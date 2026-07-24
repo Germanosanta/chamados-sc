@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Central de Chamados — Santa Colomba</title>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Styles -->
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<!-- SIDEBAR -->
+<div class="app">
+<!-- Botão "Voltar ao Portal" — fixed, fora do menu-overlay para permanecer visível -->
+<button class="menu-back-btn" id="menu-back-btn" onclick="voltarMenu()">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="15 18 9 12 15 6"/></svg>
+  Portal
+</button>
+<!-- ══════════════════════════════════════════════════════════
+     MENU PRINCIPAL — Portal de Tecnologia SC
+     z-index:490 (abaixo do login:500, acima do app:0)
+     ════════════════════════════════════════════════════════ -->
+<div id="menu-overlay">
+
+  <!-- Botão voltar ao menu (visível dentro do sistema) -->
+  <div class="menu-header">
+    <div class="menu-logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+    </div>
+    <div class="menu-portal-title">Portal de Tecnologia</div>
+    <div class="menu-portal-sub">Santa Colomba Agropecuária</div>
+    <div class="menu-user-pill" id="menu-user-label">Usuário</div>
+  </div>
+
+  <div class="menu-grid">
+
+    <!-- Chamados de Campo -->
+    <div class="menu-card campo" onclick="abrirModulo('campo')" tabindex="0"
+         onkeydown="if(event.key==='Enter')abrirModulo('campo')">
+      <div class="menu-card-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div>
+        <div class="menu-card-title">Chamados de Campo</div>
+        <div class="menu-card-desc">Gestão de chamados técnicos, equipamentos e frotas. Dashboard, relatórios e controle de peças.</div>
+      </div>
+      <div class="menu-card-badge">
+        <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Módulo ativo
+      </div>
+      <span class="menu-card-arrow">→</span>
+    </div>
+
+    <!-- Chamados de Irrigação -->
+    <div class="menu-card irrigacao" onclick="abrirModulo('irrigacao')" tabindex="0"
+         onkeydown="if(event.key==='Enter')abrirModulo('irrigacao')">
+      <div class="menu-card-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+      </div>
+      <div>
+        <div class="menu-card-title">Chamados de Irrigação</div>
+        <div class="menu-card-desc">Registro e acompanhamento de chamados do sistema de irrigação. Pivôs, bombas e equipamentos hídricos.</div>
+      </div>
+      <div class="menu-card-badge">Em breve</div>
+      <span class="menu-card-arrow">→</span>
+    </div>
+
+    <!-- Cadastro de Chips -->
+    <div class="menu-card chips" onclick="abrirModulo('chips')" tabindex="0"
+         onkeydown="if(event.key==='Enter')abrirModulo('chips')">
+      <div class="menu-card-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      </div>
+      <div>
+        <div class="menu-card-title">Chips de Abastecimento</div>
+        <div class="menu-card-desc">Cadastro e controle de chips de abastecimento. Veículos, consumo e relatórios por frota.</div>
+      </div>
+      <div class="menu-card-badge">Em breve</div>
+      <span class="menu-card-arrow">→</span>
+    </div>
+
+  </div><!-- /menu-grid -->
+
+  <div class="menu-footer">
+    <span id="menu-footer-date"></span>
+    <div class="menu-footer-sep"></div>
+    <span>Tecnologia Santa Colomba</span>
+    <div class="menu-footer-sep"></div>
+    <button style="background:none;border:none;cursor:pointer;font-size:11px;color:var(--text3);font-family:var(--font)" onclick="doLogout()">Sair</button>
+  </div>
+
+</div><!-- /#menu-overlay -->
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-row">
+      <div class="brand-icon">
+        <svg viewBox="0 0 20 20"><path d="M10 2L3 6v8l7 4 7-4V6L10 2zm0 2.2l5 2.8-5 2.8L5 7l5-2.8zm-6 4.4l5 2.8v5.4L4 13.8V8.6zm7 8.2v-5.4l5-2.8v5.2l-5 3z"/></svg>
+      </div>
+      <div>
+        <div class="brand-name">Santa Colomba</div>
+        <div class="brand-sub">Central de Chamados</div>
+      </div>
+    </div>
+    <div class="brand-badge" id="total-badge">2,960 chamados</div>
+  </div>
+
+  <nav class="nav">
+
+    <!-- 1. Dashboard -->
+    <div class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+
+    <!-- 2. Chamados (collapsible) -->
+    <div class="nav-group">
+      <div class="nav-item nav-group-toggle" onclick="toggleNavGroup('grp-chamados',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        Chamados
+        <span class="nav-badge" id="badge-chamados">—</span>
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="nav-sub" id="grp-chamados">
+        <div class="nav-item nav-sub-item" onclick="showSection('chamados',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          Todos
+          <span class="nav-badge" id="badge-chamados-2" style="font-size:9px">—</span>
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-aberto" onclick="showSection('aberto',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Em Aberto
+          <span class="nav-badge" id="badge-aberto" style="background:var(--red)">—</span>
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-encerrados" onclick="showSection('encerrados',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Encerrados
+          <span class="nav-badge" id="badge-encerrados" style="background:var(--green)">—</span>
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-novo" onclick="showSection('novo',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Chamado
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-criticidade" onclick="showSection('criticidade',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+          Criticidade
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-painel" onclick="showSection('painel',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Painel Operacional
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Equipamentos -->
+    <div class="nav-group">
+      <div class="nav-item nav-group-toggle" onclick="toggleNavGroup('grp-equipamentos',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        Equipamentos
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="nav-sub" id="grp-equipamentos">
+        <div class="nav-item nav-sub-item" id="nav-equipamentos" onclick="showSection('equipamentos',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/></svg>
+          Cadastro
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-frotas" onclick="showSection('frotas',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><circle cx="12" cy="12" r="3"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3"/></svg>
+          Por Frota
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-pecas" onclick="showSection('pecas',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          Peças e Estoque
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-kb" onclick="showSection('kb',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          Banco de Soluções
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Frotas -->
+    <div class="nav-item" onclick="showSection('frotas',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Frotas
+    </div>
+
+    <!-- 5. Técnicos -->
+    <div class="nav-item" id="nav-tecnicos" onclick="showSection('tecnicos',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      Técnicos
+    </div>
+
+    <!-- 6. Usuários -->
+    <div class="nav-item" id="nav-usuarios" onclick="showSection('usuarios',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Usuários
+    </div>
+
+    <!-- 7. Relatórios (collapsible) -->
+    <div class="nav-group">
+      <div class="nav-item nav-group-toggle" onclick="toggleNavGroup('grp-relatorios',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios
+        <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="nav-sub" id="grp-relatorios">
+        <div class="nav-item nav-sub-item" onclick="showSection('pormes',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Por Mês
+        </div>
+        <div class="nav-item nav-sub-item" onclick="showSection('responsaveis',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          Responsáveis
+        </div>
+        <div class="nav-item nav-sub-item" id="nav-auditoria" onclick="showSection('auditoria',this)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+          Auditoria / Logs
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Configurações -->
+    <div class="nav-item" id="nav-config" onclick="showSection('config',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Configurações
+    </div>
+
+  </nav>
+
+  <div class="sidebar-footer">
+    Jun/2022 – Abr/2026<br>
+    Base local · Offline<br>
+    <span id="footer-date" style="color:var(--accent)"></span>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <button class="mob-menu-btn" id="mob-menu-btn" onclick="toggleMobileMenu()" title="Abrir menu" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div>
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="page-sub" id="page-sub">Visão geral · Santa Colomba Agropecuária</div>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <!-- Pesquisa global -->
+    <div id="global-search-wrap">
+      <input id="global-search-box" class="search-box" type="text"
+        placeholder="🔍 Pesquisa global…"
+        oninput="globalSearch(this.value)"
+        onfocus="if(this.value)document.getElementById('global-search-results').classList.add('open')"
+        autocomplete="off">
+      <div id="global-search-results"></div>
+    </div>
+
+    <!-- Novo Chamado -->
+    <button class="btn btn-primary topbar-btn" onclick="showSection('novo',document.getElementById('nav-novo'))" title="Abrir novo chamado">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <span class="btn-label">Novo</span>
+    </button>
+
+    <!-- Modo escuro -->
+    <button id="dark-toggle" class="topbar-icon-btn" onclick="toggleDark()" title="Alternar modo claro/escuro" aria-label="Alternar tema">
+      🌙
+    </button>
+
+    <!-- Firebase status -->
+    <div id="fb-status" title="Firebase"
+      style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;cursor:help;transition:background .3s"></div>
+    <!-- Relógio -->
+    <div class="topbar-clock" id="clock">--:--</div>
+
+    <!-- Usuário logado -->
+    <div class="topbar-user-pill" id="topbar-user"></div>
+
+    <!-- Sair -->
+    <button class="btn btn-ghost topbar-btn" onclick="doLogout()" title="Encerrar sessão">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <span class="btn-label">Sair</span>
+    </button>
+  </div>
+</div>
+<div class="content">
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 1: DASHBOARD                          -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section active" id="sec-dashboard">
+
+  <!-- KPIs — 6 status cards -->
+  <div class="kpi-grid" id="kpi-grid" style="grid-template-columns:repeat(6,1fr)">
+    <!-- 1. Total -->
+    <div class="kpi-card blue" style="cursor:pointer" onclick="applyStatusFilter('')" title="Ver todos">
+      <div class="kpi-label">Total de Chamados</div>
+      <div class="kpi-value" id="k-total">—</div>
+      <div class="kpi-sub"><span class="kpi-chip chip-blue" id="k-total-chip">Jun/22–Jul/26</span></div>
+    </div>
+    <!-- 2. Abertos (Não iniciado) -->
+    <div class="kpi-card red" style="cursor:pointer" onclick="applyStatusFilter('Aberto')" title="Ver em aberto">
+      <div class="kpi-label">Abertos</div>
+      <div class="kpi-value" id="k-aberto">—</div>
+      <div class="kpi-sub" id="k-aberto-sub">não iniciados</div>
+    </div>
+    <!-- 3. Em Atendimento -->
+    <div class="kpi-card amber" style="cursor:pointer" onclick="applyStatusFilter('Em Atendimento')" title="Ver em atendimento">
+      <div class="kpi-label">Em Atendimento</div>
+      <div class="kpi-value" id="k-atendimento">—</div>
+      <div class="kpi-sub">em andamento</div>
+    </div>
+    <!-- 4. Aguardando Peça -->
+    <div class="kpi-card" style="cursor:pointer;border-top-color:var(--purple)" onclick="applyStatusFilter('Aguardando Peça')" title="Ver aguardando peça">
+      <div class="kpi-label">Aguardando Peça</div>
+      <div class="kpi-value" id="k-aguardando" style="color:var(--purple)">—</div>
+      <div class="kpi-sub">bloqueados</div>
+    </div>
+    <!-- 5. Concluídos -->
+    <div class="kpi-card green" style="cursor:pointer" onclick="applyStatusFilter('Concluído')" title="Ver concluídos">
+      <div class="kpi-label">Concluídos</div>
+      <div class="kpi-value" id="k-conc">—</div>
+      <div class="kpi-sub"><span class="kpi-chip chip-green" id="k-conc-pct">—%</span> do total</div>
+    </div>
+    <!-- 6. Cancelados -->
+    <div class="kpi-card" style="cursor:pointer;border-top-color:var(--text3)" onclick="applyStatusFilter('Cancelado')" title="Ver cancelados">
+      <div class="kpi-label">Cancelados</div>
+      <div class="kpi-value" id="k-cancelado" style="color:var(--text3)">—</div>
+      <div class="kpi-sub">encerrados s/ solução</div>
+    </div>
+  </div>
+
+  <!-- ROW 1: Evolução + Donut -->
+  <div class="chart-row cols-3-2">
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">Evolução Mensal</div><div class="card-sub">Chamados por cultura · empilhado</div></div>
+      </div>
+      <div class="canvas-wrap" style="height:220px"><canvas id="ch-evolucao"></canvas></div>
+      <div class="legend" style="margin-top:14px">
+        <div class="legend-item"><div class="leg-dot" style="background:#2563eb"></div>Grãos e Fibras</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#d97706"></div>Tabaco</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#92400e"></div>Cacau</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#94a3b8"></div>Sem cultura</div>
+      </div>
+    </div>
+    <div class="card" style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+      <div class="card-header" style="width:100%">
+        <div><div class="card-title">Por Cultura</div><div class="card-sub">Participação total</div></div>
+      </div>
+      <div class="donut-wrap">
+        <canvas id="ch-donut" style="position:absolute;top:0;left:0"></canvas>
+        <div class="donut-center">
+          <div class="donut-num" id="donut-n">—</div>
+          <div class="donut-lbl">chamados</div>
+        </div>
+      </div>
+      <div class="legend" style="justify-content:center;margin-top:16px">
+        <div class="legend-item"><div class="leg-dot" style="background:#2563eb"></div>Grãos</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#d97706"></div>Tabaco</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#92400e"></div>Cacau</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Bucket + Responsáveis + Problemas -->
+  <div class="chart-row cols-3">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Por Sede / Bucket</div></div></div>
+      <div class="canvas-wrap" style="height:180px"><canvas id="ch-bucket"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Por Responsável</div></div></div>
+      <div id="resp-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Principais Problemas</div></div></div>
+      <div id="issue-bars"></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Anos + Recentes -->
+  <div class="chart-row cols-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Volume por Ano</div><div class="card-sub">Comparativo 2022–2026</div></div></div>
+      <div class="canvas-wrap" style="height:200px"><canvas id="ch-anos"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Últimos 10 Chamados</div><div class="card-sub" id="recent-sub"></div></div></div>
+      <div class="table-wrap" style="max-height:240px">
+        <table class="data-table" id="tbl-recent"></table>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 2: CHAMADOS                           -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-chamados">
+
+  <div class="filter-bar">
+    <span class="filter-label">Filtros</span>
+    <input class="search-box" type="text" id="srch" placeholder="Buscar número, máquina, título…" oninput="applyFilters()">
+    <select class="filter-select" id="f-cultura" onchange="applyFilters()">
+      <option value="">Todas as culturas</option>
+      <option>Grãos e Fibras</option>
+      <option>Tabaco</option>
+      <option>Cacau</option>
+    </select>
+    <select class="filter-select" id="f-status" onchange="applyFilters()">
+      <option value="">Todos os status</option>
+      <option value="Aberto">Aberto</option>
+      <option value="Em Atendimento">Em Atendimento</option>
+      <option value="Aguardando Peça">Aguardando Peça</option>
+      <option value="Concluído">Concluído</option>
+      <option value="Cancelado">Cancelado</option>
+      <option value="Concluída">Concluída (histórico)</option>
+      <option value="Não iniciado">Não iniciado (histórico)</option>
+    </select>
+    <select class="filter-select" id="f-bucket" onchange="applyFilters()">
+      <option value="">Todas as sedes</option>
+      <option>Solinftec KRT</option>
+      <option>Solinftec RDM</option>
+      <option>Rádio</option>
+      <option>John Deere</option>
+    </select>
+    <button class="btn btn-ghost" onclick="clearFilters()">Limpar</button>
+    <button class="btn btn-ghost" onclick="exportCSV()">⬇ CSV</button>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Título / Máquina</th>
+            <th>Cultura</th>
+            <th>Responsável</th>
+            <th>Data</th>
+            <th>Status</th>
+            <th>Bucket</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-chamados"></tbody>
+      </table>
+    </div>
+    <div class="pag-info" id="pag-info"></div>
+    <div class="pag-row" id="pag-row"></div>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: CHAMADOS EM ABERTO                   -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-aberto">
+
+  <!-- KPIs -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card blue" style="cursor:pointer" id="abcard-guil" onclick="abCardFilter('resp','Guilherme')">
+      <div class="kpi-label">Guilherme</div>
+      <div class="kpi-value" id="ab-guil">—</div>
+      <div class="kpi-sub">chamados em aberto</div>
+    </div>
+    <div class="kpi-card amber" style="cursor:pointer" id="abcard-wali" onclick="abCardFilter('resp','Walison')">
+      <div class="kpi-label">Walison</div>
+      <div class="kpi-value" id="ab-wali">—</div>
+      <div class="kpi-sub">chamados em aberto</div>
+    </div>
+    <div class="kpi-card red" style="cursor:pointer" id="abcard-venc" onclick="abCardFilter('vencidos','')">
+      <div class="kpi-label">Vencidos (+7 dias)</div>
+      <div class="kpi-value" id="ab-venc" style="color:#dc2626">—</div>
+      <div class="kpi-sub">precisam de atenção</div>
+    </div>
+    <div class="kpi-card red" style="cursor:pointer" id="abcard-total" onclick="abCardFilter('total','')">
+      <div class="kpi-label">Total em Aberto</div>
+      <div class="kpi-value" id="ab-total">—</div>
+      <div class="kpi-sub">clique para ver todos</div>
+    </div>
+  </div>
+
+  <!-- Cards de Cultura e Fazenda -->
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px">
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #2563eb" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
+      <div class="kpi-label">🌾 Grãos e Fibras</div>
+      <div class="kpi-value" id="ab-graos">—</div>
+      <div class="kpi-sub">em aberto</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #d97706" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
+      <div class="kpi-label">🌿 Tabaco</div>
+      <div class="kpi-value" id="ab-tabaco">—</div>
+      <div class="kpi-sub">em aberto</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #92400e" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
+      <div class="kpi-label">🍫 Cacau</div>
+      <div class="kpi-value" id="ab-cacau">—</div>
+      <div class="kpi-sub">em aberto</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #0d9488" onclick="abCardFilter('fazenda','Solinftec KRT')" id="abcard-krt">
+      <div class="kpi-label">📍 Karitel (KRT)</div>
+      <div class="kpi-value" id="ab-krt">—</div>
+      <div class="kpi-sub">em aberto</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #7c3aed" onclick="abCardFilter('fazenda','Solinftec RDM')" id="abcard-rdm">
+      <div class="kpi-label">📍 Rio do Meio (RDM)</div>
+      <div class="kpi-value" id="ab-rdm">—</div>
+      <div class="kpi-sub">em aberto</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <span class="filter-label">Filtros</span>
+    <input class="search-box" type="text" id="ab-srch" placeholder="Buscar número ou título…" oninput="renderAberto()">
+    <select class="filter-select" id="ab-resp" onchange="renderAberto()">
+      <option value="">Todos os responsáveis</option>
+      <option value="Guilherme">Guilherme</option>
+      <option value="Walison">Walison</option>
+    </select>
+    <select class="filter-select" id="ab-ordem" onchange="renderAberto()">
+      <option value="antigos">Mais antigos primeiro</option>
+      <option value="recentes">Mais recentes primeiro</option>
+    </select>
+    <input type="hidden" id="ab-cult-card" value="">
+    <input type="hidden" id="ab-fazenda-card" value="">
+    <input type="hidden" id="ab-resp-card" value="">
+    <input type="hidden" id="ab-venc-card" value="">
+    <button class="btn btn-ghost" id="ab-clear-cards" onclick="abCardFilter('total','')" style="display:none;font-size:11px;padding:5px 10px">✕ Limpar filtro</button>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+      <span style="font-size:11px;color:var(--text3)">Legenda:</span>
+      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#fef2f2;color:#dc2626">+7 dias</span>
+      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#fffbeb;color:#d97706">3–7 dias</span>
+      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f0fdf4;color:#16a34a">&lt;3 dias</span>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Número</th>
+            <th>Título / Máquina</th>
+            <th>Responsável</th>
+            <th>Data Abertura</th>
+            <th>Prioridade</th>
+            <th>Status</th>
+            <th>Dias em Aberto</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-aberto"></tbody>
+      </table>
+    </div>
+    <div class="pag-info" id="ab-pag-info"></div>
+    <div class="pag-row" id="ab-pag-row"></div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 3: POR MÊS                            -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-pormes">
+
+  <div class="filter-bar">
+    <span class="filter-label">Ano</span>
+    <div class="month-filter">
+      <input type="number" id="yr-filter" value="2025" min="2022" max="2026" onchange="renderMesCharts()">
+      <div style="display:flex;gap:6px">
+        <button class="filter-chip" onclick="changeYear(-1)">← Ant.</button>
+        <button class="filter-chip" onclick="changeYear(1)">Próx. →</button>
+      </div>
+      <span style="font-size:12px;color:var(--text3)">2022 – 2026</span>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title" id="mes-chart-title">Chamados por Mês</div><div class="card-sub">Barras empilhadas por cultura</div></div></div>
+      <div class="canvas-wrap" style="height:240px"><canvas id="ch-mes-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Distribuição por Cultura</div><div class="card-sub" id="mes-donut-sub">no ano</div></div></div>
+      <div class="donut-wrap" style="margin-top:8px">
+        <canvas id="ch-mes-donut" style="position:absolute;top:0;left:0"></canvas>
+        <div class="donut-center">
+          <div class="donut-num" id="mes-donut-n">—</div>
+          <div class="donut-lbl">chamados</div>
+        </div>
+      </div>
+      <div class="legend" style="justify-content:center;margin-top:16px">
+        <div class="legend-item"><div class="leg-dot" style="background:#2563eb"></div>Grãos</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#d97706"></div>Tabaco</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#92400e"></div>Cacau</div>
+        <div class="legend-item"><div class="leg-dot" style="background:#94a3b8"></div>Outros</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Heat map table -->
+  <div class="card">
+    <div class="card-header"><div><div class="card-title" id="hm-title">Heatmap por Mês</div><div class="card-sub">Intensidade de chamados por cultura</div></div></div>
+    <div id="hm-table" style="overflow-x:auto"></div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 4: RESPONSÁVEIS                       -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-responsaveis">
+
+  <div class="chart-row cols-2-1">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Chamados Atribuídos por Responsável</div><div class="card-sub">Contabiliza múltiplos responsáveis por chamado</div></div></div>
+      <div class="canvas-wrap" style="height:260px"><canvas id="ch-resp-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Participação</div></div></div>
+      <div class="donut-wrap">
+        <canvas id="ch-resp-donut" style="position:absolute;top:0;left:0"></canvas>
+        <div class="donut-center">
+          <div class="donut-num" id="resp-donut-n">—</div>
+          <div class="donut-lbl">atribuições</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div><div class="card-title">Estatísticas Detalhadas por Responsável</div>
+      <div class="card-sub">Atribuídos · Abertos · Encerrados · Em aberto · Em andamento · Tempo médio</div></div>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="tbl-resp"></table>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 5: NOVO CHAMADO                       -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-novo">
+
+  <div class="card" id="form-card">
+    <!-- ── Header com número automático ── -->
+    <div class="card-header" style="margin-bottom:20px">
+      <div>
+        <div class="card-title">Abrir Novo Chamado</div>
+        <div class="card-sub">Campos marcados com <span style="color:var(--red)">*</span> são obrigatórios.</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px">Número</div>
+        <div style="font-family:var(--font-mono);font-size:24px;font-weight:800;color:var(--accent)" id="novo-num">CHM-????</div>
+        <div style="font-size:10px;color:var(--text3)" id="novo-data-hora"></div>
+      </div>
+    </div>
+
+    <!-- ════════════════ BLOCO 1: IDENTIFICAÇÃO ════════════════ -->
+    <div class="novo-section-label">📋 Identificação</div>
+    <div class="form-grid" style="margin-bottom:20px">
+
+      <!-- Solicitante (quem está abrindo — preenchido pelo usuário logado) -->
+      <div class="form-field">
+        <div class="form-label">Solicitante</div>
+        <input class="form-input" type="text" id="f-solicitante"
+          placeholder="Nome de quem solicita o atendimento"
+          style="background:var(--surface2)">
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Preenchido automaticamente pelo usuário logado</div>
+      </div>
+
+      <!-- Data de Abertura -->
+      <div class="form-field">
+        <div class="form-label">Data de Abertura</div>
+        <input class="form-input" type="date" id="f-data">
+      </div>
+
+      <!-- Categoria -->
+      <div class="form-field">
+        <div class="form-label">Categoria <span class="req">*</span></div>
+        <select class="form-select" id="f-categoria">
+          <option value="">Selecione a categoria…</option>
+          <option value="Manutenção Corretiva">Manutenção Corretiva</option>
+          <option value="Manutenção Preventiva">Manutenção Preventiva</option>
+          <option value="Instalação">Instalação</option>
+          <option value="Configuração">Configuração</option>
+          <option value="Conectividade">Conectividade</option>
+          <option value="GPS / Rastreamento">GPS / Rastreamento</option>
+          <option value="Software">Software</option>
+          <option value="Hardware">Hardware</option>
+          <option value="Elétrica">Elétrica</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+
+      <!-- Prioridade -->
+      <div class="form-field">
+        <div class="form-label">Prioridade <span class="req">*</span></div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          <div class="prio-opt" data-val="Baixa"    onclick="selectPrior(this)" style="border-color:var(--green);color:var(--green)">🟢 Baixa</div>
+          <div class="prio-opt selected" data-val="Média"   onclick="selectPrior(this)" style="border-color:var(--amber);color:var(--amber)">🟡 Média</div>
+          <div class="prio-opt" data-val="Alta"     onclick="selectPrior(this)" style="border-color:var(--red);color:var(--red)">🔴 Alta</div>
+          <div class="prio-opt" data-val="Urgente"  onclick="selectPrior(this)" style="border-color:#7c3aed;color:#7c3aed">⚡ Urgente</div>
+        </div>
+        <input type="hidden" id="f-prior" value="Média">
+      </div>
+
+    </div>
+
+    <!-- ════════════════ BLOCO 2: EQUIPAMENTO ════════════════ -->
+    <div class="novo-section-label">🚜 Equipamento</div>
+    <div style="margin-bottom:20px">
+
+      <!-- Autocomplete de equipamento -->
+      <div class="form-field full" style="margin-bottom:12px">
+        <div class="form-label">Equipamento / Máquina <span class="req">*</span></div>
+        <div class="equip-wrap">
+          <input class="form-input" type="text" id="f-titulo"
+            placeholder="Digite o código ou nome do equipamento…"
+            autocomplete="off"
+            oninput="equipSearch(this.value)"
+            onkeydown="equipKeyNav(event)"
+            onfocus="if(this.value.length>=1)equipSearch(this.value)">
+          <button class="equip-clear-btn" id="equip-clear" onclick="equipClear()" title="Limpar">✕</button>
+          <div class="equip-dropdown" id="equip-dropdown"></div>
+        </div>
+        <input type="hidden" id="equip-selected-codigo">
+        <input type="hidden" id="equip-selected-valid">
+      </div>
+
+      <!-- Cartão de dados do equipamento (auto-filled) -->
+      <div class="equip-info-card" id="equip-info-card" style="grid-template-columns:repeat(5,1fr)">
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Frota / Código</div>
+          <div class="equip-info-val" id="equip-info-codigo" style="font-family:var(--font-mono);color:var(--accent);font-weight:700">—</div>
+        </div>
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Modelo</div>
+          <div class="equip-info-val" id="equip-info-modelo">—</div>
+        </div>
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Grupo</div>
+          <div class="equip-info-val" id="equip-info-grupo">—</div>
+        </div>
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Tipo</div>
+          <div class="equip-info-val" id="equip-info-tipo">—</div>
+        </div>
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Status</div>
+          <div class="equip-info-val" id="equip-info-status">—</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ════════════════ BLOCO 3: ALOCAÇÃO ════════════════ -->
+    <div class="novo-section-label">📍 Alocação</div>
+    <div class="form-grid" style="margin-bottom:20px">
+
+      <div class="form-field">
+        <div class="form-label">Cultura <span class="req">*</span></div>
+        <select class="form-select" id="f-nova-cultura">
+          <option value="">Selecione…</option>
+          <option>Grãos e Fibras</option>
+          <option>Tabaco</option>
+          <option>Cacau</option>
+          <option>Geral</option>
+        </select>
+      </div>
+
+      <div class="form-field">
+        <div class="form-label">Sistema / Sede <span class="req">*</span></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">
+          <div class="bucket-opt" onclick="selectBucket(this,'Solinftec KRT')">
+            <div class="bucket-opt-icon">🛰️</div>
+            <div class="bucket-opt-name" style="font-size:11px">Solinftec KRT</div>
+            <div class="bucket-opt-sub">Karitel</div>
+          </div>
+          <div class="bucket-opt" onclick="selectBucket(this,'Solinftec RDM')">
+            <div class="bucket-opt-icon">🛰️</div>
+            <div class="bucket-opt-name" style="font-size:11px">Solinftec RDM</div>
+            <div class="bucket-opt-sub">Rio do Meio</div>
+          </div>
+          <div class="bucket-opt" onclick="selectBucket(this,'Rádio')">
+            <div class="bucket-opt-icon">📻</div>
+            <div class="bucket-opt-name" style="font-size:11px">Rádio</div>
+            <div class="bucket-opt-sub">Comunicação</div>
+          </div>
+          <div class="bucket-opt" onclick="selectBucket(this,'John Deere')">
+            <div class="bucket-opt-icon">🚜</div>
+            <div class="bucket-opt-name" style="font-size:11px">John Deere</div>
+            <div class="bucket-opt-sub">Suporte JD</div>
+          </div>
+        </div>
+        <input type="hidden" id="f-bucket-val">
+      </div>
+
+    </div>
+
+    <!-- ════════════════ BLOCO 4: TÉCNICOS ════════════════ -->
+    <div class="novo-section-label">👷 Responsáveis</div>
+    <div class="form-grid" style="margin-bottom:20px">
+
+      <!-- Responsável pelo chamado (quem vai atender) -->
+      <div class="form-field">
+        <div class="form-label">Responsável pelo Chamado <span class="req">*</span></div>
+        <div id="resp-picker">
+          <div id="resp-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:28px;margin-bottom:8px"></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button type="button" class="resp-opt" data-val="Guilherme" onclick="toggleResp(this)">Guilherme Otávio</button>
+            <button type="button" class="resp-opt" data-val="Walison"   onclick="toggleResp(this)">Walison Almeida</button>
+            <button type="button" class="resp-opt" data-val="Matheus"   onclick="toggleResp(this)">Matheus Gabriel</button>
+            <button type="button" class="resp-opt" data-val="Carlos"    onclick="toggleResp(this)">Carlos Santos</button>
+            <button type="button" class="resp-opt" data-val="Francisco" onclick="toggleResp(this)">Francisco</button>
+            <button type="button" class="resp-opt" data-val="Pierry"    onclick="toggleResp(this)">Pierry</button>
+          </div>
+        </div>
+        <input type="hidden" id="f-resp" value="">
+      </div>
+
+      <!-- Técnico Responsável (quem executa o serviço) -->
+      <div class="form-field">
+        <div class="form-label">Técnico Responsável</div>
+        <select class="form-select" id="f-tecnico">
+          <option value="">A definir…</option>
+          <option>Guilherme Otávio</option>
+          <option>Walison Almeida</option>
+          <option>Matheus Gabriel</option>
+          <option>Carlos Santos</option>
+          <option>Francisco</option>
+          <option>Pierry</option>
+        </select>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Técnico que irá executar o atendimento</div>
+      </div>
+
+      <!-- Status inicial -->
+      <div class="form-field">
+        <div class="form-label">Status inicial</div>
+        <select class="form-select" id="f-status-novo">
+          <option value="Aberto">Aberto</option>
+          <option value="Em Atendimento">Em Atendimento</option>
+          <option value="Aguardando Peça">Aguardando Peça</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- ════════════════ BLOCO 5: DESCRIÇÃO ════════════════ -->
+    <div class="novo-section-label">📝 Detalhes</div>
+    <div class="form-grid" style="margin-bottom:20px">
+
+      <div class="form-field full">
+        <div class="form-label">Descrição do Problema <span class="req">*</span></div>
+        <textarea class="form-textarea" id="f-desc"
+          placeholder="Descreva o problema ou solicitação com o máximo de detalhes: sintomas observados, quando começou, condições do equipamento…"
+          style="min-height:100px"></textarea>
+      </div>
+
+      <div class="form-field full">
+        <div class="form-label">Observações</div>
+        <textarea class="form-textarea" id="f-obs-novo"
+          placeholder="Informações adicionais, histórico, tentativas anteriores de solução…"
+          style="min-height:72px"></textarea>
+      </div>
+
+    </div>
+
+    <!-- ════════════════ BLOCO 6: FOTOS ════════════════ -->
+    <div class="novo-section-label">📷 Fotos</div>
+    <div style="margin-bottom:20px">
+      <div class="foto-drop-zone" id="foto-drop-zone"
+        ondragover="event.preventDefault();this.classList.add('drag-over')"
+        ondragleave="this.classList.remove('drag-over')"
+        ondrop="handleFotoDrop(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32" style="color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <div style="font-size:13px;font-weight:500;color:var(--text2);margin-top:8px">Arraste fotos aqui ou clique para selecionar</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">JPG, PNG, PDF — máx. 5 MB cada · até 5 arquivos</div>
+        <input type="file" id="foto-input" accept="image/*,.pdf" multiple style="display:none"
+          onchange="handleFotoInput(this.files)">
+        <button class="btn btn-ghost" style="margin-top:12px;font-size:12px"
+          onclick="document.getElementById('foto-input').click()">
+          + Selecionar arquivos
+        </button>
+      </div>
+      <div id="foto-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+    </div>
+
+    <!-- ════════════════ BLOCO 7: PEÇAS ════════════════ -->
+    <div class="novo-section-label">🔧 Peças Utilizadas</div>
+    <div style="margin-bottom:20px">
+      <div class="filter-bar" style="margin-bottom:10px;padding:8px 12px">
+        <input class="search-box" type="text" id="peca-srch-novo"
+          placeholder="Buscar peça do estoque…" style="flex:1"
+          oninput="buscarPecaNovo(this.value)">
+        <span style="font-size:11px;color:var(--text3)">Busque as peças utilizadas neste chamado</span>
+      </div>
+      <div id="peca-results-novo" style="display:none;border:1px solid var(--border);border-radius:var(--radius-sm);max-height:160px;overflow-y:auto;margin-bottom:10px"></div>
+      <div id="pecas-selecionadas" style="display:flex;flex-direction:column;gap:6px"></div>
+      <div id="pecas-vazias" style="font-size:12px;color:var(--text3);padding:6px 0">Nenhuma peça adicionada. Use a busca acima.</div>
+    </div>
+
+    <!-- ════════════════ SUBMIT ════════════════ -->
+    <div style="display:flex;gap:12px;padding-top:16px;border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="submitChamado()" style="padding:10px 28px;font-size:13px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+        Criar Chamado
+      </button>
+      <button class="btn btn-ghost" onclick="resetForm()">Limpar formulário</button>
+    </div>
+  </div>
+
+  <!-- Cartão de sucesso -->
+  <div class="success-card" id="success-card">
+    <div class="success-icon">✅</div>
+    <div class="success-num" id="success-num"></div>
+    <div class="success-msg" id="success-msg"></div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3)" id="success-meta"></div>
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:center">
+      <button class="btn btn-primary" onclick="resetForm()">Novo Chamado</button>
+      <button class="btn btn-ghost" onclick="showSection('chamados',document.querySelector('[onclick*=chamados]'))">Ver Todos</button>
+    </div>
+  </div>
+
+</section>
+
+
+
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!-- SECTION: USUÁRIOS                                         -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<section class="section" id="sec-usuarios">
+
+  <div class="filter-bar" style="justify-content:space-between">
+    <span class="filter-label">Usuários Cadastrados</span>
+    <button class="btn btn-primary" onclick="abrirFormUsuario()" id="btn-novo-usuario">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Novo Usuário
+    </button>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Nome</th><th>Login</th><th>Cargo</th><th>Perfil</th><th>Email</th><th>Status</th><th>Ações</th>
+        </tr></thead>
+        <tbody id="tbl-usuarios"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Form novo/editar usuário -->
+  <div class="card" id="form-usuario-card" style="display:none">
+    <div class="card-header">
+      <div><div class="card-title" id="form-usuario-title">Novo Usuário</div></div>
+      <button class="btn btn-ghost" onclick="fecharFormUsuario()">Cancelar</button>
+    </div>
+    <div class="form-grid">
+      <input type="hidden" id="u-id">
+      <div class="form-field">
+        <div class="form-label">Nome completo <span class="req">*</span></div>
+        <input class="form-input" type="text" id="u-nome" placeholder="Nome completo">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Login <span class="req">*</span></div>
+        <input class="form-input" type="text" id="u-login" placeholder="login">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Senha <span class="req">*</span></div>
+        <input class="form-input" type="password" id="u-senha" placeholder="Senha">
+      </div>
+      <div class="form-field">
+        <div class="form-label">E-mail</div>
+        <input class="form-input" type="email" id="u-email" placeholder="email@empresa.com.br">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Cargo</div>
+        <input class="form-input" type="text" id="u-cargo" placeholder="Ex: Técnico de Campo">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Perfil de Acesso <span class="req">*</span></div>
+        <select class="form-select" id="u-perfil">
+          <option value="admin">Administrador — acesso total</option>
+          <option value="supervisor">Supervisor — abrir, editar, encerrar</option>
+          <option value="tecnico" selected>Técnico — abrir e atualizar</option>
+          <option value="visualizador">Visualizador — apenas consulta</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Status</div>
+        <select class="form-select" id="u-status">
+          <option value="Ativo">Ativo</option>
+          <option value="Inativo">Inativo</option>
+        </select>
+      </div>
+    </div>
+    <!-- Permissões -->
+    <div style="margin-top:16px">
+      <div class="form-label" style="margin-bottom:10px">Permissões
+        <button type="button" onclick="aplicarPerfilPerms()" class="btn btn-ghost" style="padding:3px 10px;font-size:11px;margin-left:8px">Aplicar perfil padrão</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px" id="perms-grid"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-primary" onclick="salvarUsuario()">Salvar Usuário</button>
+      <button class="btn btn-ghost" onclick="fecharFormUsuario()">Cancelar</button>
+    </div>
+  </div>
+
+
+  <!-- E-mail Config Card -->
+  <div class="card" id="card-email-config">
+    <div class="card-header">
+      <div><div class="card-title">📧 Notificações por E-mail</div>
+      <div class="card-sub">Configure o provider para envio automático de e-mails</div></div>
+    </div>
+    <div class="settings-group">
+      <div class="settings-group-title">Provider</div>
+      <div class="settings-row">
+        <div class="settings-key">Envio de e-mails</div>
+        <select class="filter-select" id="email-provider" onchange="saveEmailConfig()" style="flex:1;max-width:320px">
+          <option value="none">Desativado (simulado no console)</option>
+          <option value="smtp">SMTP — endpoint próprio</option>
+          <option value="ms365">Microsoft 365 / Outlook (Graph API)</option>
+        </select>
+      </div>
+      <div class="settings-row" id="email-smtp-row" style="display:none">
+        <div class="settings-key">URL do endpoint SMTP</div>
+        <input class="settings-input" id="email-smtp-url" placeholder="https://api.seuservidor.com/email" onchange="saveEmailConfig()">
+      </div>
+      <div class="settings-row">
+        <div class="settings-key">E-mail remetente</div>
+        <input class="settings-input" id="email-from" value="chamados@santacolomba.com.br" onchange="saveEmailConfig()">
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:4px">
+      <button class="btn btn-ghost" onclick="testarEmail()" style="font-size:12px">📨 Enviar e-mail de teste</button>
+      <div id="email-status" style="font-size:12px;color:var(--text3)">Provider: desativado</div>
+    </div>
+    <div style="margin-top:14px;padding:12px 14px;background:var(--accent-light);border-radius:var(--radius-sm);font-size:12px;color:var(--accent-text);line-height:1.8">
+      <strong>Como ativar:</strong><br>
+      • <strong>SMTP:</strong> configure um endpoint HTTP que aceite JSON com <code>{to,subject,body}</code><br>
+      • <strong>Microsoft 365:</strong> use o token Bearer do Graph Explorer (aba Configurações → Planner)<br>
+      • Permissões necessárias: <code>Mail.Send</code>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: CHAMADOS ENCERRADOS                  -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-encerrados">
+
+  <!-- KPI card -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card green">
+      <div class="kpi-label">Total Encerrados</div>
+      <div class="kpi-value" id="enc-total">—</div>
+      <div class="kpi-sub">chamados concluídos</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Este Mês</div>
+      <div class="kpi-value" id="enc-mes">—</div>
+      <div class="kpi-sub" id="enc-mes-label">encerrados</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Tempo Médio</div>
+      <div class="kpi-value" id="enc-tempo">—</div>
+      <div class="kpi-sub">dias para conclusão</div>
+    </div>
+    <div class="kpi-card blue">
+      <div class="kpi-label">Filtrados</div>
+      <div class="kpi-value" id="enc-filtrados">—</div>
+      <div class="kpi-sub">no filtro atual</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-bar">
+    <span class="filter-label">Filtros</span>
+    <input class="search-box" type="text" id="enc-srch" placeholder="Buscar número ou título…" oninput="renderEncerrados()">
+    <select class="filter-select" id="enc-f-resp" onchange="renderEncerrados()">
+      <option value="">Todos os responsáveis</option>
+      <option value="Guilherme">Guilherme</option>
+      <option value="Walison">Walison</option>
+      <option value="Matheus">Matheus</option>
+    </select>
+    <select class="filter-select" id="enc-f-cult" onchange="renderEncerrados()">
+      <option value="">Todas as culturas</option>
+      <option>Grãos e Fibras</option>
+      <option>Tabaco</option>
+      <option>Cacau</option>
+    </select>
+    <select class="filter-select" id="enc-f-fazenda" onchange="renderEncerrados()">
+      <option value="">Todas as fazendas</option>
+      <option value="Solinftec KRT">Karitel</option>
+      <option value="Solinftec RDM">Rio do Meio</option>
+    </select>
+    <input type="date" class="search-box" id="enc-f-de" style="width:130px" title="Data início" onchange="renderEncerrados()">
+    <input type="date" class="search-box" id="enc-f-ate" style="width:130px" title="Data fim" onchange="renderEncerrados()">
+    <button class="btn btn-ghost" onclick="limparFiltrosEnc()">Limpar</button>
+    <button class="btn btn-ghost" onclick="exportEncerradosCSV()" id="btn-exp-enc">⬇ CSV</button>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Número</th><th>Título</th><th>Cultura</th><th>Fazenda</th>
+          <th>Responsável(is)</th><th>Abertura</th>
+          <th>Encerramento</th><th>Técnico(s)</th><th>Encerrado por</th><th>Tempo</th>
+        </tr></thead>
+        <tbody id="tbl-encerrados"></tbody>
+      </table>
+    </div>
+    <div class="pag-info" id="enc-pag-info"></div>
+    <div class="pag-row" id="enc-pag-row"></div>
+  </div>
+
+</section>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: CRITICIDADE                          -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-criticidade">
+
+  <!-- KPI Cards por criticidade (clicáveis) -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card red" style="cursor:pointer" onclick="critCardFilter('Urgente')" id="critcard-urgente">
+      <div class="kpi-label">🔴 Urgente / Crítica</div>
+      <div class="kpi-value" id="crit-urgente">—</div>
+      <div class="kpi-sub">chamados</div>
+    </div>
+    <div class="kpi-card amber" style="cursor:pointer" onclick="critCardFilter('Alta')" id="critcard-alta">
+      <div class="kpi-label">🟠 Alta</div>
+      <div class="kpi-value" id="crit-alta">—</div>
+      <div class="kpi-sub">chamados</div>
+    </div>
+    <div class="kpi-card blue" style="cursor:pointer" onclick="critCardFilter('Média')" id="critcard-media">
+      <div class="kpi-label">🟡 Média</div>
+      <div class="kpi-value" id="crit-media">—</div>
+      <div class="kpi-sub">chamados</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer" onclick="critCardFilter('')" id="critcard-baixa">
+      <div class="kpi-label">🟢 Baixa</div>
+      <div class="kpi-value" id="crit-baixa">—</div>
+      <div class="kpi-sub">chamados</div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-bar">
+    <span class="filter-label">Filtros</span>
+    <input class="search-box" type="text" id="crit-srch" placeholder="Buscar número ou título…" oninput="renderCriticidade()">
+    <select class="filter-select" id="crit-f-cult" onchange="renderCriticidade()">
+      <option value="">Todas as culturas</option>
+      <option>Grãos e Fibras</option><option>Tabaco</option><option>Cacau</option>
+    </select>
+    <select class="filter-select" id="crit-f-fazenda" onchange="renderCriticidade()">
+      <option value="">Todas as fazendas</option>
+      <option value="Solinftec KRT">Karitel</option>
+      <option value="Solinftec RDM">Rio do Meio</option>
+    </select>
+    <select class="filter-select" id="crit-f-resp" onchange="renderCriticidade()">
+      <option value="">Todos os responsáveis</option>
+      <option value="Guilherme">Guilherme</option>
+      <option value="Walison">Walison</option>
+    </select>
+    <select class="filter-select" id="crit-f-status" onchange="renderCriticidade()">
+      <option value="">Todos os status</option>
+      <option value="Aberto">Aberto</option>
+      <option value="Em Atendimento">Em Atendimento</option>
+      <option value="Aguardando Peça">Aguardando Peça</option>
+      <option value="Concluído">Concluído</option>
+      <option value="Cancelado">Cancelado</option>
+      <option value="Concluída">Encerrado</option>
+    </select>
+    <input type="date" class="search-box" id="crit-f-de" style="width:130px" onchange="renderCriticidade()">
+    <input type="date" class="search-box" id="crit-f-ate" style="width:130px" onchange="renderCriticidade()">
+    <input type="hidden" id="crit-card-val" value="">
+    <button class="btn btn-ghost" id="crit-clear-btn" style="display:none" onclick="critCardFilter(null)">✕ Limpar</button>
+  </div>
+
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Número</th><th>Título</th><th>Criticidade</th><th>Cultura</th>
+          <th>Responsável</th><th>Fazenda</th><th>Data</th><th>Status</th>
+        </tr></thead>
+        <tbody id="tbl-criticidade"></tbody>
+      </table>
+    </div>
+    <div class="pag-info" id="crit-pag-info"></div>
+    <div class="pag-row" id="crit-pag-row"></div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MODAL: CHECKLIST DE ENCERRAMENTO              -->
+<!-- Abre ANTES de confirmarEncerramento/detConfirmarEnc -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-checklist" onclick="closeChecklist(event)">
+  <div class="modal-box" style="width:520px;max-width:96vw;max-height:90vh;overflow-y:auto">
+    <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--text)">📋 Checklist de Encerramento</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px" id="chk-num-label"></div>
+      </div>
+      <button class="int-close" onclick="closeChecklist()">×</button>
+    </div>
+
+    <!-- Técnico(s) que atenderam -->
+    <div class="form-field full" style="margin-bottom:12px">
+      <div class="form-label">Técnico(s) que realizaram o atendimento <span class="req">*</span></div>
+      <div id="chk-tec-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:28px;margin-bottom:8px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="chk-tec-opts">
+        <button type="button" class="resp-opt" data-tec="Guilherme Otávio" onclick="toggleTecnico(this)">Guilherme Otávio</button>
+        <button type="button" class="resp-opt" data-tec="Walison Almeida" onclick="toggleTecnico(this)">Walison Almeida</button>
+        <button type="button" class="resp-opt" data-tec="Matheus Gabriel" onclick="toggleTecnico(this)">Matheus Gabriel</button>
+        <button type="button" class="resp-opt" data-tec="Carlos Santos" onclick="toggleTecnico(this)">Carlos Santos</button>
+      </div>
+      <input type="hidden" id="chk-tecnicos" value="">
+    </div>
+
+    <!-- Solução executada -->
+    <div class="form-field full" style="margin-bottom:12px">
+      <div class="form-label">Solução executada <span class="req">*</span></div>
+      <textarea class="form-textarea" id="chk-solucao" placeholder="Descreva a solução aplicada…" style="min-height:72px"></textarea>
+    </div>
+
+    <!-- Materiais / Peças / Equipamentos -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="form-field">
+        <div class="form-label">Materiais / Peças utilizadas</div>
+        <input class="form-input" type="text" id="chk-materiais" placeholder="Ex: Cabo, sensor, fusível…">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Equipamentos utilizados</div>
+        <input class="form-input" type="text" id="chk-equipamentos" placeholder="Ex: Multímetro, laptop…">
+      </div>
+    </div>
+
+    <!-- Observações -->
+    <div class="form-field full" style="margin-bottom:14px">
+      <div class="form-label">Observações</div>
+      <textarea class="form-textarea" id="chk-obs" placeholder="Informações adicionais…" style="min-height:56px"></textarea>
+    </div>
+
+    <!-- Checklist obrigatório -->
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px">
+      <div class="form-label" style="margin-bottom:10px">Checklist obrigatório</div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="checklist-items">
+        <label class="chk-item" onclick="checklistChanged()">
+          <input type="checkbox" id="chk1" class="chk-cb"> Problema resolvido
+        </label>
+        <label class="chk-item" onclick="checklistChanged()">
+          <input type="checkbox" id="chk2" class="chk-cb"> Teste realizado
+        </label>
+        <label class="chk-item" onclick="checklistChanged()">
+          <input type="checkbox" id="chk3" class="chk-cb"> Equipamento liberado
+        </label>
+        <label class="chk-item" onclick="checklistChanged()">
+          <input type="checkbox" id="chk4" class="chk-cb"> Usuário informado
+        </label>
+      </div>
+      <div id="chk-progress" style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+        <div id="chk-progress-fill" style="height:100%;background:var(--green);border-radius:2px;width:0%;transition:width .3s"></div>
+      </div>
+      <div id="chk-progress-label" style="font-size:11px;color:var(--text3);margin-top:4px">0 de 4 itens concluídos</div>
+    </div>
+
+    <!-- Validação message -->
+    <div id="chk-erro" style="display:none;padding:8px 12px;background:var(--red-bg);border:1px solid #fecaca;border-radius:6px;font-size:12px;color:var(--red);margin-bottom:10px"></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeChecklist()">Cancelar</button>
+      <button class="btn btn-danger" id="chk-btn-confirmar" onclick="submitChecklist()">
+        ✓ Confirmar Encerramento
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: BANCO DE SOLUÇÕES                    -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-kb">
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="kpi-card blue"><div class="kpi-label">Total de Soluções</div><div class="kpi-value" id="kb-total">—</div><div class="kpi-sub">registros no banco</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Categorias</div><div class="kpi-value" id="kb-cats">—</div><div class="kpi-sub">tipos de problema</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Mais Frequente</div><div class="kpi-value" id="kb-top" style="font-size:13px;line-height:1.3">—</div><div class="kpi-sub">categoria popular</div></div>
+  </div>
+  <div class="filter-bar">
+    <input class="search-box" type="text" id="kb-srch" placeholder="Buscar problema ou solução…" oninput="renderKB()" style="flex:1;min-width:180px">
+    <select class="filter-select" id="kb-f-cat" onchange="renderKB()">
+      <option value="">Todas as categorias</option>
+      <option>Hardware</option><option>Software</option><option>Conectividade</option>
+      <option>GPS/Rastreamento</option><option>Rádio</option><option>Alimentação</option><option>Outro</option>
+    </select>
+    <select class="filter-select" id="kb-f-sistema" onchange="renderKB()">
+      <option value="">Todos os sistemas</option>
+      <option>Solinftec KRT</option><option>Solinftec RDM</option>
+      <option>Nuntec</option><option>Rádio</option><option>John Deere</option>
+    </select>
+    <button class="btn btn-primary" onclick="abrirFormKB()">+ Nova Solução</button>
+  </div>
+  <div class="card" id="form-kb-card" style="display:none;margin-bottom:16px">
+    <div class="card-header"><div class="card-title" id="form-kb-title">Nova Solução</div></div>
+    <div class="form-grid">
+      <div class="form-field full"><div class="form-label">Problema / Sintoma <span class="req">*</span></div><input class="form-input" id="kb-problema" placeholder="Ex: Bordo travado, GPS inválido…"></div>
+      <div class="form-field"><div class="form-label">Categoria <span class="req">*</span></div>
+        <select class="form-select" id="kb-cat"><option value="">Selecione…</option><option>Hardware</option><option>Software</option><option>Conectividade</option><option>GPS/Rastreamento</option><option>Rádio</option><option>Alimentação</option><option>Outro</option></select>
+      </div>
+      <div class="form-field"><div class="form-label">Sistema</div>
+        <select class="form-select" id="kb-sistema"><option value="">Todos</option><option>Solinftec KRT</option><option>Solinftec RDM</option><option>Nuntec</option><option>Rádio</option><option>John Deere</option></select>
+      </div>
+      <div class="form-field full"><div class="form-label">Solução aplicada <span class="req">*</span></div><textarea class="form-textarea" id="kb-solucao" placeholder="Descreva passo a passo…" style="min-height:80px"></textarea></div>
+      <div class="form-field"><div class="form-label">Materiais/Peças</div><input class="form-input" id="kb-materiais" placeholder="Ex: Fusível 5A, cabo…"></div>
+      <div class="form-field"><div class="form-label">Tempo médio (min)</div><input class="form-input" type="number" id="kb-tempo" placeholder="Ex: 30" min="0"></div>
+      <div class="form-field full"><div class="form-label">Observações / Dicas</div><textarea class="form-textarea" id="kb-obs" placeholder="Dicas adicionais…" style="min-height:48px"></textarea></div>
+    </div>
+    <input type="hidden" id="kb-edit-id">
+    <div id="kb-erro" style="display:none;color:var(--red);font-size:12px;margin:8px 0"></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-primary" onclick="salvarKB()">Salvar Solução</button>
+      <button class="btn btn-ghost" onclick="fecharFormKB()">Cancelar</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Problema</th><th>Categoria</th><th>Sistema</th><th>Solução</th><th>Materiais</th><th>Tempo</th><th>Ações</th></tr></thead>
+        <tbody id="tbl-kb"></tbody>
+      </table>
+    </div>
+    <div id="kb-empty" style="display:none;padding:32px;text-align:center;color:var(--text3)">Nenhuma solução cadastrada. <button class="btn btn-ghost" onclick="abrirFormKB()">Adicionar agora</button></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: PEÇAS E ESTOQUE                      -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-pecas">
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card blue"><div class="kpi-label">Itens Cadastrados</div><div class="kpi-value" id="pec-total">—</div><div class="kpi-sub">no estoque</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Estoque Baixo</div><div class="kpi-value" id="pec-baixo">—</div><div class="kpi-sub">abaixo do mínimo</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Mais Consumida</div><div class="kpi-value" id="pec-top" style="font-size:13px;line-height:1.3">—</div><div class="kpi-sub">peça popular</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Movimentações</div><div class="kpi-value" id="pec-mov-cnt">—</div><div class="kpi-sub">entradas/saídas</div></div>
+  </div>
+  <div class="filter-bar">
+    <input class="search-box" type="text" id="pec-srch" placeholder="Buscar peça ou código…" oninput="renderPecas()">
+    <select class="filter-select" id="pec-f-cat" onchange="renderPecas()">
+      <option value="">Todas as categorias</option>
+      <option>Cabo e Conector</option><option>GPS</option><option>Fusível</option>
+      <option>Suporte/Fixação</option><option>Módulo/Bordo</option><option>Antena</option>
+      <option>Chip/SIM</option><option>Rádio</option><option>Outro</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text3);cursor:pointer;white-space:nowrap">
+      <input type="checkbox" id="pec-f-baixo" onchange="renderPecas()" style="accent-color:var(--red)"> Estoque baixo
+    </label>
+    <button class="btn btn-primary" onclick="abrirFormPeca()">+ Nova Peça</button>
+  </div>
+  <div class="card" id="form-pec-card" style="display:none;margin-bottom:16px">
+    <div class="card-header"><div class="card-title" id="form-pec-title">Nova Peça</div></div>
+    <div class="form-grid">
+      <div class="form-field"><div class="form-label">Nome da Peça <span class="req">*</span></div><input class="form-input" id="pec-nome" placeholder="Ex: Fusível 5A…"></div>
+      <div class="form-field"><div class="form-label">Código / Referência</div><input class="form-input" id="pec-codigo" placeholder="Ex: FUS-5A…"></div>
+      <div class="form-field"><div class="form-label">Categoria</div>
+        <select class="form-select" id="pec-cat"><option value="">Selecione…</option><option>Cabo e Conector</option><option>GPS</option><option>Fusível</option><option>Suporte/Fixação</option><option>Módulo/Bordo</option><option>Antena</option><option>Chip/SIM</option><option>Rádio</option><option>Outro</option></select>
+      </div>
+      <div class="form-field"><div class="form-label">Unidade</div>
+        <select class="form-select" id="pec-unidade"><option>un</option><option>m</option><option>kg</option><option>cx</option><option>par</option></select>
+      </div>
+      <div class="form-field"><div class="form-label">Qtd. em Estoque <span class="req">*</span></div><input class="form-input" type="number" id="pec-qtd" min="0" value="0"></div>
+      <div class="form-field"><div class="form-label">Qtd. Mínima (alerta)</div><input class="form-input" type="number" id="pec-minimo" min="0" value="2"></div>
+      <div class="form-field"><div class="form-label">Localização</div><input class="form-input" id="pec-local" placeholder="Ex: A3, Gaveta 2…"></div>
+      <div class="form-field"><div class="form-label">Fornecedor</div><input class="form-input" id="pec-fornecedor" placeholder="Nome do fornecedor"></div>
+      <div class="form-field full"><div class="form-label">Observações</div><input class="form-input" id="pec-obs-item" placeholder="Observações…"></div>
+    </div>
+    <input type="hidden" id="pec-edit-id">
+    <div id="pec-erro" style="display:none;color:var(--red);font-size:12px;margin:8px 0"></div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-primary" onclick="salvarPeca()">Salvar Peça</button>
+      <button class="btn btn-ghost" onclick="fecharFormPeca()">Cancelar</button>
+    </div>
+  </div>
+  <!-- Movimentação rápida -->
+  <div class="card" id="pec-mov-card" style="display:none;margin-bottom:16px">
+    <div class="card-title" style="margin-bottom:12px">Movimentação de Estoque</div>
+    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div class="form-field" style="flex:1;min-width:160px"><div class="form-label">Peça</div><input class="form-input" id="mov-peca-nome" readonly style="background:var(--surface2)"><input type="hidden" id="mov-peca-id"></div>
+      <div class="form-field" style="width:100px"><div class="form-label">Tipo</div>
+        <select class="form-select" id="mov-tipo"><option value="saida">Saída</option><option value="entrada">Entrada</option></select>
+      </div>
+      <div class="form-field" style="width:80px"><div class="form-label">Qtd</div><input class="form-input" type="number" id="mov-qtd" min="1" value="1"></div>
+      <div class="form-field" style="width:130px"><div class="form-label">Chamado</div><input class="form-input" id="mov-chamado" placeholder="CHM-XXXX"></div>
+      <div class="form-field" style="flex:1;min-width:140px"><div class="form-label">Motivo</div><input class="form-input" id="mov-obs" placeholder="Ex: Consumo, Reposição…"></div>
+      <button class="btn btn-primary" onclick="registrarMovimentacao()">Confirmar</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('pec-mov-card').style.display='none'">Cancelar</button>
+    </div>
+  </div>
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Nome</th><th>Código</th><th>Categoria</th><th>Un</th><th>Estoque</th><th>Mín</th><th>Local</th><th>Ações</th></tr></thead>
+        <tbody id="tbl-pecas"></tbody>
+      </table>
+    </div>
+    <div id="pec-empty" style="display:none;padding:32px;text-align:center;color:var(--text3)">Nenhuma peça cadastrada. <button class="btn btn-ghost" onclick="abrirFormPeca()">Adicionar agora</button></div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: PAINEL OPERACIONAL                   -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-painel">
+  <!-- Row 1: KPIs críticos em tempo real -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
+    <div class="op-card" style="border-left:4px solid var(--red)">
+      <div class="op-card-title">🔴 Críticos Abertos</div>
+      <div class="op-card-val" id="op-criticos" style="color:var(--red)">—</div>
+      <div style="font-size:11px;color:var(--text3)">prioridade urgente</div>
+    </div>
+    <div class="op-card" style="border-left:4px solid var(--amber)">
+      <div class="op-card-title">⏰ Vencidos (+7d)</div>
+      <div class="op-card-val" id="op-vencidos" style="color:var(--amber)">—</div>
+      <div style="font-size:11px;color:var(--text3)">sem resolução</div>
+    </div>
+    <div class="op-card" style="border-left:4px solid var(--blue,#2563eb)">
+      <div class="op-card-title">📋 Abertos Hoje</div>
+      <div class="op-card-val" id="op-hoje">—</div>
+      <div style="font-size:11px;color:var(--text3)">novos chamados</div>
+    </div>
+    <div class="op-card" style="border-left:4px solid var(--green)">
+      <div class="op-card-title">✅ Encerrados Hoje</div>
+      <div class="op-card-val" id="op-enc-hoje" style="color:var(--green)">—</div>
+      <div style="font-size:11px;color:var(--text3)">concluídos</div>
+    </div>
+    <div class="op-card" style="border-left:4px solid var(--purple)">
+      <div class="op-card-title">📊 SLA Geral</div>
+      <div class="op-card-val" id="op-sla" style="color:var(--purple)">—</div>
+      <div class="sla-bar-wrap"><div class="sla-bar-fill" id="op-sla-bar" style="background:var(--purple);width:0%"></div></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+    <!-- Chamados críticos ativos -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">🚨 Chamados Críticos</div><div class="card-sub">Em aberto agora</div></div></div>
+      <div id="op-list-criticos" style="font-size:12px"></div>
+    </div>
+
+    <!-- Ranking técnicos (semana) -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">🏆 Ranking Técnicos</div><div class="card-sub">Encerramentos nesta semana</div></div></div>
+      <div id="op-ranking" style="font-size:12px"></div>
+    </div>
+
+    <!-- Sistemas com mais chamados abertos -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">📡 Por Sistema</div><div class="card-sub">Chamados em aberto</div></div></div>
+      <div id="op-sistemas" style="font-size:12px"></div>
+    </div>
+  </div>
+
+  <!-- Linha 2: SLA por responsável + Tempo médio + IA -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">⏱ Tempo Médio por Técnico</div><div class="card-sub">Conclusão de chamados</div></div></div>
+      <div id="op-tempo-tecnico" style="font-size:12px"></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">🤖 Sugestão de IA</div><div class="card-sub">Baseada no histórico de chamados</div></div></div>
+      <div style="margin-bottom:10px">
+        <input class="search-box" type="text" id="ia-sintoma" placeholder="Descreva o sintoma ou problema…" style="width:100%;box-sizing:border-box">
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:12px" onclick="iaAnalisar()">🤖 Analisar com IA Local</button>
+      <div id="ia-resultado"></div>
+    </div>
+  </div>
+
+  <!-- Última atualização -->
+  <div style="text-align:right;font-size:11px;color:var(--text3);margin-top:12px">
+    Atualizado em: <span id="op-updated">—</span>
+    <button class="btn btn-ghost" style="margin-left:8px;font-size:11px;padding:3px 8px" onclick="renderPainel()">↻ Atualizar</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: AUDITORIA E LOGS                     -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-auditoria">
+  <div class="filter-bar" style="margin-bottom:16px">
+    <input class="search-box" type="text" id="aud-srch" placeholder="Filtrar logs…" oninput="renderAuditoria()" style="flex:1">
+    <select class="filter-select" id="aud-f-tipo" onchange="renderAuditoria()">
+      <option value="">Todos os tipos</option>
+      <option value="abriu">Abertura</option>
+      <option value="encerrou">Encerramento</option>
+      <option value="reabriu">Reabertura</option>
+      <option value="assumiu">Assunção</option>
+      <option value="login">Login</option>
+      <option value="logout">Logout</option>
+    </select>
+    <select class="filter-select" id="aud-f-user" onchange="renderAuditoria()">
+      <option value="">Todos os usuários</option>
+    </select>
+    <button class="btn btn-ghost" onclick="exportAuditCSV()">⬇ CSV</button>
+    <button class="btn btn-ghost" style="color:var(--red)" onclick="if(confirm('Limpar todos os logs?')){localStorage.removeItem('chm_audit_v1');renderAuditoria()}">🗑 Limpar</button>
+  </div>
+  <div class="card" style="padding:0">
+    <div style="padding:12px 16px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:flex;gap:12px">
+      <span style="min-width:130px">DATA/HORA</span>
+      <span style="min-width:90px">USUÁRIO</span>
+      <span style="min-width:80px">TIPO</span>
+      <span>DETALHE</span>
+    </div>
+    <div id="aud-list" style="max-height:500px;overflow-y:auto"></div>
+    <div id="aud-empty" style="display:none;padding:32px;text-align:center;color:var(--text3)">Nenhum log registrado.</div>
+  </div>
+  <div style="font-size:11px;color:var(--text3);margin-top:8px" id="aud-count"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: HISTÓRICO POR FROTA                  -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-frotas">
+  <!-- KPIs -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card blue"><div class="kpi-label">Frotas com Chamados</div><div class="kpi-value" id="fr-total">—</div><div class="kpi-sub">equipamentos registrados</div></div>
+    <div class="kpi-card amber"><div class="kpi-label">Chamados Vinculados</div><div class="kpi-value" id="fr-chamados">—</div><div class="kpi-sub">de <span id="fr-pct">—</span>% do total</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Mais Chamados</div><div class="kpi-value" id="fr-top" style="font-size:13px;line-height:1.3">—</div><div class="kpi-sub">equipamento ativo</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Frotas Inativas</div><div class="kpi-value" id="fr-inativas">—</div><div class="kpi-sub">com chamados registrados</div></div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filter-bar">
+    <input class="search-box" type="text" id="fr-srch" placeholder="Buscar frota, código ou descrição…" oninput="renderFrotas()" style="flex:1;min-width:180px">
+    <select class="filter-select" id="fr-f-grupo" onchange="renderFrotas()">
+      <option value="">Todos os grupos</option>
+      <option>TRATOR</option><option>COLHEDORA</option><option>PULVERIZADOR</option>
+      <option>CAMINHÃO</option><option>CAMINHÃO MUNCK</option><option>PLUVIÔMETRO</option>
+      <option>SEMEADORA</option><option>VEÍCULOS LEVES</option>
+    </select>
+    <select class="filter-select" id="fr-f-status" onchange="renderFrotas()">
+      <option value="">Todos os status</option>
+      <option value="Ativo">Ativo</option>
+      <option value="Inativo">Inativo</option>
+    </select>
+    <select class="filter-select" id="fr-f-sort" onchange="renderFrotas()">
+      <option value="count">Mais chamados</option>
+      <option value="codigo">Código</option>
+      <option value="descricao">Descrição</option>
+    </select>
+  </div>
+
+  <!-- Tabela de frotas -->
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>
+          <th>Código</th><th>Descrição</th><th>Modelo</th>
+          <th>Grupo</th><th>Status</th><th style="text-align:center">Chamados</th><th>Ações</th>
+        </tr></thead>
+        <tbody id="tbl-frotas"></tbody>
+      </table>
+    </div>
+    <div id="fr-empty" style="display:none;padding:32px;text-align:center;color:var(--text3)">
+      Nenhuma frota encontrada com os filtros selecionados.
+    </div>
+  </div>
+
+  <!-- Painel de chamados da frota selecionada -->
+  <div id="fr-detail-card" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title" id="fr-detail-title">—</div>
+          <div class="card-sub" id="fr-detail-sub">—</div>
+        </div>
+        <button class="btn btn-ghost" onclick="document.getElementById('fr-detail-card').style.display='none'">✕ Fechar</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
+        <div class="op-card"><div class="op-card-title">Total Chamados</div><div class="op-card-val" id="fr-d-total">—</div></div>
+        <div class="op-card"><div class="op-card-title">Concluídos</div><div class="op-card-val" id="fr-d-conc" style="color:var(--green)">—</div></div>
+        <div class="op-card"><div class="op-card-title">Em Aberto</div><div class="op-card-val" id="fr-d-aberto" style="color:var(--amber)">—</div></div>
+        <div class="op-card"><div class="op-card-title">Tempo Médio</div><div class="op-card-val" id="fr-d-tempo" style="font-size:18px">—</div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>Chamado</th><th>Título</th><th>Data</th><th>Status</th><th>Responsável</th></tr></thead>
+          <tbody id="tbl-fr-detail"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MÓDULO: CHAMADOS DE IRRIGAÇÃO                 -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-irrigacao">
+  <div style="max-width:680px;margin:0 auto;padding:20px 0">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:56px;height:56px;border-radius:16px;background:var(--teal-bg);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" width="26" height="26"><path d="M12 2.69l5.66 5.66a8 8 0 11-11.31 0z"/></svg>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px">Chamados de Irrigação</div>
+      <div style="font-size:13px;color:var(--text3)">Módulo em desenvolvimento — em breve disponível</div>
+    </div>
+
+    <!-- Preview KPIs placeholder -->
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;opacity:.4;pointer-events:none">
+      <div class="kpi-card" style="border-top:3px solid var(--teal)"><div class="kpi-label">Chamados Abertos</div><div class="kpi-value">—</div></div>
+      <div class="kpi-card" style="border-top:3px solid var(--green)"><div class="kpi-label">Concluídos</div><div class="kpi-value">—</div></div>
+      <div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-label">Pivôs Ativos</div><div class="kpi-value">—</div></div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:40px 24px">
+      <div style="font-size:40px;margin-bottom:16px">🚧</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Módulo em Construção</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.7;max-width:400px;margin:0 auto">
+        O módulo de Chamados de Irrigação está sendo desenvolvido.<br>
+        Funcionalidades previstas: registro de chamados por pivô, controle de bombas, histórico de manutenção e relatórios de consumo hídrico.
+      </div>
+      <div style="margin-top:24px;display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-ghost" onclick="voltarMenu()">← Voltar ao Portal</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- MÓDULO: CHIPS DE ABASTECIMENTO                -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-chips">
+  <div style="max-width:680px;margin:0 auto;padding:20px 0">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="width:56px;height:56px;border-radius:16px;background:var(--purple-bg);border:2px solid var(--purple);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2" width="26" height="26"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+      </div>
+      <div style="font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px">Chips de Abastecimento</div>
+      <div style="font-size:13px;color:var(--text3)">Módulo em desenvolvimento — em breve disponível</div>
+    </div>
+
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;opacity:.4;pointer-events:none">
+      <div class="kpi-card" style="border-top:3px solid var(--purple)"><div class="kpi-label">Chips Cadastrados</div><div class="kpi-value">—</div></div>
+      <div class="kpi-card" style="border-top:3px solid var(--green)"><div class="kpi-label">Ativos</div><div class="kpi-value">—</div></div>
+      <div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-label">Frotas</div><div class="kpi-value">—</div></div>
+    </div>
+
+    <div class="card" style="text-align:center;padding:40px 24px">
+      <div style="font-size:40px;margin-bottom:16px">🚧</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px">Módulo em Construção</div>
+      <div style="font-size:13px;color:var(--text3);line-height:1.7;max-width:400px;margin:0 auto">
+        O cadastro de Chips de Abastecimento está sendo desenvolvido.<br>
+        Funcionalidades previstas: cadastro de chips por veículo, controle de abastecimento, limites por frota e relatórios de consumo.
+      </div>
+      <div style="margin-top:24px;display:flex;gap:10px;justify-content:center">
+        <button class="btn btn-ghost" onclick="voltarMenu()">← Voltar ao Portal</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: EQUIPAMENTOS (cadastro xlsx)         -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-equipamentos">
+
+  <!-- KPIs -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr)">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Total Cadastrados</div>
+      <div class="kpi-value" id="eq-total">—</div>
+      <div class="kpi-sub">equipamentos</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Ativos</div>
+      <div class="kpi-value" id="eq-ativos">—</div>
+      <div class="kpi-sub">em operação</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Inativos</div>
+      <div class="kpi-value" id="eq-inativos">—</div>
+      <div class="kpi-sub">fora de uso</div>
+    </div>
+    <div class="kpi-card" style="border-top-color:var(--teal)">
+      <div class="kpi-label">Com Chamados</div>
+      <div class="kpi-value" id="eq-com-ch" style="color:var(--teal)">—</div>
+      <div class="kpi-sub">vinculados</div>
+    </div>
+    <div class="kpi-card" style="border-top-color:var(--purple)">
+      <div class="kpi-label">Com Cadastro Completo</div>
+      <div class="kpi-value" id="eq-com-cad" style="color:var(--purple)">—</div>
+      <div class="kpi-sub">campos preenchidos</div>
+    </div>
+  </div>
+
+  <!-- Filtros + Ação -->
+  <div class="filter-bar">
+    <input class="search-box" type="text" id="eq-srch"
+      placeholder="Buscar frota, descrição, modelo, fabricante…"
+      oninput="renderEquipamentos()" style="flex:1;min-width:200px">
+    <select class="filter-select" id="eq-f-tipo" onchange="renderEquipamentos()">
+      <option value="">Todos os tipos</option>
+      <option>TRATOR</option><option>COLHEDORA</option><option>PULVERIZADOR</option>
+      <option>CAMINHÃO</option><option>SEMEADORA</option><option>VEÍCULOS LEVES</option>
+      <option>IMPLEMENTO</option><option>OUTRO</option>
+    </select>
+    <select class="filter-select" id="eq-f-fazenda" onchange="renderEquipamentos()">
+      <option value="">Todas as fazendas</option>
+      <option>KRT — Karitél</option>
+      <option>RDM — Rio do Meio</option>
+      <option>Outras</option>
+    </select>
+    <select class="filter-select" id="eq-f-status" onchange="renderEquipamentos()">
+      <option value="">Todos os status</option>
+      <option value="Ativo">Ativo</option>
+      <option value="Inativo">Inativo</option>
+      <option value="Manutenção">Em Manutenção</option>
+    </select>
+    <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap">
+      <input type="checkbox" id="eq-f-sem-cad" onchange="renderEquipamentos()" style="accent-color:var(--amber)">
+      Sem cadastro
+    </label>
+    <button class="btn btn-primary" onclick="abrirFormEq()">+ Cadastrar Equipamento</button>
+  </div>
+
+  <!-- Formulário CRUD -->
+  <div class="card" id="form-eq-card" style="display:none">
+    <div class="card-header">
+      <div>
+        <div class="card-title" id="form-eq-title">Novo Equipamento</div>
+        <div class="card-sub">Preencha os dados do equipamento. Campos marcados com * são obrigatórios.</div>
+      </div>
+      <button class="btn btn-ghost" onclick="fecharFormEq()">✕ Fechar</button>
+    </div>
+
+    <!-- Seção 1: Identificação -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px">Identificação</div>
+    <div class="form-grid" style="margin-bottom:18px">
+      <div class="form-field">
+        <div class="form-label">Frota / Código <span class="req">*</span></div>
+        <div class="equip-wrap" id="eq-frota-wrap">
+          <input class="form-input" type="text" id="eq-frota"
+            placeholder="Ex: 9100152 — busque da lista…"
+            autocomplete="off"
+            oninput="equipFormSearch(this.value,'eq-frota-drop','eq-frota-code')"
+            onkeydown="equipFormKeyNav(event,'eq-frota-drop','eq-frota-code')">
+          <div class="equip-dropdown" id="eq-frota-drop"></div>
+        </div>
+        <input type="hidden" id="eq-frota-code">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Patrimônio</div>
+        <input class="form-input" type="text" id="eq-patrimonio" placeholder="Ex: PAT-00123">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Descrição</div>
+        <input class="form-input" type="text" id="eq-descricao" placeholder="Preenchido automaticamente" readonly style="background:var(--surface2)">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Número de Série</div>
+        <input class="form-input" type="text" id="eq-serie" placeholder="Ex: 1RW8400RXHP012345">
+      </div>
+    </div>
+
+    <!-- Seção 2: Especificações -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px">Especificações</div>
+    <div class="form-grid" style="margin-bottom:18px">
+      <div class="form-field">
+        <div class="form-label">Modelo</div>
+        <input class="form-input" type="text" id="eq-modelo" placeholder="Preenchido automaticamente">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Fabricante</div>
+        <input class="form-input" type="text" id="eq-fabricante" placeholder="Ex: John Deere, Case, New Holland">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Ano</div>
+        <input class="form-input" type="number" id="eq-ano" placeholder="Ex: 2023" min="1990" max="2030">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Tipo</div>
+        <select class="form-select" id="eq-tipo">
+          <option value="">Selecione…</option>
+          <option>TRATOR</option><option>COLHEDORA</option><option>PULVERIZADOR</option>
+          <option>CAMINHÃO</option><option>SEMEADORA</option><option>VEÍCULOS LEVES</option>
+          <option>IMPLEMENTO</option><option>OUTRO</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Horímetro (h)</div>
+        <input class="form-input" type="number" id="eq-horimetro" placeholder="Ex: 4500" min="0">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Status</div>
+        <select class="form-select" id="eq-status">
+          <option value="Ativo">Ativo</option>
+          <option value="Inativo">Inativo</option>
+          <option value="Manutenção">Em Manutenção</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Seção 3: Alocação -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px">Alocação</div>
+    <div class="form-grid" style="margin-bottom:18px">
+      <div class="form-field">
+        <div class="form-label">Fazenda</div>
+        <select class="form-select" id="eq-fazenda">
+          <option value="">Selecione…</option>
+          <option>KRT — Karitél</option>
+          <option>RDM — Rio do Meio</option>
+          <option>Outras</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Cultura</div>
+        <select class="form-select" id="eq-cultura">
+          <option value="">Selecione…</option>
+          <option>Grãos e Fibras</option>
+          <option>Tabaco</option>
+          <option>Cacau</option>
+          <option>Geral</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Responsável</div>
+        <select class="form-select" id="eq-responsavel">
+          <option value="">Selecione…</option>
+          <option>Walison</option><option>Francisco</option><option>Carlos</option>
+          <option>Matheus</option><option>Guilherme</option><option>Pierry</option>
+        </select>
+      </div>
+      <div class="form-field full">
+        <div class="form-label">Observações</div>
+        <textarea class="form-textarea" id="eq-obs" placeholder="Informações adicionais sobre o equipamento…" style="min-height:56px"></textarea>
+      </div>
+    </div>
+
+    <input type="hidden" id="eq-edit-id">
+    <div id="eq-erro" style="display:none;color:var(--red);font-size:12px;margin-bottom:10px"></div>
+    <div style="display:flex;gap:10px">
+      <button class="btn btn-primary" onclick="salvarEq()">Salvar Equipamento</button>
+      <button class="btn btn-ghost" onclick="fecharFormEq()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Tabela principal -->
+  <div class="card" style="padding:0">
+    <div class="table-wrap">
+      <table class="data-table" id="tbl-eq-main">
+        <thead>
+          <tr>
+            <th>Frota</th>
+            <th>Descrição</th>
+            <th>Patrimônio</th>
+            <th>Modelo</th>
+            <th>Fabricante</th>
+            <th>Ano</th>
+            <th>Tipo</th>
+            <th>Horímetro</th>
+            <th>Fazenda</th>
+            <th>Cultura</th>
+            <th>Responsável</th>
+            <th>Status</th>
+            <th>Chamados</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-equipamentos"></tbody>
+      </table>
+    </div>
+    <div id="eq-empty" style="display:none;padding:40px;text-align:center;color:var(--text3)">
+      Nenhum equipamento encontrado com os filtros selecionados.
+    </div>
+    <div id="eq-pag" style="display:flex;align-items:center;justify-content:center;gap:6px;padding:10px"></div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: TÉCNICOS                             -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-tecnicos">
+
+  <!-- KPIs -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr)">
+    <div class="kpi-card blue">
+      <div class="kpi-label">Técnicos Cadastrados</div>
+      <div class="kpi-value" id="tec-total">—</div>
+      <div class="kpi-sub">na equipe</div>
+    </div>
+    <div class="kpi-card green">
+      <div class="kpi-label">Mais Produtivo</div>
+      <div class="kpi-value" id="tec-top" style="font-size:14px;line-height:1.3">—</div>
+      <div class="kpi-sub">maior volume</div>
+    </div>
+    <div class="kpi-card amber">
+      <div class="kpi-label">Tempo Médio</div>
+      <div class="kpi-value" id="tec-avg-tempo">—</div>
+      <div class="kpi-sub">dias por chamado</div>
+    </div>
+    <div class="kpi-card" style="border-top-color:var(--purple)">
+      <div class="kpi-label">SLA Geral</div>
+      <div class="kpi-value" id="tec-sla" style="color:var(--purple)">—</div>
+      <div class="kpi-sub">dentro do prazo ≤7d</div>
+    </div>
+    <div class="kpi-card" style="border-top-color:var(--teal)">
+      <div class="kpi-label">Chamados Pendentes</div>
+      <div class="kpi-value" id="tec-pendentes" style="color:var(--teal)">—</div>
+      <div class="kpi-sub">em aberto</div>
+    </div>
+  </div>
+
+  <!-- Filtros + Ação -->
+  <div class="filter-bar">
+    <input class="search-box" type="text" id="tec-srch"
+      placeholder="Buscar por nome, área, e-mail…"
+      oninput="renderTecnicos()" style="flex:1;min-width:180px">
+    <select class="filter-select" id="tec-f-area" onchange="renderTecnicos()">
+      <option value="">Todas as áreas</option>
+      <option>Campo</option>
+      <option>Irrigação</option>
+      <option>Infraestrutura</option>
+      <option>Suporte</option>
+      <option>Gestão</option>
+    </select>
+    <select class="filter-select" id="tec-f-periodo" onchange="renderTecnicos()">
+      <option value="tudo">Todo o período</option>
+      <option value="30">Últimos 30 dias</option>
+      <option value="90">Últimos 90 dias</option>
+      <option value="365">Último ano</option>
+    </select>
+    <select class="filter-select" id="tec-f-view" onchange="renderTecnicos()">
+      <option value="cards">Cards</option>
+      <option value="tabela">Tabela</option>
+    </select>
+    <button class="btn btn-primary" onclick="abrirFormTec()">+ Cadastrar Técnico</button>
+  </div>
+
+  <!-- Formulário CRUD -->
+  <div class="card" id="form-tec-card" style="display:none">
+    <div class="card-header">
+      <div>
+        <div class="card-title" id="form-tec-title">Novo Técnico</div>
+        <div class="card-sub">Dados de cadastro do técnico da equipe</div>
+      </div>
+      <button class="btn btn-ghost" onclick="fecharFormTec()">✕ Fechar</button>
+    </div>
+    <div class="form-grid">
+      <div class="form-field">
+        <div class="form-label">Nome completo <span class="req">*</span></div>
+        <input class="form-input" type="text" id="tec-nome" placeholder="Nome e sobrenome">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Apelido / Nome exibido</div>
+        <input class="form-input" type="text" id="tec-apelido"
+          placeholder="Ex: Guilherme (como aparece nos chamados)">
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">
+          Deve coincidir exatamente com o nome nos chamados para vincular os registros históricos
+        </div>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Telefone / WhatsApp</div>
+        <input class="form-input" type="tel" id="tec-telefone"
+          placeholder="(64) 9 9999-9999">
+      </div>
+      <div class="form-field">
+        <div class="form-label">E-mail</div>
+        <input class="form-input" type="email" id="tec-email"
+          placeholder="tecnico@santacolomba.com.br">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Área de atuação</div>
+        <select class="form-select" id="tec-area">
+          <option value="">Selecione…</option>
+          <option>Campo</option>
+          <option>Irrigação</option>
+          <option>Infraestrutura</option>
+          <option>Suporte</option>
+          <option>Gestão</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Cargo / Função</div>
+        <input class="form-input" type="text" id="tec-cargo"
+          placeholder="Ex: Técnico de Campo, Supervisor…">
+      </div>
+      <div class="form-field">
+        <div class="form-label">Status</div>
+        <select class="form-select" id="tec-status">
+          <option value="Ativo">Ativo</option>
+          <option value="Inativo">Inativo</option>
+          <option value="Férias">De Férias</option>
+          <option value="Afastado">Afastado</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <div class="form-label">Data de admissão</div>
+        <input class="form-input" type="date" id="tec-admissao">
+      </div>
+      <div class="form-field full">
+        <div class="form-label">Observações</div>
+        <textarea class="form-textarea" id="tec-obs"
+          placeholder="Especialidades, certificações, informações adicionais…"
+          style="min-height:56px"></textarea>
+      </div>
+    </div>
+    <input type="hidden" id="tec-edit-id">
+    <div id="tec-erro" style="display:none;color:var(--red);font-size:12px;margin-bottom:10px"></div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-primary" onclick="salvarTec()">Salvar Técnico</button>
+      <button class="btn btn-ghost" onclick="fecharFormTec()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- View: Cards de performance -->
+  <div id="tec-view-cards">
+    <div id="tec-cards-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px"></div>
+  </div>
+
+  <!-- View: Tabela cadastral -->
+  <div id="tec-view-tabela" style="display:none">
+    <div class="card" style="padding:0">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Apelido</th>
+              <th>Área</th>
+              <th>Cargo</th>
+              <th>Telefone</th>
+              <th>E-mail</th>
+              <th>Status</th>
+              <th style="text-align:center">Total</th>
+              <th style="text-align:center">Concluídos</th>
+              <th style="text-align:center">Pendentes</th>
+              <th>Tempo Médio</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-tecnicos"></tbody>
+        </table>
+      </div>
+      <div id="tec-empty" style="display:none;padding:32px;text-align:center;color:var(--text3)">
+        Nenhum técnico encontrado.
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
+<!-- SECTION: CONFIGURAÇÕES                        -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section" id="sec-config">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+    <!-- Aparência -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">🎨 Aparência</div><div class="card-sub">Tema e exibição</div></div></div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-key">Modo Escuro</div>
+          <button class="btn btn-ghost" onclick="toggleDark()" id="cfg-dark-btn" style="font-size:12px">🌙 Alternar</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Tema atual</div>
+          <span class="settings-val" id="cfg-tema-val">claro</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sistema -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">⚙️ Sistema</div><div class="card-sub">Informações gerais</div></div></div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-key">Total de chamados</div>
+          <span class="settings-val" id="cfg-total-ch">—</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Equipamentos</div>
+          <span class="settings-val" id="cfg-total-eq">—</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Período base</div>
+          <span class="settings-val">Jun/2022 – Jul/2026</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Armazenamento</div>
+          <span class="settings-val">localStorage · Offline</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notificações / E-mail -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">📧 Notificações por E-mail</div><div class="card-sub">Configuração SMTP / Outlook</div></div></div>
+      <div class="settings-group">
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+          <div class="settings-key">Provider</div>
+          <select class="form-select" id="cfg-email-provider" style="width:100%">
+            <option value="none">Desativado</option>
+            <option value="smtp">SMTP</option>
+            <option value="outlook">Microsoft 365 / Outlook</option>
+          </select>
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+          <div class="settings-key">Token / Chave de API</div>
+          <input class="settings-input" id="cfg-email-token" placeholder="Cole aqui o token ou app password…" style="width:100%">
+        </div>
+        <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+          <div class="settings-key">E-mail remetente</div>
+          <input class="settings-input" id="cfg-email-from" placeholder="ex: chamados@santacolomba.com.br" style="width:100%">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="salvarEmailConfig()" style="width:100%">Salvar configurações</button>
+      <div id="cfg-email-status" style="margin-top:8px;font-size:11px;color:var(--text3)"></div>
+    </div>
+
+    <!-- Dados -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">💾 Dados</div><div class="card-sub">Exportação e limpeza</div></div></div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div style="flex:1">
+            <div class="settings-key">Exportar chamados</div>
+            <div class="settings-hint">Todos os chamados em CSV</div>
+          </div>
+          <button class="btn btn-ghost" onclick="exportarCSV()" style="font-size:12px">⬇ CSV</button>
+        </div>
+        <div class="settings-row">
+          <div style="flex:1">
+            <div class="settings-key">Exportar auditoria</div>
+            <div class="settings-hint">Log completo de ações</div>
+          </div>
+          <button class="btn btn-ghost" onclick="exportAuditCSV()" style="font-size:12px">⬇ CSV</button>
+        </div>
+        <div class="settings-row">
+          <div style="flex:1">
+            <div class="settings-key">Limpar dados locais</div>
+            <div class="settings-hint">Remove chamados, KB e peças criados aqui</div>
+          </div>
+          <button class="btn btn-danger" onclick="limparDadosLocais()" style="font-size:12px">🗑 Limpar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- WhatsApp (futuro) -->
+    <div class="card" style="opacity:.6">
+      <div class="card-header"><div><div class="card-title">💬 WhatsApp <span style="font-size:10px;background:var(--amber-bg);color:var(--amber);padding:2px 7px;border-radius:10px;font-weight:700">Em breve</span></div><div class="card-sub">Notificações via WhatsApp Business API</div></div></div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.7">
+        Integração futura com WhatsApp Business API para envio automático de notificações de abertura e encerramento de chamados.
+      </div>
+    </div>
+
+    <!-- Firebase -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">🔥 Firebase / Nuvem</div><div class="card-sub">Sincronização em tempo real</div></div></div>
+      <div class="settings-group">
+        <div class="settings-row">
+          <div class="settings-key">Projeto</div>
+          <span class="settings-val">chamdos-sc</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Banco de dados</div>
+          <span class="settings-val">Firestore · us-central1</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Status</div>
+          <span id="cfg-fb-status" style="font-size:12px;font-weight:600;color:var(--text3)">Verificando…</span>
+        </div>
+        <div class="settings-row">
+          <div class="settings-key">Modo</div>
+          <span class="settings-val">Offline-first · Sync automático</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-primary" onclick="fbManualSync()" style="font-size:12px">↻ Sincronizar agora</button>
+        <button class="btn btn-ghost" onclick="fbExportFirestore()" style="font-size:12px">⬆ Push local → Nuvem</button>
+      </div>
+      <div id="cfg-fb-log" style="margin-top:8px;font-size:11px;color:var(--text3);font-family:var(--font-mono)"></div>
+    </div>
+
+    <!-- Sobre -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">ℹ️ Sobre</div></div></div>
+      <div class="settings-group">
+        <div class="settings-row"><div class="settings-key">Sistema</div><span class="settings-val">Central de Chamados SC</span></div>
+        <div class="settings-row"><div class="settings-key">Versão</div><span class="settings-val">3.0 · Portal TI</span></div>
+        <div class="settings-row"><div class="settings-key">Empresa</div><span class="settings-val">Santa Colomba Agropecuária</span></div>
+        <div class="settings-row"><div class="settings-key">Base de dados</div><span class="settings-val">3.155 chamados · Jun/2022–Jul/2026</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</div><!-- /content -->
+</main>
+</div><!-- /.app -->
+
+<div class="toast" id="toast"></div>
+
+
+
+<!-- ── ENCERRAR CHAMADO MODAL -->
+<div class="modal-overlay" id="modal-encerrar" onclick="closeEncerrar(event)">
+  <div class="modal-box">
+    <div class="modal-title">✅ Encerrar Chamado</div>
+    <div class="modal-sub">Busque pelo número do chamado para marcar como Concluída. Funciona sem internet.</div>
+
+    <div class="modal-search-row">
+      <input type="text" id="enc-input" placeholder="CHM-0001 ou apenas o número…"
+        oninput="buscarChamado()" onkeydown="if(event.key==='Escape')closeEncerrar()">
+      <button class="btn btn-ghost" onclick="buscarChamado()">Buscar</button>
+    </div>
+
+    <div class="modal-not-found" id="enc-not-found">Chamado não encontrado. Verifique o número.</div>
+
+    <div class="modal-result" id="enc-result">
+      <div class="modal-result-num" id="enc-res-num"></div>
+      <div class="modal-result-titulo" id="enc-res-titulo"></div>
+      <div class="modal-result-meta">
+        <span id="enc-res-cult"></span>
+        <span id="enc-res-resp"></span>
+        <span id="enc-res-data"></span>
+        <span id="enc-res-status"></span>
+      </div>
+    </div>
+
+    <div id="enc-confirm-msg" style="display:none;padding:12px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;margin-bottom:4px;font-size:13px;color:#92400e;font-weight:500">
+      ⚠️ Tem certeza que deseja encerrar este chamado?
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeEncerrar()">Cancelar</button>
+      <button class="btn btn-danger" id="enc-btn-confirmar" disabled onclick="confirmarEncerramento()">
+        ✓ Confirmar Encerramento
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL DETALHES DO CHAMADO -->
+<div class="modal-overlay" id="modal-detalhe" onclick="closeDetalhe(event)">
+  <div class="modal-box" style="width:540px;max-width:96vw">
+
+    <div class="modal-header" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)" id="det-num"></div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);margin-top:4px;line-height:1.4" id="det-titulo"></div>
+      </div>
+      <button class="int-close" onclick="closeDetalhe()">×</button>
+    </div>
+
+    <!-- Grid de campos -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-bottom:18px" id="det-grid">
+      <div><div class="det-label">Status</div><div id="det-status"></div></div>
+      <div><div class="det-label">Prioridade</div><div id="det-prior" class="det-val"></div></div>
+      <div><div class="det-label">Responsável(is)</div><div id="det-resp" class="det-val"></div></div>
+      <div><div class="det-label">Cultura</div><div id="det-cult" class="det-val"></div></div>
+      <div><div class="det-label">Fazenda</div><div id="det-fazenda" class="det-val"></div></div>
+      <div><div class="det-label">Sistema / Origem</div><div id="det-bucket" class="det-val"></div></div>
+      <div><div class="det-label">Data de Abertura</div><div id="det-data" class="det-val"></div></div>
+      <div><div class="det-label">Aberto por</div><div id="det-aberto-por" class="det-val"></div></div>
+      <div id="det-enc-row" style="display:none"><div class="det-label">Data de Encerramento</div><div id="det-data-enc" class="det-val"></div></div>
+      <div id="det-enc-por-row" style="display:none"><div class="det-label">Encerrado por</div><div id="det-enc-por" class="det-val"></div></div>
+      <div id="det-categoria-row"><div class="det-label">Categoria</div><div id="det-categoria" class="det-val">—</div></div>
+      <div id="det-tecnico-row"><div class="det-label">Técnico Responsável</div><div id="det-tecnico" class="det-val">—</div></div>
+      <div id="det-solicitante-row"><div class="det-label">Solicitante</div><div id="det-solicitante" class="det-val">—</div></div>
+      <div id="det-tempo-row" style="display:none"><div class="det-label">Tempo de Atendimento</div><div id="det-tempo" class="det-val" style="font-weight:700;color:var(--accent)">—</div></div>
+    </div>
+
+    <!-- Descrição -->
+    <div id="det-desc-wrap" style="margin-bottom:14px;display:none">
+      <div class="det-label">Descrição</div>
+      <div id="det-desc" style="font-size:13px;color:var(--text2);line-height:1.6;background:var(--surface2);padding:10px 12px;border-radius:8px;border:1px solid var(--border)"></div>
+    </div>
+
+    <!-- Encerramento registrado -->
+    <div id="det-closed-wrap" style="margin-bottom:14px;display:none;padding:10px 14px;border-radius:8px;background:var(--green-bg);border:1px solid #bbf7d0">
+      <div class="det-label" style="color:var(--green)">✓ Encerrado em</div>
+      <div id="det-closed-info" style="font-size:13px;color:var(--green);font-weight:600"></div>
+    </div>
+
+    <!-- Validação / bloqueio -->
+    <div id="det-bloqueio" style="display:none;padding:10px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;font-size:13px;color:#92400e;margin-bottom:12px"></div>
+
+    <!-- Confirmação -->
+    <div id="det-confirm-msg" style="display:none;padding:10px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;font-size:13px;color:#92400e;font-weight:500;margin-bottom:12px">
+      ⚠️ Tem certeza que deseja encerrar este chamado?
+    </div>
+
+    <!-- Frota / Equipamento vinculado -->
+    <div id="det-frota-wrap" style="display:none;background:var(--accent-light);border:1px solid #bfdbfe;border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:8px">🔗 Equipamento Vinculado</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+        <div><div class="det-label">Código / Frota</div><div class="det-val" id="det-frota-codigo" style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">—</div></div>
+        <div><div class="det-label">Descrição</div><div class="det-val" id="det-frota-descr">—</div></div>
+        <div><div class="det-label">Modelo</div><div class="det-val" id="det-frota-modelo">—</div></div>
+        <div><div class="det-label">Grupo</div><div class="det-val" id="det-frota-grupo">—</div></div>
+        <div><div class="det-label">Status</div><div class="det-val" id="det-frota-status" style="font-weight:600">—</div></div>
+      </div>
+    </div>
+
+    <!-- Fotos do chamado -->
+    <div id="det-fotos-wrap" style="display:none;margin-bottom:14px">
+      <div class="det-label" style="margin-bottom:8px">📷 Fotos</div>
+      <div id="det-fotos" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+    </div>
+
+    <!-- Peças utilizadas -->
+    <div id="det-pecas-wrap" style="display:none;margin-bottom:14px">
+      <div class="det-label" style="margin-bottom:8px">🔧 Peças Utilizadas</div>
+      <div id="det-pecas"></div>
+    </div>
+
+    <!-- Observações -->
+    <div id="det-obs-wrap" style="display:none;margin-bottom:14px">
+      <div class="det-label" style="margin-bottom:6px">📝 Observações</div>
+      <div id="det-obs" style="font-size:12px;color:var(--text2);line-height:1.6;background:var(--surface2);padding:10px 12px;border-radius:8px;border:1px solid var(--border)"></div>
+    </div>
+
+    <!-- Histórico -->
+    <!-- Timeline completa -->
+    <div id="det-hist-wrap" style="margin-bottom:14px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="det-label">Histórico do Chamado</div>
+        <span id="det-hist-count" style="font-size:10px;color:var(--text3)"></span>
+      </div>
+      <div id="det-hist"></div>
+    </div>
+
+    <!-- Status actions bar (only shown for open chamados) -->
+    <div id="det-status-actions" style="display:none;padding:10px 0 14px;border-top:1px solid var(--border);margin-top:4px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px">Registrar evento</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <button class="btn btn-ghost" id="det-btn-iniciar" style="font-size:11px;border-color:var(--accent);color:var(--accent)"
+          onclick="registrarEvento('iniciou')">▶ Iniciar Atendimento</button>
+        <button class="btn btn-ghost" id="det-btn-peca-sol" style="font-size:11px;border-color:var(--purple);color:var(--purple)"
+          onclick="registrarEvento('peca_solicitada')">📦 Solicitar Peça</button>
+        <button class="btn btn-ghost" id="det-btn-peca-rec" style="font-size:11px;border-color:var(--teal);color:var(--teal)"
+          onclick="registrarEvento('peca_recebida')">✔ Peça Recebida</button>
+        <button class="btn btn-ghost" id="det-btn-obs" style="font-size:11px"
+          onclick="registrarEvento('obs')">💬 Observação</button>
+      </div>
+      <!-- Inline input for detail when needed -->
+      <div id="det-evt-input-wrap" style="display:none;margin-top:8px;display:none">
+        <input class="form-input" type="text" id="det-evt-input"
+          placeholder="Descreva o evento…" style="width:100%;box-sizing:border-box"
+          onkeydown="if(event.key==='Enter')confirmarEvento()">
+        <div style="display:flex;gap:8px;margin-top:6px">
+          <button class="btn btn-primary" style="font-size:11px" onclick="confirmarEvento()">Confirmar</button>
+          <button class="btn btn-ghost" style="font-size:11px" onclick="cancelarEvento()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeDetalhe()">Fechar</button>
+      <button class="btn btn-ghost" id="det-btn-assumir" style="display:none;background:var(--amber-bg,#fef3c7);color:var(--amber,#d97706)" onclick="assumirChamado(detCurrentNum)">⚡ Assumir</button>
+      <button class="btn btn-ghost" id="det-btn-enc-init" style="display:none" onclick="detMostrarConfirm()">
+        Encerrar Chamado
+      </button>
+      <button class="btn btn-danger" id="det-btn-enc-confirm" style="display:none" onclick="detConfirmarEnc()">
+        ✓ Confirmar Encerramento
+      </button>
+      <button class="btn btn-ghost" id="det-btn-cancelar-confirm" style="display:none" onclick="detCancelarConfirm()">
+        Voltar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOGIN OVERLAY -->
+<div id="login-overlay" style="position:fixed;inset:0;background:#f0f4ff;z-index:500;display:flex;align-items:center;justify-content:center">
+  <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:380px;max-width:94vw;box-shadow:var(--shadow-lg)">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:48px;height:48px;background:linear-gradient(135deg,#2563eb,#1d4ed8);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="24" height="24" fill="white" viewBox="0 0 20 20"><path d="M10 2L3 6v8l7 4 7-4V6L10 2zm0 2.2l5 2.8-5 2.8L5 7l5-2.8zm-6 4.4l5 2.8v5.4L4 13.8V8.6zm7 8.2v-5.4l5-2.8v5.2l-5 3z"/></svg>
+      </div>
+      <div style="font-size:18px;font-weight:700;color:var(--text)">Santa Colomba</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px">Central de Chamados</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div>
+        <div class="form-label">Login</div>
+        <input class="form-input" type="text" id="login-user" placeholder="Seu login" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%">
+      </div>
+      <div>
+        <div class="form-label">Senha</div>
+        <input class="form-input" type="password" id="login-pass" placeholder="Sua senha" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%">
+      </div>
+      <div id="login-err" style="display:none;padding:8px 12px;background:var(--red-bg);border:1px solid #fecaca;border-radius:6px;font-size:12px;color:var(--red)">
+        Login ou senha incorretos.
+      </div>
+      <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:11px;font-size:14px;justify-content:center">Entrar</button>
+    </div>
+    <div style="margin-top:16px;font-size:11px;color:var(--text3);text-align:center">
+      Acesso restrito · Santa Colomba Agropecuária
+    </div>
+  </div>
+</div>
+
+  <!-- ── DATA (loaded inline for offline use) -->
+  <script src="data/chamados_historico.js"></script>
+  <script src="data/equipamentos.js"></script>
+  <script src="data/match_map.js"></script>
+  <script src="data/equip_idx.js"></script>
+
+  <!-- ── CORE -->
+  <script src="src/storage.js"></script>
+
+  <!-- ── MODULES -->
+  <script src="src/usuarios/index.js"></script>
+  <script src="src/dashboard/index.js"></script>
+  <script src="src/chamados/index.js"></script>
+  <script src="src/equipamentos/index.js"></script>
+  <script src="src/relatorios/index.js"></script>
+  <script src="src/config/index.js"></script>
+
+  <!-- ── FIREBASE (module — loads after everything else) -->
+  <script type="module" src="assets/firebase.js"></script>
+
+  <!-- ── INIT -->
+  <script src="assets/init.js"></script>
+</body>
+</html>
