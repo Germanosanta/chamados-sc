@@ -53,6 +53,22 @@ function exportarCSV() {
   a.download='chamados_santa_colomba.csv';a.click();
 }
 
+// Configuração de e-mail (seção com id="email-*") — distinta da seção "cfg-email-*"
+// acima (salvarEmailConfig), são dois formulários diferentes na tela de Configurações.
+function saveEmailConfig() {
+  const provider = document.getElementById('email-provider')?.value || 'none';
+  const smtpUrl  = document.getElementById('email-smtp-url')?.value || '';
+  const from     = document.getElementById('email-from')?.value || '';
+  emailService.config.provider = provider;
+  emailService.config.smtpEndpoint = smtpUrl;
+  emailService.config.fromEmail = from;
+  localStorage.setItem('chm_email_cfg', JSON.stringify({provider,smtpUrl,from}));
+  const statusEl = document.getElementById('email-status');
+  if(statusEl) statusEl.textContent = `Provider: ${provider==='none'?'desativado':provider}`;
+  const smtpRow = document.getElementById('email-smtp-row');
+  if(smtpRow) smtpRow.style.display = provider==='smtp'?'flex':'none';
+}
+
 function loadEmailConfig() {
   try {
     const cfg = JSON.parse(localStorage.getItem('chm_email_cfg')||'{}');
@@ -69,6 +85,24 @@ function loadEmailConfig() {
       saveEmailConfig(); // sync UI state
     }
   } catch(e) {}
+}
+
+async function testarEmail() {
+  const u = currentUser();
+  const testPayload = {
+    subject: '[TESTE] Central de Chamados – Santa Colomba',
+    body: '<p>Este é um e-mail de teste da Central de Chamados.</p><p>Se você recebeu esta mensagem, a integração está funcionando corretamente.</p>',
+    to: u?.email ? [u.email] : [],
+    chamadoNum: 'TESTE',
+  };
+  if (!testPayload.to.length) {
+    showToast('Configure o e-mail do seu usuário para testar.');
+    return;
+  }
+  const result = await emailService.send(testPayload);
+  if(result?.simulated) showToast('Simulado — configure um provider real para enviar e-mails.');
+  else if(result?.ok) showToast('E-mail de teste enviado!');
+  else showToast('Erro ao enviar e-mail de teste.');
 }
 
 async function fbManualSync() {

@@ -216,3 +216,147 @@ function allRecords() {
     return r;
   });
 }
+
+// ══════════════════════════════════════════════════════════════
+// NAVEGAÇÃO — shell do app (menu de portais, seções, grupos da sidebar)
+// ══════════════════════════════════════════════════════════════
+const SECTIONS=['dashboard','chamados','aberto','encerrados','pormes','responsaveis','criticidade','painel','auditoria','frotas','kb','pecas','novo','usuarios','irrigacao','chips','equipamentos','tecnicos','config'];
+const TITLES={
+  dashboard:'Dashboard',chamados:'Chamados',pormes:'Por Mês',
+  aberto:'Em Aberto',encerrados:'Chamados Encerrados',responsaveis:'Responsáveis',criticidade:'Criticidade',painel:'Painel Operacional',auditoria:'Auditoria e Logs',frotas:'Histórico por Frota',kb:'Banco de Soluções',pecas:'Peças e Estoque',novo:'Novo Chamado',irrigacao:'Chamados de Irrigação',chips:'Chips de Abastecimento',equipamentos:'Equipamentos',tecnicos:'Técnicos',config:'Configurações',usuarios:'Usuários'
+};
+const SUBS={
+  dashboard:'Visão geral · Santa Colomba Agropecuária',
+  chamados:'Lista completa editável',
+  pormes:'Relatório mensal por cultura',
+  aberto:'Chamados não concluídos · atualizado em tempo real',
+  criticidade:'Distribuição e acompanhamento por nível de criticidade',
+  encerrados:'Histórico de chamados concluídos',
+  usuarios:'Cadastro e gerenciamento de usuários',
+  responsaveis:'Atendimentos por responsável',
+  novo:'Abrir novo chamado',
+  irrigacao:'Gestão de chamados do sistema de irrigação',
+  chips:'Cadastro e controle de chips de abastecimento',
+  equipamentos:'Cadastro de equipamentos e frotas',
+  tecnicos:'Performance e ranking por técnico',
+  config:'Configurações do sistema',
+};
+
+function showSection(id,el){
+  SECTIONS.forEach(s=>{
+    document.getElementById('sec-'+s).classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('sec-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent=TITLES[id]||id;
+  document.getElementById('page-sub').textContent=SUBS[id]||'';
+  if(id==='chamados') renderChamados();
+  if(id==='aberto') renderAberto();
+  if(id==='criticidade') renderCriticidade();
+  if(id==='painel') renderPainel();
+  if(id==='auditoria') renderAuditoria();
+  if(id==='frotas') renderFrotas();
+  if(id==='equipamentos') renderEquipamentos();
+  if(id==='tecnicos') renderTecnicos();
+  if(id==='config') renderConfig();
+  if(id==='kb') renderKB();
+  if(id==='pecas') renderPecas();
+  if(id==='encerrados') renderEncerrados();
+  if(id==='usuarios') renderUsuarios();
+  if(id==='pormes') renderMesCharts();
+  if(id==='responsaveis') renderRespSection();
+}
+
+function toggleNavGroup(id, toggleEl) {
+  const sub = document.getElementById(id);
+  if (!sub) return;
+  const isOpen = sub.classList.contains('open');
+  // Close all groups first
+  document.querySelectorAll('.nav-sub.open').forEach(s => {
+    s.classList.remove('open');
+    s.previousElementSibling?.classList.remove('open');
+  });
+  if (!isOpen) {
+    sub.classList.add('open');
+    toggleEl.classList.add('open');
+  }
+}
+
+const MODULOS_CONFIG = {
+  campo:    { label:'Chamados de Campo',       cor:'campo',    secao:'dashboard' },
+  irrigacao:{ label:'Chamados de Irrigação',   cor:'irrigacao',secao:'irrigacao' },
+  chips:    { label:'Chips de Abastecimento',  cor:'chips',    secao:'chips'     },
+};
+
+let _moduloAtivo = null;
+
+function mostrarMenu() {
+  const overlay = document.getElementById('menu-overlay');
+  if (!overlay) return;
+  overlay.classList.add('show');
+  // position:fixed + z-index:490 covers .app — no visibility change needed
+
+  // Esconder botão voltar ao portal
+  const backBtn = document.getElementById('menu-back-btn');
+  if (backBtn) backBtn.classList.remove('show');
+
+  // Atualizar info do usuário e data
+  const u = currentUser();
+  const lbl = document.getElementById('menu-user-label');
+  if (lbl && u) lbl.textContent = u.nome + ' · ' + (PERFIL_LABEL[u.perfil]||u.perfil);
+
+  const fd = document.getElementById('menu-footer-date');
+  if (fd) fd.textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+
+  // Remove badge de módulo da topbar
+  const existingBadge = document.getElementById('topbar-module-badge');
+  if (existingBadge) existingBadge.remove();
+
+  _moduloAtivo = null;
+}
+
+// ── Abrir módulo específico
+function abrirModulo(id) {
+  const cfg = MODULOS_CONFIG[id];
+  if (!cfg) return;
+
+  // Esconde menu
+  const overlay = document.getElementById('menu-overlay');
+  if (overlay) overlay.classList.remove('show');
+
+  // Mostra botão voltar ao portal
+  const backBtn = document.getElementById('menu-back-btn');
+  if (backBtn) backBtn.classList.add('show');
+
+  // Adiciona badge de módulo ativo na topbar
+  const existingBadge = document.getElementById('topbar-module-badge');
+  if (existingBadge) existingBadge.remove();
+  if (id !== 'campo') {
+    const badge = document.createElement('span');
+    badge.id = 'topbar-module-badge';
+    badge.className = 'module-badge ' + id;
+    badge.textContent = cfg.label;
+    const tl = document.querySelector('.topbar-left');
+    if (tl) tl.appendChild(badge);
+  }
+
+  _moduloAtivo = id;
+
+  // Navigate to the module's home section
+  if (id === 'campo') {
+    // Show full sidebar nav for campo
+    document.querySelector('.sidebar')?.style.removeProperty('display');
+    showSection('dashboard', document.querySelector('.nav-item'));
+  } else if (id === 'irrigacao') {
+    // For irrigation/chips: show minimal nav (just portal back button)
+    showSection('irrigacao', null);
+  } else if (id === 'chips') {
+    showSection('chips', null);
+  }
+}
+
+// ── Voltar ao Menu
+function voltarMenu() {
+  mostrarMenu();
+}

@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Importar Dados → Firebase · Santa Colomba</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0 }
+
+    :root {
+      --bg:       #0d1117;
+      --surface:  #161b22;
+      --surface2: #21262d;
+      --border:   #30363d;
+      --text:     #e6edf3;
+      --text2:    #8b949e;
+      --text3:    #6e7681;
+      --accent:   #58a6ff;
+      --green:    #3fb950;
+      --amber:    #d29922;
+      --red:      #f85149;
+      --purple:   #bc8cff;
+      --radius:   10px;
+      --mono:     'JetBrains Mono', 'Fira Code', monospace;
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 48px;
+      gap: 0;
+    }
+
+    /* ── Header */
+    .hdr {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .hdr-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+      line-height: 1;
+    }
+    .hdr h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -.03em;
+    }
+    .hdr p {
+      font-size: 13px;
+      color: var(--text2);
+      margin-top: 5px;
+    }
+    .fb-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 4px 12px;
+      background: #1c2d42;
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    .fb-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text3);
+      transition: background .3s;
+    }
+    .fb-dot.online  { background: var(--green) }
+    .fb-dot.error   { background: var(--red) }
+
+    /* ── Main grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      max-width: 860px;
+      margin-bottom: 16px;
+    }
+
+    /* ── Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .card-icon { font-size: 22px; line-height: 1 }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .card-sub {
+      font-size: 11px;
+      color: var(--text2);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+    .card-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-family: var(--mono);
+    }
+    .chip-blue   { border-color: var(--accent); color: var(--accent); background: #1c2d42 }
+    .chip-green  { border-color: var(--green);  color: var(--green);  background: #0d2116 }
+    .chip-amber  { border-color: var(--amber);  color: var(--amber);  background: #1f1a0e }
+
+    /* ── Progress */
+    .prog-wrap { display: none; flex-direction: column; gap: 6px }
+    .prog-wrap.show { display: flex }
+    .prog-bar-track {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .prog-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--accent);
+      transition: width .2s;
+      width: 0%;
+    }
+    .prog-bar-fill.done   { background: var(--green) }
+    .prog-bar-fill.errored { background: var(--red) }
+    .prog-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text2);
+      font-family: var(--mono);
+    }
+    .prog-pct { font-weight: 700; color: var(--text) }
+    .prog-status { color: var(--text3) }
+
+    /* ── Counters */
+    .counters {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .counter {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .counter-val {
+      font-size: 20px;
+      font-weight: 800;
+      font-family: var(--mono);
+      line-height: 1;
+    }
+    .counter-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text3);
+      margin-top: 3px;
+    }
+    .c-ok    { color: var(--green) }
+    .c-skip  { color: var(--amber) }
+    .c-err   { color: var(--red) }
+
+    /* ── Button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 9px 16px;
+      border: none;
+      border-radius: 7px;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      user-select: none;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(.97) }
+    .btn:disabled { opacity: .4; cursor: not-allowed; transform: none }
+    .btn-primary { background: var(--accent); color: #0d1117 }
+    .btn-primary:hover:not(:disabled) { opacity: .85 }
+    .btn-green   { background: var(--green); color: #0d1117 }
+    .btn-green:hover:not(:disabled)  { opacity: .85 }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover:not(:disabled) { border-color: var(--text2); color: var(--text) }
+    .btn svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 2.5 }
+
+    /* ── Log */
+    .log-wrap {
+      width: 100%;
+      max-width: 860px;
+    }
+    .log-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .log-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--text3);
+    }
+    .log-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      height: 220px;
+      overflow-y: auto;
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.7;
+      color: var(--text2);
+    }
+    .log-box::-webkit-scrollbar { width: 4px }
+    .log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px }
+    .log-line { display: flex; gap: 10px; align-items: baseline }
+    .log-ts   { color: var(--text3); flex-shrink: 0; font-size: 10px }
+    .log-ok   { color: var(--green) }
+    .log-skip { color: var(--amber) }
+    .log-err  { color: var(--red) }
+    .log-info { color: var(--accent) }
+
+    /* ── Tudo button row */
+    .tudo-row {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .divider {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── Firestore rules hint */
+    .rules-hint {
+      width: 100%;
+      max-width: 860px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-size: 11px;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+    .rules-hint summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--text3);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .rules-hint pre {
+      margin-top: 10px;
+      padding: 10px;
+      background: var(--surface2);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      overflow-x: auto;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    @media (max-width: 600px) {
+      .grid { grid-template-columns: 1fr }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-icon">🔥</div>
+    <h1>Importar Dados → Firebase</h1>
+    <p>Santa Colomba Agropecuária · Firestore · projeto: <code style="color:var(--accent)">chamdos-sc</code></p>
+    <div class="fb-badge">
+      <div class="fb-dot" id="fb-dot"></div>
+      <span id="fb-status-txt">Conectando…</span>
+    </div>
+  </div>
+
+  <!-- Botão Importar Tudo -->
+  <div class="tudo-row">
+    <div class="divider"></div>
+    <button class="btn btn-green" id="btn-tudo" onclick="importarTudo()">
+      <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+      Importar Tudo
+    </button>
+    <div class="divider"></div>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="grid">
+
+    <!-- Card Equipamentos -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="card-icon">🚜</span>
+            <div>
+              <div class="card-title">Equipamentos</div>
+              <div class="card-sub">data/equipamentos.json → coleção <code style="color:var(--accent)">equipamentos</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="meta-chip chip-blue" id="eq-total-chip">— registros</span>
+        <span class="meta-chip" id="eq-key-chip">chave: c (código)</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="prog-wrap" id="eq-prog">
+        <div class="prog-bar-track">
+          <div class="prog-bar-fill" id="eq-fill"></div>
+        </div>
+        <div class="prog-info">
+          <span class="prog-pct" id="eq-pct">0%</span>
+          <span class="prog-status" id="eq-status-txt">Aguardando…</span>
+        </div>
+      </div>
+
+      <!-- Counters -->
+      <div class="counters">
+        <div class="counter">
+          <div class="counter-val c-ok"  id="eq-c-ok">—</div>
+          <div class="counter-lbl">Importados</div>
+        </div>
+        <div class="counter">
+          <div class="counter-val c-skip" id="eq-c-skip">—</div>
+          <div class="counter-lbl">Ignorados</div>
+        </div>
+        <div class="counter">
+          <div class="counter-val c-err"  id="eq-c-err">—</div>
+          <div class="counter-lbl">Erros</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-eq" onclick="importarEquipamentos()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importar Equipamentos
+      </button>
+    </div>
+
+    <!-- Card Chamados -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="card-icon">📋</span>
+            <div>
+              <div class="card-title">Chamados Históricos</div>
+              <div class="card-sub">data/chamados_historico.json → coleção <code style="color:var(--accent)">chamados</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="meta-chip chip-blue" id="ch-total-chip">— registros</span>
+        <span class="meta-chip" id="ch-key-chip">chave: CHM-XXXX</span>
+      </div>
+
+      <!-- Progress -->
+      <div class="prog-wrap" id="ch-prog">
+        <div class="prog-bar-track">
+          <div class="prog-bar-fill" id="ch-fill"></div>
+        </div>
+        <div class="prog-info">
+          <span class="prog-pct" id="ch-pct">0%</span>
+          <span class="prog-status" id="ch-status-txt">Aguardando…</span>
+        </div>
+      </div>
+
+      <!-- Counters -->
+      <div class="counters">
+        <div class="counter">
+          <div class="counter-val c-ok"  id="ch-c-ok">—</div>
+          <div class="counter-lbl">Importados</div>
+        </div>
+        <div class="counter">
+          <div class="counter-val c-skip" id="ch-c-skip">—</div>
+          <div class="counter-lbl">Ignorados</div>
+        </div>
+        <div class="counter">
+          <div class="counter-val c-err"  id="ch-c-err">—</div>
+          <div class="counter-lbl">Erros</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" id="btn-ch" onclick="importarChamados()">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Importar Chamados
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Log -->
+  <div class="log-wrap">
+    <div class="log-header">
+      <span class="log-title">Log de operações</span>
+      <button class="btn btn-ghost" style="padding:4px 10px;font-size:10px" onclick="limparLog()">Limpar</button>
+    </div>
+    <div class="log-box" id="log-box">
+      <div class="log-line"><span class="log-ts">--:--:--</span><span class="log-info">Aguardando conexão com o Firebase…</span></div>
+    </div>
+  </div>
+
+  <!-- Firestore Rules hint -->
+  <div class="log-wrap" style="margin-top:14px">
+    <details class="rules-hint">
+      <summary>⚠ Regras do Firestore (se encontrar erro de permissão)</summary>
+      <p style="margin-top:8px;color:var(--text2)">
+        No <a href="https://console.firebase.google.com/project/chamdos-sc/firestore/rules" target="_blank" style="color:var(--accent)">Firebase Console → Firestore → Rules</a>,
+        configure temporariamente para desenvolvimento:
+      </p>
+      <pre>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true; // APENAS para importação — altere depois!
+    }
+  }
+}</pre>
+      <p style="margin-top:8px;color:var(--amber)">⚠ Restaure para regras seguras após importar.</p>
+    </details>
+  </div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FIREBASE MODULE + IMPORT LOGIC
+     ══════════════════════════════════════════════════════════════ -->
+<script type="module">
+  import { initializeApp }    from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js';
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, serverTimestamp }
+                              from 'https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js';
+
+  // ── Mesma config do assets/firebase.js
+  const firebaseConfig = {
+    apiKey:            'AIzaSyDalH6I1uHQyW5cfZresj-Q9EieGk58g54',
+    authDomain:        'chamdos-sc.firebaseapp.com',
+    projectId:         'chamdos-sc',
+    storageBucket:     'chamdos-sc.firebasestorage.app',
+    messagingSenderId: '813048921429',
+    appId:             '1:813048921429:web:5cccf543918d5b0dbb83dc',
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ══════════════════════════════════════════════════════════════
+  // UTILITÁRIOS — LOG + PROGRESSO
+  // ══════════════════════════════════════════════════════════════
+
+  function ts() {
+    return new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+  }
+
+  function log(msg, type = 'info') {
+    const box  = document.getElementById('log-box');
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span class="log-ts">${ts()}</span><span class="log-${type}">${msg}</span>`;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  window.limparLog = function() {
+    document.getElementById('log-box').innerHTML = '';
+  };
+
+  function setProgress(prefix, done, total, state = 'running') {
+    const pct  = total > 0 ? Math.round(done / total * 100) : 0;
+    const fill = document.getElementById(`${prefix}-fill`);
+    const pctEl= document.getElementById(`${prefix}-pct`);
+    const stEl = document.getElementById(`${prefix}-status-txt`);
+    const wrap = document.getElementById(`${prefix}-prog`);
+    if (wrap) wrap.classList.add('show');
+    if (fill) {
+      fill.style.width = pct + '%';
+      fill.className   = 'prog-bar-fill' + (state === 'done' ? ' done' : state === 'error' ? ' errored' : '');
+    }
+    if (pctEl) pctEl.textContent = pct + '%';
+    if (stEl)  stEl.textContent  = `${done.toLocaleString('pt-BR')} / ${total.toLocaleString('pt-BR')}`;
+  }
+
+  function setCounters(prefix, ok, skip, err) {
+    const s = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    s(`${prefix}-c-ok`,   ok.toLocaleString('pt-BR'));
+    s(`${prefix}-c-skip`, skip.toLocaleString('pt-BR'));
+    s(`${prefix}-c-err`,  err.toLocaleString('pt-BR'));
+  }
+
+  function setBtn(id, disabled, text) {
+    const b = document.getElementById(id);
+    if (!b) return;
+    b.disabled = disabled;
+    if (text) b.childNodes[b.childNodes.length - 1].textContent = ' ' + text;
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // LOAD JSON — fetch relativo a partir de tools/
+  // ══════════════════════════════════════════════════════════════
+  async function loadJSON(path) {
+    const res = await fetch(path);
+    if (!res.ok) throw new Error(`HTTP ${res.status} ao carregar ${path}`);
+    return res.json();
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // IMPORT ENGINE — batch com controle de taxa
+  // Firestore: máx 500 ops por batch, ~1 MB por request
+  // Para segurança usamos setDoc individual com concorrência limitada
+  // ══════════════════════════════════════════════════════════════
+  async function importCollection({ colName, records, getId, toDoc, prefix, signal }) {
+    const total  = records.length;
+    let ok = 0, skip = 0, err = 0, done = 0;
+
+    log(`▶ Iniciando ${colName} — ${total.toLocaleString('pt-BR')} registros`, 'info');
+    setProgress(prefix, 0, total);
+    setCounters(prefix, 0, 0, 0);
+
+    // Buscar IDs já existentes (para skip sem duplicar)
+    log(`  Verificando documentos existentes em "${colName}"…`, 'info');
+    let existingIds = new Set();
+    try {
+      const snap = await getDocs(collection(db, colName));
+      snap.docs.forEach(d => existingIds.add(d.id));
+      log(`  ${existingIds.size.toLocaleString('pt-BR')} documentos já existem na coleção`, 'skip');
+    } catch (e) {
+      log(`  ⚠ Não foi possível verificar existentes: ${e.message}`, 'err');
+    }
+
+    // Processar em chunks de 10 simultâneos (evita rate limit)
+    const CONCURRENCY = 10;
+    const chunks = [];
+    for (let i = 0; i < total; i += CONCURRENCY) {
+      chunks.push(records.slice(i, i + CONCURRENCY));
+    }
+
+    for (const chunk of chunks) {
+      if (signal?.aborted) { log('⛔ Importação cancelada.', 'err'); break; }
+
+      await Promise.all(chunk.map(async (rec) => {
+        const docId  = getId(rec);
+        const data   = toDoc(rec);
+        if (!docId) { err++; log(`  ✗ ID inválido: ${JSON.stringify(rec).slice(0, 60)}`, 'err'); return; }
+
+        try {
+          // merge:true — não sobrescreve campos extras já existentes
+          await setDoc(doc(db, colName, docId), {
+            ...data,
+            _importedAt: serverTimestamp(),
+          }, { merge: true });
+
+          if (existingIds.has(docId)) {
+            skip++;
+          } else {
+            ok++;
+            existingIds.add(docId);
+          }
+        } catch (e) {
+          err++;
+          log(`  ✗ Erro em ${docId}: ${e.message}`, 'err');
+        }
+      }));
+
+      done += chunk.length;
+      setProgress(prefix, done, total);
+      setCounters(prefix, ok, skip, err);
+
+      // Yield para atualizar UI
+      await new Promise(r => setTimeout(r, 0));
+    }
+
+    const state = err > 0 ? 'error' : 'done';
+    setProgress(prefix, total, total, state);
+    log(`✅ ${colName} concluído: ${ok} importados, ${skip} já existiam, ${err} erros`, err > 0 ? 'err' : 'ok');
+    return { ok, skip, err };
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // IMPORTAR EQUIPAMENTOS
+  // Coleção: equipamentos | ID: c (código da frota)
+  // Campos expandidos: codigo, descricao, equipamento, modelo, tipo, grupo, status
+  // ══════════════════════════════════════════════════════════════
+  window.importarEquipamentos = async function() {
+    setBtn('btn-eq', true, 'Importando…');
+    setBtn('btn-tudo', true);
+    try {
+      log('📂 Carregando data/equipamentos.json…', 'info');
+      const data = await loadJSON('../data/equipamentos.json');
+      document.getElementById('eq-total-chip').textContent = `${data.length} registros`;
+
+      await importCollection({
+        colName: 'equipamentos',
+        records: data,
+        getId:   rec => rec.c || null,
+        toDoc:   rec => ({
+          codigo:      rec.c,
+          descricao:   rec.d,
+          equipamento: rec.e || `${rec.c} ${rec.d}`,
+          modelo:      rec.m || '',
+          tipo:        rec.t || '',
+          grupo:       rec.g || '',
+          status:      rec.s || 'Inativo',
+        }),
+        prefix: 'eq',
+      });
+    } catch (e) {
+      log(`✗ Falha ao carregar equipamentos: ${e.message}`, 'err');
+    } finally {
+      setBtn('btn-eq', false, 'Importar Equipamentos');
+      setBtn('btn-tudo', false);
+    }
+  };
+
+  // ══════════════════════════════════════════════════════════════
+  // IMPORTAR CHAMADOS HISTÓRICOS
+  // Coleção: chamados (mesma coleção lida pelo app principal) | ID: CHM-XXXX (índice 0)
+  // Formato source: [num, titulo, cultura, resp, data, status, bucket]
+  // ══════════════════════════════════════════════════════════════
+  window.importarChamados = async function() {
+    setBtn('btn-ch', true, 'Importando…');
+    setBtn('btn-tudo', true);
+    try {
+      log('📂 Carregando data/chamados_historico.json…', 'info');
+      const data = await loadJSON('../data/chamados_historico.json');
+      document.getElementById('ch-total-chip').textContent = `${data.length.toLocaleString('pt-BR')} registros`;
+
+      await importCollection({
+        colName: 'chamados',
+        records: data,
+        getId:   rec => rec[0] || null,
+        toDoc:   rec => ({
+          num:     rec[0],
+          titulo:  rec[1] || '',
+          cultura: rec[2] || '',
+          resp:    rec[3] || '',
+          data:    rec[4] || '',
+          status:  rec[5] || '',
+          bucket:  rec[6] || '',
+          // Campos extras que podem existir (índices 7+)
+          ...(rec[7] !== undefined ? { campo7: rec[7] } : {}),
+          ...(rec[8] !== undefined ? { prior:  rec[8] } : {}),
+        }),
+        prefix: 'ch',
+      });
+    } catch (e) {
+      log(`✗ Falha ao carregar chamados: ${e.message}`, 'err');
+    } finally {
+      setBtn('btn-ch', false, 'Importar Chamados');
+      setBtn('btn-tudo', false);
+    }
+  };
+
+  // ══════════════════════════════════════════════════════════════
+  // IMPORTAR TUDO (sequencial)
+  // ══════════════════════════════════════════════════════════════
+  window.importarTudo = async function() {
+    setBtn('btn-tudo', true, 'Importando tudo…');
+    setBtn('btn-eq',   true);
+    setBtn('btn-ch',   true);
+    log('━━━ IMPORTAR TUDO — iniciando sequência ━━━', 'info');
+    await window.importarEquipamentos();
+    await window.importarChamados();
+    log('━━━ IMPORTAR TUDO — concluído ━━━', 'ok');
+    setBtn('btn-tudo', false, 'Importar Tudo');
+    setBtn('btn-eq',   false);
+    setBtn('btn-ch',   false);
+  };
+
+  // ══════════════════════════════════════════════════════════════
+  // CONEXÃO — ping + status visual
+  // ══════════════════════════════════════════════════════════════
+  async function verificarConexao() {
+    const dot = document.getElementById('fb-dot');
+    const txt = document.getElementById('fb-status-txt');
+    try {
+      const t0   = Date.now();
+      await getDoc(doc(db, '_ping', '_ping'));
+      const ms   = Date.now() - t0;
+      dot.className  = 'fb-dot online';
+      txt.textContent = `Firebase online · ${ms}ms`;
+      log(`🔥 Firebase conectado (${ms}ms) — projeto: chamdos-sc`, 'ok');
+      // Enable buttons
+      ['btn-eq','btn-ch','btn-tudo'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) b.disabled = false;
+      });
+    } catch (e) {
+      dot.className  = 'fb-dot error';
+      txt.textContent = 'Firebase offline — verifique as regras';
+      log(`✗ Conexão falhou: ${e.message}`, 'err');
+      log('  → Verifique as Regras do Firestore (seção abaixo)', 'err');
+    }
+  }
+
+  // Disable buttons until connection confirmed
+  ['btn-eq','btn-ch','btn-tudo'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.disabled = true;
+  });
+
+  verificarConexao();
+
+  // Pre-load file sizes for chips
+  (async () => {
+    try {
+      const eq = await loadJSON('../data/equipamentos.json');
+      document.getElementById('eq-total-chip').textContent = `${eq.length} registros`;
+    } catch {}
+    try {
+      const ch = await loadJSON('../data/chamados_historico.json');
+      document.getElementById('ch-total-chip').textContent = `${ch.length.toLocaleString('pt-BR')} registros`;
+    } catch {}
+  })();
+
+</script>
+</body>
+</html>

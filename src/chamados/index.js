@@ -3,6 +3,11 @@
 // Santa Colomba — Central de Chamados SC
 // ══════════════════════════════════════════
 
+// Escapa texto controlado pelo usuário (ex: nome de arquivo) antes de inserir em innerHTML
+function _escHtml(s) {
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
 const PER_PAGE=50;
 const AB_PER_PAGE = 50;
 const CRIT_PER_PAGE=50;
@@ -247,6 +252,14 @@ function renderChamados(){
   pagRow.innerHTML=btns;
 }
 
+function clearFilters(){
+  document.getElementById('srch').value='';
+  document.getElementById('f-cultura').value='';
+  document.getElementById('f-status').value='';
+  document.getElementById('f-bucket').value='';
+  applyFilters();
+}
+
 function applyFilters(){
   const q=(document.getElementById('srch').value||'').toLowerCase();
   const fc=document.getElementById('f-cultura').value;
@@ -348,8 +361,8 @@ function openDetalhe(num) {
   if(_fotosEl&&_lr?.fotos?.length){
     _fotosEl.innerHTML=(_lr.fotos).map(f=>{
       const isPdf=f.type==='application/pdf';
-      return `<div class="foto-thumb" title="${f.name}" style="cursor:pointer" onclick="window.open('${f.data}','_blank')">
-        ${isPdf?'<div class="foto-thumb-pdf">📄</div>':`<img src="${f.data}" alt="${f.name}">`}
+      return `<div class="foto-thumb" title="${_escHtml(f.name)}" style="cursor:pointer" onclick="window.open('${f.data}','_blank')">
+        ${isPdf?'<div class="foto-thumb-pdf">📄</div>':`<img src="${f.data}" alt="${_escHtml(f.name)}">`}
       </div>`;
     }).join('');
     if(_fotosWrap) _fotosWrap.style.display='block';
@@ -731,6 +744,13 @@ function critCardFilter(val) {
   renderCriticidade();
 }
 
+function limparFiltrosEnc() {
+  ['enc-srch','enc-f-resp','enc-f-cult','enc-f-fazenda','enc-f-de','enc-f-ate'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  renderEncerrados();
+}
+
 function renderEncerrados() {
   const q        = (document.getElementById('enc-srch')?.value  || '').toLowerCase();
   const fResp    = document.getElementById('enc-f-resp')?.value  || '';
@@ -903,6 +923,27 @@ function confirmarEncerramento() {
   if (!encCurrentNum) return;
   // Open checklist first — _doEncerramento is called on submit
   openChecklist('modal');
+}
+
+function toggleTecnico(btn) {
+  btn.classList.toggle('sel');
+  const selected = [...document.querySelectorAll('#chk-tec-opts .resp-opt.sel')].map(b => b.dataset.tec);
+  document.getElementById('chk-tecnicos').value = selected.join(', ');
+  const tagsEl = document.getElementById('chk-tec-tags');
+  tagsEl.innerHTML = selected.map(v =>
+    `<span class="resp-tag">${v}<button type="button" onclick="removeTecnico('${v}')">×</button></span>`
+  ).join('');
+}
+function removeTecnico(val) {
+  const btn = document.querySelector(`#chk-tec-opts .resp-opt[data-tec="${val}"]`);
+  if (btn) btn.classList.remove('sel');
+  toggleTecnico(btn || document.createElement('button'));
+  // Re-render tags without the removed one
+  const selected = [...document.querySelectorAll('#chk-tec-opts .resp-opt.sel')].map(b=>b.dataset.tec);
+  document.getElementById('chk-tecnicos').value = selected.join(', ');
+  document.getElementById('chk-tec-tags').innerHTML = selected.map(v=>
+    `<span class="resp-tag">${v}<button type="button" onclick="removeTecnico('${v}')">×</button></span>`
+  ).join('');
 }
 
 function openChecklist(target) {
@@ -1505,8 +1546,8 @@ function renderFotoPreview() {
     const isPdf = f.type==='application/pdf';
     return `<div class="foto-thumb">
       ${isPdf
-        ? `<div class="foto-thumb-pdf" title="${f.name}">📄</div>`
-        : `<img src="${f.data}" alt="${f.name}" title="${f.name}">`}
+        ? `<div class="foto-thumb-pdf" title="${_escHtml(f.name)}">📄</div>`
+        : `<img src="${f.data}" alt="${_escHtml(f.name)}" title="${_escHtml(f.name)}">`}
       <button class="foto-thumb-del" onclick="removerFoto(${i})" title="Remover">✕</button>
     </div>`;
   }).join('');

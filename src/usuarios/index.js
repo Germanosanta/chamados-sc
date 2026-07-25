@@ -21,7 +21,7 @@ function doLogin() {
   const errEl = document.getElementById('login-err');
   const users = getUsers();
   const u = users.find(u => u.login.toLowerCase()===login && u.senha===senha && u.status==='Ativo');
-  if (!u) { errEl.style.display='block'; return; }
+  if (!u) { audit('login_falhou', `Tentativa de login inválida: ${login}`, ''); errEl.style.display='block'; return; }
   errEl.style.display='none';
   setSession(u);
   audit('login', `Login: ${u.login}`, '');
@@ -129,6 +129,9 @@ function salvarUsuario() {
 
   const users = getUsers();
   const id = document.getElementById('u-id').value;
+  if (users.some(u => u.login.toLowerCase()===login.toLowerCase() && u.id!==id)) {
+    showToast('Já existe um usuário com esse login'); return;
+  }
   const perms = [...document.querySelectorAll('#perms-grid input[type=checkbox]:checked')].map(cb=>cb.value);
   const userData = {nome,login,senha,
     email:document.getElementById('u-email').value,
@@ -142,6 +145,7 @@ function salvarUsuario() {
     users.push({id:'u'+Date.now(),...userData});
   }
   saveUsers(users);
+  audit('editou', `Usuário ${login} cadastrado/atualizado`, '');
   fecharFormUsuario();
   renderUsuarios();
   showToast(id ? 'Usuário atualizado!' : 'Usuário cadastrado com sucesso!');
@@ -163,6 +167,16 @@ function editarUsuario(id) {
   // Fill perms
   renderPermsGrid(u.perms || PERFIL_PERMS[u.perfil] || []);
   document.getElementById('form-usuario-card').scrollIntoView({behavior:'smooth'});
+}
+
+function toggleStatusUsuario(id) {
+  const users = getUsers();
+  const idx = users.findIndex(u=>u.id===id);
+  if(idx<0) return;
+  users[idx].status = users[idx].status==='Ativo' ? 'Inativo' : 'Ativo';
+  saveUsers(users);
+  renderUsuarios();
+  showToast('Status do usuário atualizado.');
 }
 
 function aplicarPerfilPerms() {

@@ -305,6 +305,15 @@ function toggleMobileMenu() {
   document.querySelector('.sidebar').classList.toggle('mob-open');
 }
 
+function changeYear(d){
+  const inp=document.getElementById('yr-filter');
+  inp.value=Math.max(2022,Math.min(2026,parseInt(inp.value)+d));
+  renderMesCharts();
+}
+
+// Instâncias Chart.js da seção "Por Mês" — destruídas/recriadas a cada render (ver uso abaixo)
+let cMesBar=null, cMesDonut=null;
+
 function renderMesCharts(){
   const yr=parseInt(document.getElementById('yr-filter').value)||2025;
   document.getElementById('mes-chart-title').textContent=`Chamados por Mês — ${yr}`;

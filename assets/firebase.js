@@ -283,7 +283,9 @@ import { initializeApp }                           from "https://www.gstatic.com
       pingFirestore();
       setInterval(pingFirestore, 30000);
       // Firestore é a fonte principal: puxa tudo p/ o cache e liga o tempo real.
-      window.fsSyncAll().then(() => window.fsStartRealtime());
+      window.fsSyncAll()
+        .then(() => window.fsStartRealtime())
+        .catch(e => { console.warn('[Firebase] fsSyncAll rejeitou:', e.message); window.fsStartRealtime(); });
     });
 
     console.log('[Firebase] SDK carregado — projeto: chamdos-sc');
