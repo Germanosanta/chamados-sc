@@ -8,10 +8,39 @@ function _escHtml(s) {
   return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
+let filteredRecords=[], page=1;
 const PER_PAGE=50;
+let abPage = 1;
 const AB_PER_PAGE = 50;
+let critPage=1;
 const CRIT_PER_PAGE=50;
+let encPage = 1;
 const ENC_PER_PAGE = 50;
+
+function diasAberto(dataStr) {
+  if (!dataStr) return 0;
+  const d = new Date(dataStr + 'T00:00:00');
+  const hoje = new Date(); hoje.setHours(0,0,0,0);
+  return Math.floor((hoje - d) / 86400000);
+}
+
+function diasChip(dias) {
+  if (dias > 7)  return 'style="background:#fef2f2;color:#dc2626;font-weight:700"';
+  if (dias >= 3) return 'style="background:#fffbeb;color:#d97706;font-weight:700"';
+  return 'style="background:#f0fdf4;color:#16a34a;font-weight:700"';
+}
+
+function priorPill(p) {
+  if (!p || p === 'Média') return '<span class="pill p-outros">Média</span>';
+  if (p === 'Urgente')    return '<span class="pill" style="background:#fef2f2;color:#dc2626;font-weight:700">Urgente</span>';
+  if (p === 'Alta')       return '<span class="pill p-tabaco">Alta</span>';
+  return '<span class="pill p-outros">Baixa</span>';
+}
+
+function getPrior(r) {
+  // local records store prior at r[9]; base records have no priority
+  return r[9] || r[10] || '';  // index may vary
+}
 
 const EVT_NEEDS_INPUT = {
   iniciou:          false,
@@ -511,6 +540,48 @@ function closeDetalhe(e) {
   detCurrentNum = null;
 }
 
+function alterarResp(num, novoResp) {
+  if (!novoResp) return;
+  // Update in local storage
+  const local = getLocal();
+  const idx = local.findIndex(r => r.num === num);
+  if (idx >= 0) {
+    local[idx].resp = novoResp;
+    saveLocal(local);
+    showToast(num + ' → ' + novoResp);
+    refreshAfterAction();
+    return;
+  }
+  // For historical records (not in local), create a local override
+  const all = allRecords();
+  const rec = all.find(r => r[0] === num);
+  if (rec) {
+    const localRecs = getLocal();
+    localRecs.push({
+      num: rec[0], titulo: rec[1], cultura: rec[2],
+      resp: novoResp, data: rec[4], status: rec[5], bucket: rec[6]
+    });
+    saveLocal(localRecs);
+    showToast(num + ' → ' + novoResp);
+    refreshAfterAction();
+  }
+}
+
+function abGotoPage(p) {
+  const pages = Math.ceil(getAbertos().length / AB_PER_PAGE) || 1;
+  if (p < 1 || p > pages) return;
+  abPage = p;
+  renderAberto();
+}
+
+// Encerrar direto da tabela Em Aberto — reutiliza confirmarEncerramento logic
+function encerrarDireto(num) {
+  // Open the existing modal pre-filled with this chamado number
+  openEncerrar();
+  document.getElementById('enc-input').value = num;
+  buscarChamado();
+}
+
 function renderAberto() {
   const q     = (document.getElementById('ab-srch')?.value || '').toLowerCase();
   const resp  = document.getElementById('ab-resp')?.value || '';
@@ -649,6 +720,12 @@ function abCardFilter(type, val) {
   renderAberto();
 }
 
+function critGotoPage(p){
+  const pages=Math.ceil(allRecords().length/CRIT_PER_PAGE)||1;
+  if(p<1||p>pages)return;
+  critPage=p; renderCriticidade();
+}
+
 function renderCriticidade() {
   const q        = (document.getElementById('crit-srch')?.value || '').toLowerCase();
   const fCult    = document.getElementById('crit-f-cult')?.value    || '';
@@ -749,6 +826,12 @@ function limparFiltrosEnc() {
     const el=document.getElementById(id); if(el) el.value='';
   });
   renderEncerrados();
+}
+
+function encGotoPage(p) {
+  const pages = Math.ceil(getEncerrados().length/ENC_PER_PAGE)||1;
+  if(p<1||p>pages) return;
+  encPage=p; renderEncerrados();
 }
 
 function renderEncerrados() {
@@ -1787,6 +1870,18 @@ function toggleResp(btn) {
   const selected = [...document.querySelectorAll('.resp-opt.sel')].map(b => b.dataset.val);
   document.getElementById('f-resp').value = selected.join(',');
   // Render tags
+  const tagsEl = document.getElementById('resp-tags');
+  tagsEl.innerHTML = selected.map(v => {
+    const label = v === 'Guilherme' ? 'Guilherme Otávio' : 'Walison Almeida';
+    return `<span class="resp-tag">${label}<button type="button" onclick="removeResp('${v}')">×</button></span>`;
+  }).join('');
+}
+
+function removeResp(val) {
+  const btn = document.querySelector(`.resp-opt[data-val="${val}"]`);
+  if (btn) btn.classList.remove('sel');
+  const selected = [...document.querySelectorAll('.resp-opt.sel')].map(b => b.dataset.val);
+  document.getElementById('f-resp').value = selected.join(',');
   const tagsEl = document.getElementById('resp-tags');
   tagsEl.innerHTML = selected.map(v => {
     const label = v === 'Guilherme' ? 'Guilherme Otávio' : 'Walison Almeida';

@@ -179,6 +179,16 @@ function toggleStatusUsuario(id) {
   showToast('Status do usuário atualizado.');
 }
 
+function renderPermsGrid(selectedPerms) {
+  const grid = document.getElementById('perms-grid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(ALL_PERMS).map(([key,label])=>`
+    <label style="display:flex;align-items:center;gap:7px;font-size:12px;cursor:pointer;color:var(--text2)">
+      <input type="checkbox" value="${key}" ${(selectedPerms||[]).includes(key)?'checked':''} style="accent-color:var(--accent);width:14px;height:14px">
+      ${label}
+    </label>`).join('');
+}
+
 function aplicarPerfilPerms() {
   const perfil = document.getElementById('u-perfil')?.value || 'tecnico';
   renderPermsGrid(PERFIL_PERMS[perfil] || []);

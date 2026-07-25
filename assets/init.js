@@ -360,3 +360,33 @@ function abrirModulo(id) {
 function voltarMenu() {
   mostrarMenu();
 }
+
+// ── Toast de notificação (usado por todos os módulos)
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── SINGLE REFRESH ENTRY POINT
+// Call this after any data mutation (abrir, encerrar, reabrir).
+// Each section only re-renders if currently visible.
+function refreshAfterAction() {
+  initAbertoBadge(); // always update all nav badges + totals
+  const active = document.querySelector('.section.active')?.id;
+  if (active === 'sec-chamados')     applyFilters();
+  if (active === 'sec-aberto')       renderAberto();
+  if (active === 'sec-encerrados')   renderEncerrados();
+  if (active === 'sec-responsaveis') renderRespSection();
+  if (active === 'sec-dashboard') {
+    // Refresh dashboard KPIs without re-rendering charts
+    const S = computeStats();
+    const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+    setEl('k-total',    S.total.toLocaleString('pt-BR'));
+    setEl('k-conc',     S.concluidos.toLocaleString('pt-BR'));
+    setEl('k-conc-pct',(S.concluidos/S.total*100).toFixed(1)+'%');
+    setEl('k-media',    S.media_mes);
+    setEl('k-aberto',   S.em_aberto+S.em_and);
+    setEl('donut-n',    S.total.toLocaleString('pt-BR'));
+  }
+}
