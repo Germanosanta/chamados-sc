@@ -71,7 +71,7 @@ function loadEmailConfig() {
   } catch(e) {}
 }
 
-function fbManualSync() {
+async function fbManualSync() {
   const log=document.getElementById('cfg-fb-log');
   const st=document.getElementById('cfg-fb-status');
   if(log) log.textContent='⏳ Sincronizando com o Firebase…';
@@ -93,7 +93,7 @@ function fbManualSync() {
   }
 }
 
-function fbExportFirestore() {
+async function fbExportFirestore() {
   const log=document.getElementById('cfg-fb-log');
   if(log) log.textContent='⏳ Enviando dados locais para o Firebase…';
   if (!_fbReady()) { if(log) log.textContent='⚠ Firebase não disponível.'; return; }

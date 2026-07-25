@@ -3,6 +3,30 @@
 // Santa Colomba — Central de Chamados SC
 // ══════════════════════════════════════════
 
+const MONTHS=["2022-06","2022-07","2022-08","2022-09","2022-10","2022-11","2022-12","2023-01","2023-02","2023-03","2023-04","2023-05","2023-06","2023-07","2023-08","2023-09","2023-10","2023-11","2023-12","2024-01","2024-02","2024-03","2024-04","2024-05","2024-06","2024-07","2024-08","2024-09","2024-10","2024-11","2024-12","2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07"];
+
+// Base compartilhada das opções dos gráficos Chart.js (usada também por src/relatorios/index.js,
+// que carrega depois deste arquivo e compartilha o mesmo escopo global de scripts clássicos).
+const GRID='rgba(0,0,0,0.04)';
+const base={
+  responsive:true,maintainAspectRatio:false,
+  plugins:{
+    legend:{display:false},
+    tooltip:{
+      backgroundColor:'rgba(26,31,54,0.95)',
+      borderColor:'rgba(255,255,255,0.08)',borderWidth:1,
+      titleColor:'#f0f4ff',bodyColor:'#8896b0',
+      padding:10,cornerRadius:8,
+      titleFont:{weight:'700',size:12},
+    }
+  },
+  scales:{
+    x:{grid:{color:GRID},ticks:{color:'#8896b0'}},
+    y:{grid:{color:GRID},ticks:{color:'#8896b0'},beginAtZero:true}
+  }
+};
+function mkBase(){ return JSON.parse(JSON.stringify(base)); }
+
 function computeStats(records) {
   const all      = records || allRecords();
   const closed   = getClosedMap();

@@ -3,6 +3,169 @@
 // Santa Colomba — Central de Chamados SC
 // ══════════════════════════════════════════
 
+const PER_PAGE=50;
+const AB_PER_PAGE = 50;
+const CRIT_PER_PAGE=50;
+const ENC_PER_PAGE = 50;
+
+const EVT_NEEDS_INPUT = {
+  iniciou:          false,
+  peca_solicitada:  true,   // ask: which part?
+  peca_recebida:    true,   // confirm: which part arrived
+  obs:              true,   // free text
+};
+const EVT_LABELS = {
+  iniciou:          'Iniciar Atendimento',
+  peca_solicitada:  'Solicitar Peça',
+  peca_recebida:    'Peça Recebida',
+  obs:              'Observação',
+};
+const EVT_PLACEHOLDERS = {
+  peca_solicitada: 'Descreva a peça solicitada (ex: Fusível 5A, Cabo USB…)',
+  peca_recebida:   'Confirme a peça recebida (ex: Fusível 5A recebido)',
+  obs:             'Digite a observação…',
+};
+// Status that each event sets on the local record
+const EVT_STATUS_CHANGE = {
+  iniciou:         'Em Atendimento',
+  peca_solicitada: 'Aguardando Peça',
+  peca_recebida:   'Em Atendimento',   // resumes after part arrives
+};
+
+const emailService = {
+  // ── Configuração (preencher para integração real)
+  config: {
+    provider: 'none',          // 'smtp' | 'ms365' | 'none'
+    smtpEndpoint: '',          // Ex: 'https://api.seuservidor.com/email'
+    ms365ClientId: '',         // Azure App Client ID
+    ms365TenantId: '7d6ecda9-dc17-43c8-9780-41da0a54daf4',
+    fromName: 'Central de Chamados – Santa Colomba',
+    fromEmail: 'chamados@santacolomba.com.br',
+  },
+
+  // ── Enviar e-mail (stub — substitua pelo provider real)
+  async send(payload) {
+    // payload: { to:[], subject:'', body:'', chamadoNum:'' }
+    if (this.config.provider === 'none') {
+      console.info('[emailService] E-mail simulado:', payload);
+      return { ok: true, simulated: true };
+    }
+    if (this.config.provider === 'smtp') {
+      // Integração SMTP via endpoint próprio
+      const res = await fetch(this.config.smtpEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      return res.json();
+    }
+    if (this.config.provider === 'ms365') {
+      // Microsoft Graph — requer token Bearer (já existente na plataforma)
+      const token = document.getElementById('cfg-token')?.value;
+      if (!token) return { ok: false, error: 'Token não configurado' };
+      const msg = {
+        message: {
+          subject: payload.subject,
+          body: { contentType: 'HTML', content: payload.body },
+          toRecipients: payload.to.map(e => ({ emailAddress: { address: e } })),
+        }
+      };
+      const res = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer '+token, 'Content-Type': 'application/json' },
+        body: JSON.stringify(msg),
+      });
+      return { ok: res.ok, status: res.status };
+    }
+  },
+
+  // ── Templates de e-mail
+
+  templateAbertura(rec, abertoPor) {
+    const num     = rec[0];
+    const titulo  = rec[1] || '—';
+    const cultura = rec[2] || 'Sem cultura';
+    const resp    = (rec[3]||'').replace(/,/g,' e ') || '—';
+    const fazenda = rec[6]==='Solinftec KRT'?'Karitel':rec[6]==='Solinftec RDM'?'Rio do Meio':(rec[6]||'—');
+    const prior   = rec[9] || 'Média';
+    const data    = rec[4] ? rec[4].split('-').reverse().join('/') : '—';
+
+    return {
+      subject: `[${num}] Novo Chamado: ${titulo}`,
+      body: `
+        <div style="font-family:Arial,sans-serif;max-width:600px">
+          <h2 style="color:#2563eb">📋 Novo Chamado Aberto</h2>
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:6px 0;color:#6b7280;width:140px">Número</td><td><strong>${num}</strong></td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Título</td><td>${titulo}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Prioridade</td><td>${prior}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Cultura</td><td>${cultura}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Fazenda</td><td>${fazenda}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Responsável(is)</td><td>${resp}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Data de abertura</td><td>${data}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Aberto por</td><td>${abertoPor}</td></tr>
+          </table>
+          <p style="margin-top:20px;color:#6b7280;font-size:12px">Central de Chamados – Santa Colomba Agropecuária</p>
+        </div>`,
+    };
+  },
+
+  templateEncerramento(rec, closedInfo) {
+    const num     = rec[0];
+    const titulo  = rec[1] || '—';
+    const resp    = (rec[3]||'').replace(/,/g,' e ') || '—';
+    const tecnicos  = closedInfo.tecnicos   || '—';
+    const encPor    = closedInfo.encerradoPor || '—';
+    const dataEnc   = (closedInfo.dataEncerramento||'')+ ' às '+(closedInfo.horaEncerramento||'');
+    const solucao   = closedInfo.solucao    || '—';
+
+    return {
+      subject: `[${num}] Chamado Encerrado: ${titulo}`,
+      body: `
+        <div style="font-family:Arial,sans-serif;max-width:600px">
+          <h2 style="color:#16a34a">✅ Chamado Encerrado</h2>
+          <table style="width:100%;border-collapse:collapse">
+            <tr><td style="padding:6px 0;color:#6b7280;width:160px">Número</td><td><strong>${num}</strong></td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Status</td><td>Encerrado</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Data/hora</td><td>${dataEnc}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Técnico(s)</td><td>${tecnicos}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Encerrado por</td><td>${encPor}</td></tr>
+            <tr><td style="padding:6px 0;color:#6b7280">Solução</td><td>${solucao}</td></tr>
+          </table>
+          <p style="margin-top:20px;color:#6b7280;font-size:12px">Central de Chamados – Santa Colomba Agropecuária</p>
+        </div>`,
+    };
+  },
+
+  // ── Obter destinatários de um chamado
+  getRecipients(rec) {
+    const users = getUsers();
+    const resps = (rec[3]||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const emails = [];
+    resps.forEach(name => {
+      const u = users.find(u => u.nome.includes(name) || u.nome.split(' ')[0]===name);
+      if (u?.email) emails.push(u.email);
+    });
+    return [...new Set(emails)];
+  },
+
+  // ── Disparar e-mail de abertura
+  async notificarAbertura(rec, abertoPor) {
+    const to  = this.getRecipients(rec);
+    if (!to.length) return;
+    const tpl = this.templateAbertura(rec, abertoPor);
+    return this.send({ ...tpl, to, chamadoNum: rec[0] });
+  },
+
+  // ── Disparar e-mail de encerramento
+  async notificarEncerramento(rec, closedInfo) {
+    const to  = this.getRecipients(rec);
+    if (!to.length) return;
+    const tpl = this.templateEncerramento(rec, closedInfo);
+    return this.send({ ...tpl, to, chamadoNum: rec[0] });
+  },
+};
+
 function allRecords() {
   const base = [...DATA, ...getLocal().map(r => [r.num, r.titulo, r.cultura, r.resp, r.data, r.status, r.bucket])];
   const closed = getClosedMap();
