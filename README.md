@@ -2,7 +2,7 @@
 
 Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e frotas.
 
-**Produção: Firebase Hosting** (`https://chamdos-sc.web.app` — ver aviso importante sobre o nome do projeto na seção Firebase abaixo). GitHub é usado apenas para versionamento; o deploy acontece automaticamente a cada push na `main` via GitHub Actions (ver seção CI/CD).
+**Produção: Firebase Hosting** (`https://chamados-sc.web.app`). GitHub é usado apenas para versionamento; o deploy acontece automaticamente a cada `git push` na `main` via GitHub Actions — **sem precisar instalar nada localmente** (ver seção "Deploy automático" abaixo, incluindo o único passo manual necessário).
 
 ## Estrutura do Projeto
 
@@ -10,11 +10,11 @@ Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e 
 /
 ├── .github/workflows/
 │   └── firebase-deploy.yml # Deploy automático no Firebase Hosting a cada push na main
-├── firebase.json           # Config do Firebase Hosting/Firestore (hosting.public = "public")
-├── .firebaserc              # Projeto Firebase padrão (chamdos-sc)
+├── firebase.json           # Config do Firebase Hosting/Firestore (hosting.public = "docs", hosting.site = "chamados-sc")
+├── .firebaserc              # Projeto Firebase padrão (chamdos-sc — ver aviso na seção Firebase)
 ├── firestore.rules          # Regras do Firestore (revisar antes de deploy — ver aviso no arquivo)
 │
-├── public/                  # Tudo que é servido pelo Firebase Hosting
+├── docs/                    # Tudo que é servido pelo Firebase Hosting
 │   ├── index.html           # Shell principal (carrega todos os módulos)
 │   ├── manifest.json        # Metadados do app (PWA básico)
 │   ├── assets/img/
@@ -54,42 +54,53 @@ Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e 
 
 > Módulos ainda são `<script>` clássicos com escopo global compartilhado (sem duplicação — cada função tem uma única declaração). Conversão para ES modules reais (import/export) é etapa futura, feita isolada por ser a de maior risco de regressão.
 
-## Uso
+## Deploy automático (GitHub Actions — sem instalar nada localmente)
 
-### Desenvolvimento (multi-file)
-Sirva a pasta `public/` com qualquer servidor HTTP local (não abra `public/index.html` direto do disco — os módulos `firebase.js`/`firestore.js` são ES modules e exigem `http(s)://`, não `file://`):
-```bash
-cd public
-npx serve .
-# ou
-python3 -m http.server 8080
-```
+Já está tudo configurado no repositório (`.github/workflows/firebase-deploy.yml`, `firebase.json`, `.firebaserc`). Faltam **dois passos manuais, feitos uma única vez, direto no navegador** — nenhum dos dois exige instalar programa nenhum no computador:
 
-### Deploy manual (Firebase Hosting)
-Requer [Firebase CLI](https://firebase.google.com/docs/cli) instalado e autenticado:
+### Passo 1 — Criar o site de Hosting "chamados-sc" (uma vez só)
+O deploy é direcionado para um site chamado `chamados-sc` (ver `firebase.json` → `hosting.site`), que é diferente do site padrão do projeto. Ele precisa existir antes do primeiro deploy:
+1. Acesse [console.firebase.google.com](https://console.firebase.google.com) → projeto **chamdos-sc**.
+2. Menu lateral → **Hosting**.
+3. Botão **"Adicionar outro site"** (Add another site).
+4. Digite o Site ID: **`chamados-sc`** → Adicionar.
+
+Depois disso o site existe (mesmo vazio) em `https://chamados-sc.web.app`, pronto para receber o deploy.
+
+### Passo 2 — Gerar a chave de serviço e colar no GitHub (o passo que você já esperava)
+1. Acesse [console.cloud.google.com/iam-admin/serviceaccounts](https://console.cloud.google.com/iam-admin/serviceaccounts?project=chamdos-sc) (mesmo projeto, `chamdos-sc`).
+2. **Criar conta de serviço** → nome sugerido `github-actions-deploy` → Criar e continuar.
+3. Em "Conceder acesso a esta conta de serviço", adicione o papel **`Firebase Hosting Admin`** → Continuar → Concluído.
+4. Clique na conta de serviço recém-criada → aba **Chaves** (Keys) → **Adicionar chave** → **Criar nova chave** → tipo **JSON** → Criar. Um arquivo `.json` será baixado no seu computador.
+5. Abra esse arquivo `.json` num editor de texto, copie **todo o conteúdo**.
+6. No GitHub: repositório → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**.
+   - Nome: **`FIREBASE_SERVICE_ACCOUNT`** (exatamente assim, é o nome que o workflow espera)
+   - Valor: cole o JSON inteiro copiado no passo 5.
+7. Salvar.
+
+**A partir daqui, todo `git push origin main` publica sozinho em `https://chamados-sc.web.app`.** Pode apagar o arquivo `.json` baixado do computador depois de colar no GitHub — ele não precisa ficar salvo em lugar nenhum.
+
+### Deploy manual, se algum dia precisar (não obrigatório)
+Só é possível com o [Firebase CLI](https://firebase.google.com/docs/cli) instalado (requer Node.js) — não se aplica ao seu computador corporativo bloqueado, mas documentado aqui por completude:
 ```bash
 npm install -g firebase-tools
 firebase login
-firebase use chamdos-sc
 firebase deploy --only hosting
 ```
-**Antes do primeiro deploy de regras** (`firebase deploy --only firestore:rules`), revise `firestore.rules` — o arquivo documenta por que está permissivo hoje (o app não usa Firebase Auth) e o que precisa ser decidido antes de aplicar em produção.
 
-### Deploy automático (CI/CD — GitHub Actions)
-`.github/workflows/firebase-deploy.yml` já está configurado para rodar `firebase deploy` a cada `git push origin main`. Só falta um passo manual (não pode ser feito por automação, exige acesso à conta Google/Firebase do dono do projeto):
+**Antes do primeiro deploy de regras do Firestore** (`firebase deploy --only firestore:rules` — separado do deploy de Hosting, não roda automaticamente pelo GitHub Actions), revise `firestore.rules` — o arquivo documenta por que está permissivo hoje (o app não usa Firebase Auth) e o que precisa ser decidido antes de aplicar em produção.
 
-1. Gerar uma conta de serviço: `firebase init hosting:github` (guiado) **ou** manualmente em [console.cloud.google.com](https://console.cloud.google.com) → IAM → Contas de serviço → criar uma com papel "Firebase Hosting Admin" → gerar chave JSON.
-2. No GitHub: repositório → Settings → Secrets and variables → Actions → New repository secret → nome `FIREBASE_SERVICE_ACCOUNT`, valor = conteúdo do JSON gerado.
-3. A partir daí, todo push na `main` dispara o deploy sozinho — sem precisar rodar `firebase deploy` manualmente de novo.
+### Uso local (desenvolvimento, opcional)
+Sirva a pasta `docs/` com qualquer servidor HTTP local (não abra `docs/index.html` direto do disco — os módulos `firebase.js`/`firestore.js` são ES modules e exigem `http(s)://`, não `file://`).
 
 ### Single-file legado (offline)
 `legacy/chamados_sc.html` continua funcionando como build standalone (não recebe as correções feitas no app modular a partir da reorganização).
 
 ## Firebase
 
-**⚠️ Atenção ao nome do projeto**: o projeto Firebase real (usado no SDK, `authDomain`, `storageBucket`) é **`chamdos-sc`** (sem o "a" de "chamados" — provavelmente um typo de quando o projeto foi criado no console do Firebase, mas é o nome real e não deve ser alterado sem migrar todos os dados). A URL padrão de Hosting desse projeto é `https://chamdos-sc.web.app`, **não** `https://chamados-sc.web.app`. Se você criou/pretende usar um projeto chamado literalmente `chamados-sc`, é um projeto **diferente**, sem os dados/coleções já existentes.
+**⚠️ Atenção ao nome do projeto**: o projeto Firebase real (usado no SDK, `authDomain`, `storageBucket`, todas as coleções e dados já existentes) é **`chamdos-sc`** (sem o "a" de "chamados" — provavelmente um typo de quando o projeto foi criado no console, mas é o nome real e não deve ser alterado sem migrar todos os dados). O site de Hosting `chamados-sc` (URL `chamados-sc.web.app`, criado no Passo 1 acima) vive **dentro** desse mesmo projeto `chamdos-sc` — são coisas diferentes: `chamdos-sc` é o ID do projeto/banco de dados, `chamados-sc` é só o nome do site de Hosting.
 
-Coleções no Firestore (nomes reais, via `public/js/firebase/firestore.js`):
+Coleções no Firestore (nomes reais, via `docs/js/firebase/firestore.js`):
 | Collection | Dados |
 |---|---|
 | `chamados` | Chamados criados no sistema |

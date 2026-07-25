@@ -1,6 +1,7 @@
 {
   "hosting": {
-    "public": "public",
+    "site": "chamados-sc",
+    "public": "docs",
     "ignore": [
       "firebase.json",
       "**/.*",

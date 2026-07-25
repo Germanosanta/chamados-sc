@@ -3,6 +3,11 @@ name: Deploy to Firebase Hosting
 # Roda automaticamente a cada push na main. Requer o secret
 # FIREBASE_SERVICE_ACCOUNT configurado no repositório (Settings > Secrets
 # and variables > Actions) — ver instruções no README.
+#
+# O projeto Firebase real é "chamdos-sc" (ver aviso no README), mas o site de
+# Hosting alvo é "chamados-sc" (definido em firebase.json > hosting.site),
+# publicando em https://chamados-sc.web.app. Esse site precisa existir dentro
+# do projeto chamdos-sc ANTES do primeiro deploy — ver README, seção Firebase.
 on:
   push:
     branches: [main]
