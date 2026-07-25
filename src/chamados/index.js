@@ -1673,7 +1673,7 @@ function equipSearch(q) {
   const results = [...exact, ...partial].slice(0, 30);
 
   if (!results.length) {
-    drop.innerHTML = '<div class="equip-nofound">Nenhum equipamento encontrado para "' + q + '"</div>';
+    drop.innerHTML = '<div class="equip-nofound">⚠ Equipamento não cadastrado — nenhum resultado para "' + _escHtml(q) + '"</div>';
     drop.className = 'equip-dropdown open';
     return;
   }
@@ -1745,6 +1745,9 @@ function equipSelect(equip) {
     statusEl.textContent = equip.s;
     statusEl.style.color = equip.s === 'Ativo' ? 'var(--green)' : 'var(--amber)';
   }
+  // Local/Fazenda — só existe no cadastro complementar (getCadEq), nem todo equipamento tem
+  const cadInfo = getCadEq()[equip.c];
+  setEl('equip-info-fazenda', cadInfo?.fazenda);
   if (infoC) infoC.className = 'equip-info-card show';
 
   // Mark as valid selection
@@ -1752,6 +1755,55 @@ function equipSelect(equip) {
   if (selC) selC.value = equip.c;
   if (selV) selV.value = '1';
   if (clear) clear.className = 'equip-clear-btn show';
+
+  renderHistoricoEquip(equip.c);
+}
+
+// Histórico de chamados (abertos + encerrados) do equipamento selecionado no
+// formulário de Novo Chamado. Reaproveita o mesmo vínculo já usado em
+// verHistoricoFrota() (src/equipamentos/index.js): MATCH_MAP para chamados
+// históricos + local.equipCodigo para chamados criados pelo app modular.
+function renderHistoricoEquip(code) {
+  const card = document.getElementById('equip-hist-card');
+  if (!card) return;
+
+  const all    = allRecords();
+  const local  = getLocal();
+  const closed = getClosedMap();
+
+  const nums = new Set();
+  Object.entries(MATCH_MAP).forEach(([n, c]) => { if (c === code) nums.add(n); });
+  local.forEach(lr => { if (lr.equipCodigo === code) nums.add(lr.num); });
+
+  const recs = all.filter(r => nums.has(r[0])).sort((a, b) => (b[4]||'').localeCompare(a[4]||''));
+  const isFechado = r => r[5]==='Concluída' || r[5]==='Encerrado' || !!closed[r[0]];
+  const nAberto    = recs.filter(r => !isFechado(r)).length;
+  const nEncerrado = recs.filter(isFechado).length;
+
+  const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setEl('equip-hist-total',     recs.length);
+  setEl('equip-hist-aberto',    nAberto);
+  setEl('equip-hist-encerrado', nEncerrado);
+
+  const vazio   = document.getElementById('equip-hist-vazio');
+  const tblWrap = document.getElementById('equip-hist-tbl-wrap');
+  const tbody   = document.getElementById('tbl-equip-hist');
+  if (vazio)   vazio.style.display   = recs.length ? 'none'  : 'block';
+  if (tblWrap) tblWrap.style.display = recs.length ? 'table' : 'none';
+  if (tbody) {
+    tbody.innerHTML = recs.map(r => {
+      const ci = closed[r[0]];
+      return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
+        <td class="td-num">${r[0]}</td>
+        <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_escHtml(r[1])}</td>
+        <td style="font-family:var(--font-mono)">${r[4]?r[4].split('-').reverse().join('/'):'—'}</td>
+        <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
+        <td>${(r[3]||'—').replace(/,/g,' e ')}</td>
+        <td style="font-family:var(--font-mono)">${ci?.dataEncerramento || '—'}</td>
+      </tr>`;
+    }).join('');
+  }
+  card.style.display = 'block';
 }
 
 function equipClear() {
@@ -1770,6 +1822,8 @@ function equipClear() {
   if (selV)  selV.value = '';
   _equipValid = false;
   _equipFocusIdx = -1;
+  const histC = document.getElementById('equip-hist-card');
+  if (histC) histC.style.display = 'none';
 }
 
 function equipHighlight(items) {

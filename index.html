@@ -742,7 +742,7 @@
       </div>
 
       <!-- Cartão de dados do equipamento (auto-filled) -->
-      <div class="equip-info-card" id="equip-info-card" style="grid-template-columns:repeat(5,1fr)">
+      <div class="equip-info-card" id="equip-info-card">
         <div class="equip-info-field">
           <div class="equip-info-lbl">Frota / Código</div>
           <div class="equip-info-val" id="equip-info-codigo" style="font-family:var(--font-mono);color:var(--accent);font-weight:700">—</div>
@@ -762,6 +762,33 @@
         <div class="equip-info-field">
           <div class="equip-info-lbl">Status</div>
           <div class="equip-info-val" id="equip-info-status">—</div>
+        </div>
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Local / Fazenda</div>
+          <div class="equip-info-val" id="equip-info-fazenda">—</div>
+        </div>
+      </div>
+
+      <!-- Histórico de chamados do equipamento selecionado -->
+      <div id="equip-hist-card" style="display:none;margin-top:12px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+          <div style="font-size:12px;font-weight:700;color:var(--text2)">📋 Histórico do equipamento</div>
+          <div style="display:flex;gap:14px;font-size:11px;color:var(--text3)">
+            <span>Total: <strong id="equip-hist-total" style="color:var(--text)">0</strong></span>
+            <span>Em aberto: <strong id="equip-hist-aberto" style="color:var(--red)">0</strong></span>
+            <span>Encerrados: <strong id="equip-hist-encerrado" style="color:var(--green)">0</strong></span>
+          </div>
+        </div>
+        <div id="equip-hist-vazio" style="display:none;font-size:12px;color:var(--text3);padding:8px 0">Nenhum chamado encontrado para este equipamento.</div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="equip-hist-tbl-wrap" style="width:100%;font-size:11px">
+            <thead>
+              <tr>
+                <th>Número</th><th>Descrição</th><th>Abertura</th><th>Status</th><th>Responsável</th><th>Encerramento</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-equip-hist"></tbody>
+          </table>
         </div>
       </div>
 
