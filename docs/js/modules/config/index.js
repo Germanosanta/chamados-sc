@@ -44,14 +44,8 @@ function limparDadosLocais() {
   showToast('Dados locais removidos.');
 }
 
-function exportarCSV() {
-  const all = allRecords();
-  const header = 'Número,Título,Cultura,Responsável,Data,Status,Sistema';
-  const body = all.map(r=>[r[0],`"${(r[1]||'').replace(/"/g,'""')}"`,r[2]||'',r[3]||'',r[4]||'',r[5]||'',r[6]||''].join(',')).join(String.fromCharCode(10));
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(header+String.fromCharCode(10)+body);
-  a.download='chamados_santa_colomba.csv';a.click();
-}
+// exportarCSV(): única declaração em js/modules/relatorios/index.js (script
+// carregado antes deste, mesma função, reaproveitada aqui pelo botão da tela Config).
 
 // Configuração de e-mail (seção com id="email-*") — distinta da seção "cfg-email-*"
 // acima (salvarEmailConfig), são dois formulários diferentes na tela de Configurações.
@@ -440,4 +434,5 @@ function salvarTec() {
   audit('editou', `Técnico ${nome} cadastrado/atualizado`, '');
 }
 
-function _fbReady() { return typeof window.fsSave === 'function'; }
+// _fbReady(): única declaração em js/core/storage.js (script carregado antes
+// deste), reaproveitada aqui pelos botões de sync/export do Firebase.

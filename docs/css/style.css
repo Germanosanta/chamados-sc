@@ -265,7 +265,11 @@ svg{display:block;flex-shrink:0}
   width:360px;max-height:340px;overflow-y:auto;
   background:var(--surface);border:1px solid var(--border);
   border-radius:var(--radius);box-shadow:var(--shadow-lg);
-  z-index:600;display:none;
+  /* Abaixo de modais (400/450), do menu de portais (490) e do login (500) —
+     um dropdown de busca não deve cobrir nenhum desses. Antes estava em 600,
+     acima até do login: se a sessão expirasse com o dropdown aberto, ele
+     aparecia por cima da tela de login. */
+  z-index:350;display:none;
 }
 #global-search-results.open{display:block}
 .gs-item{

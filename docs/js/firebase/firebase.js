@@ -229,10 +229,13 @@ import { initializeApp }                           from "https://www.gstatic.com
     };
 
     // ════════════════════════════════════════════════════════════
-    // RE-WRAP pós-init: assets/init.js redefine saveUsers/saveClosed/saveKB/savePecas/
-    // saveEvents DEPOIS de src/storage.js (ambos scripts clássicos), em versões sem
-    // persistência remota. Como este módulo executa por último, reinstalamos o push
-    // ao Firestore sobre a versão final de cada uma.
+    // RE-WRAP pós-init: js/modules/usuarios/index.js redefine saveUsers DEPOIS de
+    // js/core/storage.js (ambos scripts clássicos) numa versão sem persistência
+    // remota. Como este módulo executa por último, reinstalamos o push ao
+    // Firestore sobre a versão final. (saveClosed/saveKB/savePecas/saveEvents já
+    // não são mais redefinidas em nenhum outro script — js/core/storage.js é a
+    // única declaração e já empurra pro Firestore nativamente, sem precisar
+    // de rewrap.)
     // ════════════════════════════════════════════════════════════
     (function _rewrapShadowed() {
       function rewrap(name, push) {
@@ -245,11 +248,7 @@ import { initializeApp }                           from "https://www.gstatic.com
         wrapped._fbHooked = true;
         window[name] = wrapped;
       }
-      rewrap('saveUsers',  u   => (u||[]).forEach(usr => { if (usr && usr.id) { const { senha, ...s } = usr; window.fsSave(COL.USUARIOS, String(usr.id), s); } }));
-      rewrap('saveClosed', obj => Object.entries(obj||{}).forEach(([num, ci]) => window.fsSave('encerramentos', num, ci)));
-      rewrap('saveKB',     arr => (arr||[]).forEach(k => { if (k && k.id) window.fsSave('kb', k.id, k); }));
-      rewrap('savePecas',  arr => (arr||[]).forEach(p => { if (p && p.id) window.fsSave(COL.PECAS, p.id, p); }));
-      rewrap('saveEvents', obj => Object.entries(obj||{}).forEach(([num, evs]) => window.fsSave('events', num, { num, eventos: evs })));
+      rewrap('saveUsers', u => (u||[]).forEach(usr => { if (usr && usr.id) { const { senha, ...s } = usr; window.fsSave(COL.USUARIOS, String(usr.id), s); } }));
     })();
 
     // ── Status indicator in topbar

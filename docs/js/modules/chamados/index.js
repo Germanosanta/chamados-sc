@@ -26,6 +26,8 @@ let _chkTarget = null;      // 'modal' | 'detalhe'
 let _fotosNovo = [];        // [{name, type, data:base64}]
 let _pecasNovo = [];        // [{id, nome, unidade, qtd}]
 let _pendingEvtType = null;
+let encCurrentNum = null;   // chamado em foco no modal de Encerrar
+let detCurrentNum = null;   // chamado em foco no modal de Detalhe
 
 function diasAberto(dataStr) {
   if (!dataStr) return 0;
@@ -1555,6 +1557,22 @@ function updateNovoNum(){
   document.getElementById('novo-num').textContent='CHM-'+String(seq).padStart(4,'0');
 }
 
+// Preenche o <select> de Técnico Responsável com os técnicos realmente
+// cadastrados (getCadTec(), sincronizado com a coleção Firestore "tecnicos"),
+// em vez de uma lista fixa de nomes gravada no HTML.
+function populateTecnicoSelect(){
+  const sel=document.getElementById('f-tecnico');
+  if(!sel) return;
+  const atual=sel.value;
+  const cad=getCadTec();
+  const tecnicos=Object.values(cad||{})
+    .filter(t=>t && t.nome && t.status!=='Inativo')
+    .sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
+  sel.innerHTML='<option value="">A definir…</option>'+
+    tecnicos.map(t=>`<option value="${_escHtml(t.apelido||t.nome)}">${_escHtml(t.nome)}</option>`).join('');
+  if(atual && [...sel.options].some(o=>o.value===atual)) sel.value=atual;
+}
+
 function resetForm(){
   // Text/textarea fields
   ['f-titulo','f-desc','f-obs-novo'].forEach(id=>{
@@ -1587,6 +1605,7 @@ function resetForm(){
   // Auto-fill
   updateNovoNum();
   preencherSolicitante();
+  populateTecnicoSelect();
   tickFormClock();
   // Equip
   equipClear();

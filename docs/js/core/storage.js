@@ -85,7 +85,6 @@ function saveLocal(arr) {
 }
 
 // ── Encerramentos → historico/{num}.encerramento
-// (init.js redefine estas duas; o hook remoto é reaplicado em firebase.js — ver nota no topo)
 function getClosedMap()  { try { return JSON.parse(localStorage.getItem(CLOSED_KEY)||'{}'); } catch { return {}; } }
 function saveClosed(obj) {
   localStorage.setItem(CLOSED_KEY, JSON.stringify(obj));             // cache
@@ -94,20 +93,9 @@ function saveClosed(obj) {
   });
 }
 
-// ── Usuários → usuarios/{id} (senha NUNCA é enviada ao Firestore — removida dentro de salvarUsuario)
-function getUsers()    { try { const u=JSON.parse(localStorage.getItem(USERS_KEY)); return u||DEFAULT_USERS; } catch { return DEFAULT_USERS; } }
-function saveUsers(u)  {
-  localStorage.setItem(USERS_KEY, JSON.stringify(u));                // cache
-  (u||[]).forEach(usr => {
-    if (!usr || !usr.id) return;
-    _fbCall('salvarUsuario', () => window.FirestoreStorage.salvarUsuario(usr));
-  });
-}
-
-// ── Session (sessionStorage — local apenas, fora do Firestore)
-function getSession()  { try { return JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch { return null; } }
-function setSession(u) { sessionStorage.setItem(SESSION_KEY,JSON.stringify(u)); }
-function clearSession(){ sessionStorage.removeItem(SESSION_KEY); }
+// getUsers/saveUsers/getSession/setSession/clearSession/currentUser: única declaração
+// em js/modules/usuarios/index.js (script carregado depois deste, é a versão ativa).
+// saveUsers ganha o push ao Firestore via _rewrapShadowed em js/firebase/firebase.js.
 
 // ── Banco de Soluções (KB) → configuracoes/kb__{id}
 function getKB()       { try { return JSON.parse(localStorage.getItem(KB_KEY)||'[]'); } catch { return []; } }
