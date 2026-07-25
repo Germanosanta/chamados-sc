@@ -164,9 +164,9 @@ function fbSyncAfterLogin() {
   if (!_fbReady()) return;
   setTimeout(() => {
     if (typeof window.fsSyncAll === 'function') {
-      window.fsSyncAll().then(() => {
-        console.log('[Firebase] Sync pós-login concluído');
-      });
+      window.fsSyncAll()
+        .then(() => console.log('[Firebase] Sync pós-login concluído'))
+        .catch(e => console.warn('[Firebase] Sync pós-login falhou:', e.message));
     }
   }, 500); // small delay so UI is fully ready
 }
@@ -413,7 +413,8 @@ function excluirTec(id) {
   saveCadTec(cad);
   if (_fbReady()) {
     window.FirestoreStorage.excluirDocumento(FS_COL.TECNICOS, id)
-      .then(res => { if (!res.ok) console.warn('[Técnicos] excluir falhou:', res.error); });
+      .then(res => { if (!res.ok) console.warn('[Técnicos] excluir falhou:', res.error); })
+      .catch(e => console.warn('[Técnicos] excluir falhou:', e.message));
   }
   renderTecnicos();
   populateTecnicoSelect();

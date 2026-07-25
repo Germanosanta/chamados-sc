@@ -232,10 +232,10 @@ import { initializeApp }                           from "https://www.gstatic.com
     // RE-WRAP pós-init: js/modules/usuarios/index.js redefine saveUsers DEPOIS de
     // js/core/storage.js (ambos scripts clássicos) numa versão sem persistência
     // remota. Como este módulo executa por último, reinstalamos o push ao
-    // Firestore sobre a versão final. (saveClosed/saveKB/savePecas/saveEvents já
-    // não são mais redefinidas em nenhum outro script — js/core/storage.js é a
-    // única declaração e já empurra pro Firestore nativamente, sem precisar
-    // de rewrap.)
+    // Firestore sobre a versão final. (saveClosed/saveKB/savePecas já não são
+    // mais redefinidas em nenhum outro script — js/core/storage.js é a única
+    // declaração e já empurra pro Firestore nativamente, sem precisar de
+    // rewrap. addEvent() faz o próprio push inline, não usa saveEvents.)
     // ════════════════════════════════════════════════════════════
     (function _rewrapShadowed() {
       function rewrap(name, push) {

@@ -789,6 +789,10 @@
           <div class="equip-info-lbl">Marca</div>
           <div class="equip-info-val" id="equip-info-marca">—</div>
         </div>
+        <div class="equip-info-field">
+          <div class="equip-info-lbl">Patrimônio</div>
+          <div class="equip-info-val" id="equip-info-patrimonio">—</div>
+        </div>
       </div>
 
       <!-- Histórico de chamados do equipamento selecionado -->
@@ -1277,12 +1281,7 @@
     <div class="form-field full" style="margin-bottom:12px">
       <div class="form-label">Técnico(s) que realizaram o atendimento <span class="req">*</span></div>
       <div id="chk-tec-tags" style="display:flex;flex-wrap:wrap;gap:6px;min-height:28px;margin-bottom:8px"></div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap" id="chk-tec-opts">
-        <button type="button" class="resp-opt" data-tec="Guilherme Otávio" onclick="toggleTecnico(this)">Guilherme Otávio</button>
-        <button type="button" class="resp-opt" data-tec="Walison Almeida" onclick="toggleTecnico(this)">Walison Almeida</button>
-        <button type="button" class="resp-opt" data-tec="Matheus Gabriel" onclick="toggleTecnico(this)">Matheus Gabriel</button>
-        <button type="button" class="resp-opt" data-tec="Carlos Santos" onclick="toggleTecnico(this)">Carlos Santos</button>
-      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="chk-tec-opts"></div>
       <input type="hidden" id="chk-tecnicos" value="">
     </div>
 

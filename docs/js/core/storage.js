@@ -129,12 +129,9 @@ function saveMovs(v)   {
 
 // ── Events log (timeline) → historico/{num}.eventos
 function getEvents()   { try { return JSON.parse(localStorage.getItem(EVENTS_KEY)||'{}'); } catch { return {}; } }
-function saveEvents(v) {
-  localStorage.setItem(EVENTS_KEY, JSON.stringify(v));               // cache
-  Object.entries(v||{}).forEach(([num, evs]) => {
-    _fbCall('salvarHistorico(eventos)', () => window.FirestoreStorage.salvarHistorico(num, { num, eventos: evs }));
-  });
-}
+// addEvent() abaixo grava direto (localStorage + push ao Firestore só do
+// chamado alterado) sem passar por um saveEvents(objeto inteiro) — não existe
+// mais essa função genérica, era código morto (nenhuma chamada em lugar nenhum).
 function addEvent(num,type,actor,detail) {
   const ev=getEvents();
   if(!ev[num])ev[num]=[];

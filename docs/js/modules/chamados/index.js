@@ -1047,10 +1047,26 @@ function removeTecnico(val) {
   ).join('');
 }
 
+// Botões de seleção de técnico do checklist de encerramento — lidos de
+// getCadTec() (Firestore), nunca de lista fixa.
+function populateChkTecOpts() {
+  const wrap = document.getElementById('chk-tec-opts');
+  if (!wrap) return;
+  const tecnicos = Object.values(getCadTec()||{})
+    .filter(t => t && t.nome && t.status !== 'Inativo')
+    .sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR'));
+  wrap.innerHTML = tecnicos.map(t => {
+    const val = t.apelido || t.nome;
+    return `<button type="button" class="resp-opt" data-tec="${_escHtml(val)}" onclick="toggleTecnico(this)">${_escHtml(t.nome)}</button>`;
+  }).join('');
+}
+
 function openChecklist(target) {
   _chkTarget = target;
   const num = target==='modal' ? encCurrentNum : detCurrentNum;
   if (!num) return;
+
+  populateChkTecOpts();
 
   // Find record for context
   const rec = allRecords().find(r=>r[0]===num);
@@ -1816,6 +1832,7 @@ function equipSelect(equip) {
   const cadInfo = getCadEq()[equip.c];
   setEl('equip-info-fazenda', cadInfo?.fazenda);
   setEl('equip-info-marca', cadInfo?.fabricante);
+  setEl('equip-info-patrimonio', cadInfo?.patrimonio);
   if (infoC) infoC.className = 'equip-info-card show';
 
   // Mark as valid selection
