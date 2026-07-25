@@ -38,7 +38,7 @@ function salvarEmailConfig() {
 }
 
 function limparDadosLocais() {
-  if (!confirm('Isso irá remover todos os chamados, encerramentos, KB e peças criados localmente. Os dados históricos (3.155 chamados) serão preservados. Continuar?')) return;
+  if (!confirm('Isso irá remover todos os chamados, encerramentos, KB e peças criados localmente. Os dados históricos (3.214 chamados) serão preservados. Continuar?')) return;
   ['chm_local_v1','chm_closed_v1','chm_kb_v1','chm_pecas_v1','chm_movs_v1','chm_events_v1'].forEach(k=>localStorage.removeItem(k));
   refreshAfterAction();
   showToast('Dados locais removidos.');

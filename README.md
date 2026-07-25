@@ -39,7 +39,7 @@ Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e 
 │       │   ├── usuarios/index.js      # Login, sessão, perfis, permissões
 │       │   └── config/index.js        # Configurações, e-mail, Firebase, técnicos
 │       └── data/
-│           ├── chamados_historico.js  # 3.155 chamados (Jun/2022–Jul/2026)
+│           ├── chamados_historico.js  # 3.214 chamados (Jun/2022–Jul/2026)
 │           ├── equipamentos.js        # 445 equipamentos (planilha xlsx)
 │           ├── match_map.js           # Vínculo chamado → frota (125 entries)
 │           └── equip_idx.js           # Índice equipamentos por código
@@ -116,7 +116,7 @@ Coleções no Firestore (nomes reais, via `docs/js/firebase/firestore.js`):
 ## Stack
 
 - **Frontend**: HTML5 + CSS3 + JS vanilla (sem framework)
-- **Dados históricos**: 3.155 chamados embutidos em JS
+- **Dados históricos**: 3.214 chamados embutidos em JS
 - **Persistência local**: localStorage (offline-first)
 - **Nuvem**: Firebase Firestore (sync em background) + Firebase Hosting
 - **Fontes**: Inter + JetBrains Mono (Google Fonts)
