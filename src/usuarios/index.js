@@ -33,6 +33,67 @@ function doLogin() {
   mostrarMenu();
 }
 
+// ── CADASTRO — auto-cadastro de novo usuário (tela de login)
+function abrirCadastro() {
+  document.getElementById('login-overlay').style.display = 'none';
+  document.getElementById('cadastro-overlay').style.display = 'flex';
+  document.getElementById('cadastro-err').style.display = 'none';
+  document.getElementById('cadastro-ok').style.display = 'none';
+}
+
+function fecharCadastro() {
+  document.getElementById('cadastro-overlay').style.display = 'none';
+  document.getElementById('login-overlay').style.display = 'flex';
+  ['cad-nome','cad-login','cad-email','cad-senha','cad-senha2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
+function salvarCadastro() {
+  const nome   = document.getElementById('cad-nome').value.trim();
+  const login  = document.getElementById('cad-login').value.trim();
+  const email  = document.getElementById('cad-email').value.trim();
+  const senha  = document.getElementById('cad-senha').value;
+  const senha2 = document.getElementById('cad-senha2').value;
+  const perfil = document.getElementById('cad-perfil').value;
+  const errEl  = document.getElementById('cadastro-err');
+  const okEl   = document.getElementById('cadastro-ok');
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  if (!nome || !login || !senha || !senha2) {
+    errEl.textContent = 'Preencha nome, usuário e senha.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (senha !== senha2) {
+    errEl.textContent = 'As senhas não coincidem.';
+    errEl.style.display = 'block';
+    return;
+  }
+  const users = getUsers();
+  if (users.some(u => u.login.toLowerCase() === login.toLowerCase())) {
+    errEl.textContent = 'Já existe um usuário com esse login.';
+    errEl.style.display = 'block';
+    return;
+  }
+  users.push({
+    id: 'u' + Date.now(),
+    nome, login, senha, email,
+    cargo: '',
+    perfil,
+    status: 'Inativo',
+    perms: null,
+  });
+  saveUsers(users);
+  audit('cadastro_publico', `Novo cadastro (pendente de ativação): ${login}`, '');
+  okEl.textContent = 'Cadastro enviado! Um administrador precisa ativar sua conta antes do primeiro acesso.';
+  okEl.style.display = 'block';
+  ['cad-nome','cad-login','cad-email','cad-senha','cad-senha2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+}
+
 function doLogout() {
   audit('logout', `Logout: ${currentUser()?.login||''}`, '');
   clearSession();

@@ -2422,9 +2422,59 @@
         Login ou senha incorretos.
       </div>
       <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:11px;font-size:14px;justify-content:center">Entrar</button>
+      <button class="btn btn-ghost" onclick="abrirCadastro()" style="width:100%;padding:9px;font-size:13px;justify-content:center">Cadastro</button>
     </div>
     <div style="margin-top:16px;font-size:11px;color:var(--text3);text-align:center">
       Acesso restrito · Santa Colomba Agropecuária
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     CADASTRO — auto-cadastro de novo usuário (antes do login)
+     Mesmo padrão visual do #login-overlay; conta criada como
+     Inativo, aguardando ativação por um administrador.
+     ════════════════════════════════════════════════════════ -->
+<div id="cadastro-overlay" style="position:fixed;inset:0;background:#f0f4ff;z-index:500;display:none;align-items:center;justify-content:center">
+  <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:32px 40px;width:380px;max-width:94vw;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg)">
+    <div style="text-align:center;margin-bottom:22px">
+      <img src="coa.jpeg" alt="Santa Colomba Agropecuária" style="display:block;width:100%;max-width:200px;height:auto;margin:0 auto 10px;border-radius:8px">
+      <div style="font-size:18px;font-weight:700;color:var(--text)">Criar Conta</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px">Central de Chamados</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <div class="form-label">Nome completo</div>
+        <input class="form-input" type="text" id="cad-nome" placeholder="Seu nome completo" style="width:100%">
+      </div>
+      <div>
+        <div class="form-label">Usuário</div>
+        <input class="form-input" type="text" id="cad-login" placeholder="Login de acesso" style="width:100%">
+      </div>
+      <div>
+        <div class="form-label">E-mail</div>
+        <input class="form-input" type="email" id="cad-email" placeholder="seu@email.com.br" style="width:100%">
+      </div>
+      <div>
+        <div class="form-label">Senha</div>
+        <input class="form-input" type="password" id="cad-senha" placeholder="Escolha uma senha" style="width:100%">
+      </div>
+      <div>
+        <div class="form-label">Confirmar senha</div>
+        <input class="form-input" type="password" id="cad-senha2" placeholder="Repita a senha" style="width:100%">
+      </div>
+      <div>
+        <div class="form-label">Perfil de acesso</div>
+        <select class="form-select" id="cad-perfil" style="width:100%">
+          <option value="admin">Administrador</option>
+          <option value="tecnico" selected>Técnico</option>
+          <option value="visualizador">Usuário</option>
+        </select>
+      </div>
+      <div id="cadastro-err" style="display:none;padding:8px 12px;background:var(--red-bg);border:1px solid #fecaca;border-radius:6px;font-size:12px;color:var(--red)"></div>
+      <div id="cadastro-ok" style="display:none;padding:8px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;font-size:12px;color:#16a34a"></div>
+      <button class="btn btn-primary" onclick="salvarCadastro()" style="width:100%;padding:11px;font-size:14px;justify-content:center">Criar Conta</button>
+      <button class="btn btn-ghost" onclick="fecharCadastro()" style="width:100%;padding:9px;font-size:13px;justify-content:center">Voltar ao login</button>
     </div>
   </div>
 </div>
