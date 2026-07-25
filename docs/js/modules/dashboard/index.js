@@ -175,6 +175,19 @@ function initDashboard(){
   document.getElementById('badge-chamados').textContent = S.total.toLocaleString('pt-BR');
   document.getElementById('donut-n').textContent    = S.total.toLocaleString('pt-BR');
 
+  // Período real da base (min/max data de abertura) — antes era texto fixo
+  // no HTML ("Jun/2022 – Abr/2026"), ficava desatualizado a cada nova
+  // importação de dados. Calculado aqui a partir dos registros de verdade.
+  const MESES_ABR=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const fmtMY = d => { const [y,m]=d.split('-'); return MESES_ABR[parseInt(m,10)-1]+'/'+y.slice(2); };
+  const datas = S.all.map(r=>r[4]).filter(Boolean).sort();
+  if (datas.length) {
+    const range = fmtMY(datas[0]) + ' – ' + fmtMY(datas[datas.length-1]);
+    _setKPI('footer-range', range);
+    _setKPI('cfg-periodo-base', range.replace(' – ','–'));
+    _setKPI('cfg-base-dados', S.total.toLocaleString('pt-BR') + ' chamados · ' + range.replace(' – ','–'));
+  }
+
   // ── Evolução mensal (from allRecords — includes local records)
   const lbls = MONTHS.map(m=>{
     const [y,mo]=m.split('-');
