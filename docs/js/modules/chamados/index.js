@@ -1878,6 +1878,7 @@ function renderHistoricoEquip(code) {
         <td>${_escHtml(ci?.tecnicos || '—')}</td>
         <td style="font-family:var(--font-mono)">${ci?.dataEncerramento || '—'}</td>
         <td style="font-family:var(--font-mono)">${tempoParado}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${_escHtml(ci?.solucao||'')}">${_escHtml(ci?.solucao || '—')}</td>
       </tr>`;
     }).join('');
   }

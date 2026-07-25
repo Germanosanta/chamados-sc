@@ -134,9 +134,23 @@ function computeStats(records) {
   ];
   const issues = issueKw.map(([label,rx])=>[label,all.filter(r=>rx.test(r[0]+r[1])).length]);
 
+  // Ranking de equipamentos (chamados por frota/máquina) — mesmo vínculo
+  // usado em renderHistoricoEquip()/verHistoricoFrota(): MATCH_MAP (histórico)
+  // + local.equipCodigo (chamados abertos pelo app modular).
+  const localByNum = {};
+  getLocal().forEach(lr => { localByNum[lr.num] = lr; });
+  const equip_map = {};
+  all.forEach(r => {
+    const eq = getChamadoEquip(r[0], localByNum[r[0]]);
+    if (eq) {
+      const label = eq.codigo + ' · ' + eq.descricao;
+      equip_map[label] = (equip_map[label]||0) + 1;
+    }
+  });
+
   return {
     all, total, concluidos, em_aberto, em_and, atendimento, aguardando, cancelados, media_mes,
-    resp_map, cult_map, bkt_map, karitel, rio_meio,
+    resp_map, cult_map, bkt_map, karitel, rio_meio, equip_map,
     by_year, months_g, months_t, months_c, months_o,
     tempo_medio, vencidos, issues,
   };
@@ -212,6 +226,23 @@ function initDashboard(){
       <div class="prog-header"><span class="prog-name">${name}</span><span class="prog-val">${val.toLocaleString('pt-BR')}</span></div>
       <div class="prog-track"><div class="prog-fill" style="width:${val/maxResp*100}%;background:${respColors[i%5]}"></div></div>
     </div>`).join('');
+
+  // ── Ranking de equipamentos (chamados por frota/máquina)
+  const equipEntries = Object.entries(S.equip_map).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const equipBarsEl = document.getElementById('equip-bars');
+  if (equipBarsEl) {
+    const maxEquip = equipEntries[0]?.[1]||1;
+    const equipColors=['#2563eb','#0d9488','#7c3aed','#16a34a','#d97706','#dc2626'];
+    equipBarsEl.innerHTML = equipEntries.length ? equipEntries.map(([name,val],i)=>`
+      <div class="prog-item">
+        <div class="prog-header"><span class="prog-name">${name}</span><span class="prog-val">${val.toLocaleString('pt-BR')}</span></div>
+        <div class="prog-track"><div class="prog-fill" style="width:${val/maxEquip*100}%;background:${equipColors[i%6]}"></div></div>
+      </div>`).join('') : '<div style="color:var(--text3);font-size:12px;padding:8px 0">Sem chamados vinculados a equipamento ainda.</div>';
+  }
+
+  // ── Tempo médio de atendimento (abertura → encerramento)
+  const kTempoMedioEl = document.getElementById('k-tempo-medio');
+  if (kTempoMedioEl) kTempoMedioEl.textContent = S.tempo_medio === '—' ? '—' : S.tempo_medio + 'd';
 
   // ── Issues
   const maxIssue = S.issues[0]?.[1]||1;

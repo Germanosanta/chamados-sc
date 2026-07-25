@@ -202,7 +202,10 @@ function refreshAfterAction() {
   if (active === 'sec-chamados')     applyFilters();
   if (active === 'sec-aberto')       renderAberto();
   if (active === 'sec-encerrados')   renderEncerrados();
+  if (active === 'sec-criticidade')  renderCriticidade();
   if (active === 'sec-responsaveis') renderRespSection();
+  if (active === 'sec-frotas')       renderFrotas();
+  if (active === 'sec-tecnicos')     renderTecnicos();
   // Histórico do equipamento selecionado no formulário de Novo Chamado —
   // atualiza em tempo real se outro usuário abrir/encerrar um chamado dele.
   const equipSelecionado = document.getElementById('equip-selected-codigo')?.value;

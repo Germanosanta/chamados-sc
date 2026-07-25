@@ -312,7 +312,7 @@
     <div class="kpi-card blue" style="cursor:pointer" onclick="applyStatusFilter('')" title="Ver todos">
       <div class="kpi-label">Total de Chamados</div>
       <div class="kpi-value" id="k-total">—</div>
-      <div class="kpi-sub"><span class="kpi-chip chip-blue" id="k-total-chip">Jun/22–Jul/26</span></div>
+      <div class="kpi-sub"><span class="kpi-chip chip-blue" id="k-total-chip">Jun/22–Jul/26</span> · Tempo médio <span id="k-tempo-medio">—</span></div>
     </div>
     <!-- 2. Abertos (Não iniciado) -->
     <div class="kpi-card red" style="cursor:pointer" onclick="applyStatusFilter('Aberto')" title="Ver em aberto">
@@ -392,6 +392,14 @@
     <div class="card">
       <div class="card-header"><div><div class="card-title">Principais Problemas</div></div></div>
       <div id="issue-bars"></div>
+    </div>
+  </div>
+
+  <!-- ROW 2.5: Ranking de Equipamentos -->
+  <div class="chart-row cols-full">
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">Ranking de Equipamentos</div><div class="card-sub">Máquinas com mais chamados</div></div></div>
+      <div id="equip-bars"></div>
     </div>
   </div>
 
@@ -798,7 +806,7 @@
           <table class="data-table" id="equip-hist-tbl-wrap" style="width:100%;font-size:11px">
             <thead>
               <tr>
-                <th>Número</th><th>Descrição</th><th>Prioridade</th><th>Abertura</th><th>Status</th><th>Responsável</th><th>Técnico</th><th>Encerramento</th><th>Tempo parado</th>
+                <th>Número</th><th>Descrição</th><th>Prioridade</th><th>Abertura</th><th>Status</th><th>Responsável</th><th>Técnico</th><th>Encerramento</th><th>Tempo parado</th><th>Solução aplicada</th>
               </tr>
             </thead>
             <tbody id="tbl-equip-hist"></tbody>
@@ -2294,6 +2302,9 @@
       <div class="modal-result-meta" style="margin-top:4px">
         <span id="enc-res-equip"></span>
         <span id="enc-res-prior"></span>
+      </div>
+      <div style="margin-top:8px">
+        <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="openDetalhe(document.getElementById('enc-res-num').textContent)">📋 Ver fotos, histórico e observações</button>
       </div>
     </div>
 

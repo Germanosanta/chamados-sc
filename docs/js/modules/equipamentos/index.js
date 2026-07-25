@@ -3,6 +3,13 @@
 // Santa Colomba — Central de Chamados SC
 // ══════════════════════════════════════════
 
+// Índice de foco do teclado no autocomplete do formulário de cadastro de
+// equipamento (equipFormSearch/equipFormKeyNav/equipFormHighlight). Note:
+// _eqPage NÃO é declarada aqui de propósito — é usada via window._eqPage
+// (ver eqGotoPage), então uma declaração let criaria um binding lexical
+// separado do global e quebraria a paginação.
+let _eqFormFocusIdx = -1;
+
 function renderEquipamentos() {
   const q        = (document.getElementById('eq-srch')?.value||'').toLowerCase();
   const fTipo    = document.getElementById('eq-f-tipo')?.value||'';
