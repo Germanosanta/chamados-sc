@@ -17,6 +17,16 @@ const CRIT_PER_PAGE=50;
 let encPage = 1;
 const ENC_PER_PAGE = 50;
 
+// Variáveis de estado do módulo — existiam declaradas no legado (assets/app.js)
+// mas ficaram de fora ao migrar para o app modular; restauradas aqui.
+let _gsTimeout = null;
+let _equipFocusIdx = -1;   // navegação por teclado no dropdown de equipamento
+let _equipValid    = false; // se um equipamento válido está selecionado
+let _chkTarget = null;      // 'modal' | 'detalhe'
+let _fotosNovo = [];        // [{name, type, data:base64}]
+let _pecasNovo = [];        // [{id, nome, unidade, qtd}]
+let _pendingEvtType = null;
+
 function diasAberto(dataStr) {
   if (!dataStr) return 0;
   const d = new Date(dataStr + 'T00:00:00');
