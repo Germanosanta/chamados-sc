@@ -166,7 +166,8 @@ function initDashboard(){
     const [y,mo]=m.split('-');
     return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(mo)-1]+'-'+y.slice(2);
   });
-  new Chart(document.getElementById('ch-evolucao'),{
+  if(cEvolucao) cEvolucao.destroy();
+  cEvolucao=new Chart(document.getElementById('ch-evolucao'),{
     type:'bar',
     data:{labels:lbls,datasets:[
       {label:'Grãos e Fibras',data:S.months_g,backgroundColor:'rgba(37,99,235,.8)',borderRadius:2,borderSkipped:false},
@@ -182,7 +183,8 @@ function initDashboard(){
   const totT=S.months_t.reduce((a,b)=>a+b,0);
   const totC=S.months_c.reduce((a,b)=>a+b,0);
   const totO=S.months_o.reduce((a,b)=>a+b,0);
-  new Chart(document.getElementById('ch-donut'),{
+  if(cDonutCultura) cDonutCultura.destroy();
+  cDonutCultura=new Chart(document.getElementById('ch-donut'),{
     type:'doughnut',
     data:{labels:['Grãos e Fibras','Tabaco','Cacau','Sem cultura'],
       datasets:[{data:[totG,totT,totC,totO],backgroundColor:['#2563eb','#d97706','#92400e','#94a3b8'],borderWidth:2,borderColor:'#fff',hoverOffset:6}]},
@@ -191,7 +193,8 @@ function initDashboard(){
 
   // ── Bucket / Sistema (barras horizontais)
   const bktEntries = Object.entries(S.bkt_map).sort((a,b)=>b[1]-a[1]);
-  new Chart(document.getElementById('ch-bucket'),{
+  if(cBucket) cBucket.destroy();
+  cBucket=new Chart(document.getElementById('ch-bucket'),{
     type:'bar',
     data:{labels:bktEntries.map(e=>e[0]),
       datasets:[{data:bktEntries.map(e=>e[1]),
@@ -220,7 +223,8 @@ function initDashboard(){
 
   // ── Por ano
   const anoData=[2022,2023,2024,2025,2026].map(y=>S.by_year[y]?.total||0);
-  new Chart(document.getElementById('ch-anos'),{
+  if(cAnos) cAnos.destroy();
+  cAnos=new Chart(document.getElementById('ch-anos'),{
     type:'bar',
     data:{labels:['2022','2023','2024','2025','2026'],
       datasets:[{data:anoData,backgroundColor:['rgba(100,116,139,.7)','rgba(37,99,235,.8)','rgba(13,148,136,.8)','rgba(217,119,6,.85)','rgba(220,38,38,.7)'],borderRadius:6,borderSkipped:false}]},
@@ -313,6 +317,11 @@ function changeYear(d){
 
 // Instâncias Chart.js da seção "Por Mês" — destruídas/recriadas a cada render (ver uso abaixo)
 let cMesBar=null, cMesDonut=null;
+// Instâncias dos gráficos do Dashboard principal — guardadas para poder
+// destruir antes de recriar (Chart.js não substitui sozinho um gráfico já
+// desenhado no mesmo <canvas>: sem destroy(), instâncias antigas continuam
+// desenhando por baixo/por cima da nova, causando sobreposição visual).
+let cEvolucao=null, cDonutCultura=null, cBucket=null, cAnos=null;
 
 function renderMesCharts(){
   const yr=parseInt(document.getElementById('yr-filter').value)||2025;

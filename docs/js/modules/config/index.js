@@ -289,6 +289,8 @@ function renderTecnicos() {
           </div>
           <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;flex-shrink:0"
             onclick="abrirFormTec('${t.id}')">✏️</button>
+          <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;flex-shrink:0;color:var(--red)"
+            onclick="excluirTec('${t.id}')">🗑️</button>
         </div>
 
         <!-- Contatos -->
@@ -359,6 +361,7 @@ function renderTecnicos() {
         <td style="font-family:var(--font-mono);font-size:11px">${avgT}</td>
         <td style="white-space:nowrap">
           <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="abrirFormTec('${t.id}')">✏️ Editar</button>
+          <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;color:var(--red)" onclick="excluirTec('${t.id}')">🗑️ Excluir</button>
         </td>
       </tr>`;
     }).join('');
@@ -400,6 +403,22 @@ function abrirFormTec(id) {
 function fecharFormTec() {
   const card=document.getElementById('form-tec-card');
   if(card) card.style.display='none';
+}
+
+function excluirTec(id) {
+  const cad = getCadTec();
+  const nome = cad[id]?.nome || id;
+  if (!confirm(`Excluir "${nome}" do cadastro de técnicos? Esta ação não pode ser desfeita.`)) return;
+  delete cad[id];
+  saveCadTec(cad);
+  if (_fbReady()) {
+    window.FirestoreStorage.excluirDocumento(FS_COL.TECNICOS, id)
+      .then(res => { if (!res.ok) console.warn('[Técnicos] excluir falhou:', res.error); });
+  }
+  renderTecnicos();
+  populateTecnicoSelect();
+  showToast('Técnico removido do cadastro.');
+  audit('excluiu', `Técnico ${nome} removido do cadastro`, '');
 }
 
 function salvarTec() {

@@ -203,6 +203,10 @@ function refreshAfterAction() {
   if (active === 'sec-aberto')       renderAberto();
   if (active === 'sec-encerrados')   renderEncerrados();
   if (active === 'sec-responsaveis') renderRespSection();
+  // Histórico do equipamento selecionado no formulário de Novo Chamado —
+  // atualiza em tempo real se outro usuário abrir/encerrar um chamado dele.
+  const equipSelecionado = document.getElementById('equip-selected-codigo')?.value;
+  if (active === 'sec-novo' && equipSelecionado) renderHistoricoEquip(equipSelecionado);
   if (active === 'sec-dashboard') {
     // Refresh dashboard KPIs without re-rendering charts
     const S = computeStats();

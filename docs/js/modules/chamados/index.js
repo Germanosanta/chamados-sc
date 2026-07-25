@@ -1676,6 +1676,37 @@ function removerFoto(idx) {
   renderFotoPreview();
 }
 
+// Universo de equipamentos pesquisável: o catálogo estático EQUIPAMENTOS (445
+// itens) enriquecido com Patrimônio/Marca do cadastro administrável (getCadEq(),
+// espelho local da coleção Firestore "equipamentos") + qualquer equipamento
+// cadastrado que NÃO faz parte do catálogo estático original (frota nova,
+// registrada depois pela tela de Equipamentos) — sem isso, equipamentos
+// cadastrados fora dos 445 originais nunca apareciam nesta busca.
+function _equipUniverso() {
+  const cad = getCadEq() || {};
+  const vistos = new Set();
+  const lista = EQUIPAMENTOS.map(eq => {
+    vistos.add(eq.c);
+    const c = cad[eq.c];
+    if (!c) return eq;
+    const extra = [c.patrimonio, c.fabricante].filter(Boolean).join(' ');
+    return extra ? { ...eq, e: eq.e + ' ' + extra } : eq;
+  });
+  Object.values(cad).forEach(c => {
+    if (!c || !c.frota || vistos.has(c.frota)) return;
+    lista.push({
+      c: c.frota,
+      d: c.modelo || c.fabricante || ('Equipamento ' + c.frota),
+      e: [c.frota, c.modelo, c.fabricante, c.patrimonio].filter(Boolean).join(' '),
+      m: c.modelo || '',
+      t: c.tipo || '',
+      g: c.tipo || '',
+      s: c.status || 'Ativo',
+    });
+  });
+  return lista;
+}
+
 function equipSearch(q) {
   const drop  = document.getElementById('equip-dropdown');
   const clear = document.getElementById('equip-clear');
@@ -1699,22 +1730,14 @@ function equipSearch(q) {
   }
 
   const ql = q.toLowerCase();
-  // Search: code starts-with first, then description contains
-  const exact   = EQUIPAMENTOS.filter(e => e.c.toLowerCase().startsWith(ql));
-  const partial = EQUIPAMENTOS.filter(e =>
+  const universo = _equipUniverso();
+  // Search: code starts-with first, then description/modelo/patrimônio/marca contains
+  const exact   = universo.filter(e => e.c.toLowerCase().startsWith(ql));
+  const partial = universo.filter(e =>
     !e.c.toLowerCase().startsWith(ql) &&
-    (e.d.toLowerCase().includes(ql) || e.e.toLowerCase().includes(ql))
+    (e.d.toLowerCase().includes(ql) || e.e.toLowerCase().includes(ql) || (e.m||'').toLowerCase().includes(ql))
   );
-  // Também pesquisa por Patrimônio e Marca/Fabricante — campos que só existem
-  // no cadastro administrável (getCadEq(), sincronizado com o Firestore),
-  // não no catálogo estático EQUIPAMENTOS.
-  const jaIncluido = new Set([...exact, ...partial].map(e => e.c));
-  const porCadastro = Object.values(getCadEq()||{})
-    .filter(c => c && c.frota && !jaIncluido.has(c.frota) &&
-      ((c.patrimonio||'').toLowerCase().includes(ql) || (c.fabricante||'').toLowerCase().includes(ql)))
-    .map(c => EQUIPAMENTOS.find(e => e.c === c.frota))
-    .filter(Boolean);
-  const results = [...exact, ...partial, ...porCadastro].slice(0, 30);
+  const results = [...exact, ...partial].slice(0, 30);
 
   if (!results.length) {
     drop.innerHTML = '<div class="equip-nofound">⚠ Equipamento não cadastrado — nenhum resultado para "' + _escHtml(q) + '"</div>';
@@ -1789,9 +1812,10 @@ function equipSelect(equip) {
     statusEl.textContent = equip.s;
     statusEl.style.color = equip.s === 'Ativo' ? 'var(--green)' : 'var(--amber)';
   }
-  // Local/Fazenda — só existe no cadastro complementar (getCadEq), nem todo equipamento tem
+  // Fazenda/Marca — só existem no cadastro complementar (getCadEq), nem todo equipamento tem
   const cadInfo = getCadEq()[equip.c];
   setEl('equip-info-fazenda', cadInfo?.fazenda);
+  setEl('equip-info-marca', cadInfo?.fabricante);
   if (infoC) infoC.className = 'equip-info-card show';
 
   // Mark as valid selection
@@ -1837,13 +1861,23 @@ function renderHistoricoEquip(code) {
   if (tbody) {
     tbody.innerHTML = recs.map(r => {
       const ci = closed[r[0]];
+      let tempoParado = '—';
+      if (r[4]) {
+        const abertura = new Date(r[4]+'T00:00:00');
+        const fim = ci?.encerradoEm ? new Date(ci.encerradoEm) : new Date();
+        const dias = Math.max(0, Math.floor((fim - abertura) / 86400000));
+        tempoParado = dias + (dias === 1 ? ' dia' : ' dias');
+      }
       return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
         <td class="td-num">${r[0]}</td>
         <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_escHtml(r[1])}</td>
+        <td>${priorPill(getPrior(r))}</td>
         <td style="font-family:var(--font-mono)">${r[4]?r[4].split('-').reverse().join('/'):'—'}</td>
         <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
         <td>${(r[3]||'—').replace(/,/g,' e ')}</td>
+        <td>${_escHtml(ci?.tecnicos || '—')}</td>
         <td style="font-family:var(--font-mono)">${ci?.dataEncerramento || '—'}</td>
+        <td style="font-family:var(--font-mono)">${tempoParado}</td>
       </tr>`;
     }).join('');
   }

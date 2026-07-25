@@ -121,11 +121,17 @@ function fecharFormUsuario() {
 }
 
 function salvarUsuario() {
+  // Só administrador pode salvar (mesma regra que já restringe o acesso à
+  // tela inteira em renderUsuarios() — checagem redundante aqui por segurança).
+  if (currentUser()?.perfil !== 'admin') { showToast('Apenas administradores podem salvar usuários.'); return; }
+
   const nome  = document.getElementById('u-nome').value.trim();
   const login = document.getElementById('u-login').value.trim();
   const senha = document.getElementById('u-senha').value;
   const perfil= document.getElementById('u-perfil').value;
   if(!nome||!login||!senha) { showToast('Nome, login e senha são obrigatórios'); return; }
+  if(senha.length<6) { showToast('A senha deve ter no mínimo 6 caracteres'); return; }
+  if(!['admin','supervisor','tecnico','visualizador'].includes(perfil)) { showToast('Perfil inválido'); return; }
 
   const users = getUsers();
   const id = document.getElementById('u-id').value;
