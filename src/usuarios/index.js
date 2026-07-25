@@ -87,11 +87,11 @@ function renderUsuarios() {
   }
   document.getElementById('tbl-usuarios').innerHTML = users.map(usr => `
     <tr>
-      <td style="font-weight:600;color:var(--text)">${usr.nome}</td>
-      <td class="td-num">${usr.login}</td>
-      <td style="color:var(--text2)">${usr.cargo||'—'}</td>
+      <td style="font-weight:600;color:var(--text)">${_escHtml(usr.nome)}</td>
+      <td class="td-num">${_escHtml(usr.login)}</td>
+      <td style="color:var(--text2)">${_escHtml(usr.cargo)||'—'}</td>
       <td><span class="pill chip-blue">${PERFIL_LABEL[usr.perfil]||usr.perfil}</span></td>
-      <td style="color:var(--text3);font-size:11px">${usr.email||'—'}</td>
+      <td style="color:var(--text3);font-size:11px">${_escHtml(usr.email)||'—'}</td>
       <td><span class="pill ${usr.status==='Ativo'?'p-concluida':'p-aberto'}">${usr.status}</span></td>
       <td style="display:flex;gap:6px">
         <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px" onclick="editarUsuario('${usr.id}')">Editar</button>

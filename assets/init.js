@@ -384,7 +384,7 @@ function refreshAfterAction() {
     const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
     setEl('k-total',    S.total.toLocaleString('pt-BR'));
     setEl('k-conc',     S.concluidos.toLocaleString('pt-BR'));
-    setEl('k-conc-pct',(S.concluidos/S.total*100).toFixed(1)+'%');
+    setEl('k-conc-pct',(S.total>0?(S.concluidos/S.total*100).toFixed(1):'0')+'%');
     setEl('k-media',    S.media_mes);
     setEl('k-aberto',   S.em_aberto+S.em_and);
     setEl('donut-n',    S.total.toLocaleString('pt-BR'));

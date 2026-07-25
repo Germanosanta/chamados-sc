@@ -261,7 +261,7 @@ function renderChamados(){
         ${r[0]}
         ${_frC?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frC}</div>`:''}
       </td>
-      <td class="td-titulo">${r[1]}</td>
+      <td class="td-titulo">${_escHtml(r[1])}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="white-space:nowrap">${r[3]||'—'}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${r[4]?r[4].split('-').reverse().join('/'):' —'}</td>
@@ -649,7 +649,7 @@ function renderAberto() {
       const prior = r[9] || r[9] || 'Média';
       return `<tr style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
         <td class="td-num">${r[0]}</td>
-        <td class="td-titulo">${r[1]}</td>
+        <td class="td-titulo">${_escHtml(r[1])}</td>
         <td style="white-space:nowrap;font-weight:500">${r[3] || '<span style="color:var(--text3)">—</span>'}</td>
         <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${dataFmt}</td>
         <td>${priorPill(prior)}</td>
@@ -783,7 +783,7 @@ function renderCriticidade() {
   tbody.innerHTML = slice.map(r=>`
     <tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
-      <td class="td-titulo">${r[1]||'—'}</td>
+      <td class="td-titulo">${_escHtml(r[1])}</td>
       <td>${critPillHtml(getPrior(r))}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
@@ -899,7 +899,7 @@ function renderEncerrados() {
       ? Math.round((new Date(ci.encerradoEm)-new Date(r[4]+'T00:00'))/86400000)+'d' : '—';
     return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
-      <td class="td-titulo">${r[1]||'—'}</td>
+      <td class="td-titulo">${_escHtml(r[1])}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="font-size:11px;color:var(--text3)">${r[6]==='Solinftec KRT'?'Karitel':r[6]==='Solinftec RDM'?'Rio do Meio':(r[6]||'—')}</td>
       <td style="font-size:11px;color:var(--text3)">${r[6]||'—'}</td>
