@@ -1000,6 +1000,12 @@ function buscarChamado() {
   document.getElementById('enc-res-resp').textContent   = (rec[3]||'Sem responsável').replace(',', ' e ');
   document.getElementById('enc-res-data').textContent   = rec[4] ? rec[4].split('-').reverse().join('/') : '—';
   document.getElementById('enc-res-status').textContent = isClosed ? '✓ Já encerrado' : '⏳ ' + (rec[5] || 'Não iniciado');
+  const _encLocalRec = getLocal().find(r => r.num === raw);
+  const _encLabel = frotaLabel(raw, _encLocalRec);
+  const _encEquipEl = document.getElementById('enc-res-equip');
+  if (_encEquipEl) _encEquipEl.textContent = _encLabel ? '🚜 ' + _encLabel : '';
+  const _encPriorEl = document.getElementById('enc-res-prior');
+  if (_encPriorEl) _encPriorEl.innerHTML = priorPill(getPrior(rec));
 
   const confirmMsg = document.getElementById('enc-confirm-msg');
   if (isClosed) {
@@ -1699,7 +1705,16 @@ function equipSearch(q) {
     !e.c.toLowerCase().startsWith(ql) &&
     (e.d.toLowerCase().includes(ql) || e.e.toLowerCase().includes(ql))
   );
-  const results = [...exact, ...partial].slice(0, 30);
+  // Também pesquisa por Patrimônio e Marca/Fabricante — campos que só existem
+  // no cadastro administrável (getCadEq(), sincronizado com o Firestore),
+  // não no catálogo estático EQUIPAMENTOS.
+  const jaIncluido = new Set([...exact, ...partial].map(e => e.c));
+  const porCadastro = Object.values(getCadEq()||{})
+    .filter(c => c && c.frota && !jaIncluido.has(c.frota) &&
+      ((c.patrimonio||'').toLowerCase().includes(ql) || (c.fabricante||'').toLowerCase().includes(ql)))
+    .map(c => EQUIPAMENTOS.find(e => e.c === c.frota))
+    .filter(Boolean);
+  const results = [...exact, ...partial, ...porCadastro].slice(0, 30);
 
   if (!results.length) {
     drop.innerHTML = '<div class="equip-nofound">⚠ Equipamento não cadastrado — nenhum resultado para "' + _escHtml(q) + '"</div>';

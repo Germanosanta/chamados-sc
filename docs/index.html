@@ -2287,6 +2287,10 @@
         <span id="enc-res-data"></span>
         <span id="enc-res-status"></span>
       </div>
+      <div class="modal-result-meta" style="margin-top:4px">
+        <span id="enc-res-equip"></span>
+        <span id="enc-res-prior"></span>
+      </div>
     </div>
 
     <div id="enc-confirm-msg" style="display:none;padding:12px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;margin-bottom:4px;font-size:13px;color:#92400e;font-weight:500">
@@ -2433,29 +2437,29 @@
 </div>
 
 <!-- ── LOGIN OVERLAY -->
-<div id="login-overlay" style="position:fixed;inset:0;background:#f0f4ff;z-index:500;display:flex;align-items:center;justify-content:center">
-  <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:380px;max-width:94vw;box-shadow:var(--shadow-lg)">
-    <div style="text-align:center;margin-bottom:28px">
-      <img src="img/coa.jpeg" alt="Santa Colomba Agropecuária" style="display:block;width:100%;max-width:240px;height:auto;margin:0 auto 12px;border-radius:8px">
-      <div style="font-size:18px;font-weight:700;color:var(--text)">Santa Colomba</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px">Central de Chamados</div>
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <img src="img/coa.jpeg" alt="Santa Colomba Agropecuária" style="display:block;width:100%;max-width:220px;height:auto;margin:0 auto 14px;border-radius:10px;box-shadow:var(--shadow)">
+      <div class="login-title">Sistema de Chamados</div>
+      <div class="login-sub">Santa Colomba Agropecuária</div>
     </div>
-    <div style="display:flex;flex-direction:column;gap:14px">
-      <div>
-        <div class="form-label">Login</div>
-        <input class="form-input" type="text" id="login-user" placeholder="Seu login" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%">
-      </div>
-      <div>
-        <div class="form-label">Senha</div>
-        <input class="form-input" type="password" id="login-pass" placeholder="Sua senha" onkeydown="if(event.key==='Enter')doLogin()" style="width:100%">
-      </div>
-      <div id="login-err" style="display:none;padding:8px 12px;background:var(--red-bg);border:1px solid #fecaca;border-radius:6px;font-size:12px;color:var(--red)">
-        Login ou senha incorretos.
-      </div>
-      <button class="btn btn-primary" onclick="doLogin()" style="width:100%;padding:11px;font-size:14px;justify-content:center">Entrar</button>
+    <div class="login-field">
+      <div class="login-label">Usuário</div>
+      <input class="login-input" type="text" id="login-user" placeholder="Seu login" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <div style="margin-top:16px;font-size:11px;color:var(--text3);text-align:center">
-      Acesso restrito · Santa Colomba Agropecuária
+    <div class="login-field">
+      <div class="login-label">Senha</div>
+      <input class="login-input" type="password" id="login-pass" placeholder="Sua senha" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div id="login-err" class="login-error">Login ou senha incorretos.</div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+    <div style="text-align:center;margin-top:14px">
+      <a href="#" onclick="event.preventDefault();showToast('Fale com o administrador para redefinir sua senha.')" style="font-size:11px;color:var(--text3)">Esqueci minha senha</a>
+    </div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);text-align:center">
+      <div style="font-size:10px;color:var(--text3)">Acesso restrito · Santa Colomba Agropecuária</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:2px">Versão 3.0</div>
     </div>
   </div>
 </div>

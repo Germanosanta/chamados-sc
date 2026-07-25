@@ -776,8 +776,9 @@ select.filter-select:focus{border-color:var(--accent)}
 .menu-footer-sep{width:1px;height:12px;background:var(--border)}
 .menu-back-btn{
   display:none;flex-shrink:0;
+  height:32px;padding:0 12px;
   background:var(--surface);border:1px solid var(--border);
-  border-radius:8px;padding:6px 12px;font-size:12px;
+  border-radius:var(--radius-sm);font-size:12px;
   font-family:var(--font);font-weight:600;color:var(--text2);
   cursor:pointer;transition:all var(--transition);
   box-shadow:var(--shadow-sm);align-items:center;gap:6px;
