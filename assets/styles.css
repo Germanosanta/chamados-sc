@@ -1063,7 +1063,7 @@ select.filter-select:focus{border-color:var(--accent)}
 }
 .menu-footer-sep{width:1px;height:12px;background:var(--border)}
 .menu-back-btn{
-  display:none;position:fixed;top:16px;left:16px;z-index:492;
+  display:none;flex-shrink:0;
   background:var(--surface);border:1px solid var(--border);
   border-radius:8px;padding:6px 12px;font-size:12px;
   font-family:var(--font);font-weight:600;color:var(--text2);
