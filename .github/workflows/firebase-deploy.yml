@@ -1,0 +1,20 @@
+name: Deploy to Firebase Hosting
+
+# Roda automaticamente a cada push na main. Requer o secret
+# FIREBASE_SERVICE_ACCOUNT configurado no repositório (Settings > Secrets
+# and variables > Actions) — ver instruções no README.
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+          projectId: chamdos-sc
+          channelId: live

@@ -7,7 +7,7 @@
   "theme_color": "#0f172a",
   "icons": [
     {
-      "src": "img/coa.jpeg",
+      "src": "assets/img/coa.jpeg",
       "sizes": "192x192",
       "type": "image/jpeg"
     }
