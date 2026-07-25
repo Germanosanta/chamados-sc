@@ -1,0 +1,5 @@
+/* ── USUÁRIOS
+   O módulo de usuários hoje reaproveita 100% dos componentes genéricos
+   de style.css (data-table, pill, form-*, btn). Nenhuma regra própria
+   ainda — arquivo criado para já existir o ponto de extensão quando
+   surgir CSS específico (ex.: badges de perfil, bloqueio de usuário). */

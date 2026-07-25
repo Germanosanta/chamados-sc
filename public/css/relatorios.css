@@ -1,0 +1,10 @@
+/* ════════════════════════════════════════════
+   AUDIT LOG
+   ════════════════════════════════════════════ */
+.audit-row{
+  display:flex;gap:10px;padding:7px 0;
+  border-bottom:1px solid var(--border);font-size:11px;align-items:flex-start;
+}
+.audit-ts{color:var(--text3);white-space:nowrap;min-width:120px;font-family:var(--font-mono)}
+.audit-actor{font-weight:600;color:var(--accent);min-width:80px}
+.audit-action{color:var(--text2);flex:1}
