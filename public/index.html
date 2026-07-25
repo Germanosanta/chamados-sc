@@ -4,10 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Central de Chamados — Santa Colomba</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/coa.jpeg" type="image/jpeg">
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles -->
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -2432,7 +2434,7 @@
 <div id="login-overlay" style="position:fixed;inset:0;background:#f0f4ff;z-index:500;display:flex;align-items:center;justify-content:center">
   <div style="background:white;border:1px solid var(--border);border-radius:16px;padding:36px 40px;width:380px;max-width:94vw;box-shadow:var(--shadow-lg)">
     <div style="text-align:center;margin-bottom:28px">
-      <img src="coa.jpeg" alt="Santa Colomba Agropecuária" style="display:block;width:100%;max-width:240px;height:auto;margin:0 auto 12px;border-radius:8px">
+      <img src="img/coa.jpeg" alt="Santa Colomba Agropecuária" style="display:block;width:100%;max-width:240px;height:auto;margin:0 auto 12px;border-radius:8px">
       <div style="font-size:18px;font-weight:700;color:var(--text)">Santa Colomba</div>
       <div style="font-size:12px;color:var(--text3);margin-top:2px">Central de Chamados</div>
     </div>
@@ -2456,30 +2458,30 @@
   </div>
 </div>
 
-  <!-- ── CHART.JS (usado por src/dashboard/index.js) -->
+  <!-- ── CHART.JS (usado por js/modules/dashboard/index.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="data/chamados_historico.js"></script>
-  <script src="data/equipamentos.js"></script>
-  <script src="data/match_map.js"></script>
-  <script src="data/equip_idx.js"></script>
+  <script src="js/data/chamados_historico.js"></script>
+  <script src="js/data/equipamentos.js"></script>
+  <script src="js/data/match_map.js"></script>
+  <script src="js/data/equip_idx.js"></script>
 
   <!-- ── CORE -->
-  <script src="src/storage.js"></script>
+  <script src="js/core/storage.js"></script>
 
   <!-- ── MODULES -->
-  <script src="src/usuarios/index.js"></script>
-  <script src="src/dashboard/index.js"></script>
-  <script src="src/chamados/index.js"></script>
-  <script src="src/equipamentos/index.js"></script>
-  <script src="src/relatorios/index.js"></script>
-  <script src="src/config/index.js"></script>
+  <script src="js/modules/usuarios/index.js"></script>
+  <script src="js/modules/dashboard/index.js"></script>
+  <script src="js/modules/chamados/index.js"></script>
+  <script src="js/modules/equipamentos/index.js"></script>
+  <script src="js/modules/relatorios/index.js"></script>
+  <script src="js/modules/config/index.js"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="assets/firebase.js"></script>
+  <script type="module" src="js/firebase/firebase.js"></script>
 
   <!-- ── INIT -->
-  <script src="assets/init.js"></script>
+  <script src="js/core/init.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@ import { initializeApp }                           from "https://www.gstatic.com
     import { getFirestore, collection, doc, setDoc,
              getDoc, getDocs, onSnapshot, serverTimestamp }
                                                        from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-    import FirestoreStorage                           from "../src/firestoreStorage.js";
+    import FirestoreStorage                           from "./firestore.js";
 
     const firebaseConfig = {
       apiKey:            "AIzaSyDalH6I1uHQyW5cfZresj-Q9EieGk58g54",

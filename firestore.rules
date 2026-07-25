@@ -1,0 +1,57 @@
+rules_version = '2';
+
+// ══════════════════════════════════════════════════════════════
+// ATENÇÃO — revisar antes de aplicar (firebase deploy --only firestore:rules)
+//
+// Este arquivo não existia no projeto até agora; as regras reais em produção
+// só existem no console do Firebase e não são conhecidas por este repositório.
+// O app NÃO usa Firebase Auth (login é feito comparando usuário/senha na
+// coleção "usuarios", sem signIn no SDK do Firebase — request.auth é sempre
+// null). Por isso, a regra abaixo replica o único comportamento que faria o
+// app funcionar hoje sem Auth: acesso aberto às 9 coleções usadas.
+//
+// Isso é o mesmo nível de exposição que (provavelmente) já existe hoje no
+// console — não estou apertando nem afrouxando a segurança atual, só
+// documentando em arquivo. NÃO faça deploy deste arquivo sem antes:
+//   1. Confirmar no console do Firebase quais são as regras reais hoje;
+//   2. Decidir se quer manter acesso aberto ou implementar autenticação
+//      real (Firebase Auth) antes de restringir por usuário/perfil.
+// ══════════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /usuarios/{docId} {
+      allow read, write: if true;
+    }
+    match /equipamentos/{docId} {
+      allow read, write: if true;
+    }
+    match /chamados/{docId} {
+      allow read, write: if true;
+    }
+    match /historico/{docId} {
+      allow read, write: if true;
+    }
+    match /pecas/{docId} {
+      allow read, write: if true;
+    }
+    match /movimentacoes/{docId} {
+      allow read, write: if true;
+    }
+    match /auditoria/{docId} {
+      allow read, write: if true;
+    }
+    match /configuracoes/{docId} {
+      allow read, write: if true;
+    }
+    match /tecnicos/{docId} {
+      allow read, write: if true;
+    }
+
+    // Documento de teste de latência (pingFirestore em assets/firebase.js)
+    match /_ping/{docId} {
+      allow read, write: if true;
+    }
+  }
+}
