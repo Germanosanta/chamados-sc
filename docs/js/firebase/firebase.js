@@ -1,7 +1,11 @@
-import { initializeApp }                           from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { initializeApp, deleteApp }                from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
     import { getFirestore, collection, doc, setDoc,
              getDoc, getDocs, onSnapshot, serverTimestamp }
                                                        from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+    import { getAuth, setPersistence, browserSessionPersistence,
+             signInWithEmailAndPassword, signOut, sendPasswordResetEmail,
+             createUserWithEmailAndPassword, updatePassword }
+                                                       from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
     import FirestoreStorage                           from "./firestore.js";
 
     const firebaseConfig = {
@@ -16,6 +20,34 @@ import { initializeApp }                           from "https://www.gstatic.com
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
     FirestoreStorage.configure(db); // src/firestoreStorage.js passa a ser o único módulo que fala com o Firestore
+
+    // ── Firebase Authentication — sessão dura só enquanto a aba fica aberta
+    //    (mesmo comportamento que a sessão baseada em sessionStorage já tinha).
+    const auth = getAuth(app);
+    setPersistence(auth, browserSessionPersistence).catch(e => console.warn('[Firebase] setPersistence falhou:', e.message));
+    window._auth = auth;
+
+    window.fbSignIn = (email, senha) => signInWithEmailAndPassword(auth, email, senha);
+    window.fbSignOut = () => signOut(auth);
+    window.fbSendPasswordReset = (email) => sendPasswordResetEmail(auth, email);
+    // Troca de senha do PRÓPRIO usuário logado (fluxo de troca obrigatória no 1º acesso).
+    window.fbUpdatePassword = (novaSenha) => updatePassword(auth.currentUser, novaSenha);
+
+    // ── Cria a conta de OUTRO usuário sem afetar a sessão do admin logado:
+    //    usa uma instância secundária do app Firebase só para o createUser,
+    //    depois descarta essa instância. Padrão documentado do Firebase para
+    //    esse cenário — não exige Cloud Functions/Admin SDK.
+    window.fbCreateAuthUser = async function(email, senha) {
+      const secondaryApp = initializeApp(firebaseConfig, 'Secondary-' + Date.now());
+      const secondaryAuth = getAuth(secondaryApp);
+      try {
+        const cred = await createUserWithEmailAndPassword(secondaryAuth, email, senha);
+        await signOut(secondaryAuth);
+        return cred.user.uid;
+      } finally {
+        await deleteApp(secondaryApp);
+      }
+    };
 
     // ── Expose db + helpers on window so the main (classic) script can call them
     window._db = db;
@@ -121,24 +153,6 @@ import { initializeApp }                           from "https://www.gstatic.com
       const keptLocal = (Array.isArray(local)?local:[]).filter(l => l && !nums.has(l.num));
       _writeLS(K.chamados, [...remote, ...keptLocal]);
     }
-    // Usuários: como _applyArray, mas preserva a senha local (nunca gravada no Firestore
-    // por segurança) — sem isso, o sync sobrescreveria os usuários sem senha e quebraria o login.
-    function _applyUsers(items) {
-      if (!items.length) return;
-      const local = _readLS(K.users, []);
-      const localById = {};
-      (Array.isArray(local)?local:[]).forEach(u => { if (u && u.id) localById[u.id] = u; });
-      const remote = items.map(it => {
-        const rec = _clean(it);
-        if (rec.senha === undefined && localById[rec.id] && localById[rec.id].senha !== undefined) {
-          rec.senha = localById[rec.id].senha;
-        }
-        return rec;
-      });
-      const ids = new Set(remote.map(r => r.id));
-      const keptLocal = (Array.isArray(local)?local:[]).filter(l => l && !ids.has(l.id));
-      _writeLS(K.users, [...remote, ...keptLocal]);
-    }
     // Histórico: um doc por chamado com {eventos, encerramento} → separa nos 2 caches.
     function _applyHistorico(items) {
       if (!items.length) return;
@@ -186,7 +200,7 @@ import { initializeApp }                           from "https://www.gstatic.com
     const SYNC_JOBS = [
       [COL.CHAMADOS,      _applyChamados],
       [COL.HISTORICO,     _applyHistorico],
-      [COL.USUARIOS,      _applyUsers],
+      [COL.USUARIOS,      items => _applyArray(items, K.users, 'id')],
       [COL.PECAS,         items => _applyArray(items, K.pecas, 'id')],
       [COL.MOVIMENTACOES, items => _applyArray(items, K.movs,  'id')],
       [COL.EQUIPAMENTOS,  items => _applyMap(items, K.cadEq)],
@@ -212,6 +226,7 @@ import { initializeApp }                           from "https://www.gstatic.com
 
     // ── Listeners em tempo real → cache sempre reflete o Firestore (fonte principal).
     //    Auditoria fica de fora (log crescente) — sincroniza sob demanda via fsSyncAll.
+    let _realtimeUnsubs = [];
     window.fsStartRealtime = function() {
       if (window._fsRealtimeOn) return;
       window._fsRealtimeOn = true;
@@ -221,11 +236,21 @@ import { initializeApp }                           from "https://www.gstatic.com
         setTimeout(() => { pending = false; if (typeof refreshAfterAction === 'function') refreshAfterAction(); }, 250);
       };
       for (const [col, apply] of SYNC_JOBS) {
-        FirestoreStorage.escutarColecao(col, items => {
+        const unsub = FirestoreStorage.escutarColecao(col, items => {
           try { apply(items); } catch(e) { console.warn('[Firebase] realtime', col, e.message); }
           relay();
         });
+        _realtimeUnsubs.push(unsub);
       }
+    };
+
+    // ── Encerra os listeners (chamado no logout). Sem isso, um login seguinte
+    //    na mesma aba não reativaria o tempo real (guard _fsRealtimeOn ficaria
+    //    travado em true com os listeners antigos já invalidados pelo signOut).
+    window.fsStopRealtime = function() {
+      _realtimeUnsubs.forEach(unsub => { try { unsub(); } catch(e) {} });
+      _realtimeUnsubs = [];
+      window._fsRealtimeOn = false;
     };
 
     // ════════════════════════════════════════════════════════════
@@ -248,7 +273,7 @@ import { initializeApp }                           from "https://www.gstatic.com
         wrapped._fbHooked = true;
         window[name] = wrapped;
       }
-      rewrap('saveUsers', u => (u||[]).forEach(usr => { if (usr && usr.id) { const { senha, ...s } = usr; window.fsSave(COL.USUARIOS, String(usr.id), s); } }));
+      rewrap('saveUsers', u => (u||[]).forEach(usr => { if (usr && usr.id) window.fsSave(COL.USUARIOS, String(usr.id), usr); }));
     })();
 
     // ── Status indicator in topbar
@@ -281,10 +306,16 @@ import { initializeApp }                           from "https://www.gstatic.com
     window.addEventListener('load', () => {
       pingFirestore();
       setInterval(pingFirestore, 30000);
-      // Firestore é a fonte principal: puxa tudo p/ o cache e liga o tempo real.
-      window.fsSyncAll()
-        .then(() => window.fsStartRealtime())
-        .catch(e => { console.warn('[Firebase] fsSyncAll rejeitou:', e.message); window.fsStartRealtime(); });
+      // As regras do Firestore agora exigem login (request.auth != null) para ler
+      // qualquer coleção real. Só dá pra sincronizar aqui se já existir uma sessão
+      // (caso de F5 na mesma aba — o Firebase Auth restaura o login sozinho via
+      // persistência de sessão). Login novo dispara o sync via fbSyncAfterLogin()
+      // (js/modules/config/index.js), chamado dentro de doLogin().
+      if (typeof getSession === 'function' && getSession()) {
+        window.fsSyncAll()
+          .then(() => window.fsStartRealtime())
+          .catch(e => { console.warn('[Firebase] fsSyncAll rejeitou:', e.message); window.fsStartRealtime(); });
+      }
     });
 
     console.log('[Firebase] SDK carregado — projeto: chamdos-sc');

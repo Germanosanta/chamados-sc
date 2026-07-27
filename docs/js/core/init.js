@@ -12,14 +12,11 @@ initAbertoBadge();
 loadEmailConfig();
 filteredRecords=[...allRecords()];
 
-// ── DEFAULT ADMIN (first run)
-// Usado por getUsers() em js/modules/usuarios/index.js quando ainda não há
-// nenhum usuário salvo no localStorage.
-const DEFAULT_USERS = [
-  {id:'u1',nome:'Administrador',login:'admin',senha:'admin123',email:'admin@santacolomba.com.br',cargo:'Administrador',perfil:'admin',status:'Ativo',perms:null},
-  {id:'u2',nome:'Guilherme Otávio Vilas Boas Montalvão',login:'guilherme',senha:'guilherme123',email:'guilherme@santacolomba.com.br',cargo:'Técnico',perfil:'tecnico',status:'Ativo',perms:null},
-  {id:'u3',nome:'Walison Almeida Santos Lima',login:'walison',senha:'walison123',email:'walison@santacolomba.com.br',cargo:'Técnico',perfil:'tecnico',status:'Ativo',perms:null},
-];
+// ── Usado por getUsers() em js/modules/usuarios/index.js só como placeholder
+// antes do primeiro sync com o Firestore (fonte real dos usuários agora que o
+// login é feito via Firebase Authentication — não existe mais "usuário seed"
+// com senha embutida no código).
+const DEFAULT_USERS = [];
 
 // Perfil permissions
 const PERFIL_LABEL = {admin:'Administrador',supervisor:'Supervisor',tecnico:'Técnico',visualizador:'Visualizador'};

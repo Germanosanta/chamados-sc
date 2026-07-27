@@ -165,6 +165,8 @@ function fbSyncAfterLogin() {
   setTimeout(() => {
     if (typeof window.fsSyncAll === 'function') {
       window.fsSyncAll()
+        .then(() => { if (typeof window.fsStartRealtime === 'function') window.fsStartRealtime(); })
+        .then(() => { if (typeof criarLoginsFaltantes === 'function') return criarLoginsFaltantes(); })
         .then(() => console.log('[Firebase] Sync pós-login concluído'))
         .catch(e => console.warn('[Firebase] Sync pós-login falhou:', e.message));
     }

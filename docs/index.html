@@ -1028,12 +1028,13 @@
         <input class="form-input" type="text" id="u-login" placeholder="login">
       </div>
       <div class="form-field">
-        <div class="form-label">Senha <span class="req">*</span></div>
+        <div class="form-label">Senha <span class="req" id="u-senha-req">*</span></div>
         <input class="form-input" type="password" id="u-senha" placeholder="Senha">
+        <button type="button" class="btn btn-ghost" id="u-senha-reset-btn" style="display:none;margin-top:6px" onclick="enviarResetSenhaUsuario()">Enviar link de redefinição de senha</button>
       </div>
       <div class="form-field">
-        <div class="form-label">E-mail</div>
-        <input class="form-input" type="email" id="u-email" placeholder="email@empresa.com.br">
+        <div class="form-label">E-mail <span class="req">*</span></div>
+        <input class="form-input" type="email" id="u-email" placeholder="email@empresa.com.br" required>
       </div>
       <div class="form-field">
         <div class="form-label">Cargo</div>
@@ -2474,6 +2475,26 @@
       <div style="font-size:10px;color:var(--text3)">Acesso restrito · Santa Colomba Agropecuária</div>
       <div style="font-size:10px;color:var(--text3);margin-top:2px">Versão 3.0</div>
     </div>
+  </div>
+</div>
+
+<!-- ── TROCA DE SENHA OBRIGATÓRIA (1º acesso pós-migração para Firebase Auth) -->
+<div id="troca-senha-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-title">Defina sua nova senha</div>
+      <div class="login-sub">Sua senha temporária precisa ser trocada neste primeiro acesso.</div>
+    </div>
+    <div class="login-field">
+      <div class="login-label">Nova senha</div>
+      <input class="login-input" type="password" id="troca-senha-nova" placeholder="Mínimo 6 caracteres" onkeydown="if(event.key==='Enter')concluirTrocaSenhaObrigatoria()">
+    </div>
+    <div class="login-field">
+      <div class="login-label">Confirmar nova senha</div>
+      <input class="login-input" type="password" id="troca-senha-confirma" placeholder="Repita a nova senha" onkeydown="if(event.key==='Enter')concluirTrocaSenhaObrigatoria()">
+    </div>
+    <div id="troca-senha-err" class="login-error">As senhas não coincidem ou são muito curtas (mínimo 6 caracteres).</div>
+    <button class="login-btn" onclick="concluirTrocaSenhaObrigatoria()">Salvar nova senha e entrar</button>
   </div>
 </div>
 

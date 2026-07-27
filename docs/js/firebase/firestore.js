@@ -11,7 +11,7 @@
 
 import {
   collection, doc, setDoc, getDoc, getDocs, deleteDoc,
-  onSnapshot, serverTimestamp, query, orderBy, limit, startAfter, writeBatch,
+  onSnapshot, serverTimestamp, query, where, orderBy, limit, startAfter, writeBatch,
 } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
 export const COL = {
@@ -57,6 +57,17 @@ async function _getOne(col, id) {
     const snap = await getDoc(doc(_db, col, String(id)));
     return { ok:true, data: snap.exists() ? { id: snap.id, ...snap.data() } : null, error:null };
   } catch (e) { return _err('_getOne', col, id)(e); }
+}
+
+// Busca documentos de uma coleção por igualdade num campo — usado no login
+// para achar o doc antigo de "usuarios" pelo e-mail quando o id do doc não
+// bate com o uid do Firebase Auth (ver docs/js/modules/usuarios/index.js).
+async function _buscarPorCampo(col, campo, valor) {
+  if (!_ready()) return { ok:false, data:null, error:'db não configurado' };
+  try {
+    const snap = await getDocs(query(collection(_db, col), where(campo, '==', valor)));
+    return { ok:true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })), error:null };
+  } catch (e) { return _err('_buscarPorCampo', col, campo)(e); }
 }
 
 // Lista uma coleção inteira ou paginada. opts: { pageSize, cursor, orderByField }
@@ -211,6 +222,7 @@ export const listarColecao     = _listPaginated;
 export const excluirDocumento  = _deleteOne;
 export const gravarEmLote      = _batchWrite;
 export const escutarColecao    = _listen;
+export const buscarPorCampo    = _buscarPorCampo;
 
 const FirestoreStorage = {
   configure, COL,
@@ -224,6 +236,7 @@ const FirestoreStorage = {
   listarAuditoria, registrarAuditoria,
   listarConfiguracoes, salvarConfiguracao,
   salvarDocumento, lerDocumento, listarColecao, excluirDocumento, gravarEmLote, escutarColecao,
+  buscarPorCampo,
 };
 if (typeof window !== 'undefined') window.FirestoreStorage = FirestoreStorage;
 export default FirestoreStorage;

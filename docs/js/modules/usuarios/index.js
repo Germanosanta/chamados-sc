@@ -3,7 +3,10 @@
 // Santa Colomba — Central de Chamados SC
 // ══════════════════════════════════════════
 
-function getUsers(){ try{ const u=JSON.parse(localStorage.getItem(USERS_KEY)); return u&&u.length?u:DEFAULT_USERS; }catch(e){ return DEFAULT_USERS; } }
+// Docs antigos marcados migrado:true (pela migração p/ Firebase Auth) continuam
+// no Firestore/cache — nada é apagado — mas ficam de fora da lista ativa do
+// app: já foram substituídos por um doc novo (id = uid do Firebase Auth).
+function getUsers(){ try{ const u=JSON.parse(localStorage.getItem(USERS_KEY)); const list=u&&u.length?u:DEFAULT_USERS; return list.filter(x=>!x.migrado); }catch(e){ return DEFAULT_USERS; } }
 
 function saveUsers(u){ localStorage.setItem(USERS_KEY,JSON.stringify(u)); }
 
@@ -15,17 +18,88 @@ function setSession(u){ sessionStorage.setItem(SESSION_KEY,JSON.stringify(u)); }
 
 function clearSession(){ sessionStorage.removeItem(SESSION_KEY); }
 
-function doLogin() {
+// Usuário cujo perfil já foi conferido (Firebase Auth ok, status Ativo) mas
+// que ainda precisa trocar a senha temporária antes de entrar de fato
+// (flag usuarios/{uid}.precisaTrocarSenha, setada pela migração).
+let _pendingLoginUser = null;
+
+// Login é feito via Firebase Authentication (e-mail/senha). Como a tela pede
+// um "usuário" (não e-mail), primeiro resolvemos login→e-mail pela coleção
+// pública "logins" (só {email, uid}, leitura aberta — necessária pré-auth),
+// depois autenticamos de verdade e buscamos o perfil em usuarios/{uid}.
+async function doLogin() {
   const login = document.getElementById('login-user').value.trim().toLowerCase();
   const senha = document.getElementById('login-pass').value;
   const errEl = document.getElementById('login-err');
-  const users = getUsers();
-  const u = users.find(u => u.login.toLowerCase()===login && u.senha===senha && u.status==='Ativo');
-  if (!u) { audit('login_falhou', `Tentativa de login inválida: ${login}`, ''); errEl.style.display='block'; return; }
-  errEl.style.display='none';
+  try {
+    const loginDoc = await window.fsGet('logins', login);
+    // Se ainda não existe logins/{login} (ex.: 1º login depois de configurar
+    // o Firebase Auth manualmente, antes de "logins" ser criada/preenchida),
+    // mas o que foi digitado já é um e-mail, autentica direto com ele — evita
+    // depender de "logins" já existir para o primeiríssimo acesso.
+    const emailParaLogin = (loginDoc && loginDoc.email) ? loginDoc.email
+      : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(login) ? login : null);
+    if (!emailParaLogin) throw new Error('login desconhecido');
+    const cred = await window.fbSignIn(emailParaLogin, senha);
+    let perfil = await window.fsGet('usuarios', cred.user.uid);
+    if (!perfil) {
+      // Doc de "usuarios" criado manualmente com um id diferente do uid do
+      // Firebase Auth (ex.: conta configurada direto no console) — acha o
+      // doc antigo pelo e-mail e copia para o id certo (uid), 1x por conta.
+      perfil = await autocorrigirUsuarioPorEmail(cred.user.uid, cred.user.email);
+    }
+    if (!perfil || perfil.status !== 'Ativo') {
+      await window.fbSignOut();
+      throw new Error('perfil inexistente ou inativo');
+    }
+    const u = { id: cred.user.uid, ...perfil };
+    errEl.style.display='none';
+    if (u.precisaTrocarSenha) {
+      // Conta migrada com senha temporária — bloqueia a entrada até trocar.
+      _pendingLoginUser = u;
+      document.getElementById('login-overlay').style.display='none';
+      document.getElementById('troca-senha-overlay').style.display='flex';
+      return;
+    }
+    finalizarLogin(u);
+  } catch (e) {
+    audit('login_falhou', `Tentativa de login inválida: ${login}`, '');
+    errEl.style.display='block';
+  }
+}
+
+// Autocorreção: quando usuarios/{uid do Firebase Auth} não existe (conta
+// criada manualmente com outro id), acha o doc antigo pelo e-mail e cria uma
+// cópia sob o id certo (perfil/status/perms idênticos — a regra do Firestore
+// não deixa mudar nada nesse passo), marcando o doc antigo como migrado.
+// Sem isso, nem o login nem as permissões (souAdmin/estouAtivo, que buscam
+// usuarios/{uid}) funcionariam pra contas configuradas fora do app.
+async function autocorrigirUsuarioPorEmail(uid, email) {
+  if (!window.FirestoreStorage || !email) return null;
+  try {
+    const res = await window.FirestoreStorage.buscarPorCampo('usuarios', 'email', email);
+    if (!res.ok) return null;
+    const antigo = res.data.find(d => !d.migrado && d.id !== uid);
+    if (!antigo) return null;
+    const { id: idAntigo, migrado, migradoParaUid, ...dadosAntigos } = antigo;
+    // perms precisa ser null (nunca undefined) — doc criado manualmente pode
+    // não ter esse campo, e o Firestore recusa gravar valor undefined.
+    const novoDado = { ...dadosAntigos, perms: dadosAntigos.perms ?? null, migradoDeId: idAntigo };
+    const criado = await window.fsSave('usuarios', uid, novoDado);
+    if (!criado.ok) return null;
+    await window.fsSave('usuarios', idAntigo, { migrado: true, migradoParaUid: uid });
+    return novoDado;
+  } catch (e) {
+    console.warn('[Usuarios] autocorrigirUsuarioPorEmail falhou:', e.message);
+    return null;
+  }
+}
+
+function finalizarLogin(u) {
   setSession(u);
   audit('login', `Login: ${u.login}`, '');
   document.getElementById('login-overlay').style.display='none';
+  document.getElementById('troca-senha-overlay').style.display='none';
   document.getElementById('topbar-user').textContent = u.nome.split(' ')[0] + ' · ' + PERFIL_LABEL[u.perfil];
   aplicarNavPerms();
   fbSyncAfterLogin(); // pull latest data from Firestore
@@ -33,8 +107,58 @@ function doLogin() {
   mostrarMenu();
 }
 
-function doLogout() {
+async function concluirTrocaSenhaObrigatoria() {
+  const nova = document.getElementById('troca-senha-nova').value;
+  const conf = document.getElementById('troca-senha-confirma').value;
+  const errEl = document.getElementById('troca-senha-err');
+  if (!_pendingLoginUser || nova.length < 6 || nova !== conf) {
+    errEl.textContent = 'As senhas não coincidem ou são muito curtas (mínimo 6 caracteres).';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+  try {
+    await window.fbUpdatePassword(nova);
+    await window.fsSave('usuarios', _pendingLoginUser.id, { precisaTrocarSenha: false });
+    const u = { ..._pendingLoginUser, precisaTrocarSenha: false };
+    _pendingLoginUser = null;
+    document.getElementById('troca-senha-nova').value='';
+    document.getElementById('troca-senha-confirma').value='';
+    finalizarLogin(u);
+  } catch (e) {
+    errEl.textContent = 'Falha ao trocar a senha: ' + (e.message || e.code || 'tente novamente.');
+    errEl.style.display='block';
+  }
+}
+
+// Backfill: garante que todo doc de "usuarios" tenha o correspondente em
+// "logins" (login->email/uid) — necessário para contas criadas fora do app
+// (ex.: direto no console do Firebase). Só cria o que estiver AUSENTE, nunca
+// sobrescreve nem duplica quem já existe. Escrita em "logins" exige admin
+// (regra do Firestore), por isso só roda para quem já está logado como admin.
+async function criarLoginsFaltantes() {
+  if (currentUser()?.perfil !== 'admin') return;
+  if (!window.FirestoreStorage) return;
+  try {
+    const usuariosRes = await window.FirestoreStorage.listarColecao('usuarios');
+    const loginsRes = await window.FirestoreStorage.listarColecao('logins');
+    if (!usuariosRes.ok || !loginsRes.ok) return;
+    const loginsExistentes = new Set(loginsRes.data.items.map(d => d.id));
+    for (const u of usuariosRes.data.items) {
+      if (u.migrado) continue; // doc antigo já substituído, não precisa de login
+      const login = (u.login || '').trim().toLowerCase();
+      if (!login || !u.email || loginsExistentes.has(login)) continue;
+      await window.fsSave('logins', login, { email: u.email, uid: u.id });
+    }
+  } catch (e) {
+    console.warn('[Usuarios] criarLoginsFaltantes falhou:', e.message);
+  }
+}
+
+async function doLogout() {
   audit('logout', `Logout: ${currentUser()?.login||''}`, '');
+  try { await window.fbSignOut(); } catch(e) {}
+  if (typeof window.fsStopRealtime === 'function') window.fsStopRealtime();
   clearSession();
   // Hide menu overlay + reset app visibility for next login
   const mo=document.getElementById('menu-overlay'); if(mo) mo.classList.remove('show');
@@ -106,7 +230,11 @@ function abrirFormUsuario() {
   document.getElementById('u-nome').value='';
   document.getElementById('u-login').value='';
   document.getElementById('u-senha').value='';
+  document.getElementById('u-senha').style.display='block';
+  document.getElementById('u-senha-req').style.display='inline';
+  document.getElementById('u-senha-reset-btn').style.display='none';
   document.getElementById('u-email').value='';
+  document.getElementById('u-email').disabled=false;
   document.getElementById('u-cargo').value='';
   document.getElementById('u-perfil').value='tecnico';
   document.getElementById('u-status').value='Ativo';
@@ -120,44 +248,80 @@ function fecharFormUsuario() {
   document.getElementById('form-usuario-card').style.display='none';
 }
 
-function salvarUsuario() {
+async function salvarUsuario() {
   // Só administrador pode salvar (mesma regra que já restringe o acesso à
   // tela inteira em renderUsuarios() — checagem redundante aqui por segurança).
   if (currentUser()?.perfil !== 'admin') { showToast('Apenas administradores podem salvar usuários.'); return; }
 
   const nome  = document.getElementById('u-nome').value.trim();
-  const login = document.getElementById('u-login').value.trim();
-  const senha = document.getElementById('u-senha').value;
+  const login = document.getElementById('u-login').value.trim().toLowerCase();
+  const email = document.getElementById('u-email').value.trim();
+  const senha = document.getElementById('u-senha').value; // só existe/é usado na criação
   const perfil= document.getElementById('u-perfil').value;
-  if(!nome||!login||!senha) { showToast('Nome, login e senha são obrigatórios'); return; }
-  if(senha.length<6) { showToast('A senha deve ter no mínimo 6 caracteres'); return; }
+  const id = document.getElementById('u-id').value;
+  if(!nome||!login||!email||(!id&&!senha)) { showToast('Nome, login, e-mail e senha são obrigatórios'); return; }
+  if(!id && senha.length<6) { showToast('A senha deve ter no mínimo 6 caracteres'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('E-mail inválido'); return; }
   if(!['admin','supervisor','tecnico','visualizador'].includes(perfil)) { showToast('Perfil inválido'); return; }
 
   const users = getUsers();
-  const id = document.getElementById('u-id').value;
-  if (users.some(u => u.login.toLowerCase()===login.toLowerCase() && u.id!==id)) {
+  if (users.some(u => u.login.toLowerCase()===login && u.id!==id)) {
     showToast('Já existe um usuário com esse login'); return;
   }
   const perms = [...document.querySelectorAll('#perms-grid input[type=checkbox]:checked')].map(cb=>cb.value);
-  const userData = {nome,login,senha,
-    email:document.getElementById('u-email').value,
+  const userData = {nome,login,email,
     cargo:document.getElementById('u-cargo').value,
     perfil,status:document.getElementById('u-status').value,
     perms: perms.length ? perms : null};
+
   if (id) {
+    const antigo = users.find(u=>u.id===id);
     const idx = users.findIndex(u=>u.id===id);
     if(idx>=0) users[idx] = {...users[idx],...userData};
-  } else {
-    const criador = currentUser();
-    users.push({id:'u'+Date.now(),...userData,
-      criadoPor: criador?.nome || criador?.login || 'Sistema',
-      criadoEm: new Date().toISOString()});
+    saveUsers(users);
+    window.fsSave('logins', login, { email, uid:id }); // garante logins/{login} criado/atualizado sempre
+    if (antigo && antigo.login !== login) {
+      window.FirestoreStorage?.excluirDocumento('logins', antigo.login);
+    }
+    audit('editou', `Usuário ${login} atualizado`, '');
+    fecharFormUsuario();
+    renderUsuarios();
+    showToast('Usuário atualizado!');
+    return;
   }
+
+  // Criação: o Firebase Auth precisa da conta antes de gravar o doc no Firestore
+  // (o id do usuário passa a ser o UID gerado pelo Auth).
+  let uid;
+  try {
+    uid = await window.fbCreateAuthUser(email, senha);
+  } catch (e) {
+    if (e.code === 'auth/email-already-in-use') showToast('Este e-mail já está cadastrado.');
+    else showToast('Falha ao criar a conta: ' + (e.message || e.code || 'erro desconhecido'));
+    return;
+  }
+  const criador = currentUser();
+  users.push({id:uid,...userData,
+    criadoPor: criador?.nome || criador?.login || 'Sistema',
+    criadoEm: new Date().toISOString()});
   saveUsers(users);
-  audit('editou', `Usuário ${login} cadastrado/atualizado`, '');
+  window.fsSave('logins', login, { email, uid });
+  audit('editou', `Usuário ${login} cadastrado`, '');
   fecharFormUsuario();
   renderUsuarios();
-  showToast(id ? 'Usuário atualizado!' : 'Usuário cadastrado com sucesso!');
+  showToast('Usuário cadastrado com sucesso!');
+}
+
+async function enviarResetSenhaUsuario() {
+  const id = document.getElementById('u-id').value;
+  const u = getUsers().find(x=>x.id===id);
+  if (!u || !u.email) { showToast('Usuário sem e-mail cadastrado.'); return; }
+  try {
+    await window.fbSendPasswordReset(u.email);
+    showToast('Link de redefinição enviado para ' + u.email);
+  } catch (e) {
+    showToast('Falha ao enviar e-mail de redefinição.');
+  }
 }
 
 function editarUsuario(id) {
@@ -166,8 +330,13 @@ function editarUsuario(id) {
   document.getElementById('u-id').value=u.id;
   document.getElementById('u-nome').value=u.nome;
   document.getElementById('u-login').value=u.login;
-  document.getElementById('u-senha').value=u.senha;
+  // Senha não é gerenciada aqui: Firebase Auth guarda a senha, o admin não
+  // consegue trocá-la diretamente (sem Admin SDK) — só enviar um link de reset.
+  document.getElementById('u-senha').style.display='none';
+  document.getElementById('u-senha-req').style.display='none';
+  document.getElementById('u-senha-reset-btn').style.display='inline-flex';
   document.getElementById('u-email').value=u.email||'';
+  document.getElementById('u-email').disabled=true; // trocar e-mail exige Admin SDK, fica fixo após criado
   document.getElementById('u-cargo').value=u.cargo||'';
   document.getElementById('u-perfil').value=u.perfil;
   document.getElementById('u-status').value=u.status;

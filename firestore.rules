@@ -1,55 +1,115 @@
 rules_version = '2';
 
 // ══════════════════════════════════════════════════════════════
-// ATENÇÃO — revisar antes de aplicar (firebase deploy --only firestore:rules)
+// O app usa Firebase Authentication (e-mail/senha) para login — request.auth
+// deixou de ser sempre null. Continuamos SEM Cloud Functions/custom claims
+// (plano gratuito): o papel de cada usuário (perfil/status) mora no próprio
+// Firestore, em usuarios/{uid} (uid = UID do Firebase Auth), e as regras
+// abaixo usam get()/exists() nesse doc para decidir permissão — é o padrão
+// "role stored in Firestore, checked via get()", 100% compatível com o
+// plano Spark (sem custo).
 //
-// Este arquivo não existia no projeto até agora; as regras reais em produção
-// só existem no console do Firebase e não são conhecidas por este repositório.
-// O app NÃO usa Firebase Auth (login é feito comparando usuário/senha na
-// coleção "usuarios", sem signIn no SDK do Firebase — request.auth é sempre
-// null). Por isso, a regra abaixo replica o único comportamento que faria o
-// app funcionar hoje sem Auth: acesso aberto às 9 coleções usadas.
+// "logins/{login}" é uma coleção auxiliar só com { email, uid }, usada para
+// resolver usuário→e-mail ANTES do login (quando ainda não há request.auth),
+// já que o app loga por nome de usuário, não por e-mail. Não é sensível
+// (login e e-mail já eram visíveis dentro do app).
 //
-// Isso é o mesmo nível de exposição que (provavelmente) já existe hoje no
-// console — não estou apertando nem afrouxando a segurança atual, só
-// documentando em arquivo. NÃO faça deploy deste arquivo sem antes:
-//   1. Confirmar no console do Firebase quais são as regras reais hoje;
-//   2. Decidir se quer manter acesso aberto ou implementar autenticação
-//      real (Firebase Auth) antes de restringir por usuário/perfil.
+// NÃO faça deploy sem antes rodar `firebase deploy --only firestore:rules`
+// e conferir no console que o bootstrap manual (primeiro admin) já foi
+// feito — ver README/plano de migração.
 // ══════════════════════════════════════════════════════════════
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    match /usuarios/{docId} {
-      allow read, write: if true;
-    }
-    match /equipamentos/{docId} {
-      allow read, write: if true;
-    }
-    match /chamados/{docId} {
-      allow read, write: if true;
-    }
-    match /historico/{docId} {
-      allow read, write: if true;
-    }
-    match /pecas/{docId} {
-      allow read, write: if true;
-    }
-    match /movimentacoes/{docId} {
-      allow read, write: if true;
-    }
-    match /auditoria/{docId} {
-      allow read, write: if true;
-    }
-    match /configuracoes/{docId} {
-      allow read, write: if true;
-    }
-    match /tecnicos/{docId} {
-      allow read, write: if true;
+    function souAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.perfil == 'admin';
     }
 
-    // Documento de teste de latência (pingFirestore em assets/firebase.js)
+    function estouAtivo() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid))
+        && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.status == 'Ativo';
+    }
+
+    match /usuarios/{uid} {
+      // Lê o próprio doc; lê qualquer doc cujo e-mail seja o mesmo do token
+      // autenticado (autocorreção de doc antigo com id diferente do uid do
+      // Firebase Auth — ver doLogin() em usuarios/index.js); ou estar ativo.
+      allow read: if request.auth != null
+        && (request.auth.uid == uid
+            || resource.data.email == request.auth.token.email
+            || estouAtivo());
+
+      allow create: if souAdmin()
+        // Autocorreção (1x por conta): cria o PRÓPRIO doc (uid = quem está
+        // logado) copiando perfil/status/perms exatamente de um doc antigo
+        // cujo e-mail bate com o do token — nunca dá pra inventar perfil/
+        // status/perms novos por aqui, só reproduzir o que o doc antigo já
+        // tinha sob a chave certa (uid do Firebase Auth).
+        || (request.auth != null && request.auth.uid == uid
+            && request.resource.data.migradoDeId is string
+            && exists(/databases/$(database)/documents/usuarios/$(request.resource.data.migradoDeId))
+            && get(/databases/$(database)/documents/usuarios/$(request.resource.data.migradoDeId)).data.email == request.auth.token.email
+            && request.resource.data.perfil == get(/databases/$(database)/documents/usuarios/$(request.resource.data.migradoDeId)).data.perfil
+            && request.resource.data.status == get(/databases/$(database)/documents/usuarios/$(request.resource.data.migradoDeId)).data.status
+            && request.resource.data.perms == get(/databases/$(database)/documents/usuarios/$(request.resource.data.migradoDeId)).data.perms);
+
+      allow delete: if souAdmin();
+
+      // Update: admin pode tudo. Duas exceções pontuais para quem não é
+      // admin, sempre restritas a exatamente esses campos (hasOnly):
+      //  1) desligar a própria flag precisaTrocarSenha (troca de senha
+      //     obrigatória no 1º acesso pós-migração);
+      //  2) marcar um doc antigo (mesmo e-mail do token) como migrado,
+      //     parte da autocorreção acima — só aponta migradoParaUid para o
+      //     PRÓPRIO uid, nunca para outra conta.
+      // (_updatedAt entra porque window.fsSave sempre carimba esse campo —
+      // ver _setMerge em js/firebase/firestore.js.)
+      allow update: if souAdmin()
+        || (request.auth != null && request.auth.uid == uid
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['precisaTrocarSenha', '_updatedAt'])
+            && request.resource.data.precisaTrocarSenha == false)
+        || (request.auth != null && resource.data.email == request.auth.token.email
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['migrado', 'migradoParaUid', '_updatedAt'])
+            && request.resource.data.migrado == true
+            && request.resource.data.migradoParaUid == request.auth.uid);
+    }
+
+    match /logins/{loginId} {
+      allow read: if true; // só login->email, necessário pré-login (resolver usuário→e-mail)
+      allow write: if souAdmin();
+    }
+
+    match /equipamentos/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /chamados/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /historico/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /pecas/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /movimentacoes/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /auditoria/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /configuracoes/{docId} {
+      allow read, write: if estouAtivo();
+    }
+    match /tecnicos/{docId} {
+      allow read, write: if estouAtivo();
+    }
+
+    // Documento de teste de latência (pingFirestore em js/firebase/firebase.js)
+    // roda antes do login, por isso fica aberto — não expõe nada sensível.
     match /_ping/{docId} {
       allow read, write: if true;
     }

@@ -16,3 +16,7 @@
 # Node (se usar ferramentas de build no futuro)
 node_modules/
 dist/
+
+# Migração de usuários (scripts/migrar-usuarios-auth.js) — nunca commitar
+scripts/senhas-temporarias-*.csv
+*firebase-adminsdk*.json
