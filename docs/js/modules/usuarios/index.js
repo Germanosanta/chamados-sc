@@ -41,6 +41,10 @@ async function doLogin() {
       : (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(login) ? login : null);
     if (!emailParaLogin) throw new Error('login desconhecido');
     const cred = await window.fbSignIn(emailParaLogin, senha);
+    // Aguarda o token do Firebase Auth antes de QUALQUER leitura/gravação no
+    // Firestore — evita "Missing or insufficient permissions" por
+    // request.auth ainda não propagado logo depois da autenticação.
+    await cred.user.getIdToken(true);
     let perfil = await window.fsGet('usuarios', cred.user.uid);
     if (!perfil) {
       // Doc de "usuarios" criado manualmente com um id diferente do uid do
@@ -48,7 +52,8 @@ async function doLogin() {
       // doc antigo pelo e-mail e copia para o id certo (uid), 1x por conta.
       perfil = await autocorrigirUsuarioPorEmail(cred.user.uid, cred.user.email);
     }
-    if (!perfil || perfil.status !== 'Ativo') {
+    const statusOk = perfil && String(perfil.status || '').toLowerCase() === 'ativo';
+    if (!statusOk) {
       await window.fbSignOut();
       throw new Error('perfil inexistente ou inativo');
     }

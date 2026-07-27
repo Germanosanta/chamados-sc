@@ -146,7 +146,13 @@ function saveAudit(v)  {
   if(v.length>2000)v=v.slice(-2000);
   localStorage.setItem(AUDIT_KEY, JSON.stringify(v));                // cache
   const last=v[v.length-1];                                          // grava só a entrada nova (log append-only)
-  if (last) _fbCall('registrarAuditoria', () => window.FirestoreStorage.registrarAuditoria(last));
+  // Só tenta gravar no Firestore se já existir um usuário autenticado no
+  // Firebase Auth (window._auth, exposto por js/firebase/firebase.js) —
+  // evita o erro "Missing or insufficient permissions" quando audit() é
+  // chamado antes/sem autenticação (ex.: tentativa de login que falhou).
+  if (last && window._auth?.currentUser) {
+    _fbCall('registrarAuditoria', () => window.FirestoreStorage.registrarAuditoria(last));
+  }
 }
 function audit(tipo,detalhe,chamado) {
   const u=currentUser();
