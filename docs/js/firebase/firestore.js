@@ -47,7 +47,7 @@ async function _setMerge(col, id, data) {
   if (!_ready() || id == null || id === '') return { ok:false, data:null, error:'db não configurado ou id ausente' };
   try {
     await setDoc(doc(_db, col, String(id)), { ...data, _updatedAt: serverTimestamp() }, { merge:true });
-    return { ok:true, data:{ id, ...data }, error:null };
+    return { ok:true, data:{ ...data, id }, error:null };
   } catch (e) { return _err('_setMerge', col, id)(e); }
 }
 
@@ -55,7 +55,10 @@ async function _getOne(col, id) {
   if (!_ready()) return { ok:false, data:null, error:'db não configurado' };
   try {
     const snap = await getDoc(doc(_db, col, String(id)));
-    return { ok:true, data: snap.exists() ? { id: snap.id, ...snap.data() } : null, error:null };
+    // ...snap.data() vem ANTES: alguns docs antigos têm um campo "id" próprio
+    // (gravado por engano, às vezes com valor desatualizado) — o id de
+    // verdade do documento (snap.id) tem que vencer sempre, por último.
+    return { ok:true, data: snap.exists() ? { ...snap.data(), id: snap.id } : null, error:null };
   } catch (e) { return _err('_getOne', col, id)(e); }
 }
 
@@ -66,7 +69,7 @@ async function _buscarPorCampo(col, campo, valor) {
   if (!_ready()) return { ok:false, data:null, error:'db não configurado' };
   try {
     const snap = await getDocs(query(collection(_db, col), where(campo, '==', valor)));
-    return { ok:true, data: snap.docs.map(d => ({ id: d.id, ...d.data() })), error:null };
+    return { ok:true, data: snap.docs.map(d => ({ ...d.data(), id: d.id })), error:null };
   } catch (e) { return _err('_buscarPorCampo', col, campo)(e); }
 }
 
@@ -83,7 +86,7 @@ async function _listPaginated(col, opts = {}) {
     if (pageSize)      clauses.push(limit(pageSize));
     const q = clauses.length ? query(collection(_db, col), ...clauses) : collection(_db, col);
     const snap = await getDocs(q);
-    const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const items = snap.docs.map(d => ({ ...d.data(), id: d.id }));
     const nextCursor = (pageSize && snap.docs.length === pageSize) ? snap.docs[snap.docs.length - 1] : null;
     return { ok:true, data:{ items, nextCursor }, error:null };
   } catch (e) { return _err('_listPaginated', col)(e); }
@@ -120,7 +123,7 @@ async function _batchWrite(items) {
 function _listen(col, callback) {
   if (!_ready()) return () => {};
   return onSnapshot(collection(_db, col), snap => {
-    callback(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    callback(snap.docs.map(d => ({ ...d.data(), id: d.id })));
   }, err => console.warn('[FirestoreStorage] listen erro:', col, err.message));
 }
 

@@ -273,7 +273,15 @@ import { initializeApp, deleteApp }                from "https://www.gstatic.com
         wrapped._fbHooked = true;
         window[name] = wrapped;
       }
-      rewrap('saveUsers', u => (u||[]).forEach(usr => { if (usr && usr.id) window.fsSave(COL.USUARIOS, String(usr.id), usr); }));
+      rewrap('saveUsers', u => (u||[]).forEach(usr => {
+        if (!usr || !usr.id) return;
+        // "id" NÃO vai dentro dos dados: é só a chave do documento. Gravar
+        // esse campo dentro do doc (como o app fazia antes) é o que causava
+        // docs antigos com um "id" preso a um valor desatualizado, quebrando
+        // a autocorreção de login (ver autocorrigirUsuarioPorEmail()).
+        const { id, ...semId } = usr;
+        window.fsSave(COL.USUARIOS, String(usr.id), semId);
+      }));
     })();
 
     // ── Status indicator in topbar
