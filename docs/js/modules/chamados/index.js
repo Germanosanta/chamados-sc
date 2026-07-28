@@ -1088,6 +1088,16 @@ function openChecklist(target) {
   document.getElementById('chk-erro').style.display='none';
   checklistChanged();
 
+  // Pré-seleciona o técnico responsável (quem assumiu o chamado, ou quem foi
+  // escolhido na abertura), se ele estiver cadastrado na lista de técnicos —
+  // evita ter que selecionar de novo o mesmo nome pra poder encerrar.
+  const _tecResp = getLocal().find(r=>r.num===num)?.tecnico;
+  if (_tecResp) {
+    const _tecBtn = [...document.querySelectorAll('#chk-tec-opts .resp-opt')]
+      .find(b => b.dataset.tec === _tecResp || b.textContent.trim() === _tecResp);
+    if (_tecBtn) toggleTecnico(_tecBtn);
+  }
+
   // Ensure modal-encerrar is closed to avoid stacking behind checklist
   if (target === 'modal') {
     document.getElementById('modal-encerrar')?.classList.remove('open');
