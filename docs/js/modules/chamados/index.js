@@ -452,8 +452,8 @@ function openDetalhe(num) {
     if(encPorRow) encPorRow.style.display = 'none';
   }
 
-  // Descrição (local records may have it at index 7+)
-  const desc = rec[7] || '';
+  // Descrição (vive no registro local como .desc, não no array de rec[])
+  const desc = _lr?.desc || '';
   const descWrap = document.getElementById('det-desc-wrap');
   if (desc) {
     descWrap.style.display = 'block';
@@ -1223,11 +1223,12 @@ function assumirChamado(num) {
   if (idx >= 0) {
     local[idx].assumidoPor = u.nome;
     local[idx].assumidoEm  = new Date().toISOString();
+    local[idx].tecnico     = u.nome; // "Técnico Responsável" passa a ser quem assumiu
   } else {
     const rec = allRecords().find(r => r[0] === num);
     if (rec) local.push({ num: rec[0], titulo: rec[1], cultura: rec[2],
       resp: rec[3], data: rec[4], status: rec[5], bucket: rec[6],
-      assumidoPor: u.nome, assumidoEm: new Date().toISOString() });
+      assumidoPor: u.nome, assumidoEm: new Date().toISOString(), tecnico: u.nome });
   }
   saveLocal(local);
   addEvent(num, 'assumiu', u.nome, `Assumido por ${u.nome}`);
@@ -1556,7 +1557,9 @@ function submitChamado(){
     meta.textContent=parts.join(' · ');
   }
 
-  addEvent(num, 'abriu', u?.nome||'Sistema', `${categoria} · ${prior}`);
+  // Sem addEvent('abriu',...) aqui: buildTimeline() já sintetiza a entrada
+  // "Chamado aberto" a partir do próprio registro local (categoria/prioridade/
+  // técnico) — chamar addEvent também duplicava essa entrada no histórico.
   audit('abriu', `Chamado ${num} aberto: ${titulo}`, num);
   showToast('Chamado '+num+' aberto com sucesso!');
   refreshAfterAction();
