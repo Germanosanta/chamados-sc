@@ -376,7 +376,7 @@ function openDetalhe(num) {
   const _lr = getLocal().find(r=>r.num===rec[0]);
   const _setD=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v||'—';};
   _setD('det-categoria',   _lr?.categoria);
-  _setD('det-tecnico',     _lr?.tecnico || _lr?.assumidoPor);
+  _setD('det-tecnico',     getTecnicoResponsavel(rec[0]));
   _setD('det-solicitante', _lr?.solicitante);
 
   // Tempo de atendimento (abertura → agora, ou → encerramento)
@@ -1091,8 +1091,7 @@ function openChecklist(target) {
   // Pré-seleciona o técnico responsável (quem assumiu o chamado, ou quem foi
   // escolhido na abertura), se ele estiver cadastrado na lista de técnicos —
   // evita ter que selecionar de novo o mesmo nome pra poder encerrar.
-  const _recAtual = getLocal().find(r=>r.num===num);
-  const _tecResp = _recAtual?.tecnico || _recAtual?.assumidoPor;
+  const _tecResp = getTecnicoResponsavel(num);
   if (_tecResp) {
     const _tecBtn = [...document.querySelectorAll('#chk-tec-opts .resp-opt')]
       .find(b => b.dataset.tec === _tecResp || b.textContent.trim() === _tecResp);
@@ -1222,6 +1221,24 @@ function reabrirChamado(num) {
   showToast('Chamado '+num+' reaberto.');
   refreshAfterAction();
   document.getElementById('modal-detalhe').classList.remove('open');
+}
+
+// Técnico responsável de um chamado, com fallback em cascata para cobrir
+// chamados antigos que não tinham o campo tecnico (ou nem assumidoPor)
+// gravado no registro local: 1) tecnico (campo atual); 2) assumidoPor (campo
+// já existente antes da correção); 3) actor do último evento assumiu/iniciou
+// no histórico (cobre registros locais sem nenhum dos dois campos acima).
+function getTecnicoResponsavel(num) {
+  const rec = getLocal().find(r => r.num === num);
+  if (rec?.tecnico)     return rec.tecnico;
+  if (rec?.assumidoPor) return rec.assumidoPor;
+  const eventos = getEvents()[num] || [];
+  for (let i = eventos.length - 1; i >= 0; i--) {
+    if ((eventos[i].type === 'assumiu' || eventos[i].type === 'iniciou') && eventos[i].actor) {
+      return eventos[i].actor;
+    }
+  }
+  return null;
 }
 
 function assumirChamado(num) {
