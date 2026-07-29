@@ -1089,12 +1089,24 @@ function openChecklist(target) {
   checklistChanged();
 
   // Pré-seleciona o técnico responsável (quem assumiu o chamado, ou quem foi
-  // escolhido na abertura), se ele estiver cadastrado na lista de técnicos —
-  // evita ter que selecionar de novo o mesmo nome pra poder encerrar.
+  // escolhido na abertura) — evita ter que selecionar de novo o mesmo nome
+  // pra poder encerrar. Se esse nome não estiver cadastrado na tela de
+  // Técnicos, cria um botão avulso pra ele (não fica de fora do checklist só
+  // por não estar no cadastro de técnicos).
   const _tecResp = getTecnicoResponsavel(num);
   if (_tecResp) {
-    const _tecBtn = [...document.querySelectorAll('#chk-tec-opts .resp-opt')]
+    const _wrap = document.getElementById('chk-tec-opts');
+    let _tecBtn = [...document.querySelectorAll('#chk-tec-opts .resp-opt')]
       .find(b => b.dataset.tec === _tecResp || b.textContent.trim() === _tecResp);
+    if (!_tecBtn && _wrap) {
+      _tecBtn = document.createElement('button');
+      _tecBtn.type = 'button';
+      _tecBtn.className = 'resp-opt';
+      _tecBtn.dataset.tec = _tecResp;
+      _tecBtn.textContent = _tecResp;
+      _tecBtn.onclick = () => toggleTecnico(_tecBtn);
+      _wrap.prepend(_tecBtn);
+    }
     if (_tecBtn) toggleTecnico(_tecBtn);
   }
 
