@@ -376,7 +376,7 @@ function openDetalhe(num) {
   const _lr = getLocal().find(r=>r.num===rec[0]);
   const _setD=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v||'—';};
   _setD('det-categoria',   _lr?.categoria);
-  _setD('det-tecnico',     _lr?.tecnico);
+  _setD('det-tecnico',     _lr?.tecnico || _lr?.assumidoPor);
   _setD('det-solicitante', _lr?.solicitante);
 
   // Tempo de atendimento (abertura → agora, ou → encerramento)
@@ -1091,7 +1091,8 @@ function openChecklist(target) {
   // Pré-seleciona o técnico responsável (quem assumiu o chamado, ou quem foi
   // escolhido na abertura), se ele estiver cadastrado na lista de técnicos —
   // evita ter que selecionar de novo o mesmo nome pra poder encerrar.
-  const _tecResp = getLocal().find(r=>r.num===num)?.tecnico;
+  const _recAtual = getLocal().find(r=>r.num===num);
+  const _tecResp = _recAtual?.tecnico || _recAtual?.assumidoPor;
   if (_tecResp) {
     const _tecBtn = [...document.querySelectorAll('#chk-tec-opts .resp-opt')]
       .find(b => b.dataset.tec === _tecResp || b.textContent.trim() === _tecResp);
