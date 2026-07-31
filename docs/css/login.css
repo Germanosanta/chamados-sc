@@ -27,10 +27,10 @@
   font-family:var(--font);font-size:13px;color:var(--text);outline:none;
   transition:all var(--transition);
 }
-.login-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.login-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
 .login-error{
   font-size:11px;color:var(--red);background:var(--red-bg);
-  border:1px solid #fecaca;border-radius:var(--radius-sm);
+  border:1px solid color-mix(in srgb,var(--red) 35%,var(--surface));border-radius:var(--radius-sm);
   padding:7px 11px;margin-bottom:12px;display:none;
 }
 .login-btn{

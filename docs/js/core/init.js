@@ -1,6 +1,7 @@
 // ── INIT — Bootstrap da aplicação
 // ── INIT
 initTheme();
+initSidebarCollapsed();
 document.getElementById('f-data').value=new Date().toISOString().slice(0,10);
 updateNovoNum();
 preencherSolicitante();

@@ -353,6 +353,29 @@ function toggleMobileMenu() {
   document.querySelector('.sidebar').classList.toggle('mob-open');
 }
 
+// Sidebar recolhível (Fase 2 · Etapa 1) — mesmo padrão de persistência do
+// tema escuro acima (chave própria no localStorage, aplicada no load antes
+// do primeiro paint relevante). Só existe em desktop — responsivo.css
+// desliga esse comportamento abaixo de 768px (sidebar já é off-canvas lá).
+function initSidebarCollapsed() {
+  const collapsed = localStorage.getItem('chm_sidebar_collapsed') === '1';
+  const btn = document.getElementById('sidebar-collapse-btn');
+  if (collapsed) document.querySelector('.sidebar')?.classList.add('collapsed');
+  if (btn) btn.setAttribute('aria-pressed', String(collapsed));
+}
+
+function toggleSidebarCollapsed() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+  const collapsed = sidebar.classList.toggle('collapsed');
+  localStorage.setItem('chm_sidebar_collapsed', collapsed ? '1' : '0');
+  const btn = document.getElementById('sidebar-collapse-btn');
+  if (btn) {
+    btn.setAttribute('aria-pressed', String(collapsed));
+    btn.title = collapsed ? 'Expandir menu' : 'Recolher menu';
+  }
+}
+
 function changeYear(d){
   const inp=document.getElementById('yr-filter');
   inp.value=Math.max(2022,Math.min(2026,parseInt(inp.value)+d));

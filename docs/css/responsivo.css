@@ -39,6 +39,23 @@
   .filter-bar{flex-wrap:wrap}
   .cols-3{grid-template-columns:1fr!important}
   .cols-2{grid-template-columns:1fr!important}
+
+  /* Sidebar recolhível (Fase 2 · Etapa 1) é um recurso de desktop — no
+     off-canvas mobile (acima) a sidebar já abre/fecha por cima da tela
+     inteira, então "recolhida" não faz sentido aqui: força sempre expandida
+     e esconde o botão de recolher. */
+  .sidebar.collapsed{width:224px}
+  .sidebar.collapsed .brand-name,
+  .sidebar.collapsed .brand-sub,
+  .sidebar.collapsed .brand-badge,
+  .sidebar.collapsed .sidebar-footer-info{display:block}
+  .sidebar.collapsed .nav-item{
+    font-size:13px;justify-content:flex-start;padding-left:10px;padding-right:10px;
+  }
+  .sidebar.collapsed .nav-badge{display:inline-flex}
+  .sidebar.collapsed .nav-chevron{display:block}
+  .sidebar.collapsed .nav-sub.open{max-height:400px!important}
+  .sidebar-collapse-btn{display:none}
 }
 @media(max-width:480px){
   .kpi-grid{grid-template-columns:1fr!important}
