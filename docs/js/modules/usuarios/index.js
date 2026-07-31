@@ -92,7 +92,16 @@ async function autocorrigirUsuarioPorEmail(uid, email) {
     const novoDado = { ...dadosAntigos, perms: dadosAntigos.perms ?? null, migradoDeId: idAntigo };
     const criado = await window.fsSave('usuarios', uid, novoDado);
     if (!criado.ok) return null;
-    await window.fsSave('usuarios', idAntigo, { migrado: true, migradoParaUid: uid });
+    const marcado = await window.fsSave('usuarios', idAntigo, { migrado: true, migradoParaUid: uid });
+    if (!marcado.ok) {
+      // O perfil novo (uid certo) já existe e o login prossegue normalmente —
+      // mas o doc antigo não foi marcado como migrado, então ele pode voltar
+      // a aparecer em listas que deveriam ignorá-lo (getUsers() filtra por
+      // "migrado"). Fica registrado na Auditoria pra um admin encontrar sem
+      // precisar vasculhar o console do navegador (achado C3 do relatório
+      // técnico de 29/07/2026: falha parcial silenciosa nesse encadeamento).
+      audit('erro_sync', `Autocorreção de login: doc antigo ${idAntigo} não pôde ser marcado como migrado após criar ${uid} (${email}) — ${marcado.error||'erro desconhecido'}`, '');
+    }
     return novoDado;
   } catch (e) {
     console.warn('[Usuarios] autocorrigirUsuarioPorEmail falhou:', e.message);
@@ -284,14 +293,22 @@ async function salvarUsuario() {
     const idx = users.findIndex(u=>u.id===id);
     if(idx>=0) users[idx] = {...users[idx],...userData};
     saveUsers(users);
-    window.fsSave('logins', login, { email, uid:id }); // garante logins/{login} criado/atualizado sempre
+    // Aguarda e confere esse fsSave (antes era "solta e esquece"): se falhar,
+    // o usuário fica sem conseguir entrar digitando o login (só por e-mail),
+    // sem ninguém perceber — achado C3 do relatório técnico de 29/07/2026.
+    const loginSync = await window.fsSave('logins', login, { email, uid:id }); // garante logins/{login} criado/atualizado sempre
     if (antigo && antigo.login !== login) {
       window.FirestoreStorage?.excluirDocumento('logins', antigo.login);
     }
     audit('editou', `Usuário ${login} atualizado`, '');
     fecharFormUsuario();
     renderUsuarios();
-    showToast('Usuário atualizado!');
+    if (loginSync?.ok) {
+      showToast('Usuário atualizado!');
+    } else {
+      showToast('⚠ Usuário atualizado, mas o login pode não sincronizar — tente salvar de novo em instantes.');
+      audit('erro_sync', `Falha ao sincronizar logins/${login} (uid ${id}) ao editar usuário — ${loginSync?.error||'erro desconhecido'}`, '');
+    }
     return;
   }
 
@@ -306,15 +323,27 @@ async function salvarUsuario() {
     return;
   }
   const criador = currentUser();
-  users.push({id:uid,...userData,
-    criadoPor: criador?.nome || criador?.login || 'Sistema',
-    criadoEm: new Date().toISOString()});
+  const extras = { criadoPor: criador?.nome || criador?.login || 'Sistema', criadoEm: new Date().toISOString() };
+  users.push({id:uid, ...userData, ...extras});
   saveUsers(users);
-  window.fsSave('logins', login, { email, uid });
+  // Aguarda e confere os dois fsSave que fecham a conta nova (perfil + mapa
+  // de login) — antes eram "solta e esquece": se a rede caísse bem aqui, a
+  // conta do Firebase Auth ficava criada mas sem contraparte no Firestore, e
+  // o toast de sucesso aparecia do mesmo jeito, sem avisar ninguém (achado
+  // C3 do relatório técnico de 29/07/2026).
+  const [criouPerfil, criouLogin] = await Promise.all([
+    window.fsSave('usuarios', uid, { ...userData, ...extras }),
+    window.fsSave('logins', login, { email, uid }),
+  ]);
   audit('editou', `Usuário ${login} cadastrado`, '');
   fecharFormUsuario();
   renderUsuarios();
-  showToast('Usuário cadastrado com sucesso!');
+  if (criouPerfil?.ok && criouLogin?.ok) {
+    showToast('Usuário cadastrado com sucesso!');
+  } else {
+    showToast('⚠ Conta criada, mas não sincronizou por completo com o Firestore — abra "Editar" neste usuário para tentar de novo.');
+    audit('erro_sync', `Sincronização incompleta ao cadastrar ${login} (uid ${uid}): usuarios.ok=${!!criouPerfil?.ok} logins.ok=${!!criouLogin?.ok}`, '');
+  }
 }
 
 async function enviarResetSenhaUsuario() {

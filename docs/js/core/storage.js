@@ -74,21 +74,55 @@ function _fbCall(label, promiseFactory) {
   } catch (e) { console.warn('[Storage]', label, 'falhou:', e.message); }
 }
 
+// ── Comparação usada só para decidir o que precisa ser reenviado ao
+// Firestore (nunca para lógica de negócio). "ignore" descarta campos que não
+// vão pro Firestore mesmo (ex.: fotos em base64), pra não disparar um envio
+// só porque um campo local-only mudou.
+function _fsIgual(a, b, ignore) {
+  if (!ignore || !ignore.length) return JSON.stringify(a) === JSON.stringify(b);
+  const strip = o => { if (!o) return o; const c = {...o}; ignore.forEach(k => delete c[k]); return c; };
+  return JSON.stringify(strip(a)) === JSON.stringify(strip(b));
+}
+
+// Corrige o achado C2 do relatório técnico (29/07/2026): antes, todo save*()
+// reenviava ao Firestore TODOS os itens do array/mapa a cada chamada, mesmo
+// os que não mudaram desde o último save — como esses arrays só crescem
+// (chamados tocados, peças, etc.), uma única ação disparava uma escrita por
+// item já tocado. Agora só o que de fato mudou (novo ou alterado) é
+// reenviado — mesma assinatura, mesmo resultado final no Firestore, só menos
+// escritas. Nenhum chamador precisou mudar.
+function _pushSoAlterados(oldArr, newArr, idField, pushFn, ignore) {
+  const oldMap = new Map((Array.isArray(oldArr)?oldArr:[]).map(x => [x && x[idField], x]));
+  (newArr||[]).forEach(item => {
+    if (!item || item[idField] == null) return;
+    if (_fsIgual(oldMap.get(item[idField]), item, ignore)) return;
+    pushFn(item);
+  });
+}
+function _pushMapSoAlterados(oldObj, newObj, pushFn) {
+  const old = oldObj || {};
+  Object.entries(newObj||{}).forEach(([k, v]) => {
+    if (_fsIgual(old[k], v)) return;
+    pushFn(k, v);
+  });
+}
+
 // ── Chamados locais → chamados/{num}
 function getLocal()     { try { return JSON.parse(localStorage.getItem(LOCAL_KEY)||'[]'); } catch { return []; } }
 function saveLocal(arr) {
+  const old = getLocal();
   localStorage.setItem(LOCAL_KEY, JSON.stringify(arr));               // cache
-  (arr||[]).forEach(rec => {
-    if (!rec || !rec.num) return;
+  _pushSoAlterados(old, arr, 'num', rec => {
     _fbCall('salvarChamado', () => window.FirestoreStorage.salvarChamado(rec));
-  });
+  }, ['fotos']); // fotos (base64) não vão ao Firestore — ver salvarChamado()
 }
 
 // ── Encerramentos → historico/{num}.encerramento
 function getClosedMap()  { try { return JSON.parse(localStorage.getItem(CLOSED_KEY)||'{}'); } catch { return {}; } }
 function saveClosed(obj) {
+  const old = getClosedMap();
   localStorage.setItem(CLOSED_KEY, JSON.stringify(obj));             // cache
-  Object.entries(obj||{}).forEach(([num, ci]) => {
+  _pushMapSoAlterados(old, obj, (num, ci) => {
     _fbCall('salvarHistorico(encerramento)', () => window.FirestoreStorage.salvarHistorico(num, { num, encerramento: ci }));
   });
 }
@@ -100,9 +134,9 @@ function saveClosed(obj) {
 // ── Banco de Soluções (KB) → configuracoes/kb__{id}
 function getKB()       { try { return JSON.parse(localStorage.getItem(KB_KEY)||'[]'); } catch { return []; } }
 function saveKB(v)     {
+  const old = getKB();
   localStorage.setItem(KB_KEY, JSON.stringify(v));                   // cache
-  (v||[]).forEach(k => {
-    if (!k || !k.id) return;
+  _pushSoAlterados(old, v, 'id', k => {
     _fbCall('salvarConfiguracao(kb)', () => window.FirestoreStorage.salvarConfiguracao('kb__'+k.id, { __kind:'kb', ...k }));
   });
 }
@@ -110,9 +144,9 @@ function saveKB(v)     {
 // ── Peças e Estoque → pecas/{id}
 function getPecas()    { try { return JSON.parse(localStorage.getItem(PECAS_KEY)||'[]'); } catch { return []; } }
 function savePecas(v)  {
+  const old = getPecas();
   localStorage.setItem(PECAS_KEY, JSON.stringify(v));                // cache
-  (v||[]).forEach(p => {
-    if (!p || !p.id) return;
+  _pushSoAlterados(old, v, 'id', p => {
     _fbCall('salvarPeca', () => window.FirestoreStorage.salvarPeca(p));
   });
 }
@@ -120,9 +154,9 @@ function savePecas(v)  {
 // ── Movimentações → movimentacoes/{id}
 function getMovs()     { try { return JSON.parse(localStorage.getItem(MOV_KEY)||'[]'); } catch { return []; } }
 function saveMovs(v)   {
+  const old = getMovs();
   localStorage.setItem(MOV_KEY, JSON.stringify(v));                  // cache
-  (v||[]).forEach(m => {
-    if (!m || !m.id) return;
+  _pushSoAlterados(old, v, 'id', m => {
     _fbCall('salvarMovimentacao', () => window.FirestoreStorage.salvarMovimentacao(m));
   });
 }
@@ -164,8 +198,9 @@ function audit(tipo,detalhe,chamado) {
 // ── Cadastro Equipamentos → equipamentos/{frota}
 function getCadEq()    { try { return JSON.parse(localStorage.getItem(CADASTRO_EQ_KEY)||'{}'); } catch { return {}; } }
 function saveCadEq(v)  {
+  const old = getCadEq();
   localStorage.setItem(CADASTRO_EQ_KEY, JSON.stringify(v));          // cache
-  Object.entries(v||{}).forEach(([frota, data]) => {
+  _pushMapSoAlterados(old, v, (frota, data) => {
     _fbCall('salvarEquipamento', () => window.FirestoreStorage.salvarEquipamento(frota, data));
   });
 }
@@ -173,8 +208,9 @@ function saveCadEq(v)  {
 // ── Cadastro Técnicos → tecnicos/{key}
 function getCadTec()   { try { return JSON.parse(localStorage.getItem(CADASTRO_TEC_KEY)||'{}'); } catch { return {}; } }
 function saveCadTec(v) {
+  const old = getCadTec();
   localStorage.setItem(CADASTRO_TEC_KEY, JSON.stringify(v));         // cache
-  Object.entries(v||{}).forEach(([key, data]) => {
+  _pushMapSoAlterados(old, v, (key, data) => {
     _fbCall('salvarTecnico', () => window.FirestoreStorage.salvarTecnico(key, data));
   });
 }

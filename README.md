@@ -88,7 +88,7 @@ firebase login
 firebase deploy --only hosting
 ```
 
-**Antes do primeiro deploy de regras do Firestore** (`firebase deploy --only firestore:rules` — separado do deploy de Hosting, não roda automaticamente pelo GitHub Actions), revise `firestore.rules` — o arquivo documenta por que está permissivo hoje (o app não usa Firebase Auth) e o que precisa ser decidido antes de aplicar em produção.
+**Antes de qualquer deploy de regras do Firestore** (`firebase deploy --only firestore:rules` — separado do deploy de Hosting, não roda automaticamente pelo GitHub Actions), revise `firestore.rules` no Console. O login é feito via Firebase Authentication (e-mail/senha) — o papel de cada usuário (perfil/status/perms) mora em `usuarios/{uid}` e as regras usam `get()` nesse doc pra decidir permissão, sem custom claims nem Cloud Functions (100% compatível com o plano Spark). Um push que altera `firestore.rules` **não é aplicado sozinho** — é fácil esquecer esse passo manual depois de uma sessão de correções.
 
 ### Uso local (desenvolvimento, opcional)
 Sirva a pasta `docs/` com qualquer servidor HTTP local (não abra `docs/index.html` direto do disco — os módulos `firebase.js`/`firestore.js` são ES modules e exigem `http(s)://`, não `file://`).
@@ -103,9 +103,10 @@ Sirva a pasta `docs/` com qualquer servidor HTTP local (não abra `docs/index.ht
 Coleções no Firestore (nomes reais, via `docs/js/firebase/firestore.js`):
 | Collection | Dados |
 |---|---|
+| `usuarios` | Perfil, cargo, permissões — chave é o UID do Firebase Auth. Sem campo `senha` (vive só no Firebase Auth, nunca no Firestore) |
+| `logins` | Mapa `{login → email/uid}`, leitura aberta — resolve nome de usuário para e-mail antes do login (o app ainda loga por usuário, não por e-mail) |
 | `chamados` | Chamados criados no sistema |
 | `historico` | Eventos de timeline + dados de encerramento por chamado |
-| `usuarios` | Usuários (sem campo `senha`, mantido só localmente) |
 | `equipamentos` | Cadastro de equipamentos/frotas |
 | `tecnicos` | Cadastro de técnicos |
 | `pecas` | Estoque de peças |
@@ -122,13 +123,15 @@ Coleções no Firestore (nomes reais, via `docs/js/firebase/firestore.js`):
 - **Fontes**: Inter + JetBrains Mono (Google Fonts)
 - **Charts**: Chart.js 4.4.1
 
-## Credenciais padrão
+## Contas de acesso
 
-| Login | Senha | Perfil |
-|---|---|---|
-| admin | admin123 | Administrador |
-| guilherme | guilherme123 | Supervisor |
-| walison | walison123 | Técnico |
+Não existem mais credenciais padrão/seed embutidas no código — login é feito via Firebase Authentication (e-mail/senha), com contas reais criadas pela tela **Usuários** (acesso restrito a administradores) ou pelo bootstrap manual abaixo. Perfis disponíveis: Administrador, Supervisor, Técnico, Visualizador — cada um com um conjunto padrão de permissões (`PERFIL_PERMS` em `docs/js/core/init.js`), customizável por usuário na própria tela de cadastro.
+
+### Bootstrap do primeiro admin (uma vez só, direto no Console)
+1. Console do Firebase → projeto **chamdos-sc** → Authentication → Users → **Add user** (e-mail real + senha).
+2. Firestore → criar doc `usuarios/{UID gerado}` com `nome, login, email, perfil:"admin", status:"Ativo", perms:null`.
+3. Firestore → criar doc `logins/{login}` com `{ email, uid: UID }`.
+4. A partir daí, esse admin cadastra os demais usuários pela tela do próprio app.
 
 ## Módulos
 

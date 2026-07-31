@@ -263,25 +263,35 @@ import { initializeApp, deleteApp }                from "https://www.gstatic.com
     // rewrap. addEvent() faz o próprio push inline, não usa saveEvents.)
     // ════════════════════════════════════════════════════════════
     (function _rewrapShadowed() {
-      function rewrap(name, push) {
-        if (typeof window[name] !== 'function' || window[name]._fbHooked) return;
-        const orig = window[name];
-        const wrapped = function(...args) {
-          orig.apply(this, args);
-          try { push(...args); } catch(e) { console.warn('[Firebase] rewrap', name, 'falhou:', e.message); }
-        };
-        wrapped._fbHooked = true;
-        window[name] = wrapped;
-      }
-      rewrap('saveUsers', u => (u||[]).forEach(usr => {
-        if (!usr || !usr.id) return;
-        // "id" NÃO vai dentro dos dados: é só a chave do documento. Gravar
-        // esse campo dentro do doc (como o app fazia antes) é o que causava
-        // docs antigos com um "id" preso a um valor desatualizado, quebrando
-        // a autocorreção de login (ver autocorrigirUsuarioPorEmail()).
-        const { id, ...semId } = usr;
-        window.fsSave(COL.USUARIOS, String(usr.id), semId);
-      }));
+      if (typeof window.saveUsers !== 'function' || window.saveUsers._fbHooked) return;
+      const origSaveUsers = window.saveUsers;
+      const wrappedSaveUsers = function(u) {
+        // Snapshot ANTES de origSaveUsers rodar — ele já reescreve a chave
+        // K.users no localStorage, então é agora ou nunca pra saber o que
+        // havia antes desse save.
+        const old = _readLS(K.users, []);
+        origSaveUsers.call(this, u);
+        try {
+          const oldMap = new Map((Array.isArray(old)?old:[]).map(x => [x && x.id, x]));
+          (u||[]).forEach(usr => {
+            if (!usr || !usr.id) return;
+            // "id" NÃO vai dentro dos dados: é só a chave do documento. Gravar
+            // esse campo dentro do doc (como o app fazia antes) é o que causava
+            // docs antigos com um "id" preso a um valor desatualizado, quebrando
+            // a autocorreção de login (ver autocorrigirUsuarioPorEmail()).
+            const { id, ...semId } = usr;
+            // Corrige o achado C2 do relatório técnico (29/07/2026), aqui no
+            // rewrap: antes, TODO usuário do array era reenviado ao Firestore
+            // a cada save de QUALQUER usuário. Agora só quem de fato mudou.
+            const prevRaw = oldMap.get(usr.id);
+            const prevSemId = prevRaw ? (() => { const {id:_i, ...rest} = prevRaw; return rest; })() : undefined;
+            if (JSON.stringify(prevSemId) === JSON.stringify(semId)) return;
+            window.fsSave(COL.USUARIOS, String(usr.id), semId);
+          });
+        } catch(e) { console.warn('[Firebase] rewrap saveUsers falhou:', e.message); }
+      };
+      wrappedSaveUsers._fbHooked = true;
+      window.saveUsers = wrappedSaveUsers;
     })();
 
     // ── Status indicator in topbar

@@ -34,6 +34,31 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.status.lower() == 'ativo';
     }
 
+    // ── Permissões granulares (achado C1 do relatório técnico de 29/07/2026):
+    // até aqui, "estouAtivo()" bastava pra ler/escrever em chamados, ou seja,
+    // as 15 permissões (p_abrir, p_editar, p_excluir...) só existiam no
+    // cliente (ALL_PERMS/PERFIL_PERMS em core/init.js, checadas via
+    // pode()/temAcesso() em usuarios/index.js) — nada impedia uma chamada
+    // direta ao SDK, fora da UI, de escrever mesmo sem a permissão. As duas
+    // funções abaixo espelham EXATAMENTE essa mesma lógica do lado do
+    // servidor, sem inventar nenhuma regra nova: PERFIL_PERMS aqui e em
+    // core/init.js precisam ficar manualmente em sincronia (não há Cloud
+    // Function/custom claim pra derivar isso automaticamente no plano Spark).
+    function permsPadrao(perfil) {
+      return perfil == 'admin'        ? ['p_dashboard','p_chamados','p_aberto','p_encerrados','p_novo','p_responsaveis','p_relatorios','p_usuarios','p_config','p_abrir','p_editar','p_encerrar','p_reabrir','p_excluir','p_exportar']
+        : perfil == 'supervisor'      ? ['p_dashboard','p_chamados','p_aberto','p_encerrados','p_novo','p_responsaveis','p_relatorios','p_abrir','p_editar','p_encerrar','p_reabrir','p_exportar']
+        : perfil == 'tecnico'         ? ['p_dashboard','p_chamados','p_aberto','p_encerrados','p_novo','p_abrir','p_editar']
+        : perfil == 'visualizador'    ? ['p_dashboard','p_chamados','p_aberto','p_encerrados','p_responsaveis','p_relatorios','p_exportar']
+        : [];
+    }
+    function meusPerms() {
+      let doc = get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+      return doc.perms is list ? doc.perms : permsPadrao(doc.perfil);
+    }
+    function temPerm(perm) {
+      return estouAtivo() && (perm in meusPerms());
+    }
+
     match /usuarios/{uid} {
       // Lê o próprio doc; lê qualquer doc cujo e-mail seja o mesmo do token
       // autenticado (autocorreção de doc antigo com id diferente do uid do
@@ -87,7 +112,25 @@ service cloud.firestore {
       allow read, write: if estouAtivo();
     }
     match /chamados/{docId} {
-      allow read, write: if estouAtivo();
+      // Cada operação exige a mesma permissão que a própria UI já usa pra
+      // mostrar/esconder o botão correspondente (pode('editar'/'encerrar')
+      // e temAcesso('p_reabrir') em usuarios/index.js e chamados/index.js) —
+      // só move a checagem também pro servidor; quem já podia fazer algo
+      // continua podendo, e quem não podia (ex.: perfil Visualizador) deixa
+      // de conseguir contornar a UI chamando o SDK direto. "update" cobre
+      // assumir/editar/encerrar/reabrir/checklist, que não têm como ser
+      // distinguidos aqui só pelo diff — por isso aceita qualquer uma das
+      // permissões relacionadas. "create" fica só em estouAtivo(): "p_abrir"
+      // existe na tela de permissões, mas hoje NENHUM código do app confere
+      // essa permissão antes de gravar um chamado novo (só a visibilidade do
+      // item de menu depende de "p_novo", uma permissão diferente) — passar
+      // a exigir "p_abrir" aqui seria inventar uma restrição nova que não
+      // existe hoje na UI, fora do escopo desta correção (ver relatório
+      // técnico de 29/07/2026, achado C1: só fechar a lacuna já existente).
+      allow read: if estouAtivo();
+      allow create: if estouAtivo();
+      allow update: if souAdmin() || temPerm('p_editar') || temPerm('p_encerrar') || temPerm('p_reabrir');
+      allow delete: if souAdmin() || temPerm('p_excluir');
     }
     match /historico/{docId} {
       allow read, write: if estouAtivo();
