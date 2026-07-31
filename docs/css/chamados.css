@@ -31,6 +31,9 @@
   letter-spacing:.08em;color:var(--accent);
   padding:6px 0 10px;border-bottom:1px solid var(--border);
   margin-bottom:14px;display:flex;align-items:center;gap:7px;
+  /* Compensa a barra de etapas sticky (Etapa 2C-i) — sem isso, clicar
+     numa âncora deixava o título do bloco escondido atrás dela. */
+  scroll-margin-top:46px;
 }
 /* ── Priority selector */
 .prio-opt{
@@ -312,4 +315,36 @@
   .detalhe-box{ padding:14px 14px 16px; }
   .det-acao-btn{ padding:9px 12px; font-size:12px; flex:1 1 calc(50% - 8px); justify-content:center; }
   .det-frota-grid{ grid-template-columns:1fr 1fr; }
+}
+
+/* ════════════════════════════════════════════
+   FASE 2 · ETAPA 2C-i — NOVO CHAMADO MODERNIZADO
+   (navegador de etapas + indicador de progresso não-bloqueante)
+   ════════════════════════════════════════════ */
+.novo-steps{
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px;
+  padding:10px 0; margin-bottom:18px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:5; background:var(--surface);
+}
+.novo-step{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 11px; border-radius:20px; border:1px solid var(--border);
+  background:var(--surface2); color:var(--text2);
+  font-size:11px; font-weight:600; text-decoration:none;
+  transition:all var(--transition); white-space:nowrap;
+}
+.novo-step:hover{ border-color:var(--accent); color:var(--accent-text); }
+.novo-step.novo-step-ok{
+  background:var(--green-bg); border-color:color-mix(in srgb,var(--green) 40%,var(--surface)); color:var(--green);
+}
+.novo-step.novo-step-ok::after{ content:'✓'; font-weight:800; margin-left:2px; }
+.novo-progress{
+  margin-left:auto; font-size:11px; font-weight:650; color:var(--text3);
+  font-family:var(--font-mono); white-space:nowrap;
+}
+.novo-progress.novo-progress-ok{ color:var(--green); }
+
+@media (max-width:700px){
+  .novo-steps{ position:static; }
+  .novo-progress{ margin-left:0; flex-basis:100%; }
 }

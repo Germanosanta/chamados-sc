@@ -9,15 +9,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260729e">
-  <link rel="stylesheet" href="css/login.css?v=20260729e">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260729e">
-  <link rel="stylesheet" href="css/chamados.css?v=20260729e">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260729e">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260729e">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260729e">
-  <link rel="stylesheet" href="css/config.css?v=20260729e">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260729e">
+  <link rel="stylesheet" href="css/style.css?v=20260729f">
+  <link rel="stylesheet" href="css/login.css?v=20260729f">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260729f">
+  <link rel="stylesheet" href="css/chamados.css?v=20260729f">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260729f">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260729f">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260729f">
+  <link rel="stylesheet" href="css/config.css?v=20260729f">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260729f">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -710,8 +710,24 @@
       </div>
     </div>
 
+    <!-- Navegador de etapas (Fase 2 · Etapa 2C-i) — âncoras pros 7 blocos já
+         existentes; a página continua uma rolagem só (sem estado de "etapa
+         atual" nem bloqueio de navegação — clicar só rola até o bloco). O
+         indicador de progresso é puramente visual: observa os mesmos campos
+         que submitChamado() já exige, sem duplicar nem alterar a validação. -->
+    <div class="novo-steps" id="novo-steps">
+      <a href="#novo-bloco-1" class="novo-step" id="novo-step-ident">📋 Identificação</a>
+      <a href="#novo-bloco-2" class="novo-step" id="novo-step-equip">🚜 Equipamento</a>
+      <a href="#novo-bloco-3" class="novo-step" id="novo-step-alocacao">📍 Alocação</a>
+      <a href="#novo-bloco-4" class="novo-step" id="novo-step-resp">👷 Responsáveis</a>
+      <a href="#novo-bloco-5" class="novo-step" id="novo-step-detalhes">📝 Detalhes</a>
+      <a href="#novo-bloco-6" class="novo-step">📷 Fotos</a>
+      <a href="#novo-bloco-7" class="novo-step">🔧 Peças</a>
+      <span class="novo-progress" id="novo-progress">0/5 obrigatórios</span>
+    </div>
+
     <!-- ════════════════ BLOCO 1: IDENTIFICAÇÃO ════════════════ -->
-    <div class="novo-section-label">📋 Identificação</div>
+    <div class="novo-section-label" id="novo-bloco-1">📋 Identificação</div>
     <div class="form-grid" style="margin-bottom:20px">
 
       <!-- Solicitante (quem está abrindo — preenchido pelo usuário logado) -->
@@ -732,7 +748,7 @@
       <!-- Categoria -->
       <div class="form-field">
         <div class="form-label">Categoria <span class="req">*</span></div>
-        <select class="form-select" id="f-categoria">
+        <select class="form-select" id="f-categoria" onchange="atualizarProgressoNovo()">
           <option value="">Selecione a categoria…</option>
           <option value="Manutenção Corretiva">Manutenção Corretiva</option>
           <option value="Manutenção Preventiva">Manutenção Preventiva</option>
@@ -762,7 +778,7 @@
     </div>
 
     <!-- ════════════════ BLOCO 2: EQUIPAMENTO ════════════════ -->
-    <div class="novo-section-label">🚜 Equipamento</div>
+    <div class="novo-section-label" id="novo-bloco-2">🚜 Equipamento</div>
     <div style="margin-bottom:20px">
 
       <!-- Autocomplete de equipamento -->
@@ -844,7 +860,7 @@
     </div>
 
     <!-- ════════════════ BLOCO 3: ALOCAÇÃO ════════════════ -->
-    <div class="novo-section-label">📍 Alocação</div>
+    <div class="novo-section-label" id="novo-bloco-3">📍 Alocação</div>
     <div class="form-grid" style="margin-bottom:20px">
 
       <div class="form-field">
@@ -888,7 +904,7 @@
     </div>
 
     <!-- ════════════════ BLOCO 4: TÉCNICOS ════════════════ -->
-    <div class="novo-section-label">👷 Responsáveis</div>
+    <div class="novo-section-label" id="novo-bloco-4">👷 Responsáveis</div>
     <div class="form-grid" style="margin-bottom:20px">
 
       <!-- Responsável pelo chamado (quem vai atender) -->
@@ -930,12 +946,12 @@
     </div>
 
     <!-- ════════════════ BLOCO 5: DESCRIÇÃO ════════════════ -->
-    <div class="novo-section-label">📝 Detalhes</div>
+    <div class="novo-section-label" id="novo-bloco-5">📝 Detalhes</div>
     <div class="form-grid" style="margin-bottom:20px">
 
       <div class="form-field full">
         <div class="form-label">Descrição do Problema <span class="req">*</span></div>
-        <textarea class="form-textarea" id="f-desc"
+        <textarea class="form-textarea" id="f-desc" oninput="atualizarProgressoNovo()"
           placeholder="Descreva o problema ou solicitação com o máximo de detalhes: sintomas observados, quando começou, condições do equipamento…"
           style="min-height:100px"></textarea>
       </div>
@@ -950,7 +966,7 @@
     </div>
 
     <!-- ════════════════ BLOCO 6: FOTOS ════════════════ -->
-    <div class="novo-section-label">📷 Fotos</div>
+    <div class="novo-section-label" id="novo-bloco-6">📷 Fotos</div>
     <div style="margin-bottom:20px">
       <div class="foto-drop-zone" id="foto-drop-zone"
         ondragover="event.preventDefault();this.classList.add('drag-over')"
@@ -966,11 +982,11 @@
           + Selecionar arquivos
         </button>
       </div>
-      <div id="foto-preview" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"></div>
+      <div id="foto-preview" class="det-galeria" style="margin-top:10px"></div>
     </div>
 
     <!-- ════════════════ BLOCO 7: PEÇAS ════════════════ -->
-    <div class="novo-section-label">🔧 Peças Utilizadas</div>
+    <div class="novo-section-label" id="novo-bloco-7">🔧 Peças Utilizadas</div>
     <div style="margin-bottom:20px">
       <div class="filter-bar" style="margin-bottom:10px;padding:8px 12px">
         <input class="search-box" type="text" id="peca-srch-novo"
@@ -2572,26 +2588,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260729e"></script>
-  <script src="js/data/equipamentos.js?v=20260729e"></script>
-  <script src="js/data/match_map.js?v=20260729e"></script>
-  <script src="js/data/equip_idx.js?v=20260729e"></script>
+  <script src="js/data/chamados_historico.js?v=20260729f"></script>
+  <script src="js/data/equipamentos.js?v=20260729f"></script>
+  <script src="js/data/match_map.js?v=20260729f"></script>
+  <script src="js/data/equip_idx.js?v=20260729f"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260729e"></script>
+  <script src="js/core/storage.js?v=20260729f"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260729e"></script>
-  <script src="js/modules/dashboard/index.js?v=20260729e"></script>
-  <script src="js/modules/chamados/index.js?v=20260729e"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260729e"></script>
-  <script src="js/modules/relatorios/index.js?v=20260729e"></script>
-  <script src="js/modules/config/index.js?v=20260729e"></script>
+  <script src="js/modules/usuarios/index.js?v=20260729f"></script>
+  <script src="js/modules/dashboard/index.js?v=20260729f"></script>
+  <script src="js/modules/chamados/index.js?v=20260729f"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260729f"></script>
+  <script src="js/modules/relatorios/index.js?v=20260729f"></script>
+  <script src="js/modules/config/index.js?v=20260729f"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260729e"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260729f"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260729e"></script>
+  <script src="js/core/init.js?v=20260729f"></script>
 </body>
 </html>

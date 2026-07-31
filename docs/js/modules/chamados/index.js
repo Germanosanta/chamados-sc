@@ -1846,6 +1846,29 @@ function populateTecnicoSelect(){
   if(atual && [...sel.options].some(o=>o.value===atual)) sel.value=atual;
 }
 
+// Indicador de progresso do formulário "Novo Chamado" (Fase 2 · Etapa 2C-i)
+// — só observa os MESMOS 5 campos que submitChamado() já exige (categoria,
+// equipamento válido, sistema/sede, responsável, descrição); não bloqueia
+// nada, não duplica a validação — é só um retrato visual do que falta.
+function atualizarProgressoNovo() {
+  const feitos = {
+    ident:    !!document.getElementById('f-categoria')?.value,
+    equip:    !!document.getElementById('equip-selected-valid')?.value,
+    alocacao: !!document.getElementById('f-bucket-val')?.value,
+    resp:     !!document.getElementById('f-resp')?.value,
+    detalhes: !!document.getElementById('f-desc')?.value.trim(),
+  };
+  Object.entries(feitos).forEach(([chave, ok]) => {
+    document.getElementById('novo-step-' + chave)?.classList.toggle('novo-step-ok', ok);
+  });
+  const n = Object.values(feitos).filter(Boolean).length;
+  const badge = document.getElementById('novo-progress');
+  if (badge) {
+    badge.textContent = `${n}/5 obrigatórios`;
+    badge.classList.toggle('novo-progress-ok', n === 5);
+  }
+}
+
 function resetForm(){
   // Text/textarea fields
   ['f-titulo','f-desc','f-obs-novo'].forEach(id=>{
@@ -1882,6 +1905,7 @@ function resetForm(){
   tickFormClock();
   // Equip
   equipClear();
+  atualizarProgressoNovo();
 }
 
 function resetEquipForm() {
@@ -2093,6 +2117,7 @@ function equipSelect(equip) {
   if (clear) clear.className = 'equip-clear-btn show';
 
   renderHistoricoEquip(equip.c);
+  atualizarProgressoNovo();
 }
 
 // Histórico de chamados (abertos + encerrados) do equipamento selecionado no
@@ -2177,6 +2202,7 @@ function equipClear() {
   _equipFocusIdx = -1;
   const histC = document.getElementById('equip-hist-card');
   if (histC) histC.style.display = 'none';
+  atualizarProgressoNovo();
 }
 
 function equipHighlight(items) {
@@ -2272,16 +2298,30 @@ function detConfirmarEnc() {
   openChecklist('detalhe');
 }
 
+// Rótulo completo de cada responsável — achado da Etapa 2C-i: o código
+// anterior só distinguia Guilherme/Walison (ternário de 2 opções só);
+// qualquer outro responsável dos 6 botões existentes (Matheus/Carlos/
+// Francisco/Pierry) aparecia rotulado como "Walison Almeida" nas tags.
+// Mesmos nomes já escritos nos próprios botões (index.html), só
+// centralizados aqui pra não repetir a lista em 2 funções.
+const RESP_LABEL = {
+  Guilherme: 'Guilherme Otávio', Walison: 'Walison Almeida',
+  Matheus: 'Matheus Gabriel', Carlos: 'Carlos Santos',
+  Francisco: 'Francisco', Pierry: 'Pierry',
+};
+function _respTagsHTML(selected) {
+  return selected.map(v =>
+    `<span class="resp-tag">${RESP_LABEL[v]||v}<button type="button" onclick="removeResp('${v}')">×</button></span>`
+  ).join('');
+}
+
 function toggleResp(btn) {
   btn.classList.toggle('sel');
   const selected = [...document.querySelectorAll('.resp-opt.sel')].map(b => b.dataset.val);
   document.getElementById('f-resp').value = selected.join(',');
-  // Render tags
   const tagsEl = document.getElementById('resp-tags');
-  tagsEl.innerHTML = selected.map(v => {
-    const label = v === 'Guilherme' ? 'Guilherme Otávio' : 'Walison Almeida';
-    return `<span class="resp-tag">${label}<button type="button" onclick="removeResp('${v}')">×</button></span>`;
-  }).join('');
+  tagsEl.innerHTML = _respTagsHTML(selected);
+  atualizarProgressoNovo();
 }
 
 function removeResp(val) {
@@ -2290,10 +2330,8 @@ function removeResp(val) {
   const selected = [...document.querySelectorAll('.resp-opt.sel')].map(b => b.dataset.val);
   document.getElementById('f-resp').value = selected.join(',');
   const tagsEl = document.getElementById('resp-tags');
-  tagsEl.innerHTML = selected.map(v => {
-    const label = v === 'Guilherme' ? 'Guilherme Otávio' : 'Walison Almeida';
-    return `<span class="resp-tag">${label}<button type="button" onclick="removeResp('${v}')">×</button></span>`;
-  }).join('');
+  tagsEl.innerHTML = _respTagsHTML(selected);
+  atualizarProgressoNovo();
 }
 
 function selectBucket(el,name){
@@ -2301,6 +2339,7 @@ function selectBucket(el,name){
   el.classList.add('selected');
   selBucket=name;
   document.getElementById('f-bucket-val').value=name;
+  atualizarProgressoNovo();
 }
 
 function gsOpen(num) {

@@ -7,6 +7,7 @@ updateNovoNum();
 preencherSolicitante();
 populateTecnicoSelect();
 tickFormClock();
+atualizarProgressoNovo();
 setInterval(tickFormClock, 30000);
 initDashboard();
 initAbertoBadge();
