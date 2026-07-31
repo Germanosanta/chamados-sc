@@ -9,15 +9,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260729d">
-  <link rel="stylesheet" href="css/login.css?v=20260729d">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260729d">
-  <link rel="stylesheet" href="css/chamados.css?v=20260729d">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260729d">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260729d">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260729d">
-  <link rel="stylesheet" href="css/config.css?v=20260729d">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260729d">
+  <link rel="stylesheet" href="css/style.css?v=20260729e">
+  <link rel="stylesheet" href="css/login.css?v=20260729e">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260729e">
+  <link rel="stylesheet" href="css/chamados.css?v=20260729e">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260729e">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260729e">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260729e">
+  <link rel="stylesheet" href="css/config.css?v=20260729e">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260729e">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -2344,110 +2344,86 @@
 </div>
 
 <!-- ── MODAL DETALHES DO CHAMADO -->
+<!-- ══════════════════════════════════════════════
+     CENTRO OPERACIONAL DO CHAMADO (Fase 2 · Etapa 2B)
+     7 blocos: Cabeçalho, Ações Rápidas, Timeline, Equipamento,
+     Galeria de Anexos, Observações, Auditoria. Todo o conteúdo é
+     preenchido por openDetalhe() em chamados/index.js — os mesmos ids
+     de sempre, só reorganizados neste layout novo (nenhuma função de
+     dados/regra foi alterada para esta reestruturação).
+     ══════════════════════════════════════════════ -->
 <div class="modal-overlay" id="modal-detalhe" onclick="closeDetalhe(event)">
-  <div class="modal-box" style="width:540px;max-width:96vw">
+  <div class="modal-box detalhe-box" style="width:1120px;max-width:97vw">
 
-    <div class="modal-header" style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px">
-      <div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--accent)" id="det-num"></div>
-        <div style="font-size:16px;font-weight:700;color:var(--text);margin-top:4px;line-height:1.4" id="det-titulo"></div>
+    <!-- Barra superior: navegar entre chamados (lê a tabela visível) + fechar -->
+    <div class="det-topbar">
+      <div class="det-topbar-nav">
+        <button class="int-close" onclick="event.stopPropagation();detAnterior()" title="Chamado anterior (←)" aria-label="Chamado anterior">‹</button>
+        <button class="int-close" onclick="event.stopPropagation();detProximo()" title="Próximo chamado (→)" aria-label="Próximo chamado">›</button>
       </div>
-      <button class="int-close" onclick="closeDetalhe()">×</button>
+      <button class="int-close" onclick="closeDetalhe()" title="Fechar (Esc)">×</button>
     </div>
 
-    <!-- Grid de campos -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-bottom:18px" id="det-grid">
-      <div><div class="det-label">Status</div><div id="det-status"></div></div>
-      <div><div class="det-label">Prioridade</div><div id="det-prior" class="det-val"></div></div>
-      <div><div class="det-label">Responsável(is)</div><div id="det-resp" class="det-val"></div></div>
-      <div><div class="det-label">Cultura</div><div id="det-cult" class="det-val"></div></div>
-      <div><div class="det-label">Fazenda</div><div id="det-fazenda" class="det-val"></div></div>
-      <div><div class="det-label">Sistema / Origem</div><div id="det-bucket" class="det-val"></div></div>
-      <div><div class="det-label">Data de Abertura</div><div id="det-data" class="det-val"></div></div>
-      <div><div class="det-label">Aberto por</div><div id="det-aberto-por" class="det-val"></div></div>
-      <div id="det-enc-row" style="display:none"><div class="det-label">Data de Encerramento</div><div id="det-data-enc" class="det-val"></div></div>
-      <div id="det-enc-por-row" style="display:none"><div class="det-label">Encerrado por</div><div id="det-enc-por" class="det-val"></div></div>
-      <div id="det-categoria-row"><div class="det-label">Categoria</div><div id="det-categoria" class="det-val">—</div></div>
-      <div id="det-tecnico-row"><div class="det-label">Técnico Responsável</div><div id="det-tecnico" class="det-val">—</div></div>
-      <div id="det-solicitante-row"><div class="det-label">Solicitante</div><div id="det-solicitante" class="det-val">—</div></div>
-      <div id="det-tempo-row" style="display:none"><div class="det-label">Tempo de Atendimento</div><div id="det-tempo" class="det-val" style="font-weight:700;color:var(--accent)">—</div></div>
-    </div>
-
-    <!-- Descrição -->
-    <div id="det-desc-wrap" style="margin-bottom:14px;display:none">
-      <div class="det-label">Descrição</div>
-      <div id="det-desc" style="font-size:13px;color:var(--text2);line-height:1.6;background:var(--surface2);padding:10px 12px;border-radius:8px;border:1px solid var(--border)"></div>
-    </div>
-
-    <!-- Encerramento registrado -->
-    <div id="det-closed-wrap" style="margin-bottom:14px;display:none;padding:10px 14px;border-radius:8px;background:var(--green-bg);border:1px solid #bbf7d0">
-      <div class="det-label" style="color:var(--green)">✓ Encerrado em</div>
-      <div id="det-closed-info" style="font-size:13px;color:var(--green);font-weight:600"></div>
-    </div>
-
-    <!-- Validação / bloqueio -->
-    <div id="det-bloqueio" style="display:none;padding:10px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;font-size:13px;color:#92400e;margin-bottom:12px"></div>
-
-    <!-- Confirmação -->
-    <div id="det-confirm-msg" style="display:none;padding:10px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;font-size:13px;color:#92400e;font-weight:500;margin-bottom:12px">
-      ⚠️ Tem certeza que deseja encerrar este chamado?
-    </div>
-
-    <!-- Frota / Equipamento vinculado -->
-    <div id="det-frota-wrap" style="display:none;background:var(--accent-light);border:1px solid #bfdbfe;border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--accent);margin-bottom:8px">🔗 Equipamento Vinculado</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
-        <div><div class="det-label">Código / Frota</div><div class="det-val" id="det-frota-codigo" style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">—</div></div>
-        <div><div class="det-label">Descrição</div><div class="det-val" id="det-frota-descr">—</div></div>
-        <div><div class="det-label">Modelo</div><div class="det-val" id="det-frota-modelo">—</div></div>
-        <div><div class="det-label">Grupo</div><div class="det-val" id="det-frota-grupo">—</div></div>
-        <div><div class="det-label">Status</div><div class="det-val" id="det-frota-status" style="font-weight:600">—</div></div>
+    <!-- ════════════════ BLOCO 1 · CABEÇALHO ════════════════ -->
+    <div class="det-cabecalho">
+      <div class="det-cabecalho-top">
+        <div>
+          <div style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent)" id="det-num"></div>
+          <div style="font-size:19px;font-weight:700;color:var(--text);margin-top:2px;line-height:1.3" id="det-titulo"></div>
+        </div>
+        <div id="det-status"></div>
+      </div>
+      <div class="det-cabecalho-grid">
+        <div><div class="det-label">Prioridade</div><div id="det-prior" class="det-val"></div></div>
+        <div><div class="det-label">Atraso / SLA</div><div id="det-sla" class="det-val">—</div></div>
+        <div id="det-tempo-row" style="display:none"><div class="det-label">Tempo de Atendimento</div><div id="det-tempo" class="det-val" style="font-weight:700;color:var(--accent)">—</div></div>
+        <div><div class="det-label">Fazenda</div><div id="det-fazenda" class="det-val"></div></div>
+        <div><div class="det-label">Sistema / Origem</div><div id="det-bucket" class="det-val"></div></div>
+        <div><div class="det-label">Cultura</div><div id="det-cult" class="det-val"></div></div>
+        <div><div class="det-label">Responsável(is)</div><div id="det-resp" class="det-val"></div></div>
+        <div id="det-solicitante-row"><div class="det-label">Solicitante</div><div id="det-solicitante" class="det-val">—</div></div>
+        <div id="det-tecnico-row"><div class="det-label">Técnico Responsável</div><div id="det-tecnico" class="det-val">—</div></div>
+        <div id="det-categoria-row"><div class="det-label">Categoria</div><div id="det-categoria" class="det-val">—</div></div>
+        <div><div class="det-label">Data de Abertura</div><div id="det-data" class="det-val"></div></div>
+        <div><div class="det-label">Aberto por</div><div id="det-aberto-por" class="det-val"></div></div>
+        <div id="det-enc-row" style="display:none"><div class="det-label">Data de Encerramento</div><div id="det-data-enc" class="det-val"></div></div>
+        <div id="det-enc-por-row" style="display:none"><div class="det-label">Encerrado por</div><div id="det-enc-por" class="det-val"></div></div>
+      </div>
+      <!-- Descrição do problema -->
+      <div id="det-desc-wrap" style="margin-top:12px;display:none">
+        <div class="det-label">Descrição do problema</div>
+        <div id="det-desc" style="font-size:13px;color:var(--text2);line-height:1.6;background:var(--surface2);padding:10px 12px;border-radius:8px;border:1px solid var(--border);margin-top:4px"></div>
       </div>
     </div>
 
-    <!-- Fotos do chamado -->
-    <div id="det-fotos-wrap" style="display:none;margin-bottom:14px">
-      <div class="det-label" style="margin-bottom:8px">📷 Fotos</div>
-      <div id="det-fotos" style="display:flex;flex-wrap:wrap;gap:8px"></div>
-    </div>
-
-    <!-- Peças utilizadas -->
-    <div id="det-pecas-wrap" style="display:none;margin-bottom:14px">
-      <div class="det-label" style="margin-bottom:8px">🔧 Peças Utilizadas</div>
-      <div id="det-pecas"></div>
-    </div>
-
-    <!-- Observações -->
-    <div id="det-obs-wrap" style="display:none;margin-bottom:14px">
-      <div class="det-label" style="margin-bottom:6px">📝 Observações</div>
-      <div id="det-obs" style="font-size:12px;color:var(--text2);line-height:1.6;background:var(--surface2);padding:10px 12px;border-radius:8px;border:1px solid var(--border)"></div>
-    </div>
-
-    <!-- Histórico -->
-    <!-- Timeline completa -->
-    <div id="det-hist-wrap" style="margin-bottom:14px;display:none">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div class="det-label">Histórico do Chamado</div>
-        <span id="det-hist-count" style="font-size:10px;color:var(--text3)"></span>
+    <!-- ════════════════ BLOCO 2 · AÇÕES RÁPIDAS ════════════════
+         det-status-actions preserva EXATAMENTE o escopo de antes (só o
+         grupo Iniciar/Pausar/Retomar/Observação, com display:contents pra
+         participar da mesma fileira visual dos botões vizinhos) — Assumir/
+         Encerrar/Reabrir continuam com sua própria visibilidade
+         independente, exatamente como já era antes desta reestruturação. -->
+    <div class="det-acoes">
+      <div id="det-closed-wrap" style="display:none;padding:9px 14px;border-radius:8px;background:var(--green-bg);border:1px solid color-mix(in srgb,var(--green) 35%,var(--surface));margin-bottom:10px">
+        <div class="det-label" style="color:var(--green)">✓ Encerrado em</div>
+        <div id="det-closed-info" style="font-size:13px;color:var(--green);font-weight:600"></div>
       </div>
-      <div id="det-hist"></div>
-    </div>
-
-    <!-- Status actions bar (only shown for open chamados) -->
-    <div id="det-status-actions" style="display:none;padding:10px 0 14px;border-top:1px solid var(--border);margin-top:4px">
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px">Registrar evento</div>
-      <div style="display:flex;gap:7px;flex-wrap:wrap">
-        <button class="btn btn-ghost" id="det-btn-iniciar" style="font-size:11px;border-color:var(--accent);color:var(--accent)"
-          onclick="registrarEvento('iniciou')">▶ Iniciar Atendimento</button>
-        <button class="btn btn-ghost" id="det-btn-peca-sol" style="font-size:11px;border-color:var(--purple);color:var(--purple)"
-          onclick="registrarEvento('peca_solicitada')">📦 Solicitar Peça</button>
-        <button class="btn btn-ghost" id="det-btn-peca-rec" style="font-size:11px;border-color:var(--teal);color:var(--teal)"
-          onclick="registrarEvento('peca_recebida')">✔ Peça Recebida</button>
-        <button class="btn btn-ghost" id="det-btn-obs" style="font-size:11px"
-          onclick="registrarEvento('obs')">💬 Observação</button>
+      <div id="det-bloqueio" style="display:none;padding:10px 14px;border-radius:8px;background:var(--amber-bg);border:1px solid var(--amber);font-size:13px;color:var(--amber);margin-bottom:10px"></div>
+      <div id="det-confirm-msg" style="display:none;padding:10px 14px;border-radius:8px;background:var(--amber-bg);border:1px solid var(--amber);font-size:13px;color:var(--amber);font-weight:500;margin-bottom:10px">
+        ⚠️ Tem certeza que deseja encerrar este chamado?
       </div>
-      <!-- Inline input for detail when needed -->
-      <div id="det-evt-input-wrap" style="display:none;margin-top:8px;display:none">
+      <div class="det-acoes-row" id="det-acoes-row">
+        <button class="det-acao-btn det-acao-assumir" id="det-btn-assumir" style="display:none" onclick="assumirChamado(detCurrentNum)"><span class="det-acao-ic">⚡</span>Assumir</button>
+        <div id="det-status-actions" style="display:none">
+          <button class="det-acao-btn" id="det-btn-iniciar" onclick="registrarEvento('iniciou')"><span class="det-acao-ic">▶</span>Iniciar</button>
+          <button class="det-acao-btn" id="det-btn-peca-sol" onclick="registrarEvento('peca_solicitada')"><span class="det-acao-ic">⏸</span>Pausar</button>
+          <button class="det-acao-btn" id="det-btn-peca-rec" onclick="registrarEvento('peca_recebida')"><span class="det-acao-ic">▶</span>Retomar</button>
+          <button class="det-acao-btn" id="det-btn-obs" onclick="registrarEvento('obs')"><span class="det-acao-ic">💬</span>Observação</button>
+        </div>
+        <button class="det-acao-btn det-acao-encerrar" id="det-btn-enc-init" style="display:none" onclick="detMostrarConfirm()"><span class="det-acao-ic">✓</span>Encerrar</button>
+        <button class="det-acao-btn det-acao-danger" id="det-btn-enc-confirm" style="display:none" onclick="detConfirmarEnc()"><span class="det-acao-ic">✓</span>Confirmar Encerramento</button>
+        <button class="det-acao-btn" id="det-btn-cancelar-confirm" style="display:none" onclick="detCancelarConfirm()">Voltar</button>
+      </div>
+      <div id="det-evt-input-wrap" style="display:none;margin-top:10px">
         <input class="form-input" type="text" id="det-evt-input"
           placeholder="Descreva o evento…" style="width:100%;box-sizing:border-box"
           onkeydown="if(event.key==='Enter')confirmarEvento()">
@@ -2458,18 +2434,88 @@
       </div>
     </div>
 
+    <!-- Corpo: 2 colunas -->
+    <div class="det-body-grid">
+
+      <!-- COLUNA PRINCIPAL -->
+      <div class="det-col-main">
+
+        <!-- ════════════════ BLOCO 3 · TIMELINE ════════════════ -->
+        <div class="det-block" id="det-hist-wrap" style="display:none">
+          <div class="det-block-head">
+            <div class="det-block-title">🕐 Linha do Tempo</div>
+            <span id="det-hist-count" style="font-size:10px;color:var(--text3)"></span>
+          </div>
+          <div id="det-hist"></div>
+        </div>
+
+        <!-- ════════════════ BLOCO 6 · OBSERVAÇÕES ════════════════ -->
+        <div class="det-block" id="det-comentarios-wrap">
+          <div class="det-block-head"><div class="det-block-title">💬 Observações</div></div>
+          <div id="det-comentarios"></div>
+        </div>
+
+      </div>
+
+      <!-- COLUNA LATERAL -->
+      <div class="det-col-side">
+
+        <!-- ════════════════ BLOCO 4 · EQUIPAMENTO ════════════════ -->
+        <div class="det-block" id="det-frota-wrap" style="display:none">
+          <div class="det-block-head"><div class="det-block-title">🔗 Equipamento Vinculado</div></div>
+          <div class="det-frota-grid">
+            <div><div class="det-label">Código / Frota</div><div class="det-val" id="det-frota-codigo" style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">—</div></div>
+            <div><div class="det-label">Descrição</div><div class="det-val" id="det-frota-descr">—</div></div>
+            <div><div class="det-label">Modelo</div><div class="det-val" id="det-frota-modelo">—</div></div>
+            <div><div class="det-label">Grupo</div><div class="det-val" id="det-frota-grupo">—</div></div>
+            <div><div class="det-label">Status</div><div class="det-val" id="det-frota-status" style="font-weight:600">—</div></div>
+          </div>
+          <!-- Histórico resumido do equipamento — mesma renderHistoricoEquip()
+               da tela Novo Chamado, com prefixo próprio (ver chamados/index.js). -->
+          <div id="det-equip-hist-card" style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+              <div style="font-size:11px;font-weight:700;color:var(--text2)">Últimos chamados deste equipamento</div>
+              <div style="display:flex;gap:10px;font-size:10px;color:var(--text3)">
+                <span>Total: <strong id="det-equip-hist-total" style="color:var(--text)">0</strong></span>
+                <span>Abertos: <strong id="det-equip-hist-aberto" style="color:var(--red)">0</strong></span>
+                <span>Encerrados: <strong id="det-equip-hist-encerrado" style="color:var(--green)">0</strong></span>
+              </div>
+            </div>
+            <div id="det-equip-hist-vazio" style="display:none;font-size:11px;color:var(--text3);padding:6px 0">Nenhum outro chamado para este equipamento.</div>
+            <div style="overflow-x:auto">
+              <table class="data-table" id="det-equip-hist-tbl-wrap" style="width:100%;font-size:10.5px">
+                <thead><tr>
+                  <th>Número</th><th>Descrição</th><th>Prioridade</th><th>Abertura</th><th>Status</th><th>Responsável</th><th>Técnico</th><th>Encerramento</th><th>Tempo parado</th><th>Solução</th>
+                </tr></thead>
+                <tbody id="tbl-det-equip-hist"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ════════════════ BLOCO 5 · GALERIA DE ANEXOS ════════════════ -->
+        <div class="det-block" id="det-fotos-wrap" style="display:none">
+          <div class="det-block-head"><div class="det-block-title">📷 Anexos</div></div>
+          <div id="det-fotos" class="det-galeria"></div>
+        </div>
+
+        <!-- Peças utilizadas (dado estruturado, escolhido do estoque na abertura) -->
+        <div class="det-block" id="det-pecas-wrap" style="display:none">
+          <div class="det-block-head"><div class="det-block-title">🔧 Peças Utilizadas</div></div>
+          <div id="det-pecas"></div>
+        </div>
+
+        <!-- ════════════════ BLOCO 7 · AUDITORIA ════════════════ -->
+        <div class="det-block" id="det-auditoria-wrap" style="display:none">
+          <div class="det-block-head"><div class="det-block-title">🔍 Auditoria deste chamado</div></div>
+          <div id="det-auditoria"></div>
+        </div>
+
+      </div>
+    </div>
+
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeDetalhe()">Fechar</button>
-      <button class="btn btn-ghost" id="det-btn-assumir" style="display:none;background:var(--amber-bg,#fef3c7);color:var(--amber,#d97706)" onclick="assumirChamado(detCurrentNum)">⚡ Assumir</button>
-      <button class="btn btn-ghost" id="det-btn-enc-init" style="display:none" onclick="detMostrarConfirm()">
-        Encerrar Chamado
-      </button>
-      <button class="btn btn-danger" id="det-btn-enc-confirm" style="display:none" onclick="detConfirmarEnc()">
-        ✓ Confirmar Encerramento
-      </button>
-      <button class="btn btn-ghost" id="det-btn-cancelar-confirm" style="display:none" onclick="detCancelarConfirm()">
-        Voltar
-      </button>
     </div>
   </div>
 </div>
@@ -2526,26 +2572,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260729d"></script>
-  <script src="js/data/equipamentos.js?v=20260729d"></script>
-  <script src="js/data/match_map.js?v=20260729d"></script>
-  <script src="js/data/equip_idx.js?v=20260729d"></script>
+  <script src="js/data/chamados_historico.js?v=20260729e"></script>
+  <script src="js/data/equipamentos.js?v=20260729e"></script>
+  <script src="js/data/match_map.js?v=20260729e"></script>
+  <script src="js/data/equip_idx.js?v=20260729e"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260729d"></script>
+  <script src="js/core/storage.js?v=20260729e"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260729d"></script>
-  <script src="js/modules/dashboard/index.js?v=20260729d"></script>
-  <script src="js/modules/chamados/index.js?v=20260729d"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260729d"></script>
-  <script src="js/modules/relatorios/index.js?v=20260729d"></script>
-  <script src="js/modules/config/index.js?v=20260729d"></script>
+  <script src="js/modules/usuarios/index.js?v=20260729e"></script>
+  <script src="js/modules/dashboard/index.js?v=20260729e"></script>
+  <script src="js/modules/chamados/index.js?v=20260729e"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260729e"></script>
+  <script src="js/modules/relatorios/index.js?v=20260729e"></script>
+  <script src="js/modules/config/index.js?v=20260729e"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260729d"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260729e"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260729d"></script>
+  <script src="js/core/init.js?v=20260729e"></script>
 </body>
 </html>

@@ -363,7 +363,7 @@ function renderChamados(){
     const diasC = diasAberto(r[4]);
     const prior = prioridadeReal(r[0]);
     const resps = (r[3]||'').split(',').map(s=>s.trim()).filter(Boolean);
-    return `<tr class="ticket-row" onclick="openDetalhe('${r[0]}')">
+    return `<tr class="ticket-row" data-num="${r[0]}" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">
         <div style="display:flex;align-items:center;gap:6px">${r[0]}${prior?prioridadeBadge(prior):''}</div>
         ${_frC?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frC}</div>`:''}
@@ -482,7 +482,8 @@ function openDetalhe(num) {
   // Grid fields
   const statusEl = document.getElementById('det-status');
   statusEl.innerHTML = `<span class="pill ${statusPill(rec[5])}">${isClosed ? (rec[5]==='Encerrado'?'Encerrado':'Concluída') : (rec[5] || 'Não iniciado')}</span>`;
-  document.getElementById('det-prior').textContent  = rec[9] || rec[9] || 'Média';
+  // det-prior preenchido mais abaixo via prioridadeReal(num) — achado da
+  // Etapa 2A (rec[9] nunca existe, sempre "Média"), corrigido também aqui.
   document.getElementById('det-resp').textContent   = (rec[3]||'').replace(/,/g,' e ') || '—';
 
   // New fields from local record
@@ -533,18 +534,14 @@ function openDetalhe(num) {
     if(_pecasWrap) _pecasWrap.style.display='block';
   } else if(_pecasWrap) _pecasWrap.style.display='none';
 
-  // Observações
-  const _obsWrap=document.getElementById('det-obs-wrap');
-  const _obsEl=document.getElementById('det-obs');
-  if(_obsEl&&_lr?.observacoes){
-    _obsEl.textContent=_lr.observacoes;
-    if(_obsWrap) _obsWrap.style.display='block';
-  } else if(_obsWrap) _obsWrap.style.display='none';
+  // Observações — bloco antigo (det-obs/det-obs-wrap) substituído pelo
+  // Bloco 6 (Observações/comentários, ver _detComentariosHTML() abaixo,
+  // que já inclui _lr.observacoes junto dos eventos tipo 'obs').
   document.getElementById('det-cult').innerHTML     = `<span class="pill ${cultPill(rec[2])}">${rec[2]||'Sem cultura'}</span>`;
-  // Fazenda label
-  const fazendaLabel = rec[6]==='Solinftec KRT'?'Karitel':rec[6]==='Solinftec RDM'?'Rio do Meio':(rec[6]||'—');
   const setDetEl = (id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
-  setDetEl('det-fazenda', fazendaLabel);
+  // fazendaLabel(): mesmo helper compartilhado criado na Etapa 2A (antes
+  // esse mapeamento estava escrito à mão aqui, de novo).
+  setDetEl('det-fazenda', fazendaLabel(rec[6]));
   setDetEl('det-bucket',  rec[6] || '—');
   setDetEl('det-data',    rec[4] ? rec[4].split('-').reverse().join('/') : '—');
 
@@ -629,14 +626,16 @@ function openDetalhe(num) {
     }
   }
 
-  // Reabrir button (no recursion — runs once per open)
+  // Reabrir button (no recursion — runs once per open) — Fase 2 · Etapa 2B:
+  // agora fica dentro de #det-acoes-row (junto dos outros botões de ação),
+  // em vez do rodapé do modal; mesma função, mesma condição de sempre.
   const btnReabrir = document.getElementById('det-btn-reabrir') ||
     (() => {
       const b = document.createElement('button');
       b.id = 'det-btn-reabrir';
-      b.className = 'btn btn-ghost';
-      b.textContent = '↩ Reabrir Chamado';
-      document.querySelector('.modal-footer')?.prepend(b);
+      b.className = 'det-acao-btn';
+      b.innerHTML = '<span class="det-acao-ic">↩</span>Reabrir';
+      document.getElementById('det-acoes-row')?.appendChild(b);
       return b;
     })();
   btnReabrir.style.display = (isClosed && temAcesso('p_reabrir')) ? 'inline-flex' : 'none';
@@ -648,15 +647,87 @@ function openDetalhe(num) {
     const _jaAssumido = _localA?.assumidoPor && _localA.assumidoPor===(currentUser()?.nome||'');
     _btnAssumirDet.style.display = (!isClosed && pode('editar') && !_jaAssumido) ? 'inline-flex' : 'none';
   }
-  // Status action bar
+  // Status action bar — 'contents' (não 'block') pra participar da mesma
+  // fileira flex dos botões vizinhos em #det-acoes-row (Etapa 2B); mesma
+  // condição de sempre, só o modo de exibição CSS mudou.
   const _statusActBar = document.getElementById('det-status-actions');
   if (_statusActBar) {
-    _statusActBar.style.display = (!isClosed && pode('editar')) ? 'block' : 'none';
+    _statusActBar.style.display = (!isClosed && pode('editar')) ? 'contents' : 'none';
     const _evWrap = document.getElementById('det-evt-input-wrap');
     if (_evWrap) _evWrap.style.display = 'none';
   }
 
+  // Bloco 4 · histórico resumido do equipamento embutido no painel
+  // (Fase 2 · Etapa 2B) — mesma função renderHistoricoEquip() da tela Novo
+  // Chamado, só com prefixo de ids próprio pra não colidir no DOM.
+  if (_detEquip) renderHistoricoEquip(_detEquip.codigo, 'det-equip-hist');
+
+  // Bloco 6 · observações como comentários cronológicos, Bloco 7 · auditoria
+  // do chamado — ambos só leem dado já existente (ver funções abaixo).
+  const _comentEl = document.getElementById('det-comentarios');
+  if (_comentEl) _comentEl.innerHTML = _detComentariosHTML(num, _lr);
+  const _auditWrap = document.getElementById('det-auditoria-wrap');
+  const _auditEl   = document.getElementById('det-auditoria');
+  if (_auditEl) {
+    const _entradas = getAudit().filter(a => a.chamado === num).sort((a,b)=>(b.ts||'').localeCompare(a.ts||''));
+    if (_entradas.length) {
+      _auditEl.innerHTML = _detAuditoriaHTML(_entradas);
+      if (_auditWrap) _auditWrap.style.display = 'block';
+    } else if (_auditWrap) _auditWrap.style.display = 'none';
+  }
+
+  // Bloco 1 · Atraso/SLA no cabeçalho — mesmos diasAberto()/diasChip() já
+  // usados nas listas (Etapa 2A), só não existia essa leitura aqui ainda.
+  const _slaEl = document.getElementById('det-sla');
+  if (_slaEl) {
+    if (isClosed) { _slaEl.textContent = '—'; }
+    else {
+      const _dias = diasAberto(rec[4]);
+      _slaEl.innerHTML = `<span ${diasChip(_dias)}>${_dias} dia${_dias===1?'':'s'} em aberto</span>`;
+    }
+  }
+  document.getElementById('det-prior').textContent = prioridadeReal(num) || 'Média';
+
   document.getElementById('modal-detalhe').classList.add('open');
+}
+
+// Bloco 6 (Observações) — junta o campo .observacoes (texto livre da
+// abertura) com os eventos tipo 'obs' já registrados
+// (registrarEvento('obs')/confirmarEvento(), addEvent em core/storage.js).
+// 100% dado já existente, só reorganizado como lista de comentários.
+function _detComentariosHTML(num, localRec) {
+  const eventos = (getEvents()[num] || []).filter(e => e.type === 'obs');
+  const itens = [];
+  if (localRec?.observacoes) {
+    itens.push({ ts: localRec.dataHoraISO || '', actor: localRec.abertoPor || 'Sistema', texto: localRec.observacoes, origem: 'Observação da abertura' });
+  }
+  eventos.forEach(e => itens.push({ ts: e.ts, actor: e.actor, texto: e.detail, origem: null }));
+  if (!itens.length) return `<div style="font-size:12px;color:var(--text3);padding:6px 0">Nenhuma observação registrada.</div>`;
+  itens.sort((a,b) => (a.ts||'').localeCompare(b.ts||''));
+  return itens.map(it => {
+    const d = it.ts ? new Date(it.ts) : null;
+    const fmt = d && !isNaN(d) ? d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
+    return `<div class="det-comentario">
+      <div class="det-comentario-head"><strong>${_escHtml(it.actor||'—')}</strong><span>${fmt}</span></div>
+      <div class="det-comentario-txt">${_escHtml(it.texto||'')}</div>
+      ${it.origem?`<div class="det-comentario-origem">${it.origem}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// Bloco 7 (Auditoria) — entradas de getAudit() já filtradas por chamado
+// (chamado a chamada em confirmarEvento()/assumirChamado()/etc via
+// audit(tipo,detalhe,chamado) — core/storage.js). Só formata pra exibição.
+function _detAuditoriaHTML(entradas) {
+  return entradas.map(a => {
+    const d = a.ts ? new Date(a.ts) : null;
+    const fmt = d && !isNaN(d) ? d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
+    return `<div class="det-audit-row">
+      <span class="det-audit-ts">${fmt}</span>
+      <span class="det-audit-quem">${_escHtml(a.usuario||'—')}</span>
+      <span class="det-audit-oq">${_escHtml(a.detalhe||a.tipo||'')}</span>
+    </div>`;
+  }).join('');
 }
 
 function closeDetalhe(e) {
@@ -664,6 +735,40 @@ function closeDetalhe(e) {
   document.getElementById('modal-detalhe').classList.remove('open');
   detCurrentNum = null;
 }
+
+// Navegação ◀ ▶ entre chamados (Fase 2 · Etapa 2B) — lê a tabela
+// atualmente visível no DOM (a lista de onde o chamado foi aberto), sem
+// tocar em nenhuma função renderX(); respeita o filtro/ordenação/página já
+// aplicados na tela, porque só lê o que já está renderizado.
+function _detListaAtual() {
+  const tbody = document.querySelector('.section.active tbody');
+  if (!tbody) return [];
+  return [...tbody.querySelectorAll('tr[data-num]')].map(tr => tr.dataset.num);
+}
+function _detNavegar(delta) {
+  if (!detCurrentNum) return;
+  const lista = _detListaAtual();
+  const idx = lista.indexOf(detCurrentNum);
+  if (idx === -1) return;
+  const novoNum = lista[idx + delta];
+  if (novoNum) openDetalhe(novoNum);
+}
+function detAnterior() { _detNavegar(-1); }
+function detProximo()  { _detNavegar(1); }
+
+// Atalhos de teclado enquanto o Centro Operacional está aberto — ←/→
+// navegam entre chamados, Esc fecha. Ignorados com o foco num campo de
+// texto/select (ex.: digitando uma observação), pra não atrapalhar
+// digitação nem interceptar Esc de dentro de um campo.
+document.addEventListener('keydown', (e) => {
+  const modal = document.getElementById('modal-detalhe');
+  if (!modal || !modal.classList.contains('open')) return;
+  const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  if (e.key === 'Escape')        closeDetalhe();
+  else if (e.key === 'ArrowLeft')  detAnterior();
+  else if (e.key === 'ArrowRight') detProximo();
+});
 
 function alterarResp(num, novoResp) {
   if (!novoResp) return;
@@ -780,7 +885,7 @@ function renderAberto() {
       const prior = prioridadeReal(r[0]) || 'Média';
       const _lrAb = getLocal().find(x=>x.num===r[0]);
       const _frAb = frotaLabel(r[0], _lrAb);
-      return `<tr style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
+      return `<tr data-num="${r[0]}" style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
         <td class="td-num">${r[0]}</td>
         <td class="td-titulo">
           ${_escHtml(r[1])}
@@ -910,7 +1015,7 @@ function renderCriticidade() {
     const _lrCr = getLocal().find(x=>x.num===r[0]);
     const _frCr = frotaLabel(r[0], _lrCr);
     return `
-    <tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
+    <tr data-num="${r[0]}" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}${_frCr?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frCr}</div>`:''}</td>
       <td>${prioridadeBadge(prioridadeReal(r[0]))}</td>
@@ -1022,7 +1127,7 @@ function renderEncerrados() {
     // Corrige uma célula <td> extra que existia aqui (repetia o bucket cru
     // duas vezes), deixando cada coluna desalinhada com seu cabeçalho —
     // achado da Etapa 2A, corrigido nesta reescrita. 10 células, 10 <th>.
-    return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
+    return `<tr data-num="${r[0]}" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
@@ -1994,8 +2099,12 @@ function equipSelect(equip) {
 // formulário de Novo Chamado. Reaproveita o mesmo vínculo já usado em
 // verHistoricoFrota() (src/equipamentos/index.js): MATCH_MAP para chamados
 // históricos + local.equipCodigo para chamados criados pelo app modular.
-function renderHistoricoEquip(code) {
-  const card = document.getElementById('equip-hist-card');
+// prefix ganhou um parâmetro (Fase 2 · Etapa 2B) pra poder renderizar o
+// mesmo histórico dentro do Centro Operacional do Chamado, sem duplicar
+// ids no DOM — chamada sem o 2º argumento (equipSelect(), tela Novo
+// Chamado) continua escrevendo exatamente nos mesmos ids de sempre.
+function renderHistoricoEquip(code, prefix = 'equip-hist') {
+  const card = document.getElementById(prefix + '-card');
   if (!card) return;
 
   const all    = allRecords();
@@ -2012,13 +2121,13 @@ function renderHistoricoEquip(code) {
   const nEncerrado = recs.filter(isFechado).length;
 
   const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  setEl('equip-hist-total',     recs.length);
-  setEl('equip-hist-aberto',    nAberto);
-  setEl('equip-hist-encerrado', nEncerrado);
+  setEl(prefix + '-total',     recs.length);
+  setEl(prefix + '-aberto',    nAberto);
+  setEl(prefix + '-encerrado', nEncerrado);
 
-  const vazio   = document.getElementById('equip-hist-vazio');
-  const tblWrap = document.getElementById('equip-hist-tbl-wrap');
-  const tbody   = document.getElementById('tbl-equip-hist');
+  const vazio   = document.getElementById(prefix + '-vazio');
+  const tblWrap = document.getElementById(prefix + '-tbl-wrap');
+  const tbody   = document.getElementById('tbl-' + prefix);
   if (vazio)   vazio.style.display   = recs.length ? 'none'  : 'block';
   if (tblWrap) tblWrap.style.display = recs.length ? 'table' : 'none';
   if (tbody) {
@@ -2031,10 +2140,12 @@ function renderHistoricoEquip(code) {
         const dias = Math.max(0, Math.floor((fim - abertura) / 86400000));
         tempoParado = dias + (dias === 1 ? ' dia' : ' dias');
       }
+      // Prioridade corrigida aqui também (mesmo achado da Etapa 2A: getPrior/
+      // rec[9] nunca funciona) — usa prioridadeReal(num) + prioridadeBadge.
       return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
         <td class="td-num">${r[0]}</td>
         <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_escHtml(r[1])}</td>
-        <td>${priorPill(getPrior(r))}</td>
+        <td>${prioridadeBadge(prioridadeReal(r[0]))}</td>
         <td style="font-family:var(--font-mono)">${r[4]?r[4].split('-').reverse().join('/'):'—'}</td>
         <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
         <td>${(r[3]||'—').replace(/,/g,' e ')}</td>
