@@ -188,3 +188,41 @@
   display:inline-flex;align-items:center;
   padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700;
 }
+
+/* ════════════════════════════════════════════
+   FASE 2 · ETAPA 2A — LISTAS DE CHAMADOS
+   (ordenação de coluna, filtros avançados, linha da tabela, responsivo)
+   ════════════════════════════════════════════ */
+
+/* Cabeçalho ordenável — clique alterna asc/desc (sortChamados() em
+   chamados/index.js); a seta só aparece na coluna ativa. */
+.th-sort{ cursor:pointer; user-select:none; position:relative; padding-right:20px!important; }
+.th-sort:hover{ color:var(--text); }
+.th-sort::after{
+  content:'↕'; position:absolute; right:6px; opacity:.35; font-size:10px;
+}
+.th-sort.sorted::after{ content:'↑'; opacity:1; color:var(--accent); }
+.th-sort.sorted-desc::after{ content:'↓'; }
+
+/* Painel de filtros avançados — mesma caixa de .filter-bar, com um leve
+   tom de destaque pra ficar claro que é um bloco extra, opcional. */
+.filter-bar-adv{
+  background:var(--accent-light); border-color:color-mix(in srgb,var(--accent) 30%,var(--border));
+  margin-top:-8px;
+}
+.btn-ghost-active{ background:var(--accent-light); border-color:var(--accent); color:var(--accent-text); }
+
+/* Linha de chamado — leve realce à esquerda no hover, além do já existente
+   destaque de fundo (style.css .data-table tr:hover). */
+.ticket-row{ border-left:2px solid transparent; transition:border-color var(--transition); }
+.ticket-row:hover{ border-left-color:var(--accent); }
+
+@media (max-width:1100px){
+  /* Nas listas de chamados, prioriza número/título/status — some com
+     colunas secundárias antes de recorrer a rolagem horizontal. */
+  #sec-chamados .data-table th:nth-child(3), #sec-chamados .data-table td:nth-child(3),
+  #sec-criticidade .data-table th:nth-child(4), #sec-criticidade .data-table td:nth-child(4) { display:none; }
+}
+@media (max-width:768px){
+  .filter-bar-adv{ margin-top:0; }
+}

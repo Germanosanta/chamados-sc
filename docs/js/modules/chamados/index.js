@@ -29,6 +29,12 @@ let _pendingEvtType = null;
 let encCurrentNum = null;   // chamado em foco no modal de Encerrar
 let detCurrentNum = null;   // chamado em foco no modal de Detalhe
 
+// Limiares de atraso — antes repetidos como número mágico (7 e 3) em vários
+// pontos (renderAberto, renderPainel, diasChip); centralizados aqui, Fase 2
+// · Etapa 2A, mesmos valores de sempre, só numa fonte única agora.
+const DIAS_ATRASO_ALERTA  = 3;
+const DIAS_ATRASO_CRITICO = 7;
+
 function diasAberto(dataStr) {
   if (!dataStr) return 0;
   const d = new Date(dataStr + 'T00:00:00');
@@ -36,12 +42,22 @@ function diasAberto(dataStr) {
   return Math.floor((hoje - d) / 86400000);
 }
 
+// Chip de atraso — reescrito na Fase 2 · Etapa 2A pra usar a família .badge
+// (Etapa 1) em vez de cor hardcoded, que ficava sempre clara mesmo no modo
+// escuro. Mesmos limiares de sempre (DIAS_ATRASO_ALERTA/CRITICO), só o
+// jeito de pintar mudou.
 function diasChip(dias) {
-  if (dias > 7)  return 'style="background:#fef2f2;color:#dc2626;font-weight:700"';
-  if (dias >= 3) return 'style="background:#fffbeb;color:#d97706;font-weight:700"';
-  return 'style="background:#f0fdf4;color:#16a34a;font-weight:700"';
+  if (dias > DIAS_ATRASO_CRITICO)  return 'class="badge badge-red"';
+  if (dias >= DIAS_ATRASO_ALERTA)  return 'class="badge badge-amber"';
+  return 'class="badge badge-green"';
 }
 
+// priorPill/getPrior mantidos EXATAMENTE como estavam (nenhum caractere
+// alterado) — getPrior(r) é conhecidamente quebrado (r[9] nunca existe no
+// array de 7 posições), mas outras telas fora do escopo desta etapa (ex.:
+// renderPainel em dashboard/index.js) ainda podem depender do comportamento
+// atual. As telas reescritas nesta etapa usam prioridadeReal(num) abaixo,
+// que lê o campo certo, em vez de tocar nestas duas funções.
 function priorPill(p) {
   if (!p || p === 'Média') return '<span class="pill p-outros">Média</span>';
   if (p === 'Urgente')    return '<span class="pill" style="background:#fef2f2;color:#dc2626;font-weight:700">Urgente</span>';
@@ -52,6 +68,56 @@ function priorPill(p) {
 function getPrior(r) {
   // local records store prior at r[9]; base records have no priority
   return r[9] || r[10] || '';  // index may vary
+}
+
+// Lê a prioridade de verdade de um chamado — getPrior(r)/rec[9] acima
+// nunca funciona (nenhum array real tem posição 9). O valor real vive no
+// registro local (getLocal()), gravado por submitChamado() no campo
+// "prior". Mesmo caminho que buildTimeline() já usa corretamente
+// (localRec.prior) — só agora reaproveitado também nas listas.
+function prioridadeReal(num) {
+  return getLocal().find(r => r.num === num)?.prior || '';
+}
+
+// Badge de prioridade — substitui priorPill() nas telas reescritas na
+// Fase 2 · Etapa 2A, usando a família .badge (Etapa 1) e recebendo o
+// valor já lido corretamente via prioridadeReal(num).
+function prioridadeBadge(p) {
+  if (p === 'Urgente') return '<span class="badge badge-red">⚡ Urgente</span>';
+  if (p === 'Alta')    return '<span class="badge badge-amber">🔴 Alta</span>';
+  if (p === 'Baixa')   return '<span class="badge badge-green">🟢 Baixa</span>';
+  return '<span class="badge badge-neutral">🟡 Média</span>';
+}
+
+// Rótulo de fazenda — antes escrito 2x diferente (openDetalhe tinha essa
+// mesma lógica inline; renderEncerrados usava só o <option> do filtro).
+// Centralizado aqui, mesmo mapeamento de sempre (KRT→Karitel, RDM→Rio do
+// Meio, senão o valor cru).
+function fazendaLabel(bucket) {
+  if (bucket === 'Solinftec KRT') return 'Karitel';
+  if (bucket === 'Solinftec RDM') return 'Rio do Meio';
+  return bucket || '—';
+}
+
+// Paginação — helper único (Fase 2 · Etapa 2A). As 4 telas de listagem
+// (chamados/aberto/criticidade/encerrados) tinham essa mesma sequência de
+// botões "← 1 … → " copiada e colada em cada renderX(); mesmo resultado
+// de sempre, só numa função só agora — gotoFn é o nome (string) da função
+// de navegação de cada tela (gotoPage/abGotoPage/critGotoPage/encGotoPage).
+function _paginacaoHTML(page, totalItens, perPage, gotoFn) {
+  const pages = Math.ceil(totalItens / perPage) || 1;
+  let btns = `<button class="pag-btn" onclick="${gotoFn}(${page-1})" ${page===1?'disabled':''}>←</button>`;
+  const start = Math.max(1, page-2), end = Math.min(pages, page+2);
+  if (start > 1) btns += `<button class="pag-btn" onclick="${gotoFn}(1)">1</button>${start>2?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}`;
+  for (let p = start; p <= end; p++) btns += `<button class="pag-btn ${p===page?'active':''}" onclick="${gotoFn}(${p})">${p}</button>`;
+  if (end < pages) btns += `${end<pages-1?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}<button class="pag-btn" onclick="${gotoFn}(${pages})">${pages}</button>`;
+  btns += `<button class="pag-btn" onclick="${gotoFn}(${page+1})" ${page===pages?'disabled':''}>→</button>`;
+  return btns;
+}
+function _pagInfoTexto(page, totalItens, perPage) {
+  const de = totalItens ? (page-1)*perPage+1 : 0;
+  const ate = Math.min(page*perPage, totalItens);
+  return `Exibindo ${de}–${ate} de ${totalItens.toLocaleString('pt-BR')} registros`;
 }
 
 const EVT_NEEDS_INPUT = {
@@ -243,6 +309,25 @@ function getEncerrados() {
   );
 }
 
+// Ordenação dinâmica da lista principal (Fase 2 · Etapa 2A) — client-side,
+// sobre o array já filtrado (filteredRecords), sem tocar em nenhum dado.
+// Clicar no mesmo campo inverte a direção; campo novo começa ascendente.
+let _sortField = null, _sortDir = 1;
+const _SORT_IDX = { num:0, titulo:1, cultura:2, resp:3, data:4, status:5, bucket:6 };
+function _aplicarOrdenacao(arr) {
+  if (!_sortField) return arr;
+  const idx = _SORT_IDX[_sortField];
+  return [...arr].sort((a, b) => {
+    const va = (a[idx]||'').toString(), vb = (b[idx]||'').toString();
+    return va.localeCompare(vb, 'pt-BR', {numeric:true}) * _sortDir;
+  });
+}
+function sortChamados(field) {
+  if (_sortField === field) _sortDir *= -1; else { _sortField = field; _sortDir = 1; }
+  filteredRecords = _aplicarOrdenacao(filteredRecords);
+  renderChamados();
+}
+
 function renderChamados(){
   if(!filteredRecords.length) filteredRecords=[...allRecords()];
 
@@ -260,37 +345,52 @@ function renderChamados(){
   }
 })();
   const total=filteredRecords.length;
-  const pages=Math.ceil(total/PER_PAGE);
   const slice=filteredRecords.slice((page-1)*PER_PAGE, page*PER_PAGE);
+  const _closedMapC = getClosedMap();
 
-  document.getElementById('pag-info').textContent=`Exibindo ${(page-1)*PER_PAGE+1}–${Math.min(page*PER_PAGE,total)} de ${total.toLocaleString('pt-BR')} registros`;
+  document.getElementById('pag-info').textContent = _pagInfoTexto(page, total, PER_PAGE);
+
+  // Cabeçalhos ordenáveis — marca visualmente qual coluna está ativa
+  document.querySelectorAll('#tbl-chamados-head [data-sort]').forEach(th=>{
+    th.classList.toggle('sorted', th.dataset.sort===_sortField);
+    th.classList.toggle('sorted-desc', th.dataset.sort===_sortField && _sortDir===-1);
+  });
 
   document.getElementById('tbl-chamados').innerHTML=slice.map(r=>{
     const _lrC=getLocal().find(x=>x.num===r[0]);
     const _frC=frotaLabel(r[0],_lrC);
-    return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
+    const isClosedC = r[5]==='Concluída' || r[5]==='Encerrado' || r[5]==='Concluído' || !!_closedMapC[r[0]];
+    const diasC = diasAberto(r[4]);
+    const prior = prioridadeReal(r[0]);
+    const resps = (r[3]||'').split(',').map(s=>s.trim()).filter(Boolean);
+    return `<tr class="ticket-row" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">
-        ${r[0]}
+        <div style="display:flex;align-items:center;gap:6px">${r[0]}${prior?prioridadeBadge(prior):''}</div>
         ${_frC?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frC}</div>`:''}
       </td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
-      <td style="white-space:nowrap">${r[3]||'—'}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${r[4]?r[4].split('-').reverse().join('/'):' —'}</td>
+      <td style="white-space:nowrap">${resps.length ? resps.map(n=>`<span class="badge badge-neutral" style="margin-right:3px">${_escHtml(n)}</span>`).join('') : '—'}</td>
+      <td style="white-space:nowrap">
+        <span style="font-family:var(--font-mono);font-size:11px">${r[4]?r[4].split('-').reverse().join('/'):'—'}</span>
+        ${!isClosedC && diasC>=DIAS_ATRASO_ALERTA ? `<span ${diasChip(diasC)} style="margin-left:5px">${diasC}d</span>` : ''}
+      </td>
       <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
-      <td style="color:var(--text3);font-size:11px">${r[6]||'—'}</td>
+      <td style="color:var(--text3);font-size:11px">${fazendaLabel(r[6])}</td>
     </tr>`;}).join('');
 
-  // Pagination
-  const pagRow=document.getElementById('pag-row');
-  let btns='';
-  btns+=`<button class="pag-btn" onclick="gotoPage(${page-1})" ${page===1?'disabled':''}>←</button>`;
-  const start=Math.max(1,page-2), end=Math.min(pages,page+2);
-  if(start>1) btns+=`<button class="pag-btn" onclick="gotoPage(1)">1</button>${start>2?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}`;
-  for(let p=start;p<=end;p++) btns+=`<button class="pag-btn ${p===page?'active':''}" onclick="gotoPage(${p})">${p}</button>`;
-  if(end<pages) btns+=`${end<pages-1?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}<button class="pag-btn" onclick="gotoPage(${pages})">${pages}</button>`;
-  btns+=`<button class="pag-btn" onclick="gotoPage(${page+1})" ${page===pages?'disabled':''}>→</button>`;
-  pagRow.innerHTML=btns;
+  document.getElementById('pag-row').innerHTML = _paginacaoHTML(page, total, PER_PAGE, 'gotoPage');
+}
+
+// Painel de filtros avançados (Fase 2 · Etapa 2A) — só mostra/esconde o
+// bloco de campos extras; a filtragem em si acontece em applyFilters().
+function toggleFiltrosAvancados() {
+  const el = document.getElementById('filtros-avancados');
+  const btn = document.getElementById('btn-filtros-avancados');
+  if (!el) return;
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'flex' : 'none';
+  if (btn) btn.classList.toggle('btn-ghost-active', open);
 }
 
 function clearFilters(){
@@ -298,6 +398,9 @@ function clearFilters(){
   document.getElementById('f-cultura').value='';
   document.getElementById('f-status').value='';
   document.getElementById('f-bucket').value='';
+  const fr = document.getElementById('flt-resp'); if (fr) fr.value = '';
+  const fd = document.getElementById('f-de');   if (fd) fd.value = '';
+  const fa = document.getElementById('f-ate');  if (fa) fa.value = '';
   applyFilters();
 }
 
@@ -306,6 +409,12 @@ function applyFilters(){
   const fc=document.getElementById('f-cultura').value;
   const fs=document.getElementById('f-status').value;
   const fb=document.getElementById('f-bucket').value;
+  // Filtros avançados (Fase 2 · Etapa 2A) — mesmos campos que já existem
+  // em rec[], só não eram filtráveis por aqui ainda: responsável e período
+  // de abertura.
+  const fresp = (document.getElementById('flt-resp')?.value || '').toLowerCase();
+  const fde   = document.getElementById('f-de')?.value  || '';
+  const fate  = document.getElementById('f-ate')?.value || '';
   const _closed=getClosedMap();
   const _matchStatus=(r,fs)=>{
     if(!fs) return true;
@@ -321,9 +430,13 @@ function applyFilters(){
     if(fc && r[2]!==fc) return false;
     if(fs && !_matchStatus(r,fs)) return false;
     if(fb && r[6]!==fb) return false;
+    if(fresp && !(r[3]||'').toLowerCase().includes(fresp)) return false;
+    if(fde  && (!r[4] || r[4] < fde))  return false;
+    if(fate && (!r[4] || r[4] > fate)) return false;
     if(q && !(r[0].toLowerCase().includes(q)||r[1].toLowerCase().includes(q))) return false;
     return true;
   });
+  filteredRecords = _aplicarOrdenacao(filteredRecords); // preserva a ordenação ativa, se houver
   page=1;
   renderChamados();
 }
@@ -655,18 +768,29 @@ function renderAberto() {
   } else {
     tbody.innerHTML = slice.map(r => {
       const dias = diasAberto(r[4]);
-      const rowBg = dias > 7 ? 'background:#fff5f5' : dias >= 3 ? 'background:#fffdf0' : '';
+      // Linha de fundo por atraso — reescrita na Etapa 2A com color-mix (theme-
+      // aware) no lugar dos hex fixos de antes (#fff5f5/#fffdf0), que ficavam
+      // claros demais no modo escuro.
+      const rowBg = dias > DIAS_ATRASO_CRITICO ? `background:color-mix(in srgb,var(--red) 6%,var(--surface))`
+        : dias >= DIAS_ATRASO_ALERTA ? `background:color-mix(in srgb,var(--amber) 6%,var(--surface))` : '';
       const dataFmt = r[4] ? r[4].split('-').reverse().join('/') : '—';
-      // r[9] = prioridade (index 9 for local records; base records don't have it → fallback)
-      const prior = r[9] || r[9] || 'Média';
+      // Prioridade corrigida (achado da Etapa 2 · Etapa 2A) — antes lia
+      // r[9] (nunca existe), sempre mostrando "Média". Agora lê do registro
+      // local, onde o valor de verdade é gravado.
+      const prior = prioridadeReal(r[0]) || 'Média';
+      const _lrAb = getLocal().find(x=>x.num===r[0]);
+      const _frAb = frotaLabel(r[0], _lrAb);
       return `<tr style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
         <td class="td-num">${r[0]}</td>
-        <td class="td-titulo">${_escHtml(r[1])}</td>
+        <td class="td-titulo">
+          ${_escHtml(r[1])}
+          <div style="font-size:9px;color:var(--text3);margin-top:1px">${fazendaLabel(r[6])}${_frAb?' · '+_frAb:''}</div>
+        </td>
         <td style="white-space:nowrap;font-weight:500">${r[3] || '<span style="color:var(--text3)">—</span>'}</td>
         <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${dataFmt}</td>
-        <td>${priorPill(prior)}</td>
+        <td>${prioridadeBadge(prior)}</td>
         <td><span class="pill ${statusPill(r[5])}">${r[5] || 'Não iniciado'}</span></td>
-        <td><span class="pill" ${diasChip(dias)}>${dias}d</span></td>
+        <td><span ${diasChip(dias)}>${dias}d</span></td>
         <td style="white-space:nowrap;display:flex;gap:6px;align-items:center" onclick="event.stopPropagation()">
           <select onchange="alterarResp('${r[0]}',this.value)" title="Alterar responsável"
             style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);font-size:11px;color:var(--text);font-family:var(--font);cursor:pointer">
@@ -682,17 +806,8 @@ function renderAberto() {
     }).join('');
   }
 
-  // Pagination buttons — reuse same pattern as renderChamados
   const pagRow = document.getElementById('ab-pag-row');
-  if (!pagRow) return;
-  let btns = '';
-  btns += `<button class="pag-btn" onclick="abGotoPage(${abPage-1})" ${abPage===1?'disabled':''}>←</button>`;
-  const start = Math.max(1, abPage-2), end = Math.min(pages, abPage+2);
-  if (start > 1) btns += `<button class="pag-btn" onclick="abGotoPage(1)">1</button>${start>2?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}`;
-  for (let p = start; p <= end; p++) btns += `<button class="pag-btn ${p===abPage?'active':''}" onclick="abGotoPage(${p})">${p}</button>`;
-  if (end < pages) btns += `${end<pages-1?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}<button class="pag-btn" onclick="abGotoPage(${pages})">${pages}</button>`;
-  btns += `<button class="pag-btn" onclick="abGotoPage(${abPage+1})" ${abPage===pages?'disabled':''}>→</button>`;
-  pagRow.innerHTML = btns;
+  if (pagRow) pagRow.innerHTML = _paginacaoHTML(abPage, total, AB_PER_PAGE, 'abGotoPage');
 }
 
 function abCardFilter(type, val) {
@@ -757,22 +872,28 @@ function renderCriticidade() {
   if (fStatus) recs = recs.filter(r => r[5] === fStatus || (fStatus==='Concluída' && (r[5]==='Encerrado'||r[5]==='Concluída')));
   if (fDe)     recs = recs.filter(r => (r[4]||'') >= fDe);
   if (fAte)    recs = recs.filter(r => (r[4]||'') <= fAte);
-  if (critCard !== undefined && critCard !== null) {
-    recs = recs.filter(r => getPrior(r) === critCard);
+  // Achado da Etapa 2A: getPrior(r)/rec[9] nunca funcionou (ver
+  // prioridadeReal() no topo do arquivo) — este filtro, os 4 KPIs e a
+  // ordenação abaixo foram todos reescritos pra ler pelo caminho certo.
+  if (critCard) {
+    recs = recs.filter(r => {
+      const p = prioridadeReal(r[0]);
+      return critCard === 'Baixa' ? (!p || p === 'Baixa') : p === critCard;
+    });
   }
 
   // KPIs from ALL records (unfiltered)
   const all = allRecords();
   const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  setEl('crit-urgente', all.filter(r=>getPrior(r)==='Urgente').length.toLocaleString('pt-BR'));
-  setEl('crit-alta',    all.filter(r=>getPrior(r)==='Alta').length.toLocaleString('pt-BR'));
-  setEl('crit-media',   all.filter(r=>getPrior(r)==='Média').length.toLocaleString('pt-BR'));
-  setEl('crit-baixa',   all.filter(r=>!getPrior(r)||getPrior(r)==='Baixa').length.toLocaleString('pt-BR'));
+  setEl('crit-urgente', all.filter(r=>prioridadeReal(r[0])==='Urgente').length.toLocaleString('pt-BR'));
+  setEl('crit-alta',    all.filter(r=>prioridadeReal(r[0])==='Alta').length.toLocaleString('pt-BR'));
+  setEl('crit-media',   all.filter(r=>prioridadeReal(r[0])==='Média').length.toLocaleString('pt-BR'));
+  setEl('crit-baixa',   all.filter(r=>{const p=prioridadeReal(r[0]);return !p||p==='Baixa';}).length.toLocaleString('pt-BR'));
 
   // Sort by priority then date
   const priorityRank = {Urgente:0,Alta:1,Média:2,Baixa:3,'':4};
   recs.sort((a,b)=>{
-    const pa=priorityRank[getPrior(a)]??4, pb=priorityRank[getPrior(b)]??4;
+    const pa=priorityRank[prioridadeReal(a[0])]??4, pb=priorityRank[prioridadeReal(b[0])]??4;
     if(pa!==pb) return pa-pb;
     return (b[4]||'').localeCompare(a[4]||'');
   });
@@ -780,41 +901,28 @@ function renderCriticidade() {
   const total=recs.length, pages=Math.ceil(total/CRIT_PER_PAGE)||1;
   if(critPage>pages)critPage=1;
   const slice=recs.slice((critPage-1)*CRIT_PER_PAGE, critPage*CRIT_PER_PAGE);
-  setEl('crit-pag-info',`Exibindo ${(critPage-1)*CRIT_PER_PAGE+1}–${Math.min(critPage*CRIT_PER_PAGE,total)} de ${total.toLocaleString('pt-BR')}`);
+  setEl('crit-pag-info', _pagInfoTexto(critPage, total, CRIT_PER_PAGE));
 
   const tbody=document.getElementById('tbl-criticidade');
   if(!tbody)return;
 
-  const critPillHtml = p => {
-    if(!p||p==='Baixa') return `<span class="pill p-outros">${p||'Sem prior.'}</span>`;
-    if(p==='Urgente') return `<span class="pill" style="background:var(--red-bg);color:var(--red);font-weight:700">🔴 Urgente</span>`;
-    if(p==='Alta')    return `<span class="pill p-tabaco">🟠 Alta</span>`;
-    return `<span class="pill chip-blue">🟡 Média</span>`;
-  };
-
-  tbody.innerHTML = slice.map(r=>`
+  tbody.innerHTML = slice.map(r=>{
+    const _lrCr = getLocal().find(x=>x.num===r[0]);
+    const _frCr = frotaLabel(r[0], _lrCr);
+    return `
     <tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
-      <td class="td-titulo">${_escHtml(r[1])}</td>
-      <td>${critPillHtml(getPrior(r))}</td>
+      <td class="td-titulo">${_escHtml(r[1])}${_frCr?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frCr}</div>`:''}</td>
+      <td>${prioridadeBadge(prioridadeReal(r[0]))}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
-      <td style="font-size:11px;color:var(--text3)">${r[6]||'—'}</td>
+      <td style="font-size:11px;color:var(--text3)">${fazendaLabel(r[6])}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${r[4]?r[4].split('-').reverse().join('/'):'—'}</td>
       <td><span class="pill ${statusPill(r[5])}">${r[5]||'—'}</span></td>
-    </tr>`).join('');
+    </tr>`;}).join('');
 
-  // Pagination (same pattern as other sections)
   const pagRow=document.getElementById('crit-pag-row');
-  if(!pagRow)return;
-  let btns='';
-  btns+=`<button class="pag-btn" onclick="critGotoPage(${critPage-1})" ${critPage===1?'disabled':''}>←</button>`;
-  const s=Math.max(1,critPage-2),e=Math.min(pages,critPage+2);
-  if(s>1)btns+=`<button class="pag-btn" onclick="critGotoPage(1)">1</button>${s>2?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}`;
-  for(let p=s;p<=e;p++)btns+=`<button class="pag-btn ${p===critPage?'active':''}" onclick="critGotoPage(${p})">${p}</button>`;
-  if(e<pages)btns+=`${e<pages-1?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}<button class="pag-btn" onclick="critGotoPage(${pages})">${pages}</button>`;
-  btns+=`<button class="pag-btn" onclick="critGotoPage(${critPage+1})" ${critPage===pages?'disabled':''}>→</button>`;
-  pagRow.innerHTML=btns;
+  if (pagRow) pagRow.innerHTML = _paginacaoHTML(critPage, total, CRIT_PER_PAGE, 'critGotoPage');
 }
 
 function critCardFilter(val) {
@@ -823,9 +931,11 @@ function critCardFilter(val) {
   // toggle: click same card clears
   inp.value = (inp.value === val && val !== null) ? '' : (val === null ? '' : val);
   const v = inp.value;
-  // Highlight
+  // Highlight — "baixa" agora usa o valor real 'Baixa' (achado da Etapa 2A):
+  // antes usava '' (o mesmo sentinela de "nenhum filtro"), então clicar em
+  // Baixa e não filtrar nada eram indistinguíveis.
   ['urgente','alta','media','baixa'].forEach(id => {
-    const map = {urgente:'Urgente',alta:'Alta',media:'Média',baixa:''};
+    const map = {urgente:'Urgente',alta:'Alta',media:'Média',baixa:'Baixa'};
     document.getElementById('critcard-'+id)?.classList.toggle('crit-active', v === map[id]);
   });
   document.getElementById('crit-clear-btn').style.display = (inp.value !== '') ? 'flex' : 'none';
@@ -907,34 +1017,27 @@ function renderEncerrados() {
     const dataAb  = r[4] ? r[4].split('-').reverse().join('/') : '—';
     const dataEnc = ci.dataEncerramento || '—';
     const encPor  = ci.encerradoPor || '—';
-    const dias    = (r[4] && ci.encerradoEm)
-      ? Math.round((new Date(ci.encerradoEm)-new Date(r[4]+'T00:00'))/86400000)+'d' : '—';
+    const diasNum = (r[4] && ci.encerradoEm)
+      ? Math.round((new Date(ci.encerradoEm)-new Date(r[4]+'T00:00'))/86400000) : null;
+    // Corrige uma célula <td> extra que existia aqui (repetia o bucket cru
+    // duas vezes), deixando cada coluna desalinhada com seu cabeçalho —
+    // achado da Etapa 2A, corrigido nesta reescrita. 10 células, 10 <th>.
     return `<tr style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
       <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
-      <td style="font-size:11px;color:var(--text3)">${r[6]==='Solinftec KRT'?'Karitel':r[6]==='Solinftec RDM'?'Rio do Meio':(r[6]||'—')}</td>
-      <td style="font-size:11px;color:var(--text3)">${r[6]||'—'}</td>
+      <td style="font-size:11px;color:var(--text3)">${fazendaLabel(r[6])}</td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${dataAb}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">${dataEnc}</td>
       <td style="font-size:11px;color:var(--text3)">${ci.tecnicos||'—'}</td>
       <td style="font-size:11px;color:var(--text3)">${encPor}</td>
-      <td><span class="pill chip-green" style="background:var(--green-bg);color:var(--green)">${dias}</span></td>
+      <td>${diasNum==null?'—':`<span ${diasChip(diasNum)}>${diasNum}d</span>`}</td>
     </tr>`;
   }).join('');
 
-  // Pagination buttons — reuse same pattern
   const pagRow = document.getElementById('enc-pag-row');
-  if (!pagRow) return;
-  let btns='';
-  btns+=`<button class="pag-btn" onclick="encGotoPage(${encPage-1})" ${encPage===1?'disabled':''}>←</button>`;
-  const s=Math.max(1,encPage-2), e2=Math.min(pages,encPage+2);
-  if(s>1) btns+=`<button class="pag-btn" onclick="encGotoPage(1)">1</button>${s>2?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}`;
-  for(let p=s;p<=e2;p++) btns+=`<button class="pag-btn ${p===encPage?'active':''}" onclick="encGotoPage(${p})">${p}</button>`;
-  if(e2<pages) btns+=`${e2<pages-1?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}<button class="pag-btn" onclick="encGotoPage(${pages})">${pages}</button>`;
-  btns+=`<button class="pag-btn" onclick="encGotoPage(${encPage+1})" ${encPage===pages?'disabled':''}>→</button>`;
-  pagRow.innerHTML=btns;
+  if (pagRow) pagRow.innerHTML = _paginacaoHTML(encPage, total, ENC_PER_PAGE, 'encGotoPage');
 }
 
 function openEncerrar() {

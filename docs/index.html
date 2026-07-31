@@ -9,15 +9,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260729c">
-  <link rel="stylesheet" href="css/login.css?v=20260729c">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260729c">
-  <link rel="stylesheet" href="css/chamados.css?v=20260729c">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260729c">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260729c">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260729c">
-  <link rel="stylesheet" href="css/config.css?v=20260729c">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260729c">
+  <link rel="stylesheet" href="css/style.css?v=20260729d">
+  <link rel="stylesheet" href="css/login.css?v=20260729d">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260729d">
+  <link rel="stylesheet" href="css/chamados.css?v=20260729d">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260729d">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260729d">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260729d">
+  <link rel="stylesheet" href="css/config.css?v=20260729d">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260729d">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -462,22 +462,33 @@
       <option>Rádio</option>
       <option>John Deere</option>
     </select>
+    <button class="btn btn-ghost" id="btn-filtros-avancados" onclick="toggleFiltrosAvancados()">Filtros avançados</button>
     <button class="btn btn-ghost" onclick="clearFilters()">Limpar</button>
     <button class="btn btn-ghost" onclick="exportarCSV()">⬇ CSV</button>
+  </div>
+
+  <!-- Filtros avançados (Fase 2 · Etapa 2A) — mesmos campos que já existem
+       no registro (responsável, data), só não eram filtráveis por aqui. -->
+  <div class="filter-bar filter-bar-adv" id="filtros-avancados" style="display:none">
+    <span class="filter-label">Avançado</span>
+    <input class="search-box" type="text" id="flt-resp" placeholder="Responsável contém…" oninput="applyFilters()">
+    <input class="search-box" type="date" id="f-de" title="Abertura de" onchange="applyFilters()">
+    <span style="color:var(--text3);font-size:11px">até</span>
+    <input class="search-box" type="date" id="f-ate" title="Abertura até" onchange="applyFilters()">
   </div>
 
   <div class="card" style="padding:0">
     <div class="table-wrap">
       <table class="data-table">
         <thead>
-          <tr>
-            <th>Número</th>
-            <th>Título / Máquina</th>
-            <th>Cultura</th>
-            <th>Responsável</th>
-            <th>Data</th>
-            <th>Status</th>
-            <th>Bucket</th>
+          <tr id="tbl-chamados-head">
+            <th class="th-sort" data-sort="num" onclick="sortChamados('num')">Número</th>
+            <th class="th-sort" data-sort="titulo" onclick="sortChamados('titulo')">Título / Máquina</th>
+            <th class="th-sort" data-sort="cultura" onclick="sortChamados('cultura')">Cultura</th>
+            <th class="th-sort" data-sort="resp" onclick="sortChamados('resp')">Responsável</th>
+            <th class="th-sort" data-sort="data" onclick="sortChamados('data')">Data</th>
+            <th class="th-sort" data-sort="status" onclick="sortChamados('status')">Status</th>
+            <th>Fazenda / Sistema</th>
           </tr>
         </thead>
         <tbody id="tbl-chamados"></tbody>
@@ -1220,7 +1231,7 @@
       <div class="kpi-value" id="crit-media">—</div>
       <div class="kpi-sub">chamados</div>
     </div>
-    <div class="kpi-card" style="cursor:pointer" onclick="critCardFilter('')" id="critcard-baixa">
+    <div class="kpi-card" style="cursor:pointer" onclick="critCardFilter('Baixa')" id="critcard-baixa">
       <div class="kpi-label">🟢 Baixa</div>
       <div class="kpi-value" id="crit-baixa">—</div>
       <div class="kpi-sub">chamados</div>
@@ -2515,26 +2526,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260729c"></script>
-  <script src="js/data/equipamentos.js?v=20260729c"></script>
-  <script src="js/data/match_map.js?v=20260729c"></script>
-  <script src="js/data/equip_idx.js?v=20260729c"></script>
+  <script src="js/data/chamados_historico.js?v=20260729d"></script>
+  <script src="js/data/equipamentos.js?v=20260729d"></script>
+  <script src="js/data/match_map.js?v=20260729d"></script>
+  <script src="js/data/equip_idx.js?v=20260729d"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260729c"></script>
+  <script src="js/core/storage.js?v=20260729d"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260729c"></script>
-  <script src="js/modules/dashboard/index.js?v=20260729c"></script>
-  <script src="js/modules/chamados/index.js?v=20260729c"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260729c"></script>
-  <script src="js/modules/relatorios/index.js?v=20260729c"></script>
-  <script src="js/modules/config/index.js?v=20260729c"></script>
+  <script src="js/modules/usuarios/index.js?v=20260729d"></script>
+  <script src="js/modules/dashboard/index.js?v=20260729d"></script>
+  <script src="js/modules/chamados/index.js?v=20260729d"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260729d"></script>
+  <script src="js/modules/relatorios/index.js?v=20260729d"></script>
+  <script src="js/modules/config/index.js?v=20260729d"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260729c"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260729d"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260729c"></script>
+  <script src="js/core/init.js?v=20260729d"></script>
 </body>
 </html>
