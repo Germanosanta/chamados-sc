@@ -12,6 +12,12 @@ let filteredRecords=[], page=1;
 const PER_PAGE=50;
 let abPage = 1;
 const AB_PER_PAGE = 50;
+// Fase 4.6 (ajustes finais) — mesma arquitetura de filteredRecords/
+// applyFilters() de sec-chamados, agora em sec-aberto: um array só,
+// populado por applyAbertoFilters(), consumido por renderAberto() (lista)
+// E renderKanban() (agora exclusivo daqui) — sem duplicar filtro/busca/
+// ordenação entre as duas visões.
+let filteredAbertos = [];
 let critPage=1;
 const CRIT_PER_PAGE=50;
 let encPage = 1;
@@ -356,7 +362,6 @@ function sortChamados(field) {
   if (_sortField === field) _sortDir *= -1; else { _sortField = field; _sortDir = 1; }
   filteredRecords = _aplicarOrdenacao(filteredRecords);
   renderChamados();
-  if (viewMode === 'kanban') renderKanban();
 }
 
 function renderChamados(){
@@ -476,7 +481,6 @@ function applyFilters(){
   filteredRecords = _aplicarOrdenacao(filteredRecords); // preserva a ordenação ativa, se houver
   page=1;
   renderChamados();
-  if (viewMode === 'kanban') renderKanban();
 }
 
 function gotoPage(p){
@@ -486,10 +490,12 @@ function gotoPage(p){
 }
 
 // ══════════════════════════════════════════════════════════════
-// KANBAN ENTERPRISE (Fase 3) — mesmos dados/filtros de filteredRecords,
-// nenhum campo novo, nenhuma lógica de leitura nova. Colunas = as 4 fases
-// já formalizadas em STATUS_STEPS (Etapa 2C-ii), reaproveitadas como
-// definição das raias, sem redefinir o que cada status significa.
+// KANBAN ENTERPRISE (Fase 3; exclusivo de "Chamados em Aberto" desde a
+// Fase 4.6 ajustes finais) — mesmos dados/filtros/ordenação de
+// filteredAbertos, nenhum campo novo, nenhuma lógica de leitura nova.
+// Colunas = as 4 fases já formalizadas em STATUS_STEPS (Etapa 2C-ii),
+// reaproveitadas como definição das raias, sem redefinir o que cada
+// status significa.
 // ══════════════════════════════════════════════════════════════
 let viewMode = localStorage.getItem('chm_view_mode') || 'lista';
 
@@ -515,13 +521,22 @@ function _kbLaneKey(status) {
 function renderKanban() {
   const board = document.getElementById('kanban-board');
   if (!board) return;
-  const lanes = [...STATUS_STEPS, {key:'cancelado', label:'Cancelado'}];
+  // Fase 4.6 (ajustes finais) — a raia "Cancelado" foi removida aqui: como
+  // o board agora só existe dentro de "Chamados em Aberto"
+  // (filteredAbertos vem de getAbertos(), que já exclui cancelados por
+  // definição), essa raia nunca teria nenhum card e nunca recebia nenhuma
+  // transição de arrasto (_KB_TRANSICOES não tem nenhuma entrada
+  // terminando em 'cancelado') — ficaria permanentemente vazia e sem
+  // função. A raia "Encerrado" continua existindo como destino de
+  // arrasto (concluir um chamado pelo board); o card sai do board no
+  // próximo render por já não estar mais em aberto — comportamento
+  // normal de um board Kanban, não uma remoção de funcionalidade.
+  const lanes = STATUS_STEPS;
   const closedMap = getClosedMap();
   board.innerHTML = lanes.map(l => {
-    const itens = filteredRecords.filter(r => _kbLaneKey(r[5]) === l.key);
-    const readonly = l.key === 'cancelado';
+    const itens = filteredAbertos.filter(r => _kbLaneKey(r[5]) === l.key);
     return `<div class="kanban-lane" data-lane="${l.key}"
-        ${readonly ? '' : `ondragover="_kbAllowDrop(event)" ondragleave="_kbDragLeave(event)" ondrop="_kbDrop(event,'${l.key}')"`}>
+        ondragover="_kbAllowDrop(event)" ondragleave="_kbDragLeave(event)" ondrop="_kbDrop(event,'${l.key}')">
       <div class="kanban-lane-head">
         <span>${l.label}</span>
         <span class="badge badge-neutral">${itens.length}</span>
@@ -1214,7 +1229,10 @@ function alterarResp(num, novoResp) {
 }
 
 function abGotoPage(p) {
-  const pages = Math.ceil(getAbertos().length / AB_PER_PAGE) || 1;
+  // Fase 4.6 (ajustes finais) — corrigido pra usar o array já filtrado
+  // (filteredAbertos), não o total bruto de getAbertos(); bug pequeno
+  // pré-existente (paginação podia ficar "fora" depois de filtrar).
+  const pages = Math.ceil(filteredAbertos.length / AB_PER_PAGE) || 1;
   if (p < 1 || p > pages) return;
   abPage = p;
   renderAberto();
@@ -1228,7 +1246,13 @@ function encerrarDireto(num) {
   buscarChamado();
 }
 
-function renderAberto() {
+// Fase 4.6 (ajustes finais) — extraído de dentro de renderAberto(), mesmo
+// papel que applyFilters() já tem pra sec-chamados: único ponto que
+// recalcula filteredAbertos (filtro + ordenação), depois chama
+// renderAberto() (lista) e, se o Kanban estiver ativo, renderKanban() —
+// as duas visões passam a compartilhar filtro/busca/ordenação/dados sem
+// nenhuma lógica duplicada.
+function applyAbertoFilters() {
   const q     = (document.getElementById('ab-srch')?.value || '').toLowerCase();
   const resp  = document.getElementById('ab-resp')?.value || '';
   const ordem = document.getElementById('ab-ordem')?.value || 'antigos';
@@ -1239,8 +1263,6 @@ function renderAberto() {
   const vencCard   = document.getElementById('ab-venc-card')?.value     || '';
 
   let recs = getAbertos();
-
-  // Filter
   if (q)          recs = recs.filter(r => r[0].toLowerCase().includes(q) || (r[1]||'').toLowerCase().includes(q));
   if (resp)       recs = recs.filter(r => (r[3]||'').includes(resp));
   if (cultCard)   recs = recs.filter(r => r[2] === cultCard);
@@ -1248,11 +1270,20 @@ function renderAberto() {
   if (respCard)   recs = recs.filter(r => (r[3]||'').includes(respCard));
   if (vencCard)   recs = recs.filter(r => diasAberto(r[4]) > 7);
 
-  // Sort
   recs.sort((a, b) => {
     const da = a[4] || '0000-00-00', db = b[4] || '0000-00-00';
     return ordem === 'antigos' ? da.localeCompare(db) : db.localeCompare(da);
   });
+
+  filteredAbertos = recs;
+  abPage = 1;
+  renderAberto();
+  if (viewMode === 'kanban') renderKanban();
+}
+
+function renderAberto() {
+  if (!filteredAbertos.length) filteredAbertos = [...getAbertos()];
+  const recs = filteredAbertos;
 
   // KPIs (always from full unfiltered abertos)
   const todos = getAbertos();
@@ -1367,8 +1398,7 @@ function abCardFilter(type, val) {
   document.getElementById('abcard-total')?.classList.toggle('ab-active', !hasFilter);
 
   clearBtn.style.display = hasFilter ? 'flex' : 'none';
-  abPage=1;
-  renderAberto();
+  applyAbertoFilters();
 }
 
 function critGotoPage(p){

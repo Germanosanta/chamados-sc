@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Central de Chamados — Santa Colomba</title>
   <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="assets/img/coa.jpeg" type="image/jpeg">
+  <!-- Ícones PWA (Fase 4.6 · ajustes finais) — antes usavam coa.jpeg (a
+       logo inteira) como placeholder; agora os arquivos dedicados já
+       gerados, em assets/icons/. -->
+  <link rel="icon" href="assets/icons/favicon.ico" sizes="any">
+  <link rel="icon" href="assets/icons/favicon-32x32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/icons/favicon-16x16.png" sizes="16x16" type="image/png">
   <!-- PWA (Fase 4) -->
   <meta name="theme-color" content="#2f6b4f">
-  <link rel="apple-touch-icon" href="assets/img/coa.jpeg">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -16,15 +21,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260801c">
-  <link rel="stylesheet" href="css/login.css?v=20260801c">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260801c">
-  <link rel="stylesheet" href="css/chamados.css?v=20260801c">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260801c">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260801c">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260801c">
-  <link rel="stylesheet" href="css/config.css?v=20260801c">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260801c">
+  <link rel="stylesheet" href="css/style.css?v=20260801d">
+  <link rel="stylesheet" href="css/login.css?v=20260801d">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260801d">
+  <link rel="stylesheet" href="css/chamados.css?v=20260801d">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260801d">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260801d">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260801d">
+  <link rel="stylesheet" href="css/config.css?v=20260801d">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260801d">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -410,7 +415,7 @@
         <div><div class="menu-card-title">Equipamentos</div></div>
         <span class="menu-card-arrow">→</span>
       </div>
-      <div class="menu-card" onclick="showSection('chamados',document.querySelector('#grp-chamados .nav-sub-item'));toggleViewMode('kanban')" tabindex="0" onkeydown="if(event.key==='Enter'){showSection('chamados',document.querySelector('#grp-chamados .nav-sub-item'));toggleViewMode('kanban')}">
+      <div class="menu-card" onclick="showSection('aberto',document.getElementById('nav-aberto'));toggleViewMode('kanban')" tabindex="0" onkeydown="if(event.key==='Enter'){showSection('aberto',document.getElementById('nav-aberto'));toggleViewMode('kanban')}">
         <div class="menu-card-icon" style="background:var(--purple-bg);color:var(--purple)">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="18"/><rect x="10.5" y="3" width="6" height="12"/><rect x="18" y="3" width="6" height="8"/></svg>
         </div>
@@ -588,10 +593,6 @@
     <button class="btn btn-ghost" id="btn-filtros-avancados" onclick="toggleFiltrosAvancados()">Filtros avançados</button>
     <button class="btn btn-ghost" onclick="clearFilters()">Limpar</button>
     <button class="btn btn-ghost" onclick="exportarCSV()">⬇ CSV</button>
-    <span class="view-toggle">
-      <button type="button" class="view-toggle-btn active" id="btn-view-lista" onclick="toggleViewMode('lista')">📋 Lista</button>
-      <button type="button" class="view-toggle-btn" id="btn-view-kanban" onclick="toggleViewMode('kanban')">🗂 Kanban</button>
-    </span>
   </div>
 
   <!-- Filtros avançados (Fase 2 · Etapa 2A) — mesmos campos que já existem
@@ -617,7 +618,7 @@
     </label>
   </div>
 
-  <div class="card" style="padding:0" id="chamados-list-card">
+  <div class="card" style="padding:0">
     <div class="table-wrap">
       <table class="data-table">
         <thead>
@@ -637,10 +638,6 @@
     <div class="pag-info" id="pag-info"></div>
     <div class="pag-row" id="pag-row"></div>
   </div>
-
-  <!-- Kanban Enterprise (Fase 3) — mesmos dados/filtros de filteredRecords,
-       oculto por padrão; toggleViewMode() alterna com o card acima. -->
-  <div class="kanban-board" id="kanban-board" style="display:none"></div>
 
 </section>
 
@@ -728,13 +725,13 @@
   <!-- Filters -->
   <div class="filter-bar">
     <span class="filter-label">Filtros</span>
-    <input class="search-box" type="text" id="ab-srch" placeholder="Buscar número ou título…" oninput="renderAberto()">
-    <select class="filter-select" id="ab-resp" onchange="renderAberto()">
+    <input class="search-box" type="text" id="ab-srch" placeholder="Buscar número ou título…" oninput="applyAbertoFilters()">
+    <select class="filter-select" id="ab-resp" onchange="applyAbertoFilters()">
       <option value="">Todos os responsáveis</option>
       <option value="Guilherme">Guilherme</option>
       <option value="Walison">Walison</option>
     </select>
-    <select class="filter-select" id="ab-ordem" onchange="renderAberto()">
+    <select class="filter-select" id="ab-ordem" onchange="applyAbertoFilters()">
       <option value="antigos">Mais antigos primeiro</option>
       <option value="recentes">Mais recentes primeiro</option>
     </select>
@@ -743,6 +740,13 @@
     <input type="hidden" id="ab-resp-card" value="">
     <input type="hidden" id="ab-venc-card" value="">
     <button class="btn btn-ghost" id="ab-clear-cards" onclick="abCardFilter('total','')" style="display:none;font-size:11px;padding:5px 10px">✕ Limpar filtro</button>
+    <!-- Fase 4.6 (ajustes finais) — Kanban movido de "Chamados" pra cá,
+         exclusivo desta tela; compartilha filtro/busca/ordenação/dados/
+         paginação com a Lista via filteredAbertos/applyAbertoFilters(). -->
+    <span class="view-toggle">
+      <button type="button" class="view-toggle-btn active" id="btn-view-lista" onclick="toggleViewMode('lista')">📋 Lista</button>
+      <button type="button" class="view-toggle-btn" id="btn-view-kanban" onclick="toggleViewMode('kanban')">🗂 Kanban</button>
+    </span>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
       <span style="font-size:11px;color:var(--text3)">Legenda:</span>
       <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--red-bg);color:var(--red)">+7 dias</span>
@@ -751,7 +755,7 @@
     </div>
   </div>
 
-  <div class="card" style="padding:0">
+  <div class="card" style="padding:0" id="chamados-list-card">
     <div class="table-wrap">
       <table class="data-table">
         <thead>
@@ -772,6 +776,10 @@
     <div class="pag-info" id="ab-pag-info"></div>
     <div class="pag-row" id="ab-pag-row"></div>
   </div>
+
+  <!-- Kanban Enterprise — mesmos dados/filtros de filteredAbertos, oculto
+       por padrão; toggleViewMode() alterna com o card acima. -->
+  <div class="kanban-board" id="kanban-board" style="display:none"></div>
 
 </section>
 
@@ -2854,26 +2862,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260801c"></script>
-  <script src="js/data/equipamentos.js?v=20260801c"></script>
-  <script src="js/data/match_map.js?v=20260801c"></script>
-  <script src="js/data/equip_idx.js?v=20260801c"></script>
+  <script src="js/data/chamados_historico.js?v=20260801d"></script>
+  <script src="js/data/equipamentos.js?v=20260801d"></script>
+  <script src="js/data/match_map.js?v=20260801d"></script>
+  <script src="js/data/equip_idx.js?v=20260801d"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260801c"></script>
+  <script src="js/core/storage.js?v=20260801d"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260801c"></script>
-  <script src="js/modules/dashboard/index.js?v=20260801c"></script>
-  <script src="js/modules/chamados/index.js?v=20260801c"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260801c"></script>
-  <script src="js/modules/relatorios/index.js?v=20260801c"></script>
-  <script src="js/modules/config/index.js?v=20260801c"></script>
+  <script src="js/modules/usuarios/index.js?v=20260801d"></script>
+  <script src="js/modules/dashboard/index.js?v=20260801d"></script>
+  <script src="js/modules/chamados/index.js?v=20260801d"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260801d"></script>
+  <script src="js/modules/relatorios/index.js?v=20260801d"></script>
+  <script src="js/modules/config/index.js?v=20260801d"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260801c"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260801d"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260801c"></script>
+  <script src="js/core/init.js?v=20260801d"></script>
 </body>
 </html>

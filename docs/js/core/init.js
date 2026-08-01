@@ -13,6 +13,11 @@ initDashboard();
 initAbertoBadge();
 loadEmailConfig();
 filteredRecords=[...allRecords()];
+// Fase 4.6 (ajustes finais) — Kanban agora exclusivo de "Chamados em
+// Aberto"; precisa de filteredAbertos primed aqui pelo mesmo motivo de
+// filteredRecords acima (toggleViewMode(viewMode) pode renderizar o
+// board imediatamente se o modo salvo for 'kanban').
+filteredAbertos=[...getAbertos()];
 toggleViewMode(viewMode); // Fase 3 · Kanban — restaura o modo de visualização salvo (lista/kanban)
 
 // ── Usado por getUsers() em js/modules/usuarios/index.js só como placeholder
@@ -229,7 +234,11 @@ function refreshAfterAction() {
   if (active === 'sec-home')         renderHome();
   if (active === 'sec-chamados')     applyFilters();
   if (active === 'sec-area-tecnico') renderAreaTecnico();
-  if (active === 'sec-aberto')       renderAberto();
+  // Fase 4.6 (ajustes finais) — applyAbertoFilters() no lugar de
+  // renderAberto() direto, paridade com sec-chamados acima: agora
+  // também precisa atualizar o Kanban (exclusivo desta tela) depois de
+  // qualquer ação (assumir/encerrar/etc.), não só a lista.
+  if (active === 'sec-aberto')       applyAbertoFilters();
   if (active === 'sec-encerrados')   renderEncerrados();
   if (active === 'sec-criticidade')  renderCriticidade();
   if (active === 'sec-responsaveis') renderRespSection();
