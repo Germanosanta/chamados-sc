@@ -418,6 +418,9 @@ function clearFilters(){
   const fr = document.getElementById('flt-resp'); if (fr) fr.value = '';
   const fd = document.getElementById('f-de');   if (fd) fd.value = '';
   const fa = document.getElementById('f-ate');  if (fa) fa.value = '';
+  // Fase 4.6 — 2 filtros novos (Prioridade, SLA crítico) na mesma limpeza.
+  const fp = document.getElementById('f-prior-filtro');  if (fp) fp.value = '';
+  const fsc = document.getElementById('f-sla-critico'); if (fsc) fsc.checked = false;
   applyFilters();
 }
 
@@ -432,6 +435,12 @@ function applyFilters(){
   const fresp = (document.getElementById('flt-resp')?.value || '').toLowerCase();
   const fde   = document.getElementById('f-de')?.value  || '';
   const fate  = document.getElementById('f-ate')?.value || '';
+  // Fase 4.6 — Prioridade e SLA crítico, reaproveitando prioridadeReal()/
+  // diasAberto()+DIAS_ATRASO_CRITICO (mesmo limiar já usado em diasChip),
+  // nenhuma regra nova.
+  const fprior = document.getElementById('f-prior-filtro')?.value || '';
+  const fSlaCritico = !!document.getElementById('f-sla-critico')?.checked;
+  const _local = getLocal();
   const _closed=getClosedMap();
   const _matchStatus=(r,fs)=>{
     if(!fs) return true;
@@ -450,7 +459,18 @@ function applyFilters(){
     if(fresp && !(r[3]||'').toLowerCase().includes(fresp)) return false;
     if(fde  && (!r[4] || r[4] < fde))  return false;
     if(fate && (!r[4] || r[4] > fate)) return false;
-    if(q && !(r[0].toLowerCase().includes(q)||r[1].toLowerCase().includes(q))) return false;
+    if(fprior && prioridadeReal(r[0])!==fprior) return false;
+    // Mesmo critério de _checarSlaCritico(): só chamados em aberto, mesmo
+    // limiar (> DIAS_ATRASO_CRITICO, não >=).
+    if(fSlaCritico){
+      const _isClosedSla = r[5]==='Concluída'||r[5]==='Encerrado'||r[5]==='Concluído'||!!_closed[r[0]];
+      if(_isClosedSla || diasAberto(r[4])<=DIAS_ATRASO_CRITICO) return false;
+    }
+    if(q){
+      const _lrQ = _local.find(x=>x.num===r[0]);
+      const _matchQ = r[0].toLowerCase().includes(q) || r[1].toLowerCase().includes(q) || frotaLabel(r[0],_lrQ).toLowerCase().includes(q);
+      if(!_matchQ) return false;
+    }
     return true;
   });
   filteredRecords = _aplicarOrdenacao(filteredRecords); // preserva a ordenação ativa, se houver
@@ -520,16 +540,20 @@ function _ticketCardHTML(rec, closedMap, comAcoes) {
   const num = rec[0];
   closedMap = closedMap || getClosedMap();
   const _lr = getLocal().find(x=>x.num===num);
-  const fr = frotaLabel(num, _lr);
   // Fase 4.5: card do Kanban ganha a descrição do equipamento (antes só
   // mostrava o código/frota) — mesma função já usada no Centro Operacional.
   const _equip = getChamadoEquip(num, _lr);
+  // Fase 4.6 — antes a descrição do equipamento aparecia 2x (uma vez
+  // isolada em .kanban-card-equip, outra dentro de "código · descrição"
+  // aqui); agora esta linha mostra só o código, e ganha um estado
+  // explícito quando não há equipamento vinculado, em vez de sumir.
   const dias = diasAberto(rec[4]);
   const prior = prioridadeReal(num);
   const isClosed = rec[5]==='Concluída'||rec[5]==='Encerrado'||rec[5]==='Concluído'||!!closedMap[num];
   const jaAssumido = !!(_lr && _lr.assumidoPor);
   const resp1 = (rec[3]||'').split(',').map(s=>s.trim()).filter(Boolean)[0] || '—';
   const lane = _kbLaneKey(rec[5]);
+  const descResumo = (_lr?.desc||'').trim();
   return `<div class="kanban-card" draggable="true"
       ondragstart="_kbDragStart(event,'${num}')" onclick="openDetalhe('${num}')">
     <div class="kanban-card-top">
@@ -538,12 +562,14 @@ function _ticketCardHTML(rec, closedMap, comAcoes) {
     </div>
     <div class="kanban-card-titulo">${_escHtml(rec[1]||'—')}</div>
     ${_equip ? `<div class="kanban-card-equip">🔧 ${_escHtml(_equip.descricao||'—')}</div>` : ''}
-    ${fr ? `<div class="kanban-card-frota">${fr}</div>` : ''}
+    <div class="kanban-card-frota${_equip?'':' kanban-card-frota-empty'}">${_equip ? _escHtml(_equip.codigo) : 'Sem equipamento vinculado'}</div>
+    ${descResumo ? `<div class="kanban-card-desc">${_escHtml(descResumo.length>60?descResumo.slice(0,60)+'…':descResumo)}</div>` : ''}
     <div class="kanban-card-meta">
       <span>🏭 ${fazendaLabel(rec[6])}</span>
       <span>👤 ${_escHtml(resp1)}</span>
     </div>
     <div class="kanban-card-foot">
+      <span class="badge ${statusPill(rec[5])}">${rec[5]||'—'}</span>
       ${!isClosed && dias>=DIAS_ATRASO_ALERTA ? `<span ${diasChip(dias)}>${dias}d em aberto</span>` : `<span class="badge badge-neutral">${dias}d</span>`}
       ${!jaAssumido && !isClosed ? `<button type="button" class="kanban-card-btn" onclick="event.stopPropagation();assumirChamado('${num}')">Assumir</button>` : ''}
     </div>
@@ -804,10 +830,18 @@ function openDetalhe(num) {
   // Frota/Equipamento
   const _detLocalRec = getLocal().find(x=>x.num===rec[0]);
   const _detEquip    = getChamadoEquip(rec[0], _detLocalRec);
+  // Fase 4.6 — identidade dupla sempre visível: além do bloco detalhado
+  // (Bloco 4, abaixo), o cabeçalho ganha um resumo curto ao lado do
+  // número, igual às outras telas (Lista/Kanban/Área do Técnico).
+  const _detFrotaHead = document.getElementById('det-frota-header-val');
+  if (_detFrotaHead) _detFrotaHead.textContent = _detEquip ? _detEquip.codigo : 'Sem equipamento vinculado';
   const _detFrotaEl  = document.getElementById('det-frota-wrap');
   if (_detFrotaEl) {
+    const _detFrotaData  = document.getElementById('det-frota-dados');
+    const _detFrotaEmpty = document.getElementById('det-frota-vazio');
     if (_detEquip) {
-      _detFrotaEl.style.display='block';
+      if (_detFrotaData)  _detFrotaData.style.display='';
+      if (_detFrotaEmpty) _detFrotaEmpty.style.display='none';
       document.getElementById('det-frota-codigo').textContent  = _detEquip.codigo;
       document.getElementById('det-frota-descr').textContent   = _detEquip.descricao;
       document.getElementById('det-frota-modelo').textContent  = _detEquip.modelo||'—';
@@ -815,7 +849,11 @@ function openDetalhe(num) {
       const stEl=document.getElementById('det-frota-status');
       if(stEl){stEl.textContent=_detEquip.status;stEl.style.color=_detEquip.status==='Ativo'?'var(--green)':'var(--amber)';}
     } else {
-      _detFrotaEl.style.display='none';
+      // Fase 4.6 — antes o bloco inteiro sumia (display:none) quando não
+      // havia vínculo, sem explicação; agora o bloco continua visível,
+      // igual às outras 6 seções do modal, só com uma mensagem explícita.
+      if (_detFrotaData)  _detFrotaData.style.display='none';
+      if (_detFrotaEmpty) _detFrotaEmpty.style.display='';
     }
   }
 
@@ -1264,10 +1302,13 @@ function renderAberto() {
       const _lrAb = getLocal().find(x=>x.num===r[0]);
       const _frAb = frotaLabel(r[0], _lrAb);
       return `<tr data-num="${r[0]}" style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
-        <td class="td-num">${r[0]}</td>
+        <td class="td-num">
+          ${r[0]}
+          <div style="font-size:9px;color:${_frAb?'var(--accent)':'var(--text3)'};font-family:var(--font-mono);margin-top:1px">${_frAb||'Sem equipamento vinculado'}</div>
+        </td>
         <td class="td-titulo">
           ${_escHtml(r[1])}
-          <div style="font-size:9px;color:var(--text3);margin-top:1px">${fazendaLabel(r[6])}${_frAb?' · '+_frAb:''}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:1px">${fazendaLabel(r[6])}</div>
         </td>
         <td style="white-space:nowrap;font-weight:500">${r[3] || '<span style="color:var(--text3)">—</span>'}</td>
         <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${dataFmt}</td>
@@ -1498,19 +1539,22 @@ function renderEncerrados() {
   // Table
   const tbody = document.getElementById('tbl-encerrados');
   if (!tbody) return;
-  tbody.innerHTML = !slice.length ? _estadoVazioHTML(10, 'Nenhum chamado encerrado encontrado com esses filtros.') : slice.map(r => {
+  tbody.innerHTML = !slice.length ? _estadoVazioHTML(11, 'Nenhum chamado encerrado encontrado com esses filtros.') : slice.map(r => {
     const ci = closed[r[0]] || {};
     const dataAb  = r[4] ? r[4].split('-').reverse().join('/') : '—';
     const dataEnc = ci.dataEncerramento || '—';
     const encPor  = ci.encerradoPor || '—';
     const diasNum = (r[4] && ci.encerradoEm)
       ? Math.round((new Date(ci.encerradoEm)-new Date(r[4]+'T00:00'))/86400000) : null;
-    // Corrige uma célula <td> extra que existia aqui (repetia o bucket cru
-    // duas vezes), deixando cada coluna desalinhada com seu cabeçalho —
-    // achado da Etapa 2A, corrigido nesta reescrita. 10 células, 10 <th>.
+    // Fase 4.6 — coluna Frota nova (antes era a única lista sem nenhuma
+    // referência à frota/código do equipamento, inconsistente com as
+    // outras 3 tabelas). 11 células, 11 <th>.
+    const _lrEnc = getLocal().find(x=>x.num===r[0]);
+    const _frEnc = frotaLabel(r[0], _lrEnc);
     return `<tr data-num="${r[0]}" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:${_frEnc?'var(--accent)':'var(--text3)'}">${_frEnc||'—'}</td>
       <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="font-size:11px;color:var(--text3)">${fazendaLabel(r[6])}</td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
@@ -2761,6 +2805,8 @@ function globalSearch(q) {
       const _lrGs = local.find(x => x.num === r[0]);
       if ((_lrGs?.solicitante||'').toLowerCase().includes(ql)) return true;
       if ((_lrGs?.desc||'').toLowerCase().includes(ql))        return true;
+      // Fase 4.6 — busca também por frota/código do equipamento vinculado.
+      if (frotaLabel(r[0], _lrGs).toLowerCase().includes(ql))  return true;
       return false;
     }).slice(0,10);
 

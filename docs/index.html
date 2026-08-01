@@ -16,15 +16,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260801a">
-  <link rel="stylesheet" href="css/login.css?v=20260801a">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260801a">
-  <link rel="stylesheet" href="css/chamados.css?v=20260801a">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260801a">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260801a">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260801a">
-  <link rel="stylesheet" href="css/config.css?v=20260801a">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260801a">
+  <link rel="stylesheet" href="css/style.css?v=20260801b">
+  <link rel="stylesheet" href="css/login.css?v=20260801b">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260801b">
+  <link rel="stylesheet" href="css/chamados.css?v=20260801b">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260801b">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260801b">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260801b">
+  <link rel="stylesheet" href="css/config.css?v=20260801b">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260801b">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -453,7 +453,7 @@
 
   <div class="filter-bar">
     <span class="filter-label">Filtros</span>
-    <input class="search-box" type="text" id="srch" placeholder="Buscar número, equipamento, título…" oninput="applyFilters()">
+    <input class="search-box" type="text" id="srch" placeholder="Buscar número, frota, equipamento, título…" oninput="applyFilters()">
     <select class="filter-select" id="f-cultura" onchange="applyFilters()">
       <option value="">Todas as culturas</option>
       <option>Grãos e Fibras</option>
@@ -494,6 +494,19 @@
     <input class="search-box" type="date" id="f-de" title="Abertura de" onchange="applyFilters()">
     <span style="color:var(--text3);font-size:11px">até</span>
     <input class="search-box" type="date" id="f-ate" title="Abertura até" onchange="applyFilters()">
+    <!-- Fase 4.6 — Prioridade e SLA crítico, mesmos dados já calculados por
+         prioridadeReal()/diasAberto()+DIAS_ATRASO_CRITICO. -->
+    <select class="filter-select" id="f-prior-filtro" onchange="applyFilters()">
+      <option value="">Toda prioridade</option>
+      <option value="Urgente">⚡ Urgente</option>
+      <option value="Alta">🔴 Alta</option>
+      <option value="Média">🟡 Média</option>
+      <option value="Baixa">🟢 Baixa</option>
+    </select>
+    <label class="filter-check" title="Chamados em aberto há mais de 7 dias">
+      <input type="checkbox" id="f-sla-critico" onchange="applyFilters()">
+      <span>SLA crítico</span>
+    </label>
   </div>
 
   <div class="card" style="padding:0" id="chamados-list-card">
@@ -1256,7 +1269,7 @@
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr>
-          <th>Número</th><th>Título</th><th>Cultura</th><th>Fazenda</th>
+          <th>Número</th><th>Título</th><th>Frota</th><th>Cultura</th><th>Fazenda</th>
           <th>Responsável(is)</th><th>Abertura</th>
           <th>Encerramento</th><th>Técnico(s)</th><th>Encerrado por</th><th>Tempo</th>
         </tr></thead>
@@ -2442,6 +2455,7 @@
       <div class="det-cabecalho-top">
         <div>
           <div style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--accent)" id="det-num"></div>
+          <div class="det-frota-header" id="det-frota-header">🚜 FROTA <span id="det-frota-header-val">—</span></div>
           <div style="font-size:19px;font-weight:700;color:var(--text);margin-top:2px;line-height:1.3" id="det-titulo"></div>
         </div>
         <div id="det-status"></div>
@@ -2534,14 +2548,21 @@
       <div class="det-col-side">
 
         <!-- ════════════════ BLOCO 4 · EQUIPAMENTO ════════════════ -->
-        <div class="det-block" id="det-frota-wrap" style="display:none">
+        <div class="det-block" id="det-frota-wrap">
           <div class="det-block-head"><div class="det-block-title">🔗 Equipamento Vinculado</div></div>
+          <!-- Fase 4.6 — antes o bloco inteiro sumia (display:none) quando o
+               chamado não tinha equipamento vinculado; agora o bloco continua
+               visível, igual às outras seções do modal, com uma mensagem
+               explícita em vez de um vazio silencioso. -->
+          <div id="det-frota-vazio" style="display:none;font-size:11px;color:var(--text3);padding:4px 0">Nenhum equipamento vinculado a este chamado.</div>
+          <div id="det-frota-dados">
           <div class="det-frota-grid">
             <div><div class="det-label">Código / Frota</div><div class="det-val" id="det-frota-codigo" style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">—</div></div>
             <div><div class="det-label">Descrição</div><div class="det-val" id="det-frota-descr">—</div></div>
             <div><div class="det-label">Modelo</div><div class="det-val" id="det-frota-modelo">—</div></div>
             <div><div class="det-label">Grupo</div><div class="det-val" id="det-frota-grupo">—</div></div>
             <div><div class="det-label">Status</div><div class="det-val" id="det-frota-status" style="font-weight:600">—</div></div>
+          </div>
           </div>
           <!-- Histórico resumido do equipamento — mesma renderHistoricoEquip()
                da tela Novo Chamado, com prefixo próprio (ver chamados/index.js). -->
@@ -2628,6 +2649,8 @@
     <div class="det-block" style="margin-bottom:12px">
       <div class="det-block-head"><div class="det-block-title">🔧 Dados Técnicos</div></div>
       <div class="det-cabecalho-grid">
+        <div><div class="det-label">Código / Frota</div><div class="det-val" id="fe-codigo" style="font-family:var(--font-mono);font-weight:700;color:var(--accent)">—</div></div>
+        <div><div class="det-label">Equipamento</div><div class="det-val" id="fe-equipamento">—</div></div>
         <div><div class="det-label">Modelo</div><div class="det-val" id="fe-modelo">—</div></div>
         <div><div class="det-label">Fabricante</div><div class="det-val" id="fe-fabricante">—</div></div>
         <div><div class="det-label">Ano</div><div class="det-val" id="fe-ano">—</div></div>
@@ -2719,26 +2742,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260801a"></script>
-  <script src="js/data/equipamentos.js?v=20260801a"></script>
-  <script src="js/data/match_map.js?v=20260801a"></script>
-  <script src="js/data/equip_idx.js?v=20260801a"></script>
+  <script src="js/data/chamados_historico.js?v=20260801b"></script>
+  <script src="js/data/equipamentos.js?v=20260801b"></script>
+  <script src="js/data/match_map.js?v=20260801b"></script>
+  <script src="js/data/equip_idx.js?v=20260801b"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260801a"></script>
+  <script src="js/core/storage.js?v=20260801b"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260801a"></script>
-  <script src="js/modules/dashboard/index.js?v=20260801a"></script>
-  <script src="js/modules/chamados/index.js?v=20260801a"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260801a"></script>
-  <script src="js/modules/relatorios/index.js?v=20260801a"></script>
-  <script src="js/modules/config/index.js?v=20260801a"></script>
+  <script src="js/modules/usuarios/index.js?v=20260801b"></script>
+  <script src="js/modules/dashboard/index.js?v=20260801b"></script>
+  <script src="js/modules/chamados/index.js?v=20260801b"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260801b"></script>
+  <script src="js/modules/relatorios/index.js?v=20260801b"></script>
+  <script src="js/modules/config/index.js?v=20260801b"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260801a"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260801b"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260801a"></script>
+  <script src="js/core/init.js?v=20260801b"></script>
 </body>
 </html>

@@ -210,17 +210,20 @@
 /* Encerrados (Fase 4.5) — 10 colunas (Número/Título/Cultura/Fazenda/
    Responsável(is)/Abertura/Encerramento/Técnico(s)/Encerrado por/Tempo),
    sem nenhum tratamento antes. Mesmo padrão incremental já usado acima. */
+/* Fase 4.6 — coluna Frota nova (posição 3) desloca os índices abaixo em
+   +1; Frota fica de propósito fora das listas de colunas que somem (é a
+   identidade operacional pedida nesta fase, sempre visível). */
 @media (max-width:1100px){
-  #sec-encerrados .data-table th:nth-child(3), #sec-encerrados .data-table td:nth-child(3),
-  #sec-encerrados .data-table th:nth-child(9), #sec-encerrados .data-table td:nth-child(9){ display:none; }
+  #sec-encerrados .data-table th:nth-child(4), #sec-encerrados .data-table td:nth-child(4),
+  #sec-encerrados .data-table th:nth-child(10), #sec-encerrados .data-table td:nth-child(10){ display:none; }
 }
 @media (max-width:900px){
-  #sec-encerrados .data-table th:nth-child(4), #sec-encerrados .data-table td:nth-child(4),
-  #sec-encerrados .data-table th:nth-child(8), #sec-encerrados .data-table td:nth-child(8){ display:none; }
+  #sec-encerrados .data-table th:nth-child(5), #sec-encerrados .data-table td:nth-child(5),
+  #sec-encerrados .data-table th:nth-child(9), #sec-encerrados .data-table td:nth-child(9){ display:none; }
 }
 @media (max-width:600px){
-  #sec-encerrados .data-table th:nth-child(5), #sec-encerrados .data-table td:nth-child(5),
-  #sec-encerrados .data-table th:nth-child(6), #sec-encerrados .data-table td:nth-child(6){ display:none; }
+  #sec-encerrados .data-table th:nth-child(6), #sec-encerrados .data-table td:nth-child(6),
+  #sec-encerrados .data-table th:nth-child(7), #sec-encerrados .data-table td:nth-child(7){ display:none; }
 }
 @media (max-width:768px){
   .filter-bar-adv{ margin-top:0; }
@@ -245,6 +248,13 @@
 /* Bloco 1 · Cabeçalho */
 .det-cabecalho{ padding-bottom:14px; border-bottom:1px solid var(--border); margin-bottom:14px; }
 .det-cabecalho-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:14px; }
+/* Fase 4.6 — identidade dupla (número + frota) sempre junta no cabeçalho
+   do Centro Operacional, mesmo destaque visual da frota usado nas listas
+   e no Kanban. */
+.det-frota-header{
+  font-size:11px; font-weight:700; font-family:var(--font-mono); color:var(--text2);
+  margin-top:3px; letter-spacing:.02em;
+}
 .det-cabecalho-grid{
   display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px 16px;
 }
@@ -435,9 +445,13 @@
 .kanban-card-num{ font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--accent); }
 .kanban-card-titulo{ font-size:12px; font-weight:600; color:var(--text); line-height:1.35; margin-bottom:2px; }
 .kanban-card-equip{ font-size:var(--text-xs); color:var(--text2); margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.kanban-card-frota{ font-size:10px; font-family:var(--font-mono); color:var(--accent); margin-bottom:6px; }
+.kanban-card-frota{ font-size:10px; font-family:var(--font-mono); font-weight:700; color:var(--accent); margin-bottom:6px; }
+/* Fase 4.6 — antes essa linha simplesmente não existia quando o chamado
+   não tinha equipamento vinculado; agora mostra um estado explícito. */
+.kanban-card-frota-empty{ font-weight:400; font-style:italic; color:var(--text3); }
+.kanban-card-desc{ font-size:var(--text-xs); color:var(--text3); line-height:1.35; margin-bottom:6px; }
 .kanban-card-meta{ display:flex; flex-direction:column; gap:2px; font-size:10.5px; color:var(--text3); margin-bottom:8px; }
-.kanban-card-foot{ display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.kanban-card-foot{ display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:6px; }
 .kanban-card-btn{
   border:1px solid var(--border2); background:var(--surface2); color:var(--text2);
   border-radius:20px; font-size:10px; font-weight:600; padding:4px 9px; cursor:pointer;

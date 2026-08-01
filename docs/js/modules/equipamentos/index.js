@@ -431,6 +431,11 @@ function abrirFichaEquip(frota) {
 
   const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
   setEl('fe-titulo',      frota+' · '+(base?.d||eq.d||'—'));
+  // Fase 4.6 — Código/Frota e Equipamento ganham campos rotulados próprios
+  // (antes só existiam concatenados dentro do título); o título continua
+  // como está, nada foi removido.
+  setEl('fe-codigo',      frota);
+  setEl('fe-equipamento', base?.d||eq.d||'—');
   setEl('fe-modelo',      cad.modelo||base?.m||eq.m||'—');
   setEl('fe-fabricante',  cad.fabricante);
   setEl('fe-ano',         cad.ano);
