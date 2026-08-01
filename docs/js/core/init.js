@@ -13,6 +13,7 @@ initDashboard();
 initAbertoBadge();
 loadEmailConfig();
 filteredRecords=[...allRecords()];
+toggleViewMode(viewMode); // Fase 3 · Kanban — restaura o modo de visualização salvo (lista/kanban)
 
 // ── Usado por getUsers() em js/modules/usuarios/index.js só como placeholder
 // antes do primeiro sync com o Firestore (fonte real dos usuários agora que o
@@ -22,6 +23,26 @@ const DEFAULT_USERS = [];
 
 // Perfil permissions
 const PERFIL_LABEL = {admin:'Administrador',supervisor:'Supervisor',tecnico:'Técnico',visualizador:'Visualizador'};
+
+// Restaura sessão persistida (F5 na mesma aba) — Fase 3: bug real
+// corrigido aqui. Esse mesmo bloco vivia, por engano, DENTRO de
+// renderChamados() (chamados/index.js), rodando de novo a cada filtro/
+// ordenação/página em vez de só 1x no carregamento — sem efeito errado
+// na maioria das vezes, mas redundante e com risco de reabrir o overlay
+// de login no meio do uso se getSession() alguma vez retornasse vazio
+// por um instante. O login novo continua 100% via finalizarLogin()
+// (js/modules/usuarios/index.js), intocado.
+(function(){
+  const u = getSession();
+  if (u) {
+    document.getElementById('login-overlay').style.display='none';
+    document.getElementById('topbar-user').textContent = u.nome.split(' ')[0]+' · '+(PERFIL_LABEL[u.perfil]||u.perfil);
+    aplicarNavPerms();
+  } else {
+    document.getElementById('login-overlay').style.display='flex';
+    setTimeout(()=>document.getElementById('login-user')?.focus(), 100);
+  }
+})();
 
 // All available permissions with labels
 const ALL_PERMS = {
@@ -43,14 +64,15 @@ const PERFIL_PERMS = {
 // ══════════════════════════════════════════════════════════════
 // NAVEGAÇÃO — shell do app (menu de portais, seções, grupos da sidebar)
 // ══════════════════════════════════════════════════════════════
-const SECTIONS=['dashboard','chamados','aberto','encerrados','pormes','responsaveis','criticidade','painel','auditoria','frotas','kb','pecas','novo','usuarios','irrigacao','chips','equipamentos','tecnicos','config'];
+const SECTIONS=['dashboard','chamados','area-tecnico','aberto','encerrados','pormes','responsaveis','criticidade','painel','auditoria','frotas','kb','pecas','novo','usuarios','irrigacao','chips','equipamentos','tecnicos','config'];
 const TITLES={
-  dashboard:'Dashboard',chamados:'Chamados',pormes:'Por Mês',
+  dashboard:'Dashboard',chamados:'Chamados','area-tecnico':'Área do Técnico',pormes:'Por Mês',
   aberto:'Em Aberto',encerrados:'Chamados Encerrados',responsaveis:'Responsáveis',criticidade:'Criticidade',painel:'Painel Operacional',auditoria:'Auditoria e Logs',frotas:'Histórico por Frota',kb:'Banco de Soluções',pecas:'Peças e Estoque',novo:'Novo Chamado',irrigacao:'Chamados de Irrigação',chips:'Chips de Abastecimento',equipamentos:'Equipamentos',tecnicos:'Técnicos',config:'Configurações',usuarios:'Usuários'
 };
 const SUBS={
   dashboard:'Visão geral · Santa Colomba Agropecuária',
   chamados:'Lista completa editável',
+  'area-tecnico':'Meu painel de trabalho · ações rápidas',
   pormes:'Relatório mensal por cultura',
   aberto:'Chamados não concluídos · atualizado em tempo real',
   criticidade:'Distribuição e acompanhamento por nível de criticidade',
@@ -75,6 +97,7 @@ function showSection(id,el){
   document.getElementById('page-title').textContent=TITLES[id]||id;
   document.getElementById('page-sub').textContent=SUBS[id]||'';
   if(id==='chamados') renderChamados();
+  if(id==='area-tecnico') renderAreaTecnico();
   if(id==='aberto') renderAberto();
   if(id==='criticidade') renderCriticidade();
   if(id==='painel') renderPainel();
@@ -199,6 +222,7 @@ function refreshAfterAction() {
   populateTecnicoSelect(); // mantém a lista de técnicos em sincronia com o Firestore
   const active = document.querySelector('.section.active')?.id;
   if (active === 'sec-chamados')     applyFilters();
+  if (active === 'sec-area-tecnico') renderAreaTecnico();
   if (active === 'sec-aberto')       renderAberto();
   if (active === 'sec-encerrados')   renderEncerrados();
   if (active === 'sec-criticidade')  renderCriticidade();

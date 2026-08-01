@@ -6,14 +6,6 @@
   letter-spacing:.07em;color:var(--text3);margin-bottom:2px;
 }
 .det-val{font-size:12px;color:var(--text);font-weight:500}
-.hist-row{
-  display:flex;align-items:flex-start;gap:10px;
-  padding:8px 0;border-bottom:1px solid var(--border);
-}
-.hist-row:last-child{border-bottom:none}
-.hist-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.hist-action{font-size:12px;font-weight:600;color:var(--text)}
-.hist-meta{font-size:11px;color:var(--text3);margin-top:1px;line-height:1.5}
 
 /* ════════════════════════════════════════════
    CHECKLIST
@@ -180,17 +172,6 @@
 }
 .tl-check-ok {background:var(--green-bg);color:var(--green)}
 .tl-check-no {background:var(--surface3);color:var(--text3);text-decoration:line-through}
-
-/* Status-change inline badge */
-.tl-status-from{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:11px;color:var(--text3);margin-top:4px;
-}
-.tl-arrow{color:var(--text3);font-size:12px}
-.tl-status-badge{
-  display:inline-flex;align-items:center;
-  padding:1px 8px;border-radius:20px;font-size:10px;font-weight:700;
-}
 
 /* ════════════════════════════════════════════
    FASE 2 · ETAPA 2A — LISTAS DE CHAMADOS
@@ -391,4 +372,67 @@
 
 /* Lightbox de anexos — reaproveita .modal-overlay/.modal-box (style.css). */
 #modal-lightbox .modal-box{ padding:16px; }
+
+/* ════════════════════════════════════════════
+   FASE 3 — KANBAN ENTERPRISE + ÁREA DO TÉCNICO
+   (raias/colunas + card compartilhado entre as duas telas)
+   ════════════════════════════════════════════ */
+.view-toggle{ display:inline-flex; border:1.5px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; }
+.view-toggle-btn{
+  border:none; background:var(--surface); color:var(--text3); font-size:12px; font-weight:600;
+  padding:7px 12px; cursor:pointer; transition:all var(--transition);
+}
+.view-toggle-btn:hover{ color:var(--text); }
+.view-toggle-btn.active{ background:var(--accent); color:#fff; }
+
+.kanban-board{
+  display:grid; grid-template-columns:repeat(5,minmax(220px,1fr)); gap:12px;
+  align-items:start; overflow-x:auto; padding-bottom:6px;
+}
+.kanban-lane{
+  background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius);
+  padding:10px; min-height:120px; transition:background var(--transition), border-color var(--transition);
+}
+.kanban-lane[data-lane="cancelado"]{ opacity:.7; }
+.kanban-lane-over{ background:var(--accent-light); border-color:var(--accent); }
+.kanban-lane-head{
+  display:flex; align-items:center; justify-content:space-between; gap:6px;
+  font-size:11.5px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:.04em;
+  padding:2px 2px 10px;
+}
+.kanban-lane-body{ display:flex; flex-direction:column; gap:8px; }
+.kanban-lane-empty{ font-size:11px; color:var(--text3); text-align:center; padding:16px 4px; }
+
+.kanban-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:10px; cursor:grab; transition:box-shadow var(--transition), border-color var(--transition);
+}
+.kanban-card:hover{ border-color:var(--accent); box-shadow:var(--shadow-sm); }
+.kanban-card:active{ cursor:grabbing; }
+.kanban-card-top{ display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:4px; }
+.kanban-card-num{ font-family:var(--font-mono); font-size:11px; font-weight:700; color:var(--accent); }
+.kanban-card-titulo{ font-size:12px; font-weight:600; color:var(--text); line-height:1.35; margin-bottom:2px; }
+.kanban-card-frota{ font-size:10px; font-family:var(--font-mono); color:var(--accent); margin-bottom:6px; }
+.kanban-card-meta{ display:flex; flex-direction:column; gap:2px; font-size:10.5px; color:var(--text3); margin-bottom:8px; }
+.kanban-card-foot{ display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.kanban-card-btn{
+  border:1px solid var(--border2); background:var(--surface2); color:var(--text2);
+  border-radius:20px; font-size:10px; font-weight:600; padding:4px 9px; cursor:pointer;
+  transition:all var(--transition);
+}
+.kanban-card-btn:hover{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.kanban-card-acoes{
+  display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; padding-top:8px;
+  border-top:1px solid var(--border);
+}
+
+@media (max-width:1100px){ .kanban-board{ grid-template-columns:repeat(3,minmax(200px,1fr)); } }
+@media (max-width:768px){ .kanban-board{ grid-template-columns:repeat(2,minmax(180px,1fr)); } }
+@media (max-width:480px){ .kanban-board{ grid-template-columns:1fr; } }
+
+/* Área do Técnico (Fase 3) — mesmo card do Kanban, grid simples em vez de
+   raias (aqui não há colunas por status, só o filtro ativo). */
+.at-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:12px;
+}
 #lightbox-body img, #lightbox-body iframe{ background:var(--surface2); }

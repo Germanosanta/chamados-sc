@@ -13,29 +13,17 @@ function renderConfig() {
   const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   setEl('cfg-total-ch', allRecords().length.toLocaleString('pt-BR')+' chamados');
   setEl('cfg-total-eq', (typeof EQUIPAMENTOS!=='undefined'?EQUIPAMENTOS.length:0).toLocaleString('pt-BR')+' equipamentos');
-
-  // Load email config into form
-  const cfg = typeof emailService !== 'undefined' && emailService.config ? emailService.config : {};
-  const prov = document.getElementById('cfg-email-provider');
-  const tok  = document.getElementById('cfg-email-token');
-  const frm  = document.getElementById('cfg-email-from');
-  if (prov) prov.value   = cfg.provider||'none';
-  if (tok)  tok.value    = cfg.token||'';
-  if (frm)  frm.value    = cfg.from||'';
 }
 
-function salvarEmailConfig() {
-  const provider = document.getElementById('cfg-email-provider')?.value||'none';
-  const token    = document.getElementById('cfg-email-token')?.value||'';
-  const from     = document.getElementById('cfg-email-from')?.value||'';
-  localStorage.setItem('chm_email_cfg', JSON.stringify({provider,token,from}));
-  if (typeof emailService !== 'undefined') {
-    emailService.config = {provider,token,from};
-  }
-  const st = document.getElementById('cfg-email-status');
-  if (st) { st.textContent='✓ Configurações salvas.'; st.style.color='var(--green)'; }
-  showToast('Configurações de e-mail salvas!');
-}
+// salvarEmailConfig() removida (Fase 3 — bug real corrigido): gravava
+// {provider,token,from} na MESMA chave localStorage['chm_email_cfg'] que
+// saveEmailConfig() (js/modules/config/index.js abaixo, usada pelo card
+// de e-mail em Usuários), mas substituindo emailService.config inteiro —
+// apagava smtpEndpoint/fromEmail (os campos que emailService realmente lê,
+// ver chamados/index.js:203-216) e gravava um campo "token" que nunca era
+// lido por ninguém. Salvar por esse formulário quebrava silenciosamente o
+// envio de e-mail via SMTP. saveEmailConfig()/loadEmailConfig() (a versão
+// correta) continuam intocadas.
 
 function limparDadosLocais() {
   if (!confirm('Isso irá remover todos os chamados, encerramentos, KB e peças criados localmente. Os dados históricos (3.214 chamados) serão preservados. Continuar?')) return;

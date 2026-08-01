@@ -1,5 +1,23 @@
 /* ── USUÁRIOS
-   O módulo de usuários hoje reaproveita 100% dos componentes genéricos
-   de style.css (data-table, pill, form-*, btn). Nenhuma regra própria
-   ainda — arquivo criado para já existir o ponto de extensão quando
-   surgir CSS específico (ex.: badges de perfil, bloqueio de usuário). */
+   O módulo de usuários reaproveita os componentes genéricos de style.css
+   (data-table, badge, form-*, btn). Fase 3 acrescenta só o grid de
+   permissões (antes inline, sem responsivo) e a responsividade da
+   tabela — mesmo padrão já usado em chamados.css/equipamentos.css. */
+
+/* #perms-grid tinha grid-template-columns:repeat(3,1fr) inline no HTML,
+   sem nenhuma regra pra telas estreitas — os 15 checkboxes ficavam
+   espremidos em 3 colunas fixas mesmo no mobile. */
+.perms-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px 16px; }
+@media (max-width:900px){ .perms-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:600px){ .perms-grid{ grid-template-columns:1fr; } }
+
+/* Tabela de usuários (7 colunas) — essenciais (Nome/Status/Ações) sempre
+   visíveis; secundárias somem em cascata, igual chamados.css/equipamentos.css. */
+@media (max-width:900px){
+  #sec-usuarios .data-table th:nth-child(3), #sec-usuarios .data-table td:nth-child(3),
+  #sec-usuarios .data-table th:nth-child(5), #sec-usuarios .data-table td:nth-child(5){ display:none; }
+}
+@media (max-width:600px){
+  #sec-usuarios .data-table th:nth-child(2), #sec-usuarios .data-table td:nth-child(2),
+  #sec-usuarios .data-table th:nth-child(4), #sec-usuarios .data-table td:nth-child(4){ display:none; }
+}

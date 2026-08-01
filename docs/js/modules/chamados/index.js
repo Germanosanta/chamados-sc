@@ -368,24 +368,11 @@ function sortChamados(field) {
   if (_sortField === field) _sortDir *= -1; else { _sortField = field; _sortDir = 1; }
   filteredRecords = _aplicarOrdenacao(filteredRecords);
   renderChamados();
+  if (viewMode === 'kanban') renderKanban();
 }
 
 function renderChamados(){
   if(!filteredRecords.length) filteredRecords=[...allRecords()];
-
-// ── AUTH INIT
-(function(){
-  const u = getSession();
-  if (u) {
-    document.getElementById('login-overlay').style.display='none';
-    document.getElementById('topbar-user').textContent = u.nome.split(' ')[0]+' · '+(PERFIL_LABEL[u.perfil]||u.perfil);
-    aplicarNavPerms();
-  } else {
-    document.getElementById('login-overlay').style.display='flex';
-    // focus login field
-    setTimeout(()=>document.getElementById('login-user')?.focus(), 100);
-  }
-})();
   const total=filteredRecords.length;
   const slice=filteredRecords.slice((page-1)*PER_PAGE, page*PER_PAGE);
   const _closedMapC = getClosedMap();
@@ -481,12 +468,226 @@ function applyFilters(){
   filteredRecords = _aplicarOrdenacao(filteredRecords); // preserva a ordenação ativa, se houver
   page=1;
   renderChamados();
+  if (viewMode === 'kanban') renderKanban();
 }
 
 function gotoPage(p){
   const pages=Math.ceil(filteredRecords.length/PER_PAGE);
   if(p<1||p>pages) return;
   page=p;renderChamados();
+}
+
+// ══════════════════════════════════════════════════════════════
+// KANBAN ENTERPRISE (Fase 3) — mesmos dados/filtros de filteredRecords,
+// nenhum campo novo, nenhuma lógica de leitura nova. Colunas = as 4 fases
+// já formalizadas em STATUS_STEPS (Etapa 2C-ii), reaproveitadas como
+// definição das raias, sem redefinir o que cada status significa.
+// ══════════════════════════════════════════════════════════════
+let viewMode = localStorage.getItem('chm_view_mode') || 'lista';
+
+function toggleViewMode(mode) {
+  viewMode = mode;
+  localStorage.setItem('chm_view_mode', mode);
+  document.getElementById('btn-view-lista')?.classList.toggle('active', mode==='lista');
+  document.getElementById('btn-view-kanban')?.classList.toggle('active', mode==='kanban');
+  const listCard = document.getElementById('chamados-list-card');
+  const board    = document.getElementById('kanban-board');
+  if (listCard) listCard.style.display = mode==='lista' ? '' : 'none';
+  if (board)    board.style.display    = mode==='kanban' ? '' : 'none';
+  if (mode === 'kanban') renderKanban();
+}
+
+// Raia (lane) de um chamado a partir do status real — mesmo mapeamento de
+// _statusStepIndex(), só devolvendo a key da raia em vez de um índice.
+function _kbLaneKey(status) {
+  if (status === 'Cancelado') return 'cancelado';
+  return STATUS_STEPS[_statusStepIndex(status)].key;
+}
+
+function renderKanban() {
+  const board = document.getElementById('kanban-board');
+  if (!board) return;
+  const lanes = [...STATUS_STEPS, {key:'cancelado', label:'Cancelado'}];
+  const closedMap = getClosedMap();
+  board.innerHTML = lanes.map(l => {
+    const itens = filteredRecords.filter(r => _kbLaneKey(r[5]) === l.key);
+    const readonly = l.key === 'cancelado';
+    return `<div class="kanban-lane" data-lane="${l.key}"
+        ${readonly ? '' : `ondragover="_kbAllowDrop(event)" ondragleave="_kbDragLeave(event)" ondrop="_kbDrop(event,'${l.key}')"`}>
+      <div class="kanban-lane-head">
+        <span>${l.label}</span>
+        <span class="badge badge-neutral">${itens.length}</span>
+      </div>
+      <div class="kanban-lane-body">${itens.length ? itens.map(r=>_ticketCardHTML(r, closedMap)).join('') : '<div class="kanban-lane-empty">Nenhum chamado</div>'}</div>
+    </div>`;
+  }).join('');
+}
+
+// Card do Kanban — compartilhado com a Área do Técnico (mesmo componente,
+// não dois). Clique abre o Centro Operacional (openDetalhe), igual ao
+// clique de linha nas tabelas hoje. `comAcoes=true` (usado pela Área do
+// Técnico) acrescenta um rodapé de botões grandes; o Kanban usa só o
+// botão "Assumir" (o resto é feito arrastando o card).
+function _ticketCardHTML(rec, closedMap, comAcoes) {
+  const num = rec[0];
+  closedMap = closedMap || getClosedMap();
+  const _lr = getLocal().find(x=>x.num===num);
+  const fr = frotaLabel(num, _lr);
+  const dias = diasAberto(rec[4]);
+  const prior = prioridadeReal(num);
+  const isClosed = rec[5]==='Concluída'||rec[5]==='Encerrado'||rec[5]==='Concluído'||!!closedMap[num];
+  const jaAssumido = !!(_lr && _lr.assumidoPor);
+  const resp1 = (rec[3]||'').split(',').map(s=>s.trim()).filter(Boolean)[0] || '—';
+  const lane = _kbLaneKey(rec[5]);
+  return `<div class="kanban-card" draggable="true"
+      ondragstart="_kbDragStart(event,'${num}')" onclick="openDetalhe('${num}')">
+    <div class="kanban-card-top">
+      <span class="kanban-card-num">${num}</span>
+      ${prior ? prioridadeBadge(prior) : ''}
+    </div>
+    <div class="kanban-card-titulo">${_escHtml(rec[1]||'—')}</div>
+    ${fr ? `<div class="kanban-card-frota">${fr}</div>` : ''}
+    <div class="kanban-card-meta">
+      <span>🏭 ${fazendaLabel(rec[6])}</span>
+      <span>👤 ${_escHtml(resp1)}</span>
+    </div>
+    <div class="kanban-card-foot">
+      ${!isClosed && dias>=DIAS_ATRASO_ALERTA ? `<span ${diasChip(dias)}>${dias}d em aberto</span>` : `<span class="badge badge-neutral">${dias}d</span>`}
+      ${!jaAssumido && !isClosed ? `<button type="button" class="kanban-card-btn" onclick="event.stopPropagation();assumirChamado('${num}')">Assumir</button>` : ''}
+    </div>
+    ${comAcoes ? `<div class="kanban-card-acoes">${_acoesRapidasHTML(num, lane, isClosed)}</div>` : ''}
+  </div>`;
+}
+
+// Botões de ação rápida da Área do Técnico — cada um chama EXATAMENTE a
+// mesma função que o botão correspondente já chama dentro do Centro
+// Operacional (via _abrirAcaoRapida, ver acima), só orquestrada a partir
+// do card. "Anexar Fotos" abre o Centro Operacional na Galeria — não
+// existe hoje upload de foto num chamado já aberto (só na abertura),
+// então o botão não finge uma capacidade que o sistema não tem.
+function _acoesRapidasHTML(num, lane, isClosed) {
+  if (isClosed) return '';
+  const btn = (label, onclick) => `<button type="button" class="kanban-card-btn" onclick="event.stopPropagation();${onclick}">${label}</button>`;
+  if (lane === 'aberto') {
+    return btn('▶️ Iniciar', `_abrirAcaoRapida('${num}','iniciou')`);
+  }
+  if (lane === 'atendimento') {
+    return [
+      btn('📦 Pausar', `_abrirAcaoRapida('${num}','peca_solicitada')`),
+      btn('✅ Concluir', `_abrirAcaoRapida('${num}','checklist')`),
+      btn('💬 Observação', `_abrirAcaoRapida('${num}','obs')`),
+      btn('📷 Fotos', `openDetalhe('${num}')`),
+    ].join('');
+  }
+  if (lane === 'peca') {
+    return [
+      btn('✔️ Retomar', `_abrirAcaoRapida('${num}','peca_recebida')`),
+      btn('✅ Concluir', `_abrirAcaoRapida('${num}','checklist')`),
+    ].join('');
+  }
+  if (lane === 'concluido') return btn('↩️ Reabrir', `reabrirChamado('${num}')`);
+  return '';
+}
+
+// ── Drag and drop nativo (HTML5) — sem lib de terceiros (nenhuma existe no
+// projeto). Transições compatíveis com a lógica já existente (ver mapa
+// abaixo); o resto abre o Centro Operacional em vez de tentar reescrever a
+// validação das funções originais para aceitar um número arbitrário.
+function _kbDragStart(ev, num) {
+  ev.dataTransfer.setData('text/plain', num);
+  ev.dataTransfer.effectAllowed = 'move';
+}
+function _kbAllowDrop(ev) { ev.preventDefault(); ev.currentTarget.classList.add('kanban-lane-over'); }
+function _kbDragLeave(ev) { ev.currentTarget.classList.remove('kanban-lane-over'); }
+
+// Mapa de transições compatíveis → ação real já existente que a completa.
+// 'checklist' = abre o encerramento (openChecklist), que já não exige
+// nenhum status prévio específico — por isso tanto atendimento quanto
+// peça podem ir direto pra concluído.
+const _KB_TRANSICOES = {
+  'aberto>atendimento':    'iniciou',
+  'atendimento>peca':      'peca_solicitada',
+  'peca>atendimento':      'peca_recebida',
+  'atendimento>concluido': 'checklist',
+  'peca>concluido':        'checklist',
+};
+
+function _kbDrop(ev, laneDestino) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('kanban-lane-over');
+  const num = ev.dataTransfer.getData('text/plain');
+  if (!num) return;
+  const rec = allRecords().find(r => r[0]===num);
+  if (!rec) return;
+  const laneOrigem = _kbLaneKey(rec[5]);
+  if (laneOrigem === laneDestino) return;
+  if (laneOrigem === 'cancelado') return; // raia só-leitura
+
+  // Única transição instantânea: sair de "Concluído" chama reabrirChamado()
+  // direto — é a única ação já existente que recebe o número do chamado
+  // como parâmetro e é autocontida (não depende do Centro Operacional
+  // estar aberto), confirmado por leitura direta do código.
+  if (laneOrigem === 'concluido') {
+    reabrirChamado(num);
+    return;
+  }
+
+  const acao = _KB_TRANSICOES[laneOrigem + '>' + laneDestino];
+  if (!acao) { showToast('⚠ Ação não disponível — avance uma etapa por vez.'); return; }
+  _abrirAcaoRapida(num, acao);
+}
+
+// Orquestra duas chamadas já existentes (abrir o Centro Operacional +
+// preparar a ação) — as mesmas que os botões do modal já disparam hoje,
+// só iniciadas a partir de fora dele (card do Kanban/Área do Técnico).
+// Nenhuma validação das funções originais é duplicada ou reimplementada.
+function _abrirAcaoRapida(num, acao) {
+  openDetalhe(num);
+  if (acao === 'checklist') { openChecklist('detalhe'); return; }
+  if (acao) registrarEvento(acao);
+}
+
+// ══════════════════════════════════════════════════════════════
+// ÁREA DO TÉCNICO (Fase 3) — espaço de trabalho pessoal, separado do
+// cadastro administrativo #sec-tecnicos (RH). Reaproveita getAbertos()/
+// getEncerrados()/prioridadeReal() já existentes; o único filtro
+// genuinamente novo é "Meus Chamados" (comparação por nome contra
+// resp/tecnico/assumidoPor), que hoje só existia como um "if" isolado
+// pra esconder o botão Assumir — vira filtro de lista aqui, sem nenhuma
+// escrita nova nem mudança de regra de negócio.
+// ══════════════════════════════════════════════════════════════
+let _atFiltroAtivo = 'meus';
+
+function _atEhMeu(r, nome) {
+  if (!nome) return false;
+  const lr = getLocal().find(x => x.num === r[0]);
+  const resps = (r[3]||'').split(',').map(s=>s.trim());
+  return resps.includes(nome) || lr?.tecnico === nome || lr?.assumidoPor === nome;
+}
+
+function atFiltro(f) { renderAreaTecnico(f); }
+
+function renderAreaTecnico(filtro) {
+  filtro = filtro || _atFiltroAtivo;
+  _atFiltroAtivo = filtro;
+  document.querySelectorAll('#at-chips .view-toggle-btn').forEach(b=>b.classList.toggle('active', b.dataset.at===filtro));
+
+  const nome = currentUser()?.nome || '';
+  const base = filtro === 'concluidos' ? getEncerrados() : getAbertos();
+
+  let itens;
+  if (filtro === 'meus')            itens = base.filter(r => _atEhMeu(r, nome));
+  else if (filtro === 'urgentes')   itens = base.filter(r => prioridadeReal(r[0]) === 'Urgente');
+  else if (filtro === 'atendimento')itens = base.filter(r => _kbLaneKey(r[5]) === 'atendimento');
+  else if (filtro === 'peca')       itens = base.filter(r => _kbLaneKey(r[5]) === 'peca');
+  else /* concluidos */             itens = base.filter(r => _atEhMeu(r, nome));
+
+  const wrap = document.getElementById('at-lista');
+  if (!wrap) return;
+  const closedMap = getClosedMap();
+  wrap.innerHTML = itens.length
+    ? itens.map(r => _ticketCardHTML(r, closedMap, true)).join('')
+    : `<div class="kanban-lane-empty" style="grid-column:1/-1">Nenhum chamado encontrado para este filtro.</div>`;
 }
 
 function openDetalhe(num) {

@@ -83,12 +83,17 @@ function renderEquipamentos() {
   const total=items.length;
   const pageItems=items.slice((_eqPage-1)*PAGE,_eqPage*PAGE);
 
-  const statusColor=s=>s==='Ativo'?'var(--green)':s==='Manutenção'?'var(--amber)':'var(--text3)';
+  // Badge de status — substitui a cor inline de antes (Fase 3, polimento)
+  // pela família .badge já existente; mesmo mapeamento de valor de sempre.
+  const statusBadge=s=>{
+    const cls = s==='Ativo' ? 'badge-green' : s==='Manutenção' ? 'badge-amber' : 'badge-neutral';
+    return `<span class="badge ${cls}">${s}</span>`;
+  };
 
   tbody.innerHTML=pageItems.map(e=>{
     const cnt=chCount[e.frota]||0;
     const hasData=e.patrimonio||e.fabricante||e.ano||e.horimetro||e.fazenda||e.responsavel;
-    return `<tr>
+    return `<tr style="cursor:pointer" onclick="abrirFichaEquip('${e.frota}')">
       <td class="td-num">${e.frota}</td>
       <td style="font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.descricao}">${e.descricao}</td>
       <td style="font-size:11px;font-family:var(--font-mono)">${e.patrimonio||'<span style="color:var(--border2)">—</span>'}</td>
@@ -100,10 +105,10 @@ function renderEquipamentos() {
       <td style="font-size:11px">${e.fazenda||'<span style="color:var(--border2)">—</span>'}</td>
       <td style="font-size:11px">${e.cultura||'<span style="color:var(--border2)">—</span>'}</td>
       <td style="font-size:11px">${e.responsavel||'<span style="color:var(--border2)">—</span>'}</td>
-      <td><span style="font-size:11px;font-weight:600;color:${statusColor(e.status)}">${e.status}</span></td>
-      <td style="text-align:center">${cnt?`<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer" onclick="verHistoricoFrota('${e.frota}')">${cnt}</span>`:'<span style="color:var(--border2);font-size:11px">—</span>'}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td style="text-align:center">${cnt?`<span style="background:var(--accent-light);color:var(--accent);padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;cursor:pointer" onclick="event.stopPropagation();verHistoricoFrota('${e.frota}')">${cnt}</span>`:'<span style="color:var(--border2);font-size:11px">—</span>'}</td>
       <td style="white-space:nowrap">
-        <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="abrirFormEq('${e.frota}')">✏️ Editar</button>
+        <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px" onclick="event.stopPropagation();abrirFormEq('${e.frota}')">✏️ Editar</button>
       </td>
     </tr>`;
   }).join('');
@@ -415,6 +420,83 @@ function verHistoricoFrota(code) {
 
   document.getElementById('fr-detail-card').style.display='block';
   document.getElementById('fr-detail-card').scrollIntoView({behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════════════════════════
+// FICHA DO EQUIPAMENTO (Fase 3) — modal único, somente leitura, que
+// COMPÕE 3 blocos que hoje vivem separados e não se comunicam:
+// dados técnicos (mesmo lookup que abrirFormEq() já usa), KPIs de
+// histórico (mesmo cálculo de verHistoricoFrota()) e chamados
+// relacionados via renderHistoricoEquip() — a MESMA função já usada no
+// Novo Chamado e no Centro Operacional do Chamado, só com um terceiro
+// prefixo ('eqficha-hist'). Edição continua 100% em abrirFormEq(), sem
+// nenhuma mudança nela — a ficha só chama, via o botão "✏️ Editar".
+// ══════════════════════════════════════════════════════════════
+function abrirFichaEquip(frota) {
+  const base = (typeof EQUIPAMENTOS!=='undefined'?EQUIPAMENTOS:[]).find(e=>e.c===frota);
+  const cad  = getCadEq()[frota] || {};
+  const eq   = (typeof EQUIP_IDX!=='undefined' && EQUIP_IDX[frota]) || {d:base?.d||frota, m:base?.m||'', g:base?.g||'', s:base?.s||'Ativo'};
+
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v||'—';};
+  setEl('fe-titulo',      frota+' · '+(base?.d||eq.d||'—'));
+  setEl('fe-modelo',      cad.modelo||base?.m||eq.m||'—');
+  setEl('fe-fabricante',  cad.fabricante);
+  setEl('fe-ano',         cad.ano);
+  setEl('fe-patrimonio',  cad.patrimonio);
+  setEl('fe-serie',       cad.serie);
+  setEl('fe-tipo',        cad.tipo||base?.g||eq.g||'—');
+  setEl('fe-horimetro',   cad.horimetro?Number(cad.horimetro).toLocaleString('pt-BR')+'h':'');
+  setEl('fe-fazenda',     cad.fazenda);
+  setEl('fe-cultura',     cad.cultura);
+  setEl('fe-responsavel', cad.responsavel);
+  setEl('fe-obs',         cad.obs);
+
+  const status = cad.status || eq.s || base?.s || 'Ativo';
+  const statusEl = document.getElementById('fe-status');
+  if (statusEl) {
+    statusEl.className = 'badge ' + (status==='Ativo' ? 'badge-green' : status==='Manutenção' ? 'badge-amber' : 'badge-neutral');
+    statusEl.textContent = status;
+  }
+
+  // KPIs de histórico — mesmo cálculo de verHistoricoFrota(), sem repetir
+  // a lógica na tabela (aqui só os 4 números do topo).
+  const all    = allRecords();
+  const local  = getLocal();
+  const closed = getClosedMap();
+  const nums = new Set();
+  if (typeof MATCH_MAP!=='undefined') Object.entries(MATCH_MAP).forEach(([n,c])=>{ if(c===frota) nums.add(n); });
+  local.forEach(lr=>{ if(lr.equipCodigo===frota) nums.add(lr.num); });
+  const recs = all.filter(r=>nums.has(r[0]));
+  const isCl = r=>r[5]==='Concluída'||r[5]==='Encerrado'||!!closed[r[0]];
+  let somaD=0, cntD=0;
+  recs.forEach(r=>{
+    const ci=closed[r[0]];
+    if(ci?.encerradoEm&&r[4]){
+      const d=Math.floor((new Date(ci.encerradoEm)-new Date(r[4]+'T00:00'))/86400000);
+      if(d>=0){somaD+=d;cntD++;}
+    }
+  });
+  setEl('fe-kpi-total',  recs.length);
+  setEl('fe-kpi-conc',   recs.filter(isCl).length);
+  setEl('fe-kpi-aberto', recs.filter(r=>!isCl(r)).length);
+  setEl('fe-kpi-tempo',  cntD ? (somaD/cntD).toFixed(1)+'d' : '—');
+
+  // Chamados relacionados — MESMA função já usada no Novo Chamado
+  // (prefix='equip-hist') e no Centro Operacional (prefix='det-equip-hist').
+  renderHistoricoEquip(frota, 'eqficha-hist');
+
+  const editBtn = document.getElementById('fe-editar-btn');
+  if (editBtn) editBtn.onclick = () => { fecharFichaEquip(); abrirFormEq(frota); };
+
+  const modal = document.getElementById('modal-ficha-equip');
+  modal.classList.add('open');
+  modal.setAttribute('aria-modal','true');
+  modal.setAttribute('role','dialog');
+}
+
+function fecharFichaEquip(e) {
+  if (e && e.target !== document.getElementById('modal-ficha-equip')) return;
+  document.getElementById('modal-ficha-equip').classList.remove('open');
 }
 
 function renderKB() {

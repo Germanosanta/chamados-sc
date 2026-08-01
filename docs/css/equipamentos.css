@@ -39,3 +39,27 @@
 }
 .equip-clear-btn.show{display:block}
 .equip-nofound{padding:12px;text-align:center;color:var(--text3);font-size:12px}
+
+/* ── RESPONSIVIDADE (Fase 3) — #tbl-eq-main tinha 14 colunas e nenhum
+   tratamento dedicado (só o overflow-x:auto genérico de .table-wrap).
+   Mesmo padrão já usado em chamados.css: essenciais sempre visíveis
+   (Frota/Descrição/Status/Ações), secundárias somem em cascata. */
+@media (max-width:1100px){
+  #sec-equipamentos #tbl-eq-main th:nth-child(3), #sec-equipamentos #tbl-eq-main td:nth-child(3),
+  #sec-equipamentos #tbl-eq-main th:nth-child(5), #sec-equipamentos #tbl-eq-main td:nth-child(5),
+  #sec-equipamentos #tbl-eq-main th:nth-child(6), #sec-equipamentos #tbl-eq-main td:nth-child(6),
+  #sec-equipamentos #tbl-eq-main th:nth-child(8), #sec-equipamentos #tbl-eq-main td:nth-child(8),
+  #sec-equipamentos #tbl-eq-main th:nth-child(10), #sec-equipamentos #tbl-eq-main td:nth-child(10){ display:none; }
+}
+@media (max-width:900px){
+  #sec-equipamentos #tbl-eq-main th:nth-child(4), #sec-equipamentos #tbl-eq-main td:nth-child(4),
+  #sec-equipamentos #tbl-eq-main th:nth-child(7), #sec-equipamentos #tbl-eq-main td:nth-child(7),
+  #sec-equipamentos #tbl-eq-main th:nth-child(11), #sec-equipamentos #tbl-eq-main td:nth-child(11){ display:none; }
+}
+@media (max-width:600px){
+  #sec-equipamentos #tbl-eq-main th:nth-child(9), #sec-equipamentos #tbl-eq-main td:nth-child(9),
+  #sec-equipamentos #tbl-eq-main th:nth-child(13), #sec-equipamentos #tbl-eq-main td:nth-child(13){ display:none; }
+}
+
+/* Ficha do Equipamento — reaproveita .det-block/.det-cabecalho-grid/.op-card
+   (Centro Operacional do Chamado / Histórico por Frota), sem CSS próprio. */

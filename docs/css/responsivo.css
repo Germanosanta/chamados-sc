@@ -29,7 +29,6 @@
   .kpi-grid{grid-template-columns:repeat(2,1fr)!important}
   .chart-row{grid-template-columns:1fr!important}
   .form-grid{grid-template-columns:1fr!important}
-  .bucket-grid{grid-template-columns:1fr 1fr!important}
   #global-search-box{width:140px}
   .btn-label{display:none}
   .topbar-btn{padding:0 8px;min-width:32px;justify-content:center}
