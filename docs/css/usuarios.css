@@ -21,3 +21,22 @@
   #sec-usuarios .data-table th:nth-child(2), #sec-usuarios .data-table td:nth-child(2),
   #sec-usuarios .data-table th:nth-child(4), #sec-usuarios .data-table td:nth-child(4){ display:none; }
 }
+
+/* Técnicos (Fase 4.5) — 12 colunas (Nome/Apelido/Área/Cargo/Telefone/
+   E-mail/Status/Total/Encerrados/Pendentes/Tempo Médio/Ações), a tabela
+   mais larga do projeto, sem nenhum tratamento antes. Essenciais sempre
+   visíveis: Nome/Status/Encerrados/Ações. */
+@media (max-width:1100px){
+  #sec-tecnicos .data-table th:nth-child(2),  #sec-tecnicos .data-table td:nth-child(2),
+  #sec-tecnicos .data-table th:nth-child(5),  #sec-tecnicos .data-table td:nth-child(5),
+  #sec-tecnicos .data-table th:nth-child(6),  #sec-tecnicos .data-table td:nth-child(6){ display:none; }
+}
+@media (max-width:900px){
+  #sec-tecnicos .data-table th:nth-child(4),  #sec-tecnicos .data-table td:nth-child(4),
+  #sec-tecnicos .data-table th:nth-child(11), #sec-tecnicos .data-table td:nth-child(11){ display:none; }
+}
+@media (max-width:600px){
+  #sec-tecnicos .data-table th:nth-child(3),  #sec-tecnicos .data-table td:nth-child(3),
+  #sec-tecnicos .data-table th:nth-child(8),  #sec-tecnicos .data-table td:nth-child(8),
+  #sec-tecnicos .data-table th:nth-child(10), #sec-tecnicos .data-table td:nth-child(10){ display:none; }
+}

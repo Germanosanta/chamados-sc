@@ -19,7 +19,7 @@
 //   cache só entra offline); imagens = cache-first (coerente com o
 //   max-age=86400 já configurado lá).
 
-const CACHE_VERSION = '20260731b';
+const CACHE_VERSION = '20260801a';
 const CACHE_NAME    = 'chm-shell-' + CACHE_VERSION;
 const CORE_ASSETS   = ['./', './index.html', './manifest.json'];
 

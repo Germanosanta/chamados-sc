@@ -128,9 +128,9 @@ function renderRespSection(){
       <td style="text-align:center;font-weight:700;font-family:'JetBrains Mono',monospace">${d.atribuidos.toLocaleString('pt-BR')}</td>
       <td style="text-align:center">${d.abertos_por||'—'}</td>
       <td style="text-align:center">${d.encerrados_por||'—'}</td>
-      <td style="text-align:center"><span class="pill p-aberto">${d.emAberto}</span></td>
-      <td style="text-align:center"><span class="pill p-andamento">${d.emAndamento}</span></td>
-      <td style="text-align:center"><span class="pill p-concluida">${d.encerrados}</span></td>
+      <td style="text-align:center"><span class="badge badge-red">${d.emAberto}</span></td>
+      <td style="text-align:center"><span class="badge badge-amber">${d.emAndamento}</span></td>
+      <td style="text-align:center"><span class="badge badge-green">${d.encerrados}</span></td>
       <td style="text-align:center;font-family:'JetBrains Mono',monospace;color:var(--amber)">${d.tempoAtend}</td>
       <td style="text-align:center;font-family:'JetBrains Mono',monospace;color:var(--green)">${d.tempoConc}</td>
       <td style="text-align:center">${totalAtrib?Math.round(d.atribuidos/all.length*100):0}%</td>
@@ -181,12 +181,12 @@ function renderAuditoria() {
     const fmt = d.toLocaleDateString('pt-BR')+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
     const color = typeColors[l.tipo]||'var(--text3)';
     const label = typeLabels[l.tipo]||l.tipo;
-    return `<div class="audit-row">
-      <span class="audit-ts">${fmt}</span>
-      <span class="audit-actor">${l.usuario||'—'}</span>
-      <span class="op-badge" style="background:${color}22;color:${color};min-width:90px">${label}</span>
-      <span class="audit-action">${l.chamado?`<b>${l.chamado}</b> · `:''} ${l.detalhe}</span>
-    </div>`;
+    return `<tr>
+      <td class="audit-ts">${fmt}</td>
+      <td class="audit-actor">${l.usuario||'—'}</td>
+      <td><span class="op-badge" style="background:${color}22;color:${color};min-width:90px">${label}</span></td>
+      <td class="audit-action">${l.chamado?`<b>${l.chamado}</b> · `:''} ${l.detalhe}</td>
+    </tr>`;
   }).join('');
 
   const cnt=document.getElementById('aud-count');

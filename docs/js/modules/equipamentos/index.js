@@ -100,7 +100,7 @@ function renderEquipamentos() {
       <td style="font-size:11px">${e.modelo||'—'}</td>
       <td style="font-size:11px">${e.fabricante||'<span style="color:var(--border2)">—</span>'}</td>
       <td style="font-size:11px;text-align:center">${e.ano||'<span style="color:var(--border2)">—</span>'}</td>
-      <td><span class="pill chip-blue" style="font-size:10px">${e.tipo||'—'}</span></td>
+      <td><span class="badge badge-graos" style="font-size:10px">${e.tipo||'—'}</span></td>
       <td style="font-size:11px;text-align:right">${e.horimetro?Number(e.horimetro).toLocaleString('pt-BR')+'h':'<span style="color:var(--border2)">—</span>'}</td>
       <td style="font-size:11px">${e.fazenda||'<span style="color:var(--border2)">—</span>'}</td>
       <td style="font-size:11px">${e.cultura||'<span style="color:var(--border2)">—</span>'}</td>
@@ -113,21 +113,13 @@ function renderEquipamentos() {
     </tr>`;
   }).join('');
 
-  // Pagination bar
-  const pages=Math.ceil(total/PAGE);
+  // Pagination bar — Fase 4.5: reaproveita _paginacaoHTML() (chamados/
+  // index.js), já usada em 4 telas, em vez da lógica de ellipsis escrita
+  // à mão que existia aqui (mesmo comportamento, sem duplicar lógica).
   const pag=document.getElementById('eq-pag');
-  if(pag&&pages>1){
-    let btns=`<span style="font-size:11px;color:var(--text3)">${total.toLocaleString('pt-BR')} equipamentos</span> `;
-    for(let p=1;p<=pages;p++){
-      if(p===1||p===pages||Math.abs(p-_eqPage)<=1){
-        btns+=`<button class="pag-btn${p===_eqPage?' active':''}" onclick="eqGotoPage(${p})">${p}</button>`;
-      } else if(Math.abs(p-_eqPage)===2){
-        btns+=`<span style="color:var(--text3);padding:0 4px">…</span>`;
-      }
-    }
-    pag.innerHTML=btns;
-  } else if(pag){
-    pag.innerHTML=total>0?`<span style="font-size:11px;color:var(--text3)">${total.toLocaleString('pt-BR')} equipamentos</span>`:'';
+  if(pag){
+    const texto = `<span style="font-size:11px;color:var(--text3)">${total.toLocaleString('pt-BR')} equipamentos</span>`;
+    pag.innerHTML = total > PAGE ? `${texto} ${_paginacaoHTML(_eqPage, total, PAGE, 'eqGotoPage')}` : texto;
   }
 }
 
@@ -360,7 +352,7 @@ function renderFrotas() {
       <td class="td-num">${x.code}</td>
       <td style="font-weight:600;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${x.d}</td>
       <td style="font-size:11px;color:var(--text3)">${x.m||'—'}</td>
-      <td><span class="pill chip-blue">${x.g||'—'}</span></td>
+      <td><span class="badge badge-graos">${x.g||'—'}</span></td>
       <td><span style="font-size:11px;font-weight:600;color:${x.s==='Ativo'?'var(--green)':'var(--amber)'}">${x.s}</span></td>
       <td style="text-align:center">
         <span style="background:var(--accent-light);color:var(--accent);padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700">${x.count}</span>
@@ -414,7 +406,7 @@ function verHistoricoFrota(code) {
       <td class="td-num">${r[0]}</td>
       <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r[1]||'—'}</td>
       <td style="font-family:var(--font-mono);font-size:11px">${r[4]?r[4].split('-').reverse().join('/'):' —'}</td>
-      <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
+      <td><span class="badge ${statusPill(r[5])}">${r[5]}</span></td>
       <td style="font-size:11px">${(r[3]||'—').replace(/,/g,' e ')}</td>
     </tr>`).join('');
 
@@ -531,7 +523,7 @@ function renderKB() {
   tbody.innerHTML = items.map(k=>`
     <tr>
       <td style="font-weight:600;max-width:180px">${k.problema}</td>
-      <td><span class="pill chip-blue">${k.categoria||'—'}</span></td>
+      <td><span class="badge badge-graos">${k.categoria||'—'}</span></td>
       <td style="font-size:11px;color:var(--text3)">${k.sistema||'Todos'}</td>
       <td style="max-width:220px;font-size:12px">${k.solucao}</td>
       <td style="font-size:11px;color:var(--text3)">${k.materiais||'—'}</td>
@@ -703,7 +695,7 @@ function renderPecas() {
     return `<tr>
       <td style="font-weight:600">${p.nome}${isLow?` <span style="font-size:10px;background:var(--red-bg);color:var(--red);padding:1px 5px;border-radius:4px">⚠ baixo</span>`:''}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${p.codigo||'—'}</td>
-      <td><span class="pill chip-blue">${p.categoria||'—'}</span></td>
+      <td><span class="badge badge-graos">${p.categoria||'—'}</span></td>
       <td style="font-size:11px;color:var(--text3)">${p.unidade||'un'}</td>
       <td style="${qtdClass}">${p.qtd} ${p.unidade||'un'}</td>
       <td style="font-size:11px;color:var(--text3)">${p.minimo||2}</td>

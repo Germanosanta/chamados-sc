@@ -281,8 +281,10 @@ function renderTecnicos() {
   setEl('tec-pendentes',tecs.reduce((s,t)=>s+t.aberto,0));
 
   const colors=['var(--accent)','var(--teal)','var(--green)','var(--purple)','var(--amber)','var(--red)'];
-  const statusColor=s=>s==='Ativo'?'var(--green)':s==='Férias'?'var(--amber)':s==='Afastado'?'var(--amber)':'var(--text3)';
   const statusLabel=s=>({'Ativo':'🟢 Ativo','Inativo':'⚫ Inativo','Férias':'🏖 Férias','Afastado':'⚠ Afastado'}[s]||s);
+  // Fase 4.5: badge em vez de cor de texto solta (mesmo polimento já
+  // aplicado em Equipamentos, Fase 3) — mesmo mapeamento de valor.
+  const statusBadgeCls=s=>s==='Ativo'?'badge-green':(s==='Férias'||s==='Afastado')?'badge-amber':'badge-neutral';
 
   // ── VIEW: CARDS
   if (view==='cards') {
@@ -306,7 +308,7 @@ function renderTecnicos() {
             ${t.cargo?`<div style="font-size:11px;color:var(--text3);margin-top:1px">${t.cargo}</div>`:''}
             <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap">
               ${t.area?`<span style="font-size:10px;font-weight:600;background:${color}18;color:${color};padding:1px 7px;border-radius:20px">${t.area}</span>`:''}
-              <span style="font-size:10px;font-weight:600;color:${statusColor(t.status)}">${statusLabel(t.status)}</span>
+              <span class="badge ${statusBadgeCls(t.status)}">${statusLabel(t.status)}</span>
             </div>
           </div>
           <button class="btn btn-ghost" style="padding:3px 8px;font-size:11px;flex-shrink:0"
@@ -372,11 +374,11 @@ function renderTecnicos() {
       return `<tr>
         <td style="font-weight:600">${t.nome}</td>
         <td style="font-family:var(--font-mono);font-size:11px">${t.apelido||'—'}</td>
-        <td>${t.area?`<span class="pill chip-blue" style="font-size:10px">${t.area}</span>`:'—'}</td>
+        <td>${t.area?`<span class="badge badge-graos">${t.area}</span>`:'—'}</td>
         <td style="font-size:11px;color:var(--text3)">${t.cargo||'—'}</td>
         <td style="font-size:11px">${t.telefone?`<a href="tel:${t.telefone}" style="color:var(--accent)">${t.telefone}</a>`:'—'}</td>
         <td style="font-size:11px">${t.email?`<a href="mailto:${t.email}" style="color:var(--accent)">${t.email}</a>`:'—'}</td>
-        <td><span style="font-size:11px;font-weight:600;color:${statusColor(t.status)}">${t.status}</span></td>
+        <td><span class="badge ${statusBadgeCls(t.status)}">${t.status}</span></td>
         <td style="text-align:center;font-family:var(--font-mono);font-weight:700">${t.total}</td>
         <td style="text-align:center;font-family:var(--font-mono);font-weight:700;color:var(--green)">${t.conc}</td>
         <td style="text-align:center;font-family:var(--font-mono);font-weight:700;color:var(--amber)">${t.aberto}</td>

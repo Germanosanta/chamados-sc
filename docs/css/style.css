@@ -50,6 +50,7 @@
   --radius:10px;
   --radius-sm:7px;
   --radius-xs:5px;
+  --radius-lg:16px;
   /* Escala de espaçamento — nova nesta etapa; aplicada nos componentes do
      shell (sidebar/topbar/rodapé). Não retroaplicada nas 9 folhas de estilo
      existentes agora (ver plano — isso acontece tela por tela). */
@@ -62,6 +63,20 @@
   --font:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   --font-mono:'JetBrains Mono','Fira Code',monospace;
   --transition:.15s ease;
+  /* Escala de tipografia (Fase 4.5) — mesma disciplina do --space-* da
+     Etapa 1: token pronto, adotado nos componentes tocados a partir de
+     agora (badges, hover states, tabelas novas), sem reescrever à força
+     as ~1600 linhas de CSS que já existem com valores soltos. */
+  --text-2xs:9px;
+  --text-xs:10px;
+  --text-sm:11px;
+  --text-base:12px;
+  --text-md:13px;
+  --text-lg:14px;
+  --text-xl:16px;
+  --text-2xl:20px;
+  --text-3xl:24px;
+  --text-4xl:28px;
 }
 
 /* ── DARK MODE */
@@ -339,9 +354,6 @@ svg{display:block;flex-shrink:0}
   font-size:11px;color:var(--text3);
   margin-top:6px;display:flex;align-items:center;gap:5px;
 }
-.kpi-chip{padding:1px 7px;border-radius:20px;font-size:10px;font-weight:600}
-.chip-green{background:var(--green-bg);color:var(--green)}
-.chip-blue{background:var(--accent-light);color:var(--accent)}
 .kpi-card.ab-active{
   box-shadow:0 0 0 2px var(--accent),var(--shadow);
   transform:translateY(-1px);
@@ -482,23 +494,6 @@ select.filter-select:focus{border-color:var(--accent)}
   max-width:240px;overflow:hidden;text-overflow:ellipsis;
   white-space:nowrap;color:var(--text);font-weight:500;
 }
-
-/* ════════════════════════════════════════════
-   PILLS / BADGES
-   ════════════════════════════════════════════ */
-.pill{
-  display:inline-block;padding:1px 8px;border-radius:20px;
-  font-size:10px;font-weight:600;white-space:nowrap;letter-spacing:.02em;
-}
-.p-graos{background:var(--accent-light);color:var(--accent-text)}
-.p-tabaco{background:var(--amber-bg);color:var(--amber)}
-.p-cacau{background:var(--cacau-bg);color:var(--cacau)}
-.p-outros{background:var(--surface3);color:var(--text3)}
-.p-concluida{background:var(--green-bg);color:var(--green)}
-.p-aberto{background:var(--red-bg);color:var(--red)}
-.p-andamento{background:var(--amber-bg);color:var(--amber)}
-.p-aguardando{background:var(--purple-bg);color:var(--purple)}
-.p-cancelado{background:var(--surface3);color:var(--text3)}
 
 /* ════════════════════════════════════════════
    PAGINATION
@@ -877,6 +872,15 @@ select.filter-select:focus{border-color:var(--accent)}
 .badge-amber{background:var(--amber-bg);color:var(--amber)}
 .badge-red{background:var(--red-bg);color:var(--red)}
 .badge-neutral{background:var(--surface3);color:var(--text3)}
+/* Fase 4.5 — completam a migração de .pill/p-*/.kpi-chip/.chip-* pra esta
+   família única. Mesmas cores de sempre (nenhuma cor nova): -graos e
+   -purple reaproveitam o mesmo par que .p-graos/.p-aguardando já usavam
+   (accent/purple), -tabaco/-cacau reaproveitam os tokens de cultura que
+   já existiam mas estavam presos só em .p-tabaco/.p-cacau. */
+.badge-graos{background:var(--accent-light);color:var(--accent-text)}
+.badge-tabaco{background:var(--amber-bg);color:var(--amber)}
+.badge-cacau{background:var(--cacau-bg);color:var(--cacau)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
 
 /* ── Breadcrumb — reaproveita #page-title/#page-sub (já preenchidos via
    textContent em showSection(), core/init.js); só estiliza o wrapper que já
@@ -930,11 +934,38 @@ select.filter-select:focus{border-color:var(--accent)}
 .sidebar.collapsed .sidebar-collapse-btn svg{transform:rotate(180deg)}
 
 /* Foco visível — usa o token de accent novo (marca), em vez do azul padrão
-   do navegador, nos elementos interativos do shell. */
+   do navegador, nos elementos interativos do shell. Fase 4.5: lista
+   estendida pra cobrir itens que não tinham nenhum tratamento de foco de
+   teclado (sub-itens de nav, paginação, cards clicáveis, filtros). */
 .nav-item:focus-visible,
+.nav-sub-item:focus-visible,
 .topbar-icon-btn:focus-visible,
 .topbar-btn:focus-visible,
 .sidebar-collapse-btn:focus-visible,
+.pag-btn:focus-visible,
+.kanban-card:focus-visible,
+.menu-card:focus-visible,
+.filter-select:focus-visible,
 .btn:focus-visible{
   outline:2px solid var(--accent);outline-offset:2px;
 }
+
+/* Movimento reduzido (Fase 4.5) — respeita a preferência do SO/navegador
+   sem precisar tocar em cada transição/animação individualmente. */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
+  }
+}
+
+/* Hover leve no .card genérico (Fase 4.5) — mesma receita do .kpi-card,
+   que já tinha essa elevação; o .card base nunca teve. */
+.card{ transition:box-shadow var(--transition),border-color var(--transition); }
+.card:hover{ box-shadow:var(--shadow); border-color:var(--border2); }
+
+/* Estado :active (Fase 4.5) — .btn-primary/.btn-ghost só tinham :hover. */
+.btn-primary:active{ background:var(--accent-text); transform:translateY(1px); }
+.btn-ghost:active{ background:var(--surface3); transform:translateY(1px); }

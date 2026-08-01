@@ -16,15 +16,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260731b">
-  <link rel="stylesheet" href="css/login.css?v=20260731b">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260731b">
-  <link rel="stylesheet" href="css/chamados.css?v=20260731b">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260731b">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260731b">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260731b">
-  <link rel="stylesheet" href="css/config.css?v=20260731b">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260731b">
+  <link rel="stylesheet" href="css/style.css?v=20260801a">
+  <link rel="stylesheet" href="css/login.css?v=20260801a">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260801a">
+  <link rel="stylesheet" href="css/chamados.css?v=20260801a">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260801a">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260801a">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260801a">
+  <link rel="stylesheet" href="css/config.css?v=20260801a">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260801a">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -339,7 +339,7 @@
     <div class="kpi-card blue" style="cursor:pointer" onclick="applyStatusFilter('')" title="Ver todos">
       <div class="kpi-label">Total de Chamados</div>
       <div class="kpi-value" id="k-total">—</div>
-      <div class="kpi-sub"><span class="kpi-chip chip-blue" id="k-total-chip">Jun/22–Jul/26</span> · Tempo médio <span id="k-tempo-medio">—</span></div>
+      <div class="kpi-sub"><span class="badge badge-graos" id="k-total-chip">Jun/22–Jul/26</span> · Tempo médio <span id="k-tempo-medio">—</span></div>
     </div>
     <!-- 2. Abertos (Não iniciado) -->
     <div class="kpi-card red" style="cursor:pointer" onclick="applyStatusFilter('Aberto')" title="Ver em aberto">
@@ -363,7 +363,7 @@
     <div class="kpi-card green" style="cursor:pointer" onclick="applyStatusFilter('Concluído')" title="Ver encerrados">
       <div class="kpi-label">Encerrados</div>
       <div class="kpi-value" id="k-conc">—</div>
-      <div class="kpi-sub"><span class="kpi-chip chip-green" id="k-conc-pct">—%</span> do total</div>
+      <div class="kpi-sub"><span class="badge badge-green" id="k-conc-pct">—%</span> do total</div>
     </div>
     <!-- 6. Cancelados -->
     <div class="kpi-card" style="cursor:pointer;border-top-color:var(--text3)" onclick="applyStatusFilter('Cancelado')" title="Ver cancelados">
@@ -1658,14 +1658,15 @@
     <button class="btn btn-ghost" onclick="exportAuditCSV()">⬇ CSV</button>
     <button class="btn btn-ghost" style="color:var(--red)" onclick="if(confirm('Limpar todos os logs?')){localStorage.removeItem('chm_audit_v1');renderAuditoria()}">🗑 Limpar</button>
   </div>
+  <!-- Fase 4.5: convertida de "tabela" feita de <div>s pra <table class="data-table">
+       real — mesmo dado, mesma renderAuditoria(), só o HTML de saída muda. -->
   <div class="card" style="padding:0">
-    <div style="padding:12px 16px;font-size:11px;color:var(--text3);border-bottom:1px solid var(--border);display:flex;gap:12px">
-      <span style="min-width:130px">DATA/HORA</span>
-      <span style="min-width:90px">USUÁRIO</span>
-      <span style="min-width:80px">TIPO</span>
-      <span>DETALHE</span>
+    <div class="table-wrap" style="max-height:500px">
+      <table class="data-table">
+        <thead><tr><th>Data/Hora</th><th>Usuário</th><th>Tipo</th><th>Detalhe</th></tr></thead>
+        <tbody id="aud-list"></tbody>
+      </table>
     </div>
-    <div id="aud-list" style="max-height:500px;overflow-y:auto"></div>
     <div id="aud-empty" style="display:none;padding:32px;text-align:center;color:var(--text3)">Nenhum log registrado.</div>
   </div>
   <div style="font-size:11px;color:var(--text3);margin-top:8px" id="aud-count"></div>
@@ -1707,7 +1708,7 @@
   <!-- Tabela de frotas -->
   <div class="card" style="padding:0">
     <div class="table-wrap">
-      <table class="data-table">
+      <table class="data-table" id="tbl-frotas-main">
         <thead><tr>
           <th>Código</th><th>Descrição</th><th>Modelo</th>
           <th>Grupo</th><th>Status</th><th style="text-align:center">Chamados</th><th>Ações</th>
@@ -2718,26 +2719,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260731b"></script>
-  <script src="js/data/equipamentos.js?v=20260731b"></script>
-  <script src="js/data/match_map.js?v=20260731b"></script>
-  <script src="js/data/equip_idx.js?v=20260731b"></script>
+  <script src="js/data/chamados_historico.js?v=20260801a"></script>
+  <script src="js/data/equipamentos.js?v=20260801a"></script>
+  <script src="js/data/match_map.js?v=20260801a"></script>
+  <script src="js/data/equip_idx.js?v=20260801a"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260731b"></script>
+  <script src="js/core/storage.js?v=20260801a"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260731b"></script>
-  <script src="js/modules/dashboard/index.js?v=20260731b"></script>
-  <script src="js/modules/chamados/index.js?v=20260731b"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260731b"></script>
-  <script src="js/modules/relatorios/index.js?v=20260731b"></script>
-  <script src="js/modules/config/index.js?v=20260731b"></script>
+  <script src="js/modules/usuarios/index.js?v=20260801a"></script>
+  <script src="js/modules/dashboard/index.js?v=20260801a"></script>
+  <script src="js/modules/chamados/index.js?v=20260801a"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260801a"></script>
+  <script src="js/modules/relatorios/index.js?v=20260801a"></script>
+  <script src="js/modules/config/index.js?v=20260801a"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260731b"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260801a"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260731b"></script>
+  <script src="js/core/init.js?v=20260801a"></script>
 </body>
 </html>

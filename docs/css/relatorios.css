@@ -1,10 +1,9 @@
 /* ════════════════════════════════════════════
    AUDIT LOG
+   Fase 4.5: tela convertida de <div>-tabela pra <table class="data-table">
+   real (index.html/relatorios.js) — estas 3 classes agora estilizam <td>,
+   não mais um .audit-row flex (removido, sem uso).
    ════════════════════════════════════════════ */
-.audit-row{
-  display:flex;gap:10px;padding:7px 0;
-  border-bottom:1px solid var(--border);font-size:11px;align-items:flex-start;
-}
-.audit-ts{color:var(--text3);white-space:nowrap;min-width:120px;font-family:var(--font-mono)}
-.audit-actor{font-weight:600;color:var(--accent);min-width:80px}
-.audit-action{color:var(--text2);flex:1}
+.audit-ts{color:var(--text3);white-space:nowrap;font-family:var(--font-mono)}
+.audit-actor{font-weight:600;color:var(--accent);white-space:nowrap}
+.audit-action{color:var(--text2)}

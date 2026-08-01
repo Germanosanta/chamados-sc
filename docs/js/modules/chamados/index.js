@@ -386,13 +386,13 @@ function renderChamados(){
         ${_frC?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frC}</div>`:''}
       </td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
-      <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
+      <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="white-space:nowrap">${resps.length ? resps.map(n=>`<span class="badge badge-neutral" style="margin-right:3px">${_escHtml(n)}</span>`).join('') : '—'}</td>
       <td style="white-space:nowrap">
         <span style="font-family:var(--font-mono);font-size:11px">${r[4]?r[4].split('-').reverse().join('/'):'—'}</span>
         ${!isClosedC && diasC>=DIAS_ATRASO_ALERTA ? `<span ${diasChip(diasC)} style="margin-left:5px">${diasC}d</span>` : ''}
       </td>
-      <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
+      <td><span class="badge ${statusPill(r[5])}">${r[5]}</span></td>
       <td style="color:var(--text3);font-size:11px">${fazendaLabel(r[6])}</td>
     </tr>`;}).join('');
 
@@ -521,6 +521,9 @@ function _ticketCardHTML(rec, closedMap, comAcoes) {
   closedMap = closedMap || getClosedMap();
   const _lr = getLocal().find(x=>x.num===num);
   const fr = frotaLabel(num, _lr);
+  // Fase 4.5: card do Kanban ganha a descrição do equipamento (antes só
+  // mostrava o código/frota) — mesma função já usada no Centro Operacional.
+  const _equip = getChamadoEquip(num, _lr);
   const dias = diasAberto(rec[4]);
   const prior = prioridadeReal(num);
   const isClosed = rec[5]==='Concluída'||rec[5]==='Encerrado'||rec[5]==='Concluído'||!!closedMap[num];
@@ -534,6 +537,7 @@ function _ticketCardHTML(rec, closedMap, comAcoes) {
       ${prior ? prioridadeBadge(prior) : ''}
     </div>
     <div class="kanban-card-titulo">${_escHtml(rec[1]||'—')}</div>
+    ${_equip ? `<div class="kanban-card-equip">🔧 ${_escHtml(_equip.descricao||'—')}</div>` : ''}
     ${fr ? `<div class="kanban-card-frota">${fr}</div>` : ''}
     <div class="kanban-card-meta">
       <span>🏭 ${fazendaLabel(rec[6])}</span>
@@ -749,18 +753,32 @@ function atFiltro(f) { renderAreaTecnico(f); }
 function renderAreaTecnico(filtro) {
   filtro = filtro || _atFiltroAtivo;
   _atFiltroAtivo = filtro;
-  document.querySelectorAll('#at-chips .view-toggle-btn').forEach(b=>b.classList.toggle('active', b.dataset.at===filtro));
 
   const nome = currentUser()?.nome || '';
-  const base = filtro === 'concluidos' ? getEncerrados() : getAbertos();
+  const abertos = getAbertos();
+  const encerrados = getEncerrados();
 
-  let itens;
-  if (filtro === 'meus')            itens = base.filter(r => _atEhMeu(r, nome));
-  else if (filtro === 'urgentes')   itens = base.filter(r => prioridadeReal(r[0]) === 'Urgente');
-  else if (filtro === 'atendimento')itens = base.filter(r => _kbLaneKey(r[5]) === 'atendimento');
-  else if (filtro === 'peca')       itens = base.filter(r => _kbLaneKey(r[5]) === 'peca');
-  else /* concluidos */             itens = base.filter(r => _atEhMeu(r, nome));
+  // Fase 4.5: os 5 conjuntos calculados 1x só, reaproveitados tanto pra
+  // mostrar a contagem em cada chip quanto pra listar o filtro ativo —
+  // nenhum deles é filtrado 2x.
+  const conjuntos = {
+    meus:        abertos.filter(r => _atEhMeu(r, nome)),
+    urgentes:    abertos.filter(r => prioridadeReal(r[0]) === 'Urgente'),
+    atendimento: abertos.filter(r => _kbLaneKey(r[5]) === 'atendimento'),
+    peca:        abertos.filter(r => _kbLaneKey(r[5]) === 'peca'),
+    concluidos:  encerrados.filter(r => _atEhMeu(r, nome)),
+  };
 
+  document.querySelectorAll('#at-chips .view-toggle-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.at === filtro);
+    const n = conjuntos[b.dataset.at]?.length;
+    if (n === undefined) return;
+    let cnt = b.querySelector('.at-chip-count');
+    if (!cnt) { cnt = document.createElement('span'); cnt.className = 'at-chip-count'; b.appendChild(cnt); }
+    cnt.textContent = n;
+  });
+
+  const itens = conjuntos[filtro] || conjuntos.meus;
   const wrap = document.getElementById('at-lista');
   if (!wrap) return;
   const closedMap = getClosedMap();
@@ -872,7 +890,7 @@ function openDetalhe(num) {
   // Observações — bloco antigo (det-obs/det-obs-wrap) substituído pelo
   // Bloco 6 (Observações/comentários, ver _detComentariosHTML() abaixo,
   // que já inclui _lr.observacoes junto dos eventos tipo 'obs').
-  document.getElementById('det-cult').innerHTML     = `<span class="pill ${cultPill(rec[2])}">${rec[2]||'Sem cultura'}</span>`;
+  document.getElementById('det-cult').innerHTML     = `<span class="badge ${cultPill(rec[2])}">${rec[2]||'Sem cultura'}</span>`;
   const setDetEl = (id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   // fazendaLabel(): mesmo helper compartilhado criado na Etapa 2A (antes
   // esse mapeamento estava escrito à mão aqui, de novo).
@@ -1254,7 +1272,7 @@ function renderAberto() {
         <td style="white-space:nowrap;font-weight:500">${r[3] || '<span style="color:var(--text3)">—</span>'}</td>
         <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${dataFmt}</td>
         <td>${prioridadeBadge(prior)}</td>
-        <td><span class="pill ${statusPill(r[5])}">${r[5] || 'Não iniciado'}</span></td>
+        <td><span class="badge ${statusPill(r[5])}">${r[5] || 'Não iniciado'}</span></td>
         <td><span ${diasChip(dias)}>${dias}d</span></td>
         <td style="white-space:nowrap;display:flex;gap:6px;align-items:center" onclick="event.stopPropagation()">
           <select onchange="alterarResp('${r[0]}',this.value)" title="Alterar responsável"
@@ -1382,11 +1400,11 @@ function renderCriticidade() {
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}${_frCr?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frCr}</div>`:''}</td>
       <td>${prioridadeBadge(prioridadeReal(r[0]))}</td>
-      <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
+      <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
       <td style="font-size:11px;color:var(--text3)">${fazendaLabel(r[6])}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${r[4]?r[4].split('-').reverse().join('/'):'—'}</td>
-      <td><span class="pill ${statusPill(r[5])}">${r[5]||'—'}</span></td>
+      <td><span class="badge ${statusPill(r[5])}">${r[5]||'—'}</span></td>
     </tr>`;}).join('');
 
   const pagRow=document.getElementById('crit-pag-row');
@@ -1493,7 +1511,7 @@ function renderEncerrados() {
     return `<tr data-num="${r[0]}" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
-      <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
+      <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="font-size:11px;color:var(--text3)">${fazendaLabel(r[6])}</td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px">${dataAb}</td>
@@ -2545,7 +2563,7 @@ function renderHistoricoEquip(code, prefix = 'equip-hist') {
         <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${_escHtml(r[1])}</td>
         <td>${prioridadeBadge(prioridadeReal(r[0]))}</td>
         <td style="font-family:var(--font-mono)">${r[4]?r[4].split('-').reverse().join('/'):'—'}</td>
-        <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
+        <td><span class="badge ${statusPill(r[5])}">${r[5]}</span></td>
         <td>${(r[3]||'—').replace(/,/g,' e ')}</td>
         <td>${_escHtml(ci?.tecnicos || '—')}</td>
         <td style="font-family:var(--font-mono)">${ci?.dataEncerramento || '—'}</td>
@@ -2753,7 +2771,7 @@ function globalSearch(q) {
         <div class="gs-item" onclick="gsOpen('${r[0]}')">
           <div class="gs-num">${r[0]}</div>
           <div class="gs-title">${(r[1]||'—').slice(0,60)}</div>
-          <div class="gs-meta">${r[2]||'—'} · ${(r[3]||'—').replace(/,/g,' e ')} · <span class="pill ${statusPill(r[5])}" style="padding:1px 6px;font-size:10px">${r[5]}</span></div>
+          <div class="gs-meta">${r[2]||'—'} · ${(r[3]||'—').replace(/,/g,' e ')} · <span class="badge ${statusPill(r[5])}" style="padding:1px 6px;font-size:10px">${r[5]}</span></div>
         </div>`).join('');
     }
     box.classList.add('open');

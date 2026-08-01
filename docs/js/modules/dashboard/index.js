@@ -283,8 +283,8 @@ function initDashboard(){
     <tbody>${recent.map(r=>`<tr>
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo" style="max-width:160px">${r[1]}</td>
-      <td><span class="pill ${cultPill(r[2])}">${r[2]||'—'}</span></td>
-      <td><span class="pill ${statusPill(r[5])}">${r[5]}</span></td>
+      <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
+      <td><span class="badge ${statusPill(r[5])}">${r[5]}</span></td>
     </tr>`).join('')}</tbody>`;
 }
 
@@ -318,19 +318,22 @@ function applyStatusFilter(status) {
   }, 50);
 }
 
+// Fase 4.5: devolvem badge-* em vez de p-* (família .pill removida — ver
+// style.css). Mesmas 2 funções, mesmos chamadores, mesmo mapeamento de
+// cor por valor — só o nome da classe HTML mudou.
 function statusPill(s){
-  if(s==='Concluída'||s==='Encerrado'||s==='Concluído') return 'p-concluida';
-  if(s==='Em Andamento'||s==='Em Atendimento')            return 'p-andamento';
-  if(s==='Aguardando Peça')                               return 'p-aguardando';
-  if(s==='Cancelado')                                     return 'p-cancelado';
-  return 'p-aberto';
+  if(s==='Concluída'||s==='Encerrado'||s==='Concluído') return 'badge-green';
+  if(s==='Em Andamento'||s==='Em Atendimento')            return 'badge-amber';
+  if(s==='Aguardando Peça')                               return 'badge-purple';
+  if(s==='Cancelado')                                     return 'badge-neutral';
+  return 'badge-red';
 }
 
 function cultPill(c){
-  if(c==='Grãos e Fibras') return 'p-graos';
-  if(c==='Tabaco') return 'p-tabaco';
-  if(c==='Cacau') return 'p-cacau';
-  return 'p-outros';
+  if(c==='Grãos e Fibras') return 'badge-graos';
+  if(c==='Tabaco') return 'badge-tabaco';
+  if(c==='Cacau') return 'badge-cacau';
+  return 'badge-neutral';
 }
 
 function initTheme() {

@@ -61,5 +61,29 @@
   #sec-equipamentos #tbl-eq-main th:nth-child(13), #sec-equipamentos #tbl-eq-main td:nth-child(13){ display:none; }
 }
 
+/* Frotas/Peças/Banco de Soluções (Fase 4.5) — mesmas 3 telas sem nenhum
+   tratamento responsivo até agora; mesmo padrão nth-child de sempre.
+   Frotas usa o id da tabela principal (#tbl-frotas-main), não a seção
+   inteira — a mesma seção também tem a sub-tabela de detalhe
+   (#tbl-fr-detail, só 5 colunas), que não deve ser afetada. */
+@media (max-width:1100px){
+  #tbl-frotas-main th:nth-child(3), #tbl-frotas-main td:nth-child(3){ display:none; }
+  #sec-pecas  .data-table th:nth-child(2), #sec-pecas  .data-table td:nth-child(2),
+  #sec-pecas  .data-table th:nth-child(7), #sec-pecas  .data-table td:nth-child(7){ display:none; }
+  #sec-kb     .data-table th:nth-child(5), #sec-kb     .data-table td:nth-child(5),
+  #sec-kb     .data-table th:nth-child(6), #sec-kb     .data-table td:nth-child(6){ display:none; }
+}
+@media (max-width:900px){
+  #tbl-frotas-main th:nth-child(4), #tbl-frotas-main td:nth-child(4){ display:none; }
+  #sec-pecas  .data-table th:nth-child(3), #sec-pecas  .data-table td:nth-child(3),
+  #sec-pecas  .data-table th:nth-child(6), #sec-pecas  .data-table td:nth-child(6){ display:none; }
+  #sec-kb     .data-table th:nth-child(3), #sec-kb     .data-table td:nth-child(3){ display:none; }
+}
+@media (max-width:600px){
+  #tbl-frotas-main th:nth-child(6), #tbl-frotas-main td:nth-child(6){ display:none; }
+  #sec-pecas  .data-table th:nth-child(4), #sec-pecas  .data-table td:nth-child(4){ display:none; }
+  #sec-kb     .data-table th:nth-child(2), #sec-kb     .data-table td:nth-child(2){ display:none; }
+}
+
 /* Ficha do Equipamento — reaproveita .det-block/.det-cabecalho-grid/.op-card
    (Centro Operacional do Chamado / Histórico por Frota), sem CSS próprio. */
