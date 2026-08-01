@@ -415,6 +415,26 @@ function toggleFiltrosAvancados() {
   if (btn) btn.classList.toggle('btn-ghost-active', open);
 }
 
+// Fase 4.6 (consolidação final) — extraídas de dentro de applyFilters()
+// pra serem reaproveitadas também por applyAbertoFilters(), sem duplicar
+// a lógica de status/SLA crítico entre "Chamados" e "Chamados em Aberto".
+function _matchStatusFiltro(r, fs, closedMap) {
+  if(!fs) return true;
+  const s=r[5];
+  if(fs==='Concluído')       return s==='Concluída'||s==='Encerrado'||s==='Concluído'||!!closedMap[r[0]];
+  if(fs==='Aberto')          return (s==='Não iniciado'||s==='Aberto')&&!closedMap[r[0]];
+  if(fs==='Em Atendimento')  return s==='Em Andamento'||s==='Em Atendimento';
+  if(fs==='Aguardando Peça') return s==='Aguardando Peça';
+  if(fs==='Cancelado')       return s==='Cancelado';
+  return s===fs; // exact match for legacy options
+}
+// Mesmo critério de _checarSlaCritico(): só chamados em aberto, mesmo
+// limiar (> DIAS_ATRASO_CRITICO, não >=).
+function _matchSlaCritico(r, closedMap) {
+  const isClosed = r[5]==='Concluída'||r[5]==='Encerrado'||r[5]==='Concluído'||!!closedMap[r[0]];
+  return !isClosed && diasAberto(r[4])>DIAS_ATRASO_CRITICO;
+}
+
 function clearFilters(){
   document.getElementById('srch').value='';
   document.getElementById('f-cultura').value='';
@@ -436,7 +456,9 @@ function applyFilters(){
   const fb=document.getElementById('f-bucket').value;
   // Filtros avançados (Fase 2 · Etapa 2A) — mesmos campos que já existem
   // em rec[], só não eram filtráveis por aqui ainda: responsável e período
-  // de abertura.
+  // de abertura. Fase 4.6 — flt-resp agora é <select> de técnicos ativos
+  // (era texto livre); mantém .includes() porque rec[3]/resp aceita
+  // múltiplos nomes separados por vírgula.
   const fresp = (document.getElementById('flt-resp')?.value || '').toLowerCase();
   const fde   = document.getElementById('f-de')?.value  || '';
   const fate  = document.getElementById('f-ate')?.value || '';
@@ -447,30 +469,15 @@ function applyFilters(){
   const fSlaCritico = !!document.getElementById('f-sla-critico')?.checked;
   const _local = getLocal();
   const _closed=getClosedMap();
-  const _matchStatus=(r,fs)=>{
-    if(!fs) return true;
-    const s=r[5];
-    if(fs==='Concluído')       return s==='Concluída'||s==='Encerrado'||s==='Concluído'||!!_closed[r[0]];
-    if(fs==='Aberto')          return (s==='Não iniciado'||s==='Aberto')&&!_closed[r[0]];
-    if(fs==='Em Atendimento')  return s==='Em Andamento'||s==='Em Atendimento';
-    if(fs==='Aguardando Peça') return s==='Aguardando Peça';
-    if(fs==='Cancelado')       return s==='Cancelado';
-    return s===fs; // exact match for legacy options
-  };
   filteredRecords=allRecords().filter(r=>{
     if(fc && r[2]!==fc) return false;
-    if(fs && !_matchStatus(r,fs)) return false;
+    if(fs && !_matchStatusFiltro(r,fs,_closed)) return false;
     if(fb && r[6]!==fb) return false;
     if(fresp && !(r[3]||'').toLowerCase().includes(fresp)) return false;
     if(fde  && (!r[4] || r[4] < fde))  return false;
     if(fate && (!r[4] || r[4] > fate)) return false;
     if(fprior && prioridadeReal(r[0])!==fprior) return false;
-    // Mesmo critério de _checarSlaCritico(): só chamados em aberto, mesmo
-    // limiar (> DIAS_ATRASO_CRITICO, não >=).
-    if(fSlaCritico){
-      const _isClosedSla = r[5]==='Concluída'||r[5]==='Encerrado'||r[5]==='Concluído'||!!_closed[r[0]];
-      if(_isClosedSla || diasAberto(r[4])<=DIAS_ATRASO_CRITICO) return false;
-    }
+    if(fSlaCritico && !_matchSlaCritico(r,_closed)) return false;
     if(q){
       const _lrQ = _local.find(x=>x.num===r[0]);
       const _matchQ = r[0].toLowerCase().includes(q) || r[1].toLowerCase().includes(q) || frotaLabel(r[0],_lrQ).toLowerCase().includes(q);
@@ -1252,23 +1259,76 @@ function encerrarDireto(num) {
 // renderAberto() (lista) e, se o Kanban estiver ativo, renderKanban() —
 // as duas visões passam a compartilhar filtro/busca/ordenação/dados sem
 // nenhuma lógica duplicada.
+// Fase 4.6 (consolidação final) — mostra/esconde o painel de filtros
+// avançados de "Em Aberto", mesmo padrão de toggleFiltrosAvancados()
+// já usado em "Chamados".
+function toggleAbertoAvancado() {
+  const el = document.getElementById('ab-filtros-avancados');
+  const btn = document.getElementById('btn-ab-avancado');
+  if (!el) return;
+  const open = el.style.display === 'none';
+  el.style.display = open ? 'flex' : 'none';
+  if (btn) btn.classList.toggle('btn-ghost-active', open);
+}
+
+// Fase 4.6 (consolidação final) — limpa todos os filtros de "Em Aberto"
+// (busca/status/responsável/ordem/avançados + cards), mesmo papel de
+// clearFilters() em "Chamados".
+function clearAbertoFilters() {
+  document.getElementById('ab-srch').value='';
+  document.getElementById('ab-status').value='';
+  document.getElementById('ab-resp').value='';
+  document.getElementById('ab-ordem').value='antigos';
+  const fp=document.getElementById('ab-prior');         if(fp) fp.value='';
+  const fsc=document.getElementById('ab-sla-critico');  if(fsc) fsc.checked=false;
+  const ff=document.getElementById('ab-f-frota');       if(ff) ff.value='';
+  const fso=document.getElementById('ab-f-solicitante');if(fso) fso.value='';
+  const fd=document.getElementById('ab-f-de');          if(fd) fd.value='';
+  const fa=document.getElementById('ab-f-ate');         if(fa) fa.value='';
+  abCardFilter('total',''); // já limpa os cards e chama applyAbertoFilters()
+}
+
 function applyAbertoFilters() {
   const q     = (document.getElementById('ab-srch')?.value || '').toLowerCase();
+  const fStatus = document.getElementById('ab-status')?.value || '';
   const resp  = document.getElementById('ab-resp')?.value || '';
   const ordem = document.getElementById('ab-ordem')?.value || 'antigos';
+  // Fase 4.6 — Prioridade/SLA crítico/Frota/Solicitante/Data, mesmos
+  // predicados já usados em "Chamados" (_matchSlaCritico/prioridadeReal/
+  // frotaLabel), sem lógica nova.
+  const fPrior = document.getElementById('ab-prior')?.value || '';
+  const fSlaCritico = !!document.getElementById('ab-sla-critico')?.checked;
+  const fFrota = (document.getElementById('ab-f-frota')?.value || '').toLowerCase();
+  const fSolicitante = (document.getElementById('ab-f-solicitante')?.value || '').toLowerCase();
+  const fDe = document.getElementById('ab-f-de')?.value || '';
+  const fAte = document.getElementById('ab-f-ate')?.value || '';
 
   const cultCard   = document.getElementById('ab-cult-card')?.value    || '';
   const fazendaCard= document.getElementById('ab-fazenda-card')?.value  || '';
-  const respCard   = document.getElementById('ab-resp-card')?.value     || '';
-  const vencCard   = document.getElementById('ab-venc-card')?.value     || '';
 
+  const _local = getLocal();
+  const _closed = getClosedMap();
   let recs = getAbertos();
-  if (q)          recs = recs.filter(r => r[0].toLowerCase().includes(q) || (r[1]||'').toLowerCase().includes(q));
+  if (q)          recs = recs.filter(r => {
+    const _lr = _local.find(x=>x.num===r[0]);
+    return r[0].toLowerCase().includes(q) || (r[1]||'').toLowerCase().includes(q) || frotaLabel(r[0],_lr).toLowerCase().includes(q);
+  });
+  if (fStatus)    recs = recs.filter(r => _matchStatusFiltro(r, fStatus, _closed));
   if (resp)       recs = recs.filter(r => (r[3]||'').includes(resp));
   if (cultCard)   recs = recs.filter(r => r[2] === cultCard);
   if (fazendaCard)recs = recs.filter(r => r[6] === fazendaCard);
-  if (respCard)   recs = recs.filter(r => (r[3]||'').includes(respCard));
-  if (vencCard)   recs = recs.filter(r => diasAberto(r[4]) > 7);
+  if (fPrior)     recs = recs.filter(r => prioridadeReal(r[0]) === fPrior);
+  if (fSlaCritico)recs = recs.filter(r => _matchSlaCritico(r, _closed));
+  if (fFrota)     recs = recs.filter(r => {
+    const _lr = _local.find(x=>x.num===r[0]);
+    return frotaLabel(r[0],_lr).toLowerCase().includes(fFrota);
+  });
+  if (fSolicitante) recs = recs.filter(r => {
+    const _lr = _local.find(x=>x.num===r[0]);
+    return (_lr?.solicitante||'').toLowerCase().includes(fSolicitante);
+  });
+  if (fDe)        recs = recs.filter(r => r[4] && r[4] >= fDe);
+  if (fAte)       recs = recs.filter(r => r[4] && r[4] <= fAte);
 
   recs.sort((a, b) => {
     const da = a[4] || '0000-00-00', db = b[4] || '0000-00-00';
@@ -1285,23 +1345,27 @@ function renderAberto() {
   if (!filteredAbertos.length) filteredAbertos = [...getAbertos()];
   const recs = filteredAbertos;
 
-  // KPIs (always from full unfiltered abertos)
+  // KPIs dos cards de Cultura/Fazenda (sempre do total de abertos, não
+  // filtrado — mesmo comportamento de sempre, só a fileira de status
+  // (Guilherme/Walison/Vencidos/Total) que saiu do topo nesta fase).
   const todos = getAbertos();
-  const guil  = todos.filter(r => (r[3]||'').includes('Guilherme')).length;
-  const wali  = todos.filter(r => (r[3]||'').includes('Walison')).length;
-  const venc  = todos.filter(r => diasAberto(r[4]) > 7).length;
-
   const setEl = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  setEl('ab-total', todos.length.toLocaleString('pt-BR'));
-  setEl('ab-guil',  guil.toLocaleString('pt-BR'));
-  setEl('ab-wali',  wali.toLocaleString('pt-BR'));
-  setEl('ab-venc',  venc.toLocaleString('pt-BR'));
+  // Fase 4.6 — badge de "N crítico" por cultura, só aparece quando >0
+  // (item 6: destaque visual, quantidade crítica quando existir).
+  const setCrit = (id, count) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (count > 0) { el.textContent = count+' crítico'+(count>1?'s':''); el.style.display=''; }
+    else el.style.display = 'none';
+  };
   setEl('badge-aberto', todos.length || '0');
   setEl('ab-graos',  todos.filter(r => r[2] === 'Grãos e Fibras').length.toLocaleString('pt-BR'));
+  setCrit('ab-graos-crit', todos.filter(r => r[2]==='Grãos e Fibras' && prioridadeReal(r[0])==='Urgente').length);
   setEl('ab-tabaco', todos.filter(r => r[2] === 'Tabaco').length.toLocaleString('pt-BR'));
+  setCrit('ab-tabaco-crit', todos.filter(r => r[2]==='Tabaco' && prioridadeReal(r[0])==='Urgente').length);
   setEl('ab-cacau',  todos.filter(r => r[2] === 'Cacau').length.toLocaleString('pt-BR'));
-  setEl('ab-krt',    todos.filter(r => r[6] === 'Solinftec KRT').length.toLocaleString('pt-BR'));
-  setEl('ab-rdm',    todos.filter(r => r[6] === 'Solinftec RDM').length.toLocaleString('pt-BR'));
+  setCrit('ab-cacau-crit', todos.filter(r => r[2]==='Cacau' && prioridadeReal(r[0])==='Urgente').length);
+  _renderFazendaCards(todos);
 
   // Pagination
   const total = recs.length;
@@ -1318,6 +1382,9 @@ function renderAberto() {
   if (!slice.length) {
     tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--text3)">✓ Nenhum chamado em aberto</td></tr>`;
   } else {
+    // Fase 4.6 — lista de técnicos calculada 1x fora do .map() (não por
+    // linha) e reaproveitada no <select> de reatribuição de cada linha.
+    const _tecList = _tecnicosAtivos();
     tbody.innerHTML = slice.map(r => {
       const dias = diasAberto(r[4]);
       // Linha de fundo por atraso — reescrita na Etapa 2A com color-mix (theme-
@@ -1347,12 +1414,18 @@ function renderAberto() {
         <td><span class="badge ${statusPill(r[5])}">${r[5] || 'Não iniciado'}</span></td>
         <td><span ${diasChip(dias)}>${dias}d</span></td>
         <td style="white-space:nowrap;display:flex;gap:6px;align-items:center" onclick="event.stopPropagation()">
+          <!-- Fase 4.6 (consolidação final) — opções vêm de _tecList
+               (Técnicos ativos), não mais Guilherme/Walison fixos; o
+               combo "Ambos" saiu (não escala pra N técnicos — reatribuir
+               a mais de um continua possível pelo Centro Operacional/
+               Novo Chamado, que já suportam múltiplos). -->
           <select onchange="alterarResp('${r[0]}',this.value)" title="Alterar responsável"
             style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);font-size:11px;color:var(--text);font-family:var(--font);cursor:pointer">
             <option value="">Resp.</option>
-            <option value="Guilherme" ${(r[3]||'').includes('Guilherme')?'selected':''}>Guilherme</option>
-            <option value="Walison"   ${(r[3]||'').includes('Walison')  ?'selected':''}>Walison</option>
-            <option value="Guilherme,Walison">Ambos (G + W)</option>
+            ${_tecList.map(t=>{
+              const val=t.apelido||t.nome;
+              return `<option value="${_escHtml(val)}" ${(r[3]||'').includes(val)?'selected':''}>${_escHtml(t.nome)}</option>`;
+            }).join('')}
           </select>
           <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px"
             onclick="encerrarDireto('${r[0]}')">Encerrar</button>
@@ -1365,40 +1438,57 @@ function renderAberto() {
   if (pagRow) pagRow.innerHTML = _paginacaoHTML(abPage, total, AB_PER_PAGE, 'abGotoPage');
 }
 
+// Fase 4.6 (consolidação final) — só 2 tipos de card agora (cult/fazenda);
+// "resp"/"vencidos" saíram (viraram filtros de verdade na barra: select
+// de Técnico Responsável e checkbox SLA crítico).
 function abCardFilter(type, val) {
   const cultEl   = document.getElementById('ab-cult-card');
   const fazEl    = document.getElementById('ab-fazenda-card');
-  const respEl   = document.getElementById('ab-resp-card');
-  const vencEl   = document.getElementById('ab-venc-card');
   const clearBtn = document.getElementById('ab-clear-cards');
   if(!cultEl) return;
 
   // Clear all card filters first
-  cultEl.value=''; fazEl.value=''; respEl.value=''; vencEl.value='';
+  cultEl.value=''; fazEl.value='';
 
   // Apply the selected filter (toggle: same val clears)
-  if (type==='cult')     cultEl.value = val;
+  if (type==='cult')        cultEl.value = val;
   else if(type==='fazenda') fazEl.value = val;
-  else if(type==='resp')    respEl.value = val;
-  else if(type==='vencidos') vencEl.value = '1';
   // type==='total' → all cleared above
 
-  const hasFilter = cultEl.value||fazEl.value||respEl.value||vencEl.value;
+  const hasFilter = cultEl.value||fazEl.value;
 
-  // Highlight active cards
-  const cultMap   = {graos:'Grãos e Fibras',tabaco:'Tabaco',cacau:'Cacau'};
-  const fazMap    = {krt:'Solinftec KRT',rdm:'Solinftec RDM'};
+  // Highlight cards de Cultura (ids fixos); os de Fazenda são gerados
+  // dinamicamente e já se auto-destacam a cada render (_renderFazendaCards
+  // lê o mesmo ab-fazenda-card).
+  const cultMap = {graos:'Grãos e Fibras',tabaco:'Tabaco',cacau:'Cacau'};
   ['graos','tabaco','cacau'].forEach(id =>
     document.getElementById('abcard-'+id)?.classList.toggle('ab-active', cultEl.value===cultMap[id]));
-  ['krt','rdm'].forEach(id =>
-    document.getElementById('abcard-'+id)?.classList.toggle('ab-active', fazEl.value===fazMap[id]));
-  document.getElementById('abcard-guil')?.classList.toggle('ab-active', respEl.value==='Guilherme');
-  document.getElementById('abcard-wali')?.classList.toggle('ab-active', respEl.value==='Walison');
-  document.getElementById('abcard-venc')?.classList.toggle('ab-active', !!vencEl.value);
-  document.getElementById('abcard-total')?.classList.toggle('ab-active', !hasFilter);
 
   clearBtn.style.display = hasFilter ? 'flex' : 'none';
   applyAbertoFilters();
+}
+
+// Fase 4.6 (consolidação final) — grupo "🚜 Fazenda" gerado a partir dos
+// buckets (r[6]) que realmente têm chamado aberto, em vez de 2 cards
+// fixos (Karitel/Rio do Meio) — Rádio/John Deere passam a aparecer
+// quando têm chamado, e o card some sozinho quando o bucket zera.
+const _FAZENDA_CORES = ['var(--teal)','var(--purple)','var(--accent)','var(--amber)'];
+function _renderFazendaCards(todos) {
+  const wrap = document.getElementById('ab-fazenda-cards');
+  if (!wrap) return;
+  const counts = {};
+  todos.forEach(r => { if (r[6]) counts[r[6]] = (counts[r[6]]||0)+1; });
+  const buckets = Object.keys(counts).sort((a,b)=>counts[b]-counts[a]);
+  const fazendaAtiva = document.getElementById('ab-fazenda-card')?.value || '';
+  wrap.innerHTML = buckets.length ? buckets.map((bucket,i) => {
+    const critCount = todos.filter(r=>r[6]===bucket && prioridadeReal(r[0])==='Urgente').length;
+    const ativo = fazendaAtiva===bucket ? ' ab-active' : '';
+    return `<div class="kpi-card${ativo}" style="cursor:pointer;border-top:3px solid ${_FAZENDA_CORES[i%_FAZENDA_CORES.length]}" onclick="abCardFilter('fazenda','${_escHtml(bucket)}')">
+      <div class="kpi-label">📍 ${_escHtml(fazendaLabel(bucket))}</div>
+      <div class="kpi-value">${counts[bucket].toLocaleString('pt-BR')}</div>
+      <div class="kpi-sub">em aberto ${critCount>0?`<span class="badge badge-red" style="margin-left:4px">${critCount} crítico${critCount>1?'s':''}</span>`:''}</div>
+    </div>`;
+  }).join('') : '<div style="color:var(--text3);font-size:12px;padding:8px">Nenhum chamado em aberto.</div>';
 }
 
 function critGotoPage(p){
@@ -1714,18 +1804,68 @@ function removeTecnico(val) {
   ).join('');
 }
 
+// Fase 4.6 (consolidação final) — lista única de técnicos disponíveis pra
+// atribuição, reaproveitada por todo formulário/filtro que hoje usa (ou
+// usava) uma lista fixa de nomes: botões de Responsável do Novo Chamado,
+// selects de filtro (Em Aberto/Encerrados/Criticidade/Chamados), select
+// inline de reatribuição, roster de Relatórios, e os 2 pontos que já
+// eram dinâmicos (Técnico Responsável do formulário, botões do checklist
+// de encerramento). Mesmo critério de sempre (status !== 'Inativo' —
+// Férias/Afastado continuam selecionáveis, só Inativo é excluído).
+function _tecnicosAtivos() {
+  return Object.values(getCadTec()||{})
+    .filter(t => t && t.nome && t.status !== 'Inativo')
+    .sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR'));
+}
+
 // Botões de seleção de técnico do checklist de encerramento — lidos de
 // getCadTec() (Firestore), nunca de lista fixa.
 function populateChkTecOpts() {
   const wrap = document.getElementById('chk-tec-opts');
   if (!wrap) return;
-  const tecnicos = Object.values(getCadTec()||{})
-    .filter(t => t && t.nome && t.status !== 'Inativo')
-    .sort((a,b) => a.nome.localeCompare(b.nome,'pt-BR'));
-  wrap.innerHTML = tecnicos.map(t => {
+  wrap.innerHTML = _tecnicosAtivos().map(t => {
     const val = t.apelido || t.nome;
     return `<button type="button" class="resp-opt" data-tec="${_escHtml(val)}" onclick="toggleTecnico(this)">${_escHtml(t.nome)}</button>`;
   }).join('');
+}
+
+// Fase 4.6 (consolidação final) — antes 6 botões fixos no HTML (Novo
+// Chamado); agora lidos de _tecnicosAtivos(), igual ao Técnico
+// Responsável (populateTecnicoSelect) e ao checklist (populateChkTecOpts).
+function _renderRespOpts() {
+  const wrap = document.getElementById('resp-opts');
+  if (!wrap) return;
+  const selecionados = (document.getElementById('f-resp')?.value||'').split(',').filter(Boolean);
+  wrap.innerHTML = _tecnicosAtivos().map(t => {
+    const val = t.apelido || t.nome;
+    const sel = selecionados.includes(val) ? ' sel' : '';
+    return `<button type="button" class="resp-opt${sel}" data-val="${_escHtml(val)}" onclick="toggleResp(this)">${_escHtml(t.nome)}</button>`;
+  }).join('');
+}
+
+// Fase 4.6 (consolidação final) — preenche qualquer <select> de filtro
+// por Responsável (Em Aberto/Encerrados/Criticidade/Chamados) a partir
+// da mesma lista única, em vez de opções fixas divergentes entre telas.
+function _popularSelectResp(id, placeholder) {
+  const sel = document.getElementById(id);
+  if (!sel) return;
+  const atual = sel.value;
+  sel.innerHTML = `<option value="">${placeholder}</option>` +
+    _tecnicosAtivos().map(t => `<option value="${_escHtml(t.apelido||t.nome)}">${_escHtml(t.nome)}</option>`).join('');
+  if (atual && [...sel.options].some(o=>o.value===atual)) sel.value = atual;
+}
+
+// Fase 4.6 (consolidação final) — 1 ponto só que atualiza TODO seletor de
+// Responsável/Técnico da aplicação; chamado sempre que um técnico é
+// cadastrado/editado/ativado/desativado/excluído, além do boot normal.
+function _refreshTecnicoUI() {
+  populateTecnicoSelect();
+  populateChkTecOpts();
+  _renderRespOpts();
+  _popularSelectResp('ab-resp',   'Todos os responsáveis');
+  _popularSelectResp('enc-f-resp','Todos os responsáveis');
+  _popularSelectResp('crit-f-resp','Todos os responsáveis');
+  _popularSelectResp('flt-resp',  'Todo responsável');
 }
 
 function openChecklist(target) {
@@ -2299,16 +2439,7 @@ function updateNovoNum(){
 // cadastrados (getCadTec(), sincronizado com a coleção Firestore "tecnicos"),
 // em vez de uma lista fixa de nomes gravada no HTML.
 function populateTecnicoSelect(){
-  const sel=document.getElementById('f-tecnico');
-  if(!sel) return;
-  const atual=sel.value;
-  const cad=getCadTec();
-  const tecnicos=Object.values(cad||{})
-    .filter(t=>t && t.nome && t.status!=='Inativo')
-    .sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR'));
-  sel.innerHTML='<option value="">A definir…</option>'+
-    tecnicos.map(t=>`<option value="${_escHtml(t.apelido||t.nome)}">${_escHtml(t.nome)}</option>`).join('');
-  if(atual && [...sel.options].some(o=>o.value===atual)) sel.value=atual;
+  _popularSelectResp('f-tecnico', 'A definir…');
 }
 
 // Indicador de progresso do formulário "Novo Chamado" (Fase 2 · Etapa 2C-i)
@@ -2345,7 +2476,7 @@ function resetForm(){
   });
   // Responsáveis
   document.getElementById('f-resp').value='';
-  document.querySelectorAll('.resp-opt.sel').forEach(b=>b.classList.remove('sel'));
+  _renderRespOpts(); // Fase 4.6 — re-renderiza com a lista de técnicos atual, já sem seleção
   const tagsEl=document.getElementById('resp-tags');
   if(tagsEl) tagsEl.innerHTML='';
   // Priority (reset to Média)
@@ -2763,26 +2894,19 @@ function detConfirmarEnc() {
   openChecklist('detalhe');
 }
 
-// Rótulo completo de cada responsável — achado da Etapa 2C-i: o código
-// anterior só distinguia Guilherme/Walison (ternário de 2 opções só);
-// qualquer outro responsável dos 6 botões existentes (Matheus/Carlos/
-// Francisco/Pierry) aparecia rotulado como "Walison Almeida" nas tags.
-// Mesmos nomes já escritos nos próprios botões (index.html), só
-// centralizados aqui pra não repetir a lista em 2 funções.
-const RESP_LABEL = {
-  Guilherme: 'Guilherme Otávio', Walison: 'Walison Almeida',
-  Matheus: 'Matheus Gabriel', Carlos: 'Carlos Santos',
-  Francisco: 'Francisco', Pierry: 'Pierry',
-};
+// Fase 4.6 (consolidação final) — RESP_LABEL (mapa fixo de nome completo)
+// removido: o nome completo já vem do próprio registro do técnico
+// (getCadTec()[v].nome), lido direto em vez de duplicado numa 2ª lista.
 function _respTagsHTML(selected) {
+  const cad = getCadTec();
   return selected.map(v =>
-    `<span class="resp-tag">${RESP_LABEL[v]||v}<button type="button" onclick="removeResp('${v}')">×</button></span>`
+    `<span class="resp-tag">${_escHtml(cad[v]?.nome||v)}<button type="button" onclick="removeResp('${v}')">×</button></span>`
   ).join('');
 }
 
 function toggleResp(btn) {
   btn.classList.toggle('sel');
-  const selected = [...document.querySelectorAll('.resp-opt.sel')].map(b => b.dataset.val);
+  const selected = [...document.querySelectorAll('#resp-opts .resp-opt.sel')].map(b => b.dataset.val);
   document.getElementById('f-resp').value = selected.join(',');
   const tagsEl = document.getElementById('resp-tags');
   tagsEl.innerHTML = _respTagsHTML(selected);
@@ -2790,9 +2914,9 @@ function toggleResp(btn) {
 }
 
 function removeResp(val) {
-  const btn = document.querySelector(`.resp-opt[data-val="${val}"]`);
+  const btn = document.querySelector(`#resp-opts .resp-opt[data-val="${val}"]`);
   if (btn) btn.classList.remove('sel');
-  const selected = [...document.querySelectorAll('.resp-opt.sel')].map(b => b.dataset.val);
+  const selected = [...document.querySelectorAll('#resp-opts .resp-opt.sel')].map(b => b.dataset.val);
   document.getElementById('f-resp').value = selected.join(',');
   const tagsEl = document.getElementById('resp-tags');
   tagsEl.innerHTML = _respTagsHTML(selected);

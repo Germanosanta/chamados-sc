@@ -11,6 +11,9 @@
   .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .cols-3-2,.cols-2-1{grid-template-columns:1fr}
   .cols-3{grid-template-columns:1fr 1fr}
+  /* Fase 4.6 (consolidação final) — cards de Cultura/Fazenda de "Chamados
+     em Aberto"; Fazenda já é auto-fit/responsivo por conta própria. */
+  .ab-cultura-grid{grid-template-columns:repeat(2,1fr)!important}
 }
 @media(max-width:900px){
   #global-search-box{width:160px}
@@ -62,6 +65,7 @@
   .topbar{padding:0 10px;gap:8px}
   #global-search-box{width:110px}
   .section.active{padding:14px 14px 14px}
+  .ab-cultura-grid{grid-template-columns:1fr!important}
 }
 
 @media(max-width:768px){

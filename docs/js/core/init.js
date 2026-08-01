@@ -5,7 +5,10 @@ initSidebarCollapsed();
 document.getElementById('f-data').value=new Date().toISOString().slice(0,10);
 updateNovoNum();
 preencherSolicitante();
-populateTecnicoSelect();
+// Fase 4.6 (consolidação final) — 1 chamada só popula todo seletor de
+// Responsável/Técnico (Novo Chamado, checklist, filtros de Em Aberto/
+// Encerrados/Criticidade/Chamados) a partir dos Técnicos cadastrados.
+_refreshTecnicoUI();
 tickFormClock();
 atualizarProgressoNovo();
 setInterval(tickFormClock, 30000);
@@ -27,7 +30,11 @@ toggleViewMode(viewMode); // Fase 3 · Kanban — restaura o modo de visualizaç
 const DEFAULT_USERS = [];
 
 // Perfil permissions
-const PERFIL_LABEL = {admin:'Administrador',supervisor:'Supervisor',tecnico:'Técnico',visualizador:'Visualizador'};
+// Fase 4.6 (consolidação final) — "Supervisor" passa a ser exibido como
+// "Gestor" (nomenclatura padronizada); a chave interna supervisor e toda
+// checagem de permissão (PERFIL_PERMS.supervisor etc.) continuam iguais,
+// só o texto que o usuário vê muda.
+const PERFIL_LABEL = {admin:'Administrador',supervisor:'Gestor',tecnico:'Técnico',visualizador:'Visualizador'};
 
 // Restaura sessão persistida (F5 na mesma aba) — Fase 3: bug real
 // corrigido aqui. Esse mesmo bloco vivia, por engano, DENTRO de
@@ -229,7 +236,7 @@ function showToast(msg){
 // Each section only re-renders if currently visible.
 function refreshAfterAction() {
   initAbertoBadge(); // always update all nav badges + totals
-  populateTecnicoSelect(); // mantém a lista de técnicos em sincronia com o Firestore
+  _refreshTecnicoUI(); // mantém todo seletor de Responsável/Técnico em sincronia com o Firestore
   const active = document.querySelector('.section.active')?.id;
   if (active === 'sec-home')         renderHome();
   if (active === 'sec-chamados')     applyFilters();

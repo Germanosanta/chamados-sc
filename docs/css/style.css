@@ -362,6 +362,14 @@ svg{display:block;flex-shrink:0}
   box-shadow:0 0 0 2px var(--accent),var(--shadow);
   transform:translateY(-1px);
 }
+/* Fase 4.6 (consolidação final) — rótulo dos 2 grandes agrupadores
+   operacionais de "Chamados em Aberto" (Cultura/Fazenda), mesmo peso
+   visual do .filter-label já usado nas barras de filtro. */
+.ab-group-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text3);margin:18px 0 10px;
+}
+.ab-group-label:first-child{margin-top:0}
 /* stagger animation */
 .kpi-card{animation:fadeUp .35s ease both}
 .kpi-card:nth-child(1){animation-delay:.04s}

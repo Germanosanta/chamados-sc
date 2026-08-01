@@ -18,13 +18,16 @@ function renderRespSection(){
     return diff>=0?Math.round(diff):null;
   }
 
-  const RESPS=[
-    {name:'Guilherme',label:'Guilherme Otávio',color:'#2563eb'},
-    {name:'Walison',  label:'Walison Almeida',  color:'#0d9488'},
-    {name:'Matheus',  label:'Matheus Gabriel',   color:'#7c3aed'},
-    {name:'Carlos',   label:'Carlos Santos',     color:'#16a34a'},
-    {name:'Francisco',label:'Francisco Neto',    color:'#d97706'},
-  ];
+  // Fase 4.6 (consolidação final) — antes uma lista fixa de 5 nomes
+  // (já divergente das outras telas, faltava "Pierry"); agora lida de
+  // _tecnicosAtivos() (Técnicos cadastrados e ativos), mesma fonte única
+  // usada em todo formulário/filtro de Responsável.
+  const RESP_CORES = ['#2f6b4f','#d97706','#7c3aed','#16a34a','#92400e','#0d9488','#dc2626'];
+  const RESPS = _tecnicosAtivos().map((t,i)=>({
+    name:  t.apelido||t.nome,
+    label: t.nome,
+    color: RESP_CORES[i % RESP_CORES.length],
+  }));
 
   const data = RESPS.map(({name,label,color})=>{
     // Atribuídos: any record where resp field contains this name

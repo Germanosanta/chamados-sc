@@ -441,7 +441,7 @@ function excluirTec(id) {
       .catch(e => console.warn('[Técnicos] excluir falhou:', e.message));
   }
   renderTecnicos();
-  populateTecnicoSelect();
+  _refreshTecnicoUI();
   showToast('Técnico removido do cadastro.');
   audit('excluiu', `Técnico ${nome} removido do cadastro`, '');
 }
@@ -474,6 +474,11 @@ function salvarTec() {
   saveCadTec(cad);
   fecharFormTec();
   renderTecnicos();
+  // Fase 4.6 (consolidação final) — bug real encontrado: salvar um
+  // técnico nunca atualizava os seletores de Responsável/Técnico (só
+  // excluirTec() fazia isso); cadastrar/editar/ativar/desativar um
+  // técnico agora reflete na hora em todo formulário/filtro.
+  _refreshTecnicoUI();
   showToast('✓ Técnico salvo no cadastro!');
   audit('editou', `Técnico ${nome} cadastrado/atualizado`, '');
 }
