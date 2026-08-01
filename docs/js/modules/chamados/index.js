@@ -53,29 +53,17 @@ function diasChip(dias) {
   return 'class="badge badge-green"';
 }
 
-// priorPill/getPrior mantidos EXATAMENTE como estavam (nenhum caractere
-// alterado) — getPrior(r) é conhecidamente quebrado (r[9] nunca existe no
-// array de 7 posições), mas outras telas fora do escopo desta etapa (ex.:
-// renderPainel em dashboard/index.js) ainda podem depender do comportamento
-// atual. As telas reescritas nesta etapa usam prioridadeReal(num) abaixo,
-// que lê o campo certo, em vez de tocar nestas duas funções.
-function priorPill(p) {
-  if (!p || p === 'Média') return '<span class="pill p-outros">Média</span>';
-  if (p === 'Urgente')    return '<span class="pill" style="background:#fef2f2;color:#dc2626;font-weight:700">Urgente</span>';
-  if (p === 'Alta')       return '<span class="pill p-tabaco">Alta</span>';
-  return '<span class="pill p-outros">Baixa</span>';
-}
+// priorPill/getPrior removidas na Fase 4 — getPrior(r) lia r[9], que nunca
+// existe (array de 7 posições), e o único chamador restante (busca do
+// modal de Encerrar Chamado) foi corrigido para usar o par certo abaixo
+// (prioridadeReal/prioridadeBadge, já usado em todas as outras telas
+// desde a Etapa 2A). Confirmado, por grep em todo o projeto, que nenhum
+// outro arquivo chamava priorPill/getPrior antes de remover.
 
-function getPrior(r) {
-  // local records store prior at r[9]; base records have no priority
-  return r[9] || r[10] || '';  // index may vary
-}
-
-// Lê a prioridade de verdade de um chamado — getPrior(r)/rec[9] acima
-// nunca funciona (nenhum array real tem posição 9). O valor real vive no
+// Lê a prioridade de verdade de um chamado — o valor real vive no
 // registro local (getLocal()), gravado por submitChamado() no campo
 // "prior". Mesmo caminho que buildTimeline() já usa corretamente
-// (localRec.prior) — só agora reaproveitado também nas listas.
+// (localRec.prior).
 function prioridadeReal(num) {
   return getLocal().find(r => r.num === num)?.prior || '';
 }
@@ -103,7 +91,7 @@ const STATUS_STEPS = [
   { key:'aberto',      label:'Aberto' },
   { key:'atendimento', label:'Em Atendimento' },
   { key:'peca',        label:'Aguardando Peça' },
-  { key:'concluido',   label:'Concluído' },
+  { key:'concluido',   label:'Encerrado' },
 ];
 function _statusStepIndex(status) {
   if (status==='Concluída'||status==='Encerrado'||status==='Concluído') return 3;
@@ -648,6 +636,97 @@ function _abrirAcaoRapida(num, acao) {
 }
 
 // ══════════════════════════════════════════════════════════════
+// NOTIFICAÇÕES LOCAIS (Fase 4) — entrega real desta fase: dispara via
+// Notification API quando o sync em tempo real (fsStartRealtime, já
+// existente em js/firebase/firebase.js) detecta uma mudança relevante pro
+// usuário logado, com a aba aberta em qualquer lugar (não precisa estar
+// na tela de chamados). Push de verdade (app fechado, outro dispositivo)
+// depende de Cloud Function + plano Blaze — decidido com o usuário que
+// fica fora do escopo desta fase (ver relatório final).
+// ══════════════════════════════════════════════════════════════
+function _notificarLocal(titulo, corpo, num) {
+  if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+  try {
+    const n = new Notification(titulo, { body: corpo, icon: 'assets/img/coa.jpeg', tag: 'chm-' + (num || Date.now()) });
+    n.onclick = () => { window.focus(); if (num) openDetalhe(num); n.close(); };
+  } catch (e) {}
+}
+
+// Mesma comparação já usada em _atEhMeu() (Área do Técnico, Fase 3), aqui
+// recebendo um objeto simples em vez de rec[] pra funcionar tanto com
+// registro local quanto com o item recém-sincronizado do Firestore.
+function _souEnvolvido(recLike, nome) {
+  if (!nome || !recLike) return false;
+  const resps = (recLike.resp || '').split(',').map(s => s.trim());
+  return resps.includes(nome) || recLike.tecnico === nome || recLike.assumidoPor === nome;
+}
+
+// Chamado pelo hook em fsStartRealtime() — "antes" é o estado local antes
+// do merge desta leitura; "itemsNovos" é o snapshot que acabou de chegar
+// do Firestore. Detecta só o que já é dado real (nenhum campo/cálculo novo).
+window._chmDetectarNotificacoes = function(col, itemsNovos, antes) {
+  const u = currentUser();
+  if (!u) return;
+  const nome = u.nome;
+
+  if (col === 'chamados') {
+    const antesMap = new Map((antes || []).map(r => [r.num, r]));
+    itemsNovos.forEach(rec => {
+      const prev = antesMap.get(rec.num);
+      if (!prev) {
+        if (_souEnvolvido(rec, nome) && rec.abertoPor !== nome) {
+          _notificarLocal('📋 Novo chamado atribuído', `${rec.num} · ${rec.titulo || ''}`, rec.num);
+        }
+        return;
+      }
+      if (!_souEnvolvido(prev, nome) && _souEnvolvido(rec, nome)) {
+        _notificarLocal('⚡ Chamado atribuído a você', `${rec.num} · ${rec.titulo || ''}`, rec.num);
+      } else if (prev.status !== rec.status && _souEnvolvido(rec, nome)) {
+        _notificarLocal('🔄 Status alterado', `${rec.num} agora está "${rec.status}"`, rec.num);
+      }
+    });
+  }
+
+  if (col === 'historico') {
+    const local = getLocal();
+    itemsNovos.forEach(item => {
+      const rec = local.find(r => r.num === item.id) || {};
+      if (!_souEnvolvido(rec, nome)) return;
+      if (item.encerramento && !antes?.closed?.[item.id]) {
+        _notificarLocal('✅ Chamado encerrado', `${item.id} foi encerrado`, item.id);
+      }
+      const eventosAntes = (antes?.events?.[item.id] || []).length;
+      const eventosNovos = item.eventos || [];
+      if (eventosNovos.length > eventosAntes) {
+        const novoEvt = eventosNovos[eventosNovos.length - 1];
+        if (novoEvt?.type === 'peca_recebida') {
+          _notificarLocal('📦 Peça recebida', `${item.id}: ${novoEvt.detail || ''}`, item.id);
+        }
+      }
+    });
+  }
+};
+
+// SLA crítico — checagem periódica (não é evento de sync), mesmo limiar já
+// usado em diasChip()/DIAS_ATRASO_CRITICO. Notifica 1x por chamado por
+// sessão, pra não repetir a cada checagem enquanto o atraso persiste.
+const _slaNotificados = new Set();
+function _checarSlaCritico() {
+  const u = currentUser();
+  if (!u) return;
+  const local = getLocal();
+  getAbertos().forEach(r => {
+    if (_slaNotificados.has(r[0])) return;
+    const lr = local.find(x => x.num === r[0]);
+    if (!_souEnvolvido({ resp: r[3], tecnico: lr?.tecnico, assumidoPor: lr?.assumidoPor }, u.nome)) return;
+    if (diasAberto(r[4]) > DIAS_ATRASO_CRITICO) {
+      _slaNotificados.add(r[0]);
+      _notificarLocal('🔴 SLA crítico', `${r[0]} está aberto há mais de ${DIAS_ATRASO_CRITICO} dias`, r[0]);
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
 // ÁREA DO TÉCNICO (Fase 3) — espaço de trabalho pessoal, separado do
 // cadastro administrativo #sec-tecnicos (RH). Reaproveita getAbertos()/
 // getEncerrados()/prioridadeReal() já existentes; o único filtro
@@ -735,8 +814,11 @@ function openDetalhe(num) {
   // Etapa 2A (rec[9] nunca existe, sempre "Média"), corrigido também aqui.
   document.getElementById('det-resp').textContent   = (rec[3]||'').replace(/,/g,' e ') || '—';
 
-  // New fields from local record
-  const _lr = getLocal().find(r=>r.num===rec[0]);
+  // New fields from local record — Fase 4: reaproveita _detLocalRec
+  // (calculado uma vez, acima) em vez de repetir getLocal().find() pelo
+  // mesmo registro várias vezes nesta função (hot path — roda a cada
+  // abertura de chamado).
+  const _lr = _detLocalRec;
   const _setD=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v||'—';};
   _setD('det-categoria',   _lr?.categoria);
   _setD('det-tecnico',     getTecnicoResponsavel(rec[0]));
@@ -799,7 +881,7 @@ function openDetalhe(num) {
   setDetEl('det-data',    rec[4] ? rec[4].split('-').reverse().join('/') : '—');
 
   // Aberto por (from local record)
-  const localRec2 = getLocal().find(r=>r.num===num);
+  const localRec2 = _detLocalRec;
   setDetEl('det-aberto-por', localRec2?.abertoPor || '—');
 
   // Encerramento fields
@@ -843,7 +925,7 @@ function openDetalhe(num) {
   const histWrap = document.getElementById('det-hist-wrap');
   const histEl   = document.getElementById('det-hist');
   if (histEl) {
-    const localRec = getLocal().find(r => r.num === num);
+    const localRec = _detLocalRec;
     histEl.innerHTML = buildTimeline(num, isClosed, closedInfo, localRec);
     if (histWrap) histWrap.style.display = 'block';
   }
@@ -896,7 +978,7 @@ function openDetalhe(num) {
   // Assumir button
   const _btnAssumirDet = document.getElementById('det-btn-assumir');
   if (_btnAssumirDet) {
-    const _localA = getLocal().find(r=>r.num===num);
+    const _localA = _detLocalRec;
     const _jaAssumido = _localA?.assumidoPor && _localA.assumidoPor===(currentUser()?.nome||'');
     _btnAssumirDet.style.display = (!isClosed && pode('editar') && !_jaAssumido) ? 'inline-flex' : 'none';
   }
@@ -1246,7 +1328,11 @@ function renderCriticidade() {
   const fAte     = document.getElementById('crit-f-ate')?.value     || '';
   const critCard = document.getElementById('crit-card-val')?.value;
 
-  let recs = allRecords();
+  // Fase 4: allRecords() computado 1x e reaproveitado — antes era chamado
+  // de novo mais abaixo pros KPIs (mesmo array, sem mutação entre as duas
+  // chamadas, então a segunda era redundante).
+  const all = allRecords();
+  let recs = all;
 
   if (q)       recs = recs.filter(r => r[0].toLowerCase().includes(q) || (r[1]||'').toLowerCase().includes(q));
   if (fCult)   recs = recs.filter(r => r[2] === fCult);
@@ -1265,8 +1351,7 @@ function renderCriticidade() {
     });
   }
 
-  // KPIs from ALL records (unfiltered)
-  const all = allRecords();
+  // KPIs from ALL records (unfiltered) — reaproveita "all" computado acima.
   const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   setEl('crit-urgente', all.filter(r=>prioridadeReal(r[0])==='Urgente').length.toLocaleString('pt-BR'));
   setEl('crit-alta',    all.filter(r=>prioridadeReal(r[0])==='Alta').length.toLocaleString('pt-BR'));
@@ -1491,7 +1576,11 @@ function buscarChamado() {
   const _encEquipEl = document.getElementById('enc-res-equip');
   if (_encEquipEl) _encEquipEl.textContent = _encLabel ? '🚜 ' + _encLabel : '';
   const _encPriorEl = document.getElementById('enc-res-prior');
-  if (_encPriorEl) _encPriorEl.innerHTML = priorPill(getPrior(rec));
+  // Fase 4: era priorPill(getPrior(rec)) — getPrior(r) lê r[9], que nunca
+  // existe (array de 7 posições), então esse campo sempre mostrava
+  // prioridade vazia/errada aqui. Mesmo par já usado em todas as outras
+  // telas desde a Etapa 2A.
+  if (_encPriorEl) _encPriorEl.innerHTML = prioridadeBadge(prioridadeReal(raw));
 
   const confirmMsg = document.getElementById('enc-confirm-msg');
   if (isClosed) {
@@ -1688,12 +1777,15 @@ function _doEncerramento(target, chkData) {
   const nowFmt=now.toLocaleDateString('pt-BR')+' às '+now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
   addEvent(num, 'encerrou', u?u.nome:'Sistema', chkData?.solucao||'');
   audit('encerrou', `Chamado ${num} encerrado`, num);
+  // Fase 4: allRecords() computado 1x e reaproveitado (nada muda entre as
+  // duas leituras — local/closed já foram salvos acima — a 2ª chamada era
+  // redundante).
   const _encRecForKB = allRecords().find(r=>r[0]===num);
   if(_encRecForKB && chkData?.solucao) salvarSolucaoNoKB(_encRecForKB, closed[num]);
   showToast('Chamado '+num+' encerrado com sucesso.');
   refreshAfterAction();
   // Notificação de encerramento
-  const _encRec = allRecords().find(r=>r[0]===num) || [num,'','','','','Encerrado',''];
+  const _encRec = _encRecForKB || [num,'','','','','Encerrado',''];
   emailService.notificarEncerramento(_encRec, closed[num]);
 
   if (target==='modal') {
@@ -2012,7 +2104,7 @@ function submitChamado(){
   if (!_equipValidVal){ showToast('⚠ Selecione um equipamento da lista — clique em uma opção'); document.getElementById('f-titulo')?.focus(); return; }
   if (!categoria)    { showToast('⚠ Selecione a categoria do chamado'); document.getElementById('f-categoria')?.focus(); return; }
   if (!resp)         { showToast('⚠ Selecione pelo menos um responsável'); return; }
-  if (!bucket)       { showToast('⚠ Selecione o Sistema / Sede'); return; }
+  if (!bucket)       { showToast('⚠ Selecione a Fazenda / Sistema'); return; }
   const desc = document.getElementById('f-desc').value.trim();
   if (!desc)         { showToast('⚠ Descreva o problema no campo Descrição'); document.getElementById('f-desc')?.focus(); return; }
 
@@ -2094,7 +2186,10 @@ function submitChamado(){
   const _abRec=[num,titulo,cultura,resp,data,'Aberto',bucket,'',prior];
   emailService.notificarAbertura(_abRec, u?.nome||'Sistema');
 
-  const newTotal=allRecords().length.toLocaleString('pt-BR');
+  // Fase 4: reaproveita "seq" (já é all.length+1, calculado acima) em vez
+  // de chamar allRecords() de novo — exatamente 1 registro foi adicionado
+  // entre as duas leituras, então o resultado é matematicamente o mesmo.
+  const newTotal=seq.toLocaleString('pt-BR');
   document.getElementById('badge-chamados').textContent=newTotal;
   document.getElementById('total-badge').textContent=newTotal+' chamados';
 

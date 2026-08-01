@@ -66,12 +66,75 @@ const CADASTRO_TEC_KEY = 'chm_cad_tec_v1';
 //    (src/firestoreStorage.js). Best-effort: não bloqueia a UI, seguro offline.
 function _fbReady() { return typeof window !== 'undefined' && !!window.FirestoreStorage; }
 function _fbCall(label, promiseFactory) {
-  if (!_fbReady()) return;
+  if (!_fbReady()) { _pendingSyncMark(label); return; }
   try {
     Promise.resolve(promiseFactory())
-      .then(res => { if (res && res.ok === false) console.warn('[Storage]', label, 'falhou:', res.error); })
-      .catch(e => console.warn('[Storage]', label, 'falhou:', e.message));
-  } catch (e) { console.warn('[Storage]', label, 'falhou:', e.message); }
+      .then(res => {
+        if (res && res.ok === false) { console.warn('[Storage]', label, 'falhou:', res.error); _pendingSyncMark(label); }
+        else { _pendingSyncClear(label); }
+      })
+      .catch(e => { console.warn('[Storage]', label, 'falhou:', e.message); _pendingSyncMark(label); });
+  } catch (e) { console.warn('[Storage]', label, 'falhou:', e.message); _pendingSyncMark(label); }
+}
+
+// ── Fila de sincronização pendente (Fase 4) — quando uma escrita falha (ou
+// o Firebase ainda não terminou de inicializar), guarda só o RÓTULO do tipo
+// de dado; os dados em si já estão salvos no localStorage (padrão local-
+// primeiro de sempre, ver save*() abaixo), nada se perde na UI. O reenvio
+// (flushPendingSync) refaz o push direto pelas funções de FirestoreStorage —
+// não pelos save*() com diff (achado C2, Fase 1): depois de uma tentativa
+// falha, "antes" e "depois" no localStorage já ficam iguais, então o diff
+// não veria mais nada pra reenviar. Reenviar tudo de novo é seguro (setDoc
+// é idempotente) e os conjuntos aqui são só dados criados localmente
+// (pequenos) — nunca o histórico estático inteiro.
+const SYNC_PENDING_KEY = 'chm_sync_pending_v1';
+
+function _pendingSyncMark(label) {
+  try {
+    const set = new Set(JSON.parse(localStorage.getItem(SYNC_PENDING_KEY) || '[]'));
+    set.add(label);
+    localStorage.setItem(SYNC_PENDING_KEY, JSON.stringify([...set]));
+  } catch (e) {}
+}
+function _pendingSyncClear(label) {
+  try {
+    const set = new Set(JSON.parse(localStorage.getItem(SYNC_PENDING_KEY) || '[]'));
+    if (!set.has(label)) return;
+    set.delete(label);
+    localStorage.setItem(SYNC_PENDING_KEY, JSON.stringify([...set]));
+  } catch (e) {}
+}
+
+const SYNC_FLUSH_ACTIONS = {
+  'salvarChamado':                 () => Promise.all(getLocal().map(rec => window.FirestoreStorage.salvarChamado(rec))),
+  'salvarHistorico(encerramento)': () => Promise.all(Object.entries(getClosedMap()).map(([num, ci]) => window.FirestoreStorage.salvarHistorico(num, { num, encerramento: ci }))),
+  'salvarHistorico(eventos)':      () => Promise.all(Object.entries(getEvents()).map(([num, lst]) => window.FirestoreStorage.salvarHistorico(num, { num, eventos: lst }))),
+  'salvarConfiguracao(kb)':        () => Promise.all(getKB().map(k => window.FirestoreStorage.salvarConfiguracao('kb__'+k.id, { __kind:'kb', ...k }))),
+  'salvarPeca':                    () => Promise.all(getPecas().map(p => window.FirestoreStorage.salvarPeca(p))),
+  'salvarMovimentacao':            () => Promise.all(getMovs().map(m => window.FirestoreStorage.salvarMovimentacao(m))),
+  'registrarAuditoria':            () => { const a = getAudit(); const last = a[a.length-1]; return last ? window.FirestoreStorage.registrarAuditoria(last) : Promise.resolve({ok:true}); },
+  'salvarEquipamento':             () => Promise.all(Object.entries(getCadEq()).map(([frota, data]) => window.FirestoreStorage.salvarEquipamento(frota, data))),
+  'salvarTecnico':                 () => Promise.all(Object.entries(getCadTec()).map(([key, data]) => window.FirestoreStorage.salvarTecnico(key, data))),
+};
+
+// Disparado por: evento 'online', um intervalo de 60s, e o boot da app
+// (core/init.js) — cobre o caso (iOS Safari, entre outros) onde a
+// Background Sync API nativa do Service Worker não existe.
+function flushPendingSync() {
+  if (!_fbReady() || (typeof navigator!=='undefined' && navigator.onLine===false)) return;
+  let pending = [];
+  try { pending = JSON.parse(localStorage.getItem(SYNC_PENDING_KEY) || '[]'); } catch (e) { return; }
+  pending.forEach((label) => {
+    const acao = SYNC_FLUSH_ACTIONS[label];
+    if (!acao) { _pendingSyncClear(label); return; } // rótulo desconhecido (versão antiga) — descarta
+    Promise.resolve(acao())
+      .then((res) => {
+        const results = Array.isArray(res) ? res : [res];
+        const ok = results.every(r => !r || r.ok !== false);
+        if (ok) _pendingSyncClear(label);
+      })
+      .catch(() => {}); // continua pendente, tenta de novo na próxima
+  });
 }
 
 // ── Comparação usada só para decidir o que precisa ser reenviado ao

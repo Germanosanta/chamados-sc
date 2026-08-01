@@ -6,18 +6,25 @@
   <title>Central de Chamados — Santa Colomba</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="assets/img/coa.jpeg" type="image/jpeg">
+  <!-- PWA (Fase 4) -->
+  <meta name="theme-color" content="#2f6b4f">
+  <link rel="apple-touch-icon" href="assets/img/coa.jpeg">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Chamados SC">
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260731a">
-  <link rel="stylesheet" href="css/login.css?v=20260731a">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260731a">
-  <link rel="stylesheet" href="css/chamados.css?v=20260731a">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260731a">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260731a">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260731a">
-  <link rel="stylesheet" href="css/config.css?v=20260731a">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260731a">
+  <link rel="stylesheet" href="css/style.css?v=20260731b">
+  <link rel="stylesheet" href="css/login.css?v=20260731b">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260731b">
+  <link rel="stylesheet" href="css/chamados.css?v=20260731b">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260731b">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260731b">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260731b">
+  <link rel="stylesheet" href="css/config.css?v=20260731b">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260731b">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -299,6 +306,10 @@
       🌙
     </button>
 
+    <!-- Rede (Fase 4) — distinto do #fb-status abaixo: este mede a internet
+         em si (navigator.onLine), o outro mede a latência até o Firestore. -->
+    <div id="net-status" title="Rede"
+      style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;cursor:help;transition:background .3s"></div>
     <!-- Firebase status -->
     <div id="fb-status" title="Firebase"
       style="width:8px;height:8px;border-radius:50%;background:var(--border2);flex-shrink:0;cursor:help;transition:background .3s"></div>
@@ -348,9 +359,9 @@
       <div class="kpi-value" id="k-aguardando" style="color:var(--purple)">—</div>
       <div class="kpi-sub">bloqueados</div>
     </div>
-    <!-- 5. Concluídos -->
-    <div class="kpi-card green" style="cursor:pointer" onclick="applyStatusFilter('Concluído')" title="Ver concluídos">
-      <div class="kpi-label">Concluídos</div>
+    <!-- 5. Encerrados -->
+    <div class="kpi-card green" style="cursor:pointer" onclick="applyStatusFilter('Concluído')" title="Ver encerrados">
+      <div class="kpi-label">Encerrados</div>
       <div class="kpi-value" id="k-conc">—</div>
       <div class="kpi-sub"><span class="kpi-chip chip-green" id="k-conc-pct">—%</span> do total</div>
     </div>
@@ -398,7 +409,7 @@
   <!-- ROW 2: Bucket + Responsáveis + Problemas -->
   <div class="chart-row cols-3">
     <div class="card">
-      <div class="card-header"><div><div class="card-title">Por Sede / Bucket</div></div></div>
+      <div class="card-header"><div><div class="card-title">Por Fazenda / Sistema</div></div></div>
       <div class="canvas-wrap" style="height:180px"><canvas id="ch-bucket"></canvas></div>
     </div>
     <div class="card">
@@ -414,7 +425,7 @@
   <!-- ROW 2.5: Ranking de Equipamentos -->
   <div class="chart-row cols-full">
     <div class="card">
-      <div class="card-header"><div><div class="card-title">Ranking de Equipamentos</div><div class="card-sub">Máquinas com mais chamados</div></div></div>
+      <div class="card-header"><div><div class="card-title">Ranking de Equipamentos</div><div class="card-sub">Equipamentos com mais chamados</div></div></div>
       <div id="equip-bars"></div>
     </div>
   </div>
@@ -442,7 +453,7 @@
 
   <div class="filter-bar">
     <span class="filter-label">Filtros</span>
-    <input class="search-box" type="text" id="srch" placeholder="Buscar número, máquina, título…" oninput="applyFilters()">
+    <input class="search-box" type="text" id="srch" placeholder="Buscar número, equipamento, título…" oninput="applyFilters()">
     <select class="filter-select" id="f-cultura" onchange="applyFilters()">
       <option value="">Todas as culturas</option>
       <option>Grãos e Fibras</option>
@@ -454,13 +465,13 @@
       <option value="Aberto">Aberto</option>
       <option value="Em Atendimento">Em Atendimento</option>
       <option value="Aguardando Peça">Aguardando Peça</option>
-      <option value="Concluído">Concluído</option>
+      <option value="Concluído">Encerrado</option>
       <option value="Cancelado">Cancelado</option>
-      <option value="Concluída">Concluída (histórico)</option>
+      <option value="Concluída">Concluída (registro antigo)</option>
       <option value="Não iniciado">Não iniciado (histórico)</option>
     </select>
     <select class="filter-select" id="f-bucket" onchange="applyFilters()">
-      <option value="">Todas as sedes</option>
+      <option value="">Todas as fazendas / sistemas</option>
       <option>Solinftec KRT</option>
       <option>Solinftec RDM</option>
       <option>Rádio</option>
@@ -491,7 +502,7 @@
         <thead>
           <tr id="tbl-chamados-head">
             <th class="th-sort" data-sort="num" onclick="sortChamados('num')">Número</th>
-            <th class="th-sort" data-sort="titulo" onclick="sortChamados('titulo')">Título / Máquina</th>
+            <th class="th-sort" data-sort="titulo" onclick="sortChamados('titulo')">Título / Equipamento</th>
             <th class="th-sort" data-sort="cultura" onclick="sortChamados('cultura')">Cultura</th>
             <th class="th-sort" data-sort="resp" onclick="sortChamados('resp')">Responsável</th>
             <th class="th-sort" data-sort="data" onclick="sortChamados('data')">Data</th>
@@ -527,7 +538,7 @@
       <button type="button" class="view-toggle-btn" data-at="urgentes" onclick="atFiltro('urgentes')">⚡ Urgentes</button>
       <button type="button" class="view-toggle-btn" data-at="atendimento" onclick="atFiltro('atendimento')">🔧 Em Atendimento</button>
       <button type="button" class="view-toggle-btn" data-at="peca" onclick="atFiltro('peca')">📦 Aguardando Peça</button>
-      <button type="button" class="view-toggle-btn" data-at="concluidos" onclick="atFiltro('concluidos')">✅ Concluídos</button>
+      <button type="button" class="view-toggle-btn" data-at="concluidos" onclick="atFiltro('concluidos')">✅ Encerrados</button>
     </span>
   </div>
 
@@ -625,7 +636,7 @@
         <thead>
           <tr>
             <th>Número</th>
-            <th>Título / Máquina</th>
+            <th>Título / Equipamento</th>
             <th>Responsável</th>
             <th>Data Abertura</th>
             <th>Prioridade</th>
@@ -817,7 +828,7 @@
 
       <!-- Autocomplete de equipamento -->
       <div class="form-field full" style="margin-bottom:12px">
-        <div class="form-label">Equipamento / Máquina <span class="req">*</span></div>
+        <div class="form-label">Equipamento <span class="req">*</span></div>
         <div class="equip-wrap">
           <input class="form-input" type="text" id="f-titulo"
             placeholder="Digite o código ou nome do equipamento…"
@@ -835,7 +846,7 @@
       <!-- Cartão de dados do equipamento (auto-filled) -->
       <div class="equip-info-card" id="equip-info-card">
         <div class="equip-info-field">
-          <div class="equip-info-lbl">Frota / Código</div>
+          <div class="equip-info-lbl">Código / Frota</div>
           <div class="equip-info-val" id="equip-info-codigo" style="font-family:var(--font-mono);color:var(--accent);font-weight:700">—</div>
         </div>
         <div class="equip-info-field">
@@ -909,7 +920,7 @@
       </div>
 
       <div class="form-field">
-        <div class="form-label">Sistema / Sede <span class="req">*</span></div>
+        <div class="form-label">Fazenda / Sistema <span class="req">*</span></div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px">
           <div class="bucket-opt" onclick="selectBucket(this,'Solinftec KRT')">
             <div class="bucket-opt-icon">🛰️</div>
@@ -1721,7 +1732,7 @@
       </div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px">
         <div class="op-card"><div class="op-card-title">Total Chamados</div><div class="op-card-val" id="fr-d-total">—</div></div>
-        <div class="op-card"><div class="op-card-title">Concluídos</div><div class="op-card-val" id="fr-d-conc" style="color:var(--green)">—</div></div>
+        <div class="op-card"><div class="op-card-title">Encerrados</div><div class="op-card-val" id="fr-d-conc" style="color:var(--green)">—</div></div>
         <div class="op-card"><div class="op-card-title">Em Aberto</div><div class="op-card-val" id="fr-d-aberto" style="color:var(--amber)">—</div></div>
         <div class="op-card"><div class="op-card-title">Tempo Médio</div><div class="op-card-val" id="fr-d-tempo" style="font-size:18px">—</div></div>
       </div>
@@ -1752,7 +1763,7 @@
     <!-- Preview KPIs placeholder -->
     <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px;opacity:.4;pointer-events:none">
       <div class="kpi-card" style="border-top:3px solid var(--teal)"><div class="kpi-label">Chamados Abertos</div><div class="kpi-value">—</div></div>
-      <div class="kpi-card" style="border-top:3px solid var(--green)"><div class="kpi-label">Concluídos</div><div class="kpi-value">—</div></div>
+      <div class="kpi-card" style="border-top:3px solid var(--green)"><div class="kpi-label">Encerrados</div><div class="kpi-value">—</div></div>
       <div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-label">Pivôs Ativos</div><div class="kpi-value">—</div></div>
     </div>
 
@@ -1882,7 +1893,7 @@
     <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px">Identificação</div>
     <div class="form-grid" style="margin-bottom:18px">
       <div class="form-field">
-        <div class="form-label">Frota / Código <span class="req">*</span></div>
+        <div class="form-label">Código / Frota <span class="req">*</span></div>
         <div class="equip-wrap" id="eq-frota-wrap">
           <input class="form-input" type="text" id="eq-frota"
             placeholder="Ex: 9100152 — busque da lista…"
@@ -2178,7 +2189,7 @@
               <th>E-mail</th>
               <th>Status</th>
               <th style="text-align:center">Total</th>
-              <th style="text-align:center">Concluídos</th>
+              <th style="text-align:center">Encerrados</th>
               <th style="text-align:center">Pendentes</th>
               <th>Tempo Médio</th>
               <th>Ações</th>
@@ -2199,7 +2210,10 @@
 <!-- SECTION: CONFIGURAÇÕES                        -->
 <!-- ══════════════════════════════════════════════ -->
 <section class="section" id="sec-config">
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+  <!-- Fase 4: grid trocado de estilo inline pra classe .cols-2 já existente
+       (style.css) — sem isso, a tela de Configurações inteira (não só o
+       card novo de notificações) nunca colapsava pra 1 coluna no celular. -->
+  <div class="cols-2" style="display:grid;gap:16px">
 
     <!-- Aparência -->
     <div class="card">
@@ -2250,6 +2264,17 @@
       <div class="card-header"><div><div class="card-title">📧 Notificações por E-mail</div><div class="card-sub">Configuração SMTP / Outlook</div></div></div>
       <div class="settings-hint">A configuração de e-mail é feita em <strong>Usuários</strong> (card "Notificações por E-mail") — mesma configuração usada para notificar abertura e encerramento de chamados.</div>
       <button class="btn btn-ghost" onclick="showSection('usuarios',document.getElementById('nav-usuarios'))" style="width:100%;margin-top:10px">Ir para Usuários → Notificações por E-mail</button>
+    </div>
+
+    <!-- Notificações Push (Fase 4) — entrega real desta fase: notificação
+         local via onSnapshot, com a aba aberta (ver chamados/index.js,
+         _chmDetectarNotificacoes). Envio com o app fechado depende de
+         Cloud Function + plano Blaze, fora do escopo desta fase. -->
+    <div class="card">
+      <div class="card-header"><div><div class="card-title">🔔 Notificações Push</div><div class="card-sub">Novo chamado, atribuição, status, encerramento, peça recebida, SLA crítico</div></div></div>
+      <div class="settings-hint">Avisa em tempo real com o app aberto (qualquer aba). Envio com o app fechado é uma etapa futura, que depende de infraestrutura de servidor.</div>
+      <button class="btn btn-primary" id="btn-ativar-notif" onclick="ativarNotificacoesPush()" style="width:100%;margin-top:10px">🔔 Ativar notificações</button>
+      <div id="notif-status" style="margin-top:8px;font-size:11px;color:var(--text3)"></div>
     </div>
 
     <!-- Dados -->
@@ -2336,13 +2361,21 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Banner de atualização do Service Worker (Fase 4) — só aparece quando
+     há uma versão nova pronta; nunca recarrega sozinho, só no clique. -->
+<div class="sw-update-banner" id="sw-update-banner">
+  <span>🔄 Nova versão disponível.</span>
+  <button type="button" class="btn btn-primary" style="font-size:11px;padding:5px 12px" onclick="aplicarAtualizacaoSW()">Atualizar agora</button>
+  <button type="button" class="sw-update-dismiss" onclick="document.getElementById('sw-update-banner').classList.remove('show')" aria-label="Dispensar">×</button>
+</div>
+
 
 
 <!-- ── ENCERRAR CHAMADO MODAL -->
 <div class="modal-overlay" id="modal-encerrar" onclick="closeEncerrar(event)">
   <div class="modal-box">
     <div class="modal-title">✅ Encerrar Chamado</div>
-    <div class="modal-sub">Busque pelo número do chamado para marcar como Concluída. Funciona sem internet.</div>
+    <div class="modal-sub">Busque pelo número do chamado para marcar como Encerrado. Funciona sem internet.</div>
 
     <div class="modal-search-row">
       <input type="text" id="enc-input" placeholder="CHM-0001 ou apenas o número…"
@@ -2612,7 +2645,7 @@
       <div class="det-block-head"><div class="det-block-title">📊 Histórico</div></div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
         <div class="op-card"><div class="op-card-title">Total</div><div class="op-card-val" id="fe-kpi-total">—</div></div>
-        <div class="op-card"><div class="op-card-title">Concluídos</div><div class="op-card-val" id="fe-kpi-conc" style="color:var(--green)">—</div></div>
+        <div class="op-card"><div class="op-card-title">Encerrados</div><div class="op-card-val" id="fe-kpi-conc" style="color:var(--green)">—</div></div>
         <div class="op-card"><div class="op-card-title">Em Aberto</div><div class="op-card-val" id="fe-kpi-aberto" style="color:var(--amber)">—</div></div>
         <div class="op-card"><div class="op-card-title">Tempo Médio</div><div class="op-card-val" id="fe-kpi-tempo" style="font-size:16px">—</div></div>
       </div>
@@ -2685,26 +2718,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260731a"></script>
-  <script src="js/data/equipamentos.js?v=20260731a"></script>
-  <script src="js/data/match_map.js?v=20260731a"></script>
-  <script src="js/data/equip_idx.js?v=20260731a"></script>
+  <script src="js/data/chamados_historico.js?v=20260731b"></script>
+  <script src="js/data/equipamentos.js?v=20260731b"></script>
+  <script src="js/data/match_map.js?v=20260731b"></script>
+  <script src="js/data/equip_idx.js?v=20260731b"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260731a"></script>
+  <script src="js/core/storage.js?v=20260731b"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260731a"></script>
-  <script src="js/modules/dashboard/index.js?v=20260731a"></script>
-  <script src="js/modules/chamados/index.js?v=20260731a"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260731a"></script>
-  <script src="js/modules/relatorios/index.js?v=20260731a"></script>
-  <script src="js/modules/config/index.js?v=20260731a"></script>
+  <script src="js/modules/usuarios/index.js?v=20260731b"></script>
+  <script src="js/modules/dashboard/index.js?v=20260731b"></script>
+  <script src="js/modules/chamados/index.js?v=20260731b"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260731b"></script>
+  <script src="js/modules/relatorios/index.js?v=20260731b"></script>
+  <script src="js/modules/config/index.js?v=20260731b"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260731a"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260731b"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260731a"></script>
+  <script src="js/core/init.js?v=20260731b"></script>
 </body>
 </html>

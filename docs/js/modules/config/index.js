@@ -13,6 +13,38 @@ function renderConfig() {
   const setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
   setEl('cfg-total-ch', allRecords().length.toLocaleString('pt-BR')+' chamados');
   setEl('cfg-total-eq', (typeof EQUIPAMENTOS!=='undefined'?EQUIPAMENTOS.length:0).toLocaleString('pt-BR')+' equipamentos');
+
+  _atualizarStatusNotificacoes();
+}
+
+// Notificações Push (Fase 4) — reflete o estado real da permissão do
+// navegador; o botão só existe pra disparar a AÇÃO explícita do usuário
+// (ver window.fbAtivarNotificacoes em js/firebase/firebase.js).
+function _atualizarStatusNotificacoes() {
+  const btn = document.getElementById('btn-ativar-notif');
+  const st  = document.getElementById('notif-status');
+  if (!btn || typeof Notification === 'undefined') return;
+  if (Notification.permission === 'granted') {
+    btn.textContent = '🔔 Notificações ativadas';
+    btn.disabled = true;
+    if (st) st.textContent = '✓ Você vai receber avisos em tempo real nesta aba.';
+  } else if (Notification.permission === 'denied') {
+    btn.textContent = '🔕 Notificações bloqueadas pelo navegador';
+    btn.disabled = true;
+    if (st) st.textContent = 'Permissão negada — reative nas configurações do navegador/site.';
+  }
+}
+
+async function ativarNotificacoesPush() {
+  if (typeof window.fbAtivarNotificacoes !== 'function') { showToast('Firebase ainda carregando, tente de novo em instantes.'); return; }
+  const res = await window.fbAtivarNotificacoes();
+  const st = document.getElementById('notif-status');
+  if (res.ok) {
+    showToast('🔔 Notificações ativadas!');
+  } else if (st) {
+    st.textContent = '⚠ ' + (res.error || 'Não foi possível ativar.');
+  }
+  _atualizarStatusNotificacoes();
 }
 
 // salvarEmailConfig() removida (Fase 3 — bug real corrigido): gravava
@@ -300,7 +332,7 @@ function renderTecnicos() {
           </div>
           <div>
             <div style="font-size:20px;font-weight:800;color:var(--green);font-family:var(--font-mono);line-height:1">${t.conc}</div>
-            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:2px">Concluídos</div>
+            <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:2px">Encerrados</div>
           </div>
           <div>
             <div style="font-size:20px;font-weight:800;color:var(--amber);font-family:var(--font-mono);line-height:1">${t.aberto}</div>

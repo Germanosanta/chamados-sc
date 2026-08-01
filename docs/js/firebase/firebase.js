@@ -6,6 +6,10 @@ import { initializeApp, deleteApp }                from "https://www.gstatic.com
              signInWithEmailAndPassword, signOut, sendPasswordResetEmail,
              createUserWithEmailAndPassword, updatePassword }
                                                        from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+    // Fase 4 — Push Notifications (lado cliente). getMessaging() já lida
+    // sozinho com "sem suporte" (ex.: navegador sem Service Worker) sem
+    // lançar erro na importação — só falha se de fato chamado.
+    import { getMessaging, getToken, onMessage }      from "https://www.gstatic.com/firebasejs/12.0.0/firebase-messaging.js";
     import FirestoreStorage                           from "./firestore.js";
 
     const firebaseConfig = {
@@ -32,6 +36,42 @@ import { initializeApp, deleteApp }                from "https://www.gstatic.com
     window.fbSendPasswordReset = (email) => sendPasswordResetEmail(auth, email);
     // Troca de senha do PRÓPRIO usuário logado (fluxo de troca obrigatória no 1º acesso).
     window.fbUpdatePassword = (novaSenha) => updatePassword(auth.currentUser, novaSenha);
+
+    // ── Push Notifications (Fase 4, lado cliente) ──────────────────────
+    // VAPID key pública (Console → Cloud Messaging → Web Push certificates)
+    // fornecida pelo usuário — não é segredo, é feita pra ir no cliente.
+    const VAPID_KEY = 'BLy8sRr97m3hbda4FVGkvgwPx4T7o_MYu0xm99KGcC2VLOwjV_DKG7MdOjBUuRFh9XPHfyLNWAXT12AJp8XuA78';
+
+    // Pedido de permissão + captura de token são só disparados por ação
+    // explícita do usuário (botão "Ativar notificações" em Configurações)
+    // — nunca automático no load. Salva o token em usuarios/{uid}.fcmToken
+    // via o MESMO fsSave já usado por salvarUsuario() — único campo novo
+    // desta fase, inevitável pra a feature existir mesmo em princípio.
+    window.fbAtivarNotificacoes = async function() {
+      if (typeof Notification === 'undefined') return { ok:false, error:'Navegador sem suporte a notificações.' };
+      try {
+        const perm = await Notification.requestPermission();
+        if (perm !== 'granted') return { ok:false, error:'Permissão negada.' };
+        const reg = await navigator.serviceWorker.getRegistration();
+        const messaging = getMessaging(app);
+        const token = await getToken(messaging, { vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
+        if (!token) return { ok:false, error:'Não foi possível obter o token.' };
+        const u = typeof currentUser === 'function' ? currentUser() : null;
+        if (u?.id) await window.fsSave('usuarios', u.id, { fcmToken: token });
+        // Mensagens em primeiro plano (aba ativa) — a notificação local via
+        // onSnapshot (chamados/index.js) já cobre esse caso hoje; este
+        // handler fica pronto pra quando o envio servidor-side existir.
+        onMessage(messaging, (payload) => {
+          const title = payload.notification?.title || 'Central de Chamados';
+          const body  = payload.notification?.body  || '';
+          try { new Notification(title, { body, icon:'assets/img/coa.jpeg' }); } catch(e) {}
+        });
+        return { ok:true, token };
+      } catch (e) {
+        console.warn('[Firebase] fbAtivarNotificacoes falhou:', e.message);
+        return { ok:false, error:e.message };
+      }
+    };
 
     // ── Cria a conta de OUTRO usuário sem afetar a sessão do admin logado:
     //    usa uma instância secundária do app Firebase só para o createUser,
@@ -237,6 +277,18 @@ import { initializeApp, deleteApp }                from "https://www.gstatic.com
       };
       for (const [col, apply] of SYNC_JOBS) {
         const unsub = FirestoreStorage.escutarColecao(col, items => {
+          // Fase 4: notificações locais — captura o estado ANTES do merge
+          // abaixo pra detectar o que mudou (só nas 2 coleções relevantes
+          // aos gatilhos pedidos: chamados/histórico). Leitura pura, não
+          // interfere no merge normal (_applyChamados/_applyHistorico).
+          if ((col === COL.CHAMADOS || col === COL.HISTORICO) && typeof window._chmDetectarNotificacoes === 'function') {
+            try {
+              const antes = col === COL.CHAMADOS
+                ? _readLS(K.chamados, [])
+                : { events: _readLS(K.events, {}), closed: _readLS(K.closed, {}) };
+              window._chmDetectarNotificacoes(col, items.map(_clean), antes);
+            } catch(e) { console.warn('[Firebase] detecção de notificação falhou:', e.message); }
+          }
           try { apply(items); } catch(e) { console.warn('[Firebase] realtime', col, e.message); }
           relay();
         });

@@ -245,3 +245,71 @@ function refreshAfterAction() {
     setEl('donut-n',    S.total.toLocaleString('pt-BR'));
   }
 }
+
+// ══════════════════════════════════════════════════════════════
+// FASE 4 — PWA / OFFLINE
+// ══════════════════════════════════════════════════════════════
+
+// Atalhos do manifest.json (?section=novo/aberto/area-tecnico) — navegação
+// pura, reaproveita showSection() já existente, sem lógica nova.
+(function _abrirAtalhoDaURL() {
+  const params = new URLSearchParams(location.search);
+  const sec = params.get('section');
+  if (sec) setTimeout(() => showSection(sec, document.getElementById('nav-' + sec)), 200);
+})();
+
+// Service Worker — registro conservador (ver docs/sw.js): nunca recarrega
+// a página sozinho; só mostra o banner de atualização quando há uma
+// versão nova pronta, e só troca quando o usuário clica.
+function _initServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  navigator.serviceWorker.register('sw.js').then((reg) => {
+    reg.addEventListener('updatefound', () => {
+      const novo = reg.installing;
+      if (!novo) return;
+      novo.addEventListener('statechange', () => {
+        if (novo.state === 'installed' && navigator.serviceWorker.controller) {
+          document.getElementById('sw-update-banner')?.classList.add('show');
+        }
+      });
+    });
+  }).catch((e) => console.warn('[SW] Registro falhou:', e.message));
+
+  let _swReloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (_swReloaded) return;
+    _swReloaded = true;
+    location.reload();
+  });
+}
+function aplicarAtualizacaoSW() {
+  navigator.serviceWorker.getRegistration().then((reg) => {
+    reg?.waiting?.postMessage('SKIP_WAITING');
+  });
+}
+_initServiceWorker();
+
+// Indicador Online/Offline — distinto do #fb-status (que mede latência do
+// Firestore via ping); este usa navigator.onLine + eventos online/offline,
+// não usado em nenhum outro lugar do app até a Fase 4.
+function _atualizarIndicadorRede() {
+  const dot = document.getElementById('net-status');
+  if (!dot) return;
+  const online = navigator.onLine;
+  dot.style.background = online ? 'var(--green)' : 'var(--red)';
+  dot.title = online ? 'Conectado à internet' : 'Sem internet — dados salvos localmente, sincroniza ao voltar';
+}
+window.addEventListener('online',  () => { _atualizarIndicadorRede(); flushPendingSync(); });
+window.addEventListener('offline', _atualizarIndicadorRede);
+_atualizarIndicadorRede();
+
+// Fila de reenvio pendente (ver _pendingSyncMark em core/storage.js) —
+// dispara ao voltar a ficar online e periodicamente, cobrindo o caso
+// (iOS Safari, entre outros) onde a Background Sync API nativa não existe.
+setInterval(flushPendingSync, 60000);
+setTimeout(flushPendingSync, 5000); // tenta uma vez logo no boot, se já houver pendência de uma sessão anterior
+
+// SLA crítico (Item 3, Push Notifications) — checagem periódica, já que
+// não é um evento de sync como os outros 5 gatilhos.
+setInterval(() => { if (typeof _checarSlaCritico === 'function') _checarSlaCritico(); }, 60000);
+setTimeout(() => { if (typeof _checarSlaCritico === 'function') _checarSlaCritico(); }, 8000);
