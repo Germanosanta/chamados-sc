@@ -28,6 +28,7 @@ let _pecasNovo = [];        // [{id, nome, unidade, qtd}]
 let _pendingEvtType = null;
 let encCurrentNum = null;   // chamado em foco no modal de Encerrar
 let detCurrentNum = null;   // chamado em foco no modal de Detalhe
+let _fotosAtuais = [];      // fotos do chamado aberto no momento (lightbox — Etapa 2C-ii)
 
 // Limiares de atraso — antes repetidos como número mágico (7 e 3) em vários
 // pontos (renderAberto, renderPainel, diasChip); centralizados aqui, Fase 2
@@ -89,6 +90,39 @@ function prioridadeBadge(p) {
   return '<span class="badge badge-neutral">🟡 Média</span>';
 }
 
+// Linha de progresso do status (Fase 2 · Etapa 2C-ii) — "utilizar
+// exatamente os estados existentes": os únicos valores reais de `status`
+// no sistema formam essa sequência (Cancelado é um ramo terminal à parte,
+// não faz parte da linha). "Assumido"/"Reaberto" NÃO são status — são
+// selos complementares (ver openDetalhe: assumidoPor / evento 'reabriu')
+// desenhados ao lado da linha, não como um passo dela, pra não inventar
+// 2 estados que não existem no modelo de dados.
+// Desenhado pra ser reaproveitado como cabeçalho de card no Kanban da
+// Etapa 2D — mesma função, sem tocar nela quando o board for construído.
+const STATUS_STEPS = [
+  { key:'aberto',      label:'Aberto' },
+  { key:'atendimento', label:'Em Atendimento' },
+  { key:'peca',        label:'Aguardando Peça' },
+  { key:'concluido',   label:'Concluído' },
+];
+function _statusStepIndex(status) {
+  if (status==='Concluída'||status==='Encerrado'||status==='Concluído') return 3;
+  if (status==='Aguardando Peça') return 2;
+  if (status==='Em Andamento'||status==='Em Atendimento') return 1;
+  return 0; // Não iniciado / Aberto
+}
+function statusStepperHTML(status, selosHTML) {
+  if (status === 'Cancelado') {
+    return `<div class="status-stepper is-cancelado"><span class="status-step done">🚫 Cancelado</span></div>${selosHTML||''}`;
+  }
+  const atual = _statusStepIndex(status);
+  const nodes = STATUS_STEPS.map((s,i) => {
+    const cls = i < atual ? 'done' : i === atual ? 'current' : 'todo';
+    return `<span class="status-step ${cls}">${s.label}</span>`;
+  }).join('<span class="status-step-sep"></span>');
+  return `<div class="status-stepper">${nodes}</div>${selosHTML||''}`;
+}
+
 // Rótulo de fazenda — antes escrito 2x diferente (openDetalhe tinha essa
 // mesma lógica inline; renderEncerrados usava só o <option> do filtro).
 // Centralizado aqui, mesmo mapeamento de sempre (KRT→Karitel, RDM→Rio do
@@ -113,6 +147,14 @@ function _paginacaoHTML(page, totalItens, perPage, gotoFn) {
   if (end < pages) btns += `${end<pages-1?'<span style="padding:0 4px;color:var(--text3)">…</span>':''}<button class="pag-btn" onclick="${gotoFn}(${pages})">${pages}</button>`;
   btns += `<button class="pag-btn" onclick="${gotoFn}(${page+1})" ${page===pages?'disabled':''}>→</button>`;
   return btns;
+}
+// Estado vazio padronizado (Fase 2 · Etapa 2C-ii) — achado: só
+// renderAberto() e a timeline tinham mensagem de "nada encontrado"; as
+// outras 3 tabelas (renderChamados/renderEncerrados/renderCriticidade)
+// simplesmente ficavam em branco quando o filtro não batia com nada.
+// Mesmo padrão visual em todo lugar agora, via essa função só.
+function _estadoVazioHTML(colspan, msg) {
+  return `<tr><td colspan="${colspan}" style="text-align:center;padding:32px;color:var(--text3)">${msg}</td></tr>`;
 }
 function _pagInfoTexto(page, totalItens, perPage) {
   const de = totalItens ? (page-1)*perPage+1 : 0;
@@ -356,7 +398,7 @@ function renderChamados(){
     th.classList.toggle('sorted-desc', th.dataset.sort===_sortField && _sortDir===-1);
   });
 
-  document.getElementById('tbl-chamados').innerHTML=slice.map(r=>{
+  document.getElementById('tbl-chamados').innerHTML = !slice.length ? _estadoVazioHTML(7, 'Nenhum chamado encontrado com esses filtros.') : slice.map(r=>{
     const _lrC=getLocal().find(x=>x.num===r[0]);
     const _frC=frotaLabel(r[0],_lrC);
     const isClosedC = r[5]==='Concluída' || r[5]==='Encerrado' || r[5]==='Concluído' || !!_closedMapC[r[0]];
@@ -481,7 +523,13 @@ function openDetalhe(num) {
 
   // Grid fields
   const statusEl = document.getElementById('det-status');
-  statusEl.innerHTML = `<span class="pill ${statusPill(rec[5])}">${isClosed ? (rec[5]==='Encerrado'?'Encerrado':'Concluída') : (rec[5] || 'Não iniciado')}</span>`;
+  // Selos complementares — "Assumido por X"/"Reaberto" não são valores de
+  // status (ver comentário de statusStepperHTML acima), então aparecem
+  // aqui como badges à parte, lidos de dado que já existe.
+  let _selos = '';
+  if (_detLocalRec?.assumidoPor) _selos += `<span class="status-selo">⚡ Assumido por ${_escHtml(_detLocalRec.assumidoPor)}</span>`;
+  if ((getEvents()[num]||[]).some(e => e.type === 'reabriu')) _selos += `<span class="status-selo">↩ Reaberto</span>`;
+  statusEl.innerHTML = statusStepperHTML(rec[5] || 'Não iniciado', _selos ? `<div class="status-selos">${_selos}</div>` : '');
   // det-prior preenchido mais abaixo via prioridadeReal(num) — achado da
   // Etapa 2A (rec[9] nunca existe, sempre "Média"), corrigido também aqui.
   document.getElementById('det-resp').textContent   = (rec[3]||'').replace(/,/g,' e ') || '—';
@@ -514,9 +562,13 @@ function openDetalhe(num) {
   const _fotosWrap=document.getElementById('det-fotos-wrap');
   const _fotosEl=document.getElementById('det-fotos');
   if(_fotosEl&&_lr?.fotos?.length){
-    _fotosEl.innerHTML=(_lr.fotos).map(f=>{
+    // Lightbox no lugar de abrir em nova aba (Fase 2 · Etapa 2C-ii) —
+    // reaproveita o mesmo padrão .modal-overlay/.modal-box dos outros 3
+    // modais do sistema, não é um componente novo.
+    _fotosAtuais = _lr.fotos;
+    _fotosEl.innerHTML=(_lr.fotos).map((f,i)=>{
       const isPdf=f.type==='application/pdf';
-      return `<div class="foto-thumb" title="${_escHtml(f.name)}" style="cursor:pointer" onclick="window.open('${f.data}','_blank')">
+      return `<div class="foto-thumb" title="${_escHtml(f.name)}" style="cursor:pointer" onclick="abrirLightbox(${i})">
         ${isPdf?'<div class="foto-thumb-pdf">📄</div>':`<img src="${f.data}" alt="${_escHtml(f.name)}">`}
       </div>`;
     }).join('');
@@ -734,6 +786,31 @@ function closeDetalhe(e) {
   if (e && e.target !== document.getElementById('modal-detalhe')) return;
   document.getElementById('modal-detalhe').classList.remove('open');
   detCurrentNum = null;
+}
+
+// Lightbox de anexos (Fase 2 · Etapa 2C-ii) — reaproveita o mesmo padrão
+// .modal-overlay/.modal-box já usado nos outros 3 modais do sistema, em
+// vez de abrir a foto numa aba nova do navegador. Mesmo dado de sempre
+// (_lr.fotos, populado em openDetalhe), nenhuma lógica nova.
+function abrirLightbox(idx) {
+  const f = _fotosAtuais[idx];
+  if (!f) return;
+  const isPdf = f.type === 'application/pdf';
+  const body = document.getElementById('lightbox-body');
+  const title = document.getElementById('lightbox-title');
+  if (title) title.textContent = f.name || '';
+  if (body) {
+    body.innerHTML = isPdf
+      ? `<iframe src="${f.data}" style="width:100%;height:70vh;border:none;border-radius:8px"></iframe>`
+      : `<img src="${f.data}" alt="${_escHtml(f.name||'')}" style="max-width:100%;max-height:76vh;display:block;margin:0 auto;border-radius:8px">`;
+  }
+  const linkBaixar = document.getElementById('lightbox-baixar');
+  if (linkBaixar) { linkBaixar.href = f.data; linkBaixar.download = f.name || 'anexo'; }
+  document.getElementById('modal-lightbox')?.classList.add('open');
+}
+function fecharLightbox(e) {
+  if (e && e.target !== document.getElementById('modal-lightbox')) return;
+  document.getElementById('modal-lightbox')?.classList.remove('open');
 }
 
 // Navegação ◀ ▶ entre chamados (Fase 2 · Etapa 2B) — lê a tabela
@@ -1011,7 +1088,7 @@ function renderCriticidade() {
   const tbody=document.getElementById('tbl-criticidade');
   if(!tbody)return;
 
-  tbody.innerHTML = slice.map(r=>{
+  tbody.innerHTML = !slice.length ? _estadoVazioHTML(8, 'Nenhum chamado encontrado com esses filtros.') : slice.map(r=>{
     const _lrCr = getLocal().find(x=>x.num===r[0]);
     const _frCr = frotaLabel(r[0], _lrCr);
     return `
@@ -1117,7 +1194,7 @@ function renderEncerrados() {
   // Table
   const tbody = document.getElementById('tbl-encerrados');
   if (!tbody) return;
-  tbody.innerHTML = slice.map(r => {
+  tbody.innerHTML = !slice.length ? _estadoVazioHTML(10, 'Nenhum chamado encerrado encontrado com esses filtros.') : slice.map(r => {
     const ci = closed[r[0]] || {};
     const dataAb  = r[4] ? r[4].split('-').reverse().join('/') : '—';
     const dataEnc = ci.dataEncerramento || '—';
@@ -2356,11 +2433,22 @@ function globalSearch(q) {
   _gsTimeout = setTimeout(() => {
     const ql = q.toLowerCase();
     const all = allRecords();
-    const results = all.filter(r =>
-      r[0].toLowerCase().includes(ql) ||
-      (r[1]||'').toLowerCase().includes(ql) ||
-      (r[3]||'').toLowerCase().includes(ql)
-    ).slice(0,10);
+    const local = getLocal();
+    // Ampliada na Fase 2 · Etapa 2C-ii: além de número/equipamento(título)/
+    // responsável, agora também fazenda (r[6]) e solicitante/descrição
+    // (só existem no registro local, _lr.solicitante/_lr.desc) — mesmo
+    // array, mesmo filtro, só mais 3 condições sobre dado que já existe.
+    const results = all.filter(r => {
+      if (r[0].toLowerCase().includes(ql))          return true;
+      if ((r[1]||'').toLowerCase().includes(ql))     return true;
+      if ((r[3]||'').toLowerCase().includes(ql))     return true;
+      if ((r[6]||'').toLowerCase().includes(ql))     return true;
+      if (fazendaLabel(r[6]).toLowerCase().includes(ql)) return true;
+      const _lrGs = local.find(x => x.num === r[0]);
+      if ((_lrGs?.solicitante||'').toLowerCase().includes(ql)) return true;
+      if ((_lrGs?.desc||'').toLowerCase().includes(ql))        return true;
+      return false;
+    }).slice(0,10);
 
     if (!results.length) {
       box.innerHTML='<div class="gs-item" style="color:var(--text3)">Nenhum resultado encontrado.</div>';

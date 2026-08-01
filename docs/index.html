@@ -9,15 +9,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260729f">
-  <link rel="stylesheet" href="css/login.css?v=20260729f">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260729f">
-  <link rel="stylesheet" href="css/chamados.css?v=20260729f">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260729f">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260729f">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260729f">
-  <link rel="stylesheet" href="css/config.css?v=20260729f">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260729f">
+  <link rel="stylesheet" href="css/style.css?v=20260729g">
+  <link rel="stylesheet" href="css/login.css?v=20260729g">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260729g">
+  <link rel="stylesheet" href="css/chamados.css?v=20260729g">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260729g">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260729g">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260729g">
+  <link rel="stylesheet" href="css/config.css?v=20260729g">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260729g">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -1349,21 +1349,22 @@
       <textarea class="form-textarea" id="chk-obs" placeholder="Informações adicionais…" style="min-height:56px"></textarea>
     </div>
 
-    <!-- Checklist obrigatório -->
+    <!-- Checklist obrigatório — itens em cards (Fase 2 · Etapa 2C-ii),
+         mesmos 4 ids/checkboxes e mesma checklistChanged() de sempre. -->
     <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px">
       <div class="form-label" style="margin-bottom:10px">Checklist obrigatório</div>
-      <div style="display:flex;flex-direction:column;gap:10px" id="checklist-items">
+      <div class="chk-grid" id="checklist-items">
         <label class="chk-item" onclick="checklistChanged()">
-          <input type="checkbox" id="chk1" class="chk-cb"> Problema resolvido
+          <input type="checkbox" id="chk1" class="chk-cb"> <span class="chk-item-ic">✓</span> Problema resolvido
         </label>
         <label class="chk-item" onclick="checklistChanged()">
-          <input type="checkbox" id="chk2" class="chk-cb"> Teste realizado
+          <input type="checkbox" id="chk2" class="chk-cb"> <span class="chk-item-ic">✓</span> Teste realizado
         </label>
         <label class="chk-item" onclick="checklistChanged()">
-          <input type="checkbox" id="chk3" class="chk-cb"> Equipamento liberado
+          <input type="checkbox" id="chk3" class="chk-cb"> <span class="chk-item-ic">✓</span> Equipamento liberado
         </label>
         <label class="chk-item" onclick="checklistChanged()">
-          <input type="checkbox" id="chk4" class="chk-cb"> Usuário informado
+          <input type="checkbox" id="chk4" class="chk-cb"> <span class="chk-item-ic">✓</span> Usuário informado
         </label>
       </div>
       <div id="chk-progress" style="margin-top:10px;height:4px;background:var(--border);border-radius:2px;overflow:hidden">
@@ -2536,6 +2537,21 @@
   </div>
 </div>
 
+<!-- ── LIGHTBOX DE ANEXOS (Fase 2 · Etapa 2C-ii) — mesmo padrão
+     .modal-overlay/.modal-box dos outros modais, não um componente novo. -->
+<div class="modal-overlay" id="modal-lightbox" onclick="fecharLightbox(event)">
+  <div class="modal-box" style="width:auto;max-width:90vw">
+    <div class="modal-header" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--text)" id="lightbox-title"></div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <a class="btn btn-ghost" id="lightbox-baixar" download style="font-size:11px;text-decoration:none">⬇ Baixar</a>
+        <button class="int-close" onclick="fecharLightbox()">×</button>
+      </div>
+    </div>
+    <div id="lightbox-body"></div>
+  </div>
+</div>
+
 <!-- ── LOGIN OVERLAY -->
 <div id="login-overlay">
   <div class="login-box">
@@ -2588,26 +2604,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260729f"></script>
-  <script src="js/data/equipamentos.js?v=20260729f"></script>
-  <script src="js/data/match_map.js?v=20260729f"></script>
-  <script src="js/data/equip_idx.js?v=20260729f"></script>
+  <script src="js/data/chamados_historico.js?v=20260729g"></script>
+  <script src="js/data/equipamentos.js?v=20260729g"></script>
+  <script src="js/data/match_map.js?v=20260729g"></script>
+  <script src="js/data/equip_idx.js?v=20260729g"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260729f"></script>
+  <script src="js/core/storage.js?v=20260729g"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260729f"></script>
-  <script src="js/modules/dashboard/index.js?v=20260729f"></script>
-  <script src="js/modules/chamados/index.js?v=20260729f"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260729f"></script>
-  <script src="js/modules/relatorios/index.js?v=20260729f"></script>
-  <script src="js/modules/config/index.js?v=20260729f"></script>
+  <script src="js/modules/usuarios/index.js?v=20260729g"></script>
+  <script src="js/modules/dashboard/index.js?v=20260729g"></script>
+  <script src="js/modules/chamados/index.js?v=20260729g"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260729g"></script>
+  <script src="js/modules/relatorios/index.js?v=20260729g"></script>
+  <script src="js/modules/config/index.js?v=20260729g"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260729f"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260729g"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260729f"></script>
+  <script src="js/core/init.js?v=20260729g"></script>
 </body>
 </html>

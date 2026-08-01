@@ -612,6 +612,9 @@ select.filter-select:focus{border-color:var(--accent)}
 #modal-checklist{z-index:450}
 #modal-detalhe{z-index:400}
 #modal-encerrar{z-index:400}
+/* Lightbox de anexos (Fase 2 · Etapa 2C-ii) — abre por cima do Centro
+   Operacional, então precisa da maior prioridade entre os modais. */
+#modal-lightbox{z-index:470}
 .modal-box{
   background:var(--surface);border:1px solid var(--border);
   border-radius:12px;width:440px;max-width:94vw;max-height:90vh;
