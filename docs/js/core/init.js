@@ -64,12 +64,13 @@ const PERFIL_PERMS = {
 // ══════════════════════════════════════════════════════════════
 // NAVEGAÇÃO — shell do app (menu de portais, seções, grupos da sidebar)
 // ══════════════════════════════════════════════════════════════
-const SECTIONS=['dashboard','chamados','area-tecnico','aberto','encerrados','pormes','responsaveis','criticidade','painel','auditoria','frotas','kb','pecas','novo','usuarios','irrigacao','chips','equipamentos','tecnicos','config'];
+const SECTIONS=['home','dashboard','chamados','area-tecnico','aberto','encerrados','pormes','responsaveis','criticidade','painel','auditoria','frotas','kb','pecas','novo','usuarios','irrigacao','chips','equipamentos','tecnicos','config'];
 const TITLES={
-  dashboard:'Dashboard',chamados:'Chamados','area-tecnico':'Área do Técnico',pormes:'Por Mês',
+  home:'Início',dashboard:'Dashboard',chamados:'Chamados','area-tecnico':'Área do Técnico',pormes:'Por Mês',
   aberto:'Em Aberto',encerrados:'Chamados Encerrados',responsaveis:'Responsáveis',criticidade:'Criticidade',painel:'Painel Operacional',auditoria:'Auditoria e Logs',frotas:'Histórico por Frota',kb:'Banco de Soluções',pecas:'Peças e Estoque',novo:'Novo Chamado',irrigacao:'Chamados de Irrigação',chips:'Chips de Abastecimento',equipamentos:'Equipamentos',tecnicos:'Técnicos',config:'Configurações',usuarios:'Usuários'
 };
 const SUBS={
+  home:'Visão geral operacional · atalhos rápidos',
   dashboard:'Visão geral · Santa Colomba Agropecuária',
   chamados:'Lista completa editável',
   'area-tecnico':'Meu painel de trabalho · ações rápidas',
@@ -96,6 +97,7 @@ function showSection(id,el){
   if(el) el.classList.add('active');
   document.getElementById('page-title').textContent=TITLES[id]||id;
   document.getElementById('page-sub').textContent=SUBS[id]||'';
+  if(id==='home') renderHome();
   if(id==='chamados') renderChamados();
   if(id==='area-tecnico') renderAreaTecnico();
   if(id==='aberto') renderAberto();
@@ -193,7 +195,10 @@ function abrirModulo(id) {
   if (id === 'campo') {
     // Show full sidebar nav for campo
     document.querySelector('.sidebar')?.style.removeProperty('display');
-    showSection('dashboard', document.querySelector('.nav-item'));
+    // Fase 4.6 — tela inicial pós-login passa a ser a Home Operacional
+    // (antes ia direto pro Dashboard, que continua existindo, só deixa
+    // de ser o primeiro destino).
+    showSection('home', document.getElementById('nav-home'));
   } else if (id === 'irrigacao') {
     // For irrigation/chips: show minimal nav (just portal back button)
     showSection('irrigacao', null);
@@ -221,6 +226,7 @@ function refreshAfterAction() {
   initAbertoBadge(); // always update all nav badges + totals
   populateTecnicoSelect(); // mantém a lista de técnicos em sincronia com o Firestore
   const active = document.querySelector('.section.active')?.id;
+  if (active === 'sec-home')         renderHome();
   if (active === 'sec-chamados')     applyFilters();
   if (active === 'sec-area-tecnico') renderAreaTecnico();
   if (active === 'sec-aberto')       renderAberto();

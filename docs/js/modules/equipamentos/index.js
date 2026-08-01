@@ -475,8 +475,23 @@ function abrirFichaEquip(frota) {
   });
   setEl('fe-kpi-total',  recs.length);
   setEl('fe-kpi-conc',   recs.filter(isCl).length);
-  setEl('fe-kpi-aberto', recs.filter(r=>!isCl(r)).length);
+  const fichaAbertos = recs.filter(r=>!isCl(r));
+  setEl('fe-kpi-aberto', fichaAbertos.length);
   setEl('fe-kpi-tempo',  cntD ? (somaD/cntD).toFixed(1)+'d' : '—');
+
+  // Fase 4.6 — "Chamados Abertos" como lista (não só contagem), reaproveita
+  // o mesmo array `fichaAbertos` já calculado acima pro KPI, sem nova busca.
+  const abertosEl = document.getElementById('fe-abertos-list');
+  if (abertosEl) {
+    abertosEl.innerHTML = fichaAbertos.length ? fichaAbertos.slice(0,5).map(r=>{
+      const dias = r[4] ? Math.floor((new Date()-new Date(r[4]+'T00:00'))/86400000) : 0;
+      return `<div class="op-row" style="cursor:pointer" onclick="fecharFichaEquip();openDetalhe('${r[0]}')">
+        <span class="td-num" style="font-size:11px">${r[0]}</span>
+        <span style="flex:1;padding:0 8px;font-size:11px">${(r[1]||'').slice(0,32)}</span>
+        <span style="color:${dias>7?'var(--red)':'var(--amber)'};font-size:11px">${dias}d</span>
+      </div>`;
+    }).join('') : '<div style="color:var(--text3);padding:6px 0;font-size:11px">Nenhum chamado aberto para este equipamento.</div>';
+  }
 
   // Chamados relacionados — MESMA função já usada no Novo Chamado
   // (prefix='equip-hist') e no Centro Operacional (prefix='det-equip-hist').
@@ -484,6 +499,26 @@ function abrirFichaEquip(frota) {
 
   const editBtn = document.getElementById('fe-editar-btn');
   if (editBtn) editBtn.onclick = () => { fecharFichaEquip(); abrirFormEq(frota); };
+
+  // Fase 4.6 — "Abrir Chamado" direto da ficha: reaproveita equipSelect()
+  // (mesmo primitivo já usado pelo autocomplete de equipamento no
+  // formulário de Novo Chamado), passando o mesmo objeto {c,d,e,m,g,t,s}
+  // já montado a partir de base/eq/cad acima — nenhuma lógica de
+  // formulário nova.
+  const novoBtn = document.getElementById('fe-novo-chamado-btn');
+  if (novoBtn) novoBtn.onclick = () => {
+    fecharFichaEquip();
+    showSection('novo', document.getElementById('nav-novo'));
+    equipSelect({
+      c: frota,
+      d: base?.d || eq.d || frota,
+      e: base?.e || (frota + ' ' + (base?.d||eq.d||'')),
+      m: cad.modelo || base?.m || eq.m || '',
+      g: cad.tipo    || base?.g || eq.g || '',
+      t: base?.t || '',
+      s: cad.status  || eq.s   || base?.s || 'Ativo',
+    });
+  };
 
   const modal = document.getElementById('modal-ficha-equip');
   modal.classList.add('open');

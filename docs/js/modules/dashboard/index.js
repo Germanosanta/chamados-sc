@@ -467,6 +467,23 @@ function renderMesCharts(){
   document.getElementById('hm-table').innerHTML=hmHtml;
 }
 
+// Fase 4.6 — extraídas de dentro de renderPainel() pra serem reaproveitadas
+// também pela Home Operacional. Corrige de passagem um bug real: liam
+// `r[9]||r[10]` pra achar a prioridade, mas o registro só tem 7 posições
+// (0-6) — essa expressão nunca é 'Urgente', então "Chamados Críticos"
+// sempre mostrava 0 e a lista sempre caía no fallback de vencidos, nunca
+// mostrando urgentes de verdade. Mesma classe de bug já corrigida em
+// chamados/index.js na Fase 4 (priorPill/getPrior); correção aqui usa o
+// mesmo par já correto, prioridadeReal(num), lendo do registro local.
+function _chamadosCriticosCount(abertos) {
+  return abertos.filter(r=>prioridadeReal(r[0])==='Urgente').length;
+}
+function _chamadosCriticosList(abertos, limit) {
+  const urgentes = abertos.filter(r=>prioridadeReal(r[0])==='Urgente').slice(0,limit);
+  const venc     = abertos.filter(r=>r[4]&&Math.floor((new Date()-new Date(r[4]+'T00:00'))/86400000)>7).slice(0,limit);
+  return urgentes.length ? urgentes : venc;
+}
+
 function renderPainel() {
   const all    = allRecords();
   const closed = getClosedMap();
@@ -476,7 +493,7 @@ function renderPainel() {
   const inicioSemana = new Date(); inicioSemana.setDate(inicioSemana.getDate()-7);
 
   // KPIs
-  const criticos  = abertos.filter(r=>(r[9]||r[10]||'')==='Urgente').length;
+  const criticos  = _chamadosCriticosCount(abertos);
   const vencidos  = abertos.filter(r=>r[4]&&Math.floor((new Date()-new Date(r[4]+'T00:00'))/86400000)>7).length;
   const hoje_ab   = all.filter(r=>r[4]===hoje).length;
   const local     = getLocal();
@@ -505,9 +522,7 @@ function renderPainel() {
   // Lista chamados críticos abertos (top 6)
   const listCrit = document.getElementById('op-list-criticos');
   if(listCrit){
-    const urgentes = abertos.filter(r=>(r[9]||r[10]||'')==='Urgente').slice(0,6);
-    const venc6    = abertos.filter(r=>r[4]&&Math.floor((new Date()-new Date(r[4]+'T00:00'))/86400000)>7).slice(0,6);
-    const show     = urgentes.length ? urgentes : venc6;
+    const show     = _chamadosCriticosList(abertos, 6);
     if(!show.length){ listCrit.innerHTML='<div style="color:var(--text3);padding:8px 0">Nenhum chamado crítico.</div>'; }
     else listCrit.innerHTML = show.map(r=>{
       const dias=r[4]?Math.floor((new Date()-new Date(r[4]+'T00:00'))/86400000):0;
@@ -577,6 +592,53 @@ function renderPainel() {
 
   const upd=document.getElementById('op-updated');
   if(upd)upd.textContent=new Date().toLocaleTimeString('pt-BR');
+}
+
+// Fase 4.6 — Home Operacional: tela inicial pós-login (ver abrirModulo em
+// core/init.js). Propositalmente mais leve que o Painel Operacional (que
+// continua existindo, intocado, a 1 clique) — só números-chave + atalhos.
+// 100% dado já existente: computeStats() (já usado por initDashboard()/
+// refreshAfterAction()), getAbertos(), _chamadosCriticosList/Count
+// (extraídas de renderPainel() acima), sem nenhum cálculo novo.
+function renderHome() {
+  const abertos = getAbertos();
+  const S       = computeStats(allRecords());
+  const Sab     = computeStats(abertos); // resp_map/equip_map só de chamados abertos
+
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  setEl('home-kpi-aberto',      S.em_aberto+S.em_and);
+  setEl('home-kpi-criticos',    _chamadosCriticosCount(abertos));
+  setEl('home-kpi-vencidos',    S.vencidos);
+  setEl('home-kpi-atendimento', S.atendimento);
+  setEl('home-tecnicos-count',  Object.keys(Sab.resp_map).length);
+  setEl('home-equip-count',     Object.keys(Sab.equip_map).length);
+
+  // 🚨 Chamados Críticos (até 5)
+  const critEl = document.getElementById('home-criticos');
+  if (critEl) {
+    const show = _chamadosCriticosList(abertos, 5);
+    critEl.innerHTML = show.length ? show.map(r=>{
+      const dias = r[4] ? Math.floor((new Date()-new Date(r[4]+'T00:00'))/86400000) : 0;
+      return `<div class="op-row" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
+        <span class="td-num" style="font-size:11px">${r[0]}</span>
+        <span style="flex:1;padding:0 8px;font-size:11px">${(r[1]||'').slice(0,32)}</span>
+        <span style="color:${dias>7?'var(--red)':'var(--amber)'};font-size:11px">${dias}d</span>
+      </div>`;
+    }).join('') : '<div style="color:var(--text3);padding:8px 0">Nenhum chamado crítico.</div>';
+  }
+
+  // 📋 Últimas Atividades (5 mais recentes por data — mesmo padrão de
+  // ordenação já usado em initDashboard()'s #tbl-recent).
+  const recEl = document.getElementById('home-recentes');
+  if (recEl) {
+    const recentes = [...S.all].sort((a,b)=>((b[4]||'')>a[4]?1:-1)).slice(0,5);
+    recEl.innerHTML = recentes.length ? recentes.map(r=>`
+      <div class="op-row" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
+        <span class="td-num" style="font-size:11px">${r[0]}</span>
+        <span style="flex:1;padding:0 8px;font-size:11px">${(r[1]||'').slice(0,32)}</span>
+        <span class="badge ${statusPill(r[5])}" style="font-size:9px">${r[5]||'—'}</span>
+      </div>`).join('') : '<div style="color:var(--text3);padding:8px 0">Nenhuma atividade recente.</div>';
+  }
 }
 
 function iaAnalisar() {

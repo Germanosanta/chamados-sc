@@ -383,7 +383,7 @@ function renderChamados(){
     return `<tr class="ticket-row" data-num="${r[0]}" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">
         <div style="display:flex;align-items:center;gap:6px">${r[0]}${prior?prioridadeBadge(prior):''}</div>
-        ${_frC?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frC}</div>`:''}
+        ${_frC?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">🚜 ${_frC}</div>`:''}
       </td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
       <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
@@ -1304,7 +1304,7 @@ function renderAberto() {
       return `<tr data-num="${r[0]}" style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
         <td class="td-num">
           ${r[0]}
-          <div style="font-size:9px;color:${_frAb?'var(--accent)':'var(--text3)'};font-family:var(--font-mono);margin-top:1px">${_frAb||'Sem equipamento vinculado'}</div>
+          <div style="font-size:9px;color:${_frAb?'var(--accent)':'var(--text3)'};font-family:var(--font-mono);margin-top:1px">${_frAb?'🚜 '+_frAb:'Sem equipamento vinculado'}</div>
         </td>
         <td class="td-titulo">
           ${_escHtml(r[1])}
@@ -1439,7 +1439,7 @@ function renderCriticidade() {
     return `
     <tr data-num="${r[0]}" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
-      <td class="td-titulo">${_escHtml(r[1])}${_frCr?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">${_frCr}</div>`:''}</td>
+      <td class="td-titulo">${_escHtml(r[1])}${_frCr?`<div style="font-size:9px;color:var(--accent);font-family:var(--font-mono);margin-top:1px">🚜 ${_frCr}</div>`:''}</td>
       <td>${prioridadeBadge(prioridadeReal(r[0]))}</td>
       <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>
@@ -1554,7 +1554,7 @@ function renderEncerrados() {
     return `<tr data-num="${r[0]}" style="cursor:pointer" onclick="openDetalhe('${r[0]}')">
       <td class="td-num">${r[0]}</td>
       <td class="td-titulo">${_escHtml(r[1])}</td>
-      <td style="font-family:var(--font-mono);font-size:11px;color:${_frEnc?'var(--accent)':'var(--text3)'}">${_frEnc||'—'}</td>
+      <td style="font-family:var(--font-mono);font-size:11px;color:${_frEnc?'var(--accent)':'var(--text3)'}">${_frEnc?'🚜 '+_frEnc:'—'}</td>
       <td><span class="badge ${cultPill(r[2])}">${r[2]||'—'}</span></td>
       <td style="font-size:11px;color:var(--text3)">${fazendaLabel(r[6])}</td>
       <td style="white-space:nowrap">${(r[3]||'—').replace(/,/g,' e ')}</td>

@@ -90,3 +90,18 @@
   cursor:pointer;border:1px solid var(--purple);transition:opacity var(--transition);
 }
 .ai-chip:hover{opacity:.8}
+
+/* ════════════════════════════════════════════
+   HOME OPERACIONAL (Fase 4.6) — reaproveita .kpi-card/.card/.op-row/
+   .menu-grid já existentes; só ajusta o grid de atalhos pra caber mais
+   cards por linha que os 3 fixos do Portal. #home-atalhos (id) tem
+   especificidade maior que .menu-grid (classe), então esta regra vence
+   sem !important — mas cede corretamente pros breakpoints móveis de
+   .menu-grid/.kpi-grid em responsivo.css, que usam !important.
+   ════════════════════════════════════════════ */
+#home-atalhos.menu-grid{
+  grid-template-columns:repeat(auto-fill,minmax(190px,1fr));
+  max-width:none;gap:14px;
+}
+#home-atalhos .menu-card{padding:18px 16px;gap:10px}
+#home-atalhos .menu-card-arrow{bottom:16px}

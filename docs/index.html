@@ -16,15 +16,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260801b">
-  <link rel="stylesheet" href="css/login.css?v=20260801b">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260801b">
-  <link rel="stylesheet" href="css/chamados.css?v=20260801b">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260801b">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260801b">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260801b">
-  <link rel="stylesheet" href="css/config.css?v=20260801b">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260801b">
+  <link rel="stylesheet" href="css/style.css?v=20260801c">
+  <link rel="stylesheet" href="css/login.css?v=20260801c">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260801c">
+  <link rel="stylesheet" href="css/chamados.css?v=20260801c">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260801c">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260801c">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260801c">
+  <link rel="stylesheet" href="css/config.css?v=20260801c">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260801c">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -120,8 +120,16 @@
 
   <nav class="nav">
 
+    <!-- 0. Home Operacional (Fase 4.6) — tela inicial ao entrar no módulo
+         Campo; Dashboard continua existindo, só deixa de ser o primeiro
+         destino pós-login. -->
+    <div class="nav-item active" id="nav-home" onclick="showSection('home',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Início
+    </div>
+
     <!-- 1. Dashboard -->
-    <div class="nav-item active" id="nav-dashboard" onclick="showSection('dashboard',this)">
+    <div class="nav-item" id="nav-dashboard" onclick="showSection('dashboard',this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
       Dashboard
     </div>
@@ -329,9 +337,109 @@
 <div class="content">
 
 <!-- ══════════════════════════════════════════════ -->
+<!-- SECTION 0: HOME OPERACIONAL (Fase 4.6)          -->
+<!-- Tela inicial ao entrar no módulo Campo. 100% dado já existente,
+     via renderHome() (dashboard/index.js) — reaproveita computeStats(),
+     _chamadosCriticosList()/Count() e os primitivos de navegação já
+     existentes (showSection/toggleViewMode). -->
+<!-- ══════════════════════════════════════════════ -->
+<section class="section active" id="sec-home">
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+    <div class="kpi-card red" style="cursor:pointer" onclick="showSection('aberto',document.getElementById('nav-aberto'))" title="Ver chamados em aberto">
+      <div class="kpi-label">Em Aberto</div>
+      <div class="kpi-value" id="home-kpi-aberto">—</div>
+      <div class="kpi-sub">chamados não concluídos</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer;border-top-color:var(--red)" onclick="showSection('criticidade',document.getElementById('nav-criticidade'))" title="Ver criticidade">
+      <div class="kpi-label">🚨 Críticos</div>
+      <div class="kpi-value" id="home-kpi-criticos" style="color:var(--red)">—</div>
+      <div class="kpi-sub">prioridade urgente</div>
+    </div>
+    <div class="kpi-card amber" style="cursor:pointer" onclick="showSection('painel',document.getElementById('nav-painel'))" title="Ver Painel Operacional">
+      <div class="kpi-label">⏳ SLA Vencendo</div>
+      <div class="kpi-value" id="home-kpi-vencidos">—</div>
+      <div class="kpi-sub">abertos há mais de 7 dias</div>
+    </div>
+    <div class="kpi-card" style="cursor:pointer;border-top-color:var(--purple)" onclick="showSection('aberto',document.getElementById('nav-aberto'))" title="Ver em atendimento">
+      <div class="kpi-label">👷 Em Atendimento</div>
+      <div class="kpi-value" id="home-kpi-atendimento" style="color:var(--purple)">—</div>
+      <div class="kpi-sub">sendo trabalhados agora</div>
+    </div>
+  </div>
+
+  <div class="chart-row cols-2" style="margin-top:16px">
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">🚨 Chamados Críticos</div><div class="card-sub">Prioridade urgente · até 5</div></div>
+      </div>
+      <div id="home-criticos"></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <div><div class="card-title">📋 Últimas Atividades</div><div class="card-sub">Chamados mais recentes</div></div>
+      </div>
+      <div id="home-recentes"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <div class="card-header">
+      <div><div class="card-title">🚜 Panorama da Operação</div><div class="card-sub">Equipe e equipamentos com chamados ativos agora</div></div>
+    </div>
+    <div style="display:flex;gap:32px;flex-wrap:wrap">
+      <div><div class="det-label">Técnicos em Atendimento</div><div class="det-val" id="home-tecnicos-count" style="font-size:22px;font-weight:700;color:var(--accent)">—</div></div>
+      <div><div class="det-label">Equipamentos com Chamados Ativos</div><div class="det-val" id="home-equip-count" style="font-size:22px;font-weight:700;color:var(--accent)">—</div></div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div class="card-title" style="margin-bottom:12px">⭐ Atalhos Rápidos</div>
+    <div class="menu-grid" id="home-atalhos">
+      <div class="menu-card" onclick="showSection('novo',document.getElementById('nav-novo'))" tabindex="0" onkeydown="if(event.key==='Enter')showSection('novo',document.getElementById('nav-novo'))">
+        <div class="menu-card-icon" style="background:var(--accent-light);color:var(--accent)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div><div class="menu-card-title">Novo Chamado</div></div>
+        <span class="menu-card-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showSection('equipamentos',document.getElementById('nav-equipamentos'))" tabindex="0" onkeydown="if(event.key==='Enter')showSection('equipamentos',document.getElementById('nav-equipamentos'))">
+        <div class="menu-card-icon" style="background:var(--teal-bg);color:var(--teal)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+        </div>
+        <div><div class="menu-card-title">Equipamentos</div></div>
+        <span class="menu-card-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showSection('chamados',document.querySelector('#grp-chamados .nav-sub-item'));toggleViewMode('kanban')" tabindex="0" onkeydown="if(event.key==='Enter'){showSection('chamados',document.querySelector('#grp-chamados .nav-sub-item'));toggleViewMode('kanban')}">
+        <div class="menu-card-icon" style="background:var(--purple-bg);color:var(--purple)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="6" height="18"/><rect x="10.5" y="3" width="6" height="12"/><rect x="18" y="3" width="6" height="8"/></svg>
+        </div>
+        <div><div class="menu-card-title">Kanban</div></div>
+        <span class="menu-card-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showSection('area-tecnico',document.getElementById('nav-area-tecnico'))" tabindex="0" onkeydown="if(event.key==='Enter')showSection('area-tecnico',document.getElementById('nav-area-tecnico'))">
+        <div class="menu-card-icon" style="background:var(--amber-bg);color:var(--amber)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </div>
+        <div><div class="menu-card-title">Área do Técnico</div></div>
+        <span class="menu-card-arrow">→</span>
+      </div>
+      <div class="menu-card" onclick="showSection('pormes',document.querySelector('#grp-relatorios .nav-sub-item'))" tabindex="0" onkeydown="if(event.key==='Enter')showSection('pormes',document.querySelector('#grp-relatorios .nav-sub-item'))">
+        <div class="menu-card-icon" style="background:var(--green-bg);color:var(--green)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div><div class="menu-card-title">Relatórios</div></div>
+        <span class="menu-card-arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ══════════════════════════════════════════════ -->
 <!-- SECTION 1: DASHBOARD                          -->
 <!-- ══════════════════════════════════════════════ -->
-<section class="section active" id="sec-dashboard">
+<section class="section" id="sec-dashboard">
 
   <!-- KPIs — 6 status cards -->
   <div class="kpi-grid" id="kpi-grid" style="grid-template-columns:repeat(6,1fr)">
@@ -381,9 +489,9 @@
       </div>
       <div class="canvas-wrap" style="height:220px"><canvas id="ch-evolucao"></canvas></div>
       <div class="legend" style="margin-top:14px">
-        <div class="legend-item"><div class="leg-dot" style="background:#2563eb"></div>Grãos e Fibras</div>
-        <div class="legend-item"><div class="leg-dot" style="background:#d97706"></div>Tabaco</div>
-        <div class="legend-item"><div class="leg-dot" style="background:#92400e"></div>Cacau</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--accent)"></div>Grãos e Fibras</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--amber)"></div>Tabaco</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--cacau)"></div>Cacau</div>
         <div class="legend-item"><div class="leg-dot" style="background:#94a3b8"></div>Sem cultura</div>
       </div>
     </div>
@@ -399,9 +507,9 @@
         </div>
       </div>
       <div class="legend" style="justify-content:center;margin-top:16px">
-        <div class="legend-item"><div class="leg-dot" style="background:#2563eb"></div>Grãos</div>
-        <div class="legend-item"><div class="leg-dot" style="background:#d97706"></div>Tabaco</div>
-        <div class="legend-item"><div class="leg-dot" style="background:#92400e"></div>Cacau</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--accent)"></div>Grãos</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--amber)"></div>Tabaco</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--cacau)"></div>Cacau</div>
       </div>
     </div>
   </div>
@@ -578,7 +686,7 @@
     </div>
     <div class="kpi-card red" style="cursor:pointer" id="abcard-venc" onclick="abCardFilter('vencidos','')">
       <div class="kpi-label">Vencidos (+7 dias)</div>
-      <div class="kpi-value" id="ab-venc" style="color:#dc2626">—</div>
+      <div class="kpi-value" id="ab-venc" style="color:var(--red)">—</div>
       <div class="kpi-sub">precisam de atenção</div>
     </div>
     <div class="kpi-card red" style="cursor:pointer" id="abcard-total" onclick="abCardFilter('total','')">
@@ -590,17 +698,17 @@
 
   <!-- Cards de Cultura e Fazenda -->
   <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px">
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #2563eb" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--accent)" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
       <div class="kpi-label">🌾 Grãos e Fibras</div>
       <div class="kpi-value" id="ab-graos">—</div>
       <div class="kpi-sub">em aberto</div>
     </div>
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #d97706" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--amber)" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
       <div class="kpi-label">🌿 Tabaco</div>
       <div class="kpi-value" id="ab-tabaco">—</div>
       <div class="kpi-sub">em aberto</div>
     </div>
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #92400e" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--cacau)" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
       <div class="kpi-label">🍫 Cacau</div>
       <div class="kpi-value" id="ab-cacau">—</div>
       <div class="kpi-sub">em aberto</div>
@@ -610,7 +718,7 @@
       <div class="kpi-value" id="ab-krt">—</div>
       <div class="kpi-sub">em aberto</div>
     </div>
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid #7c3aed" onclick="abCardFilter('fazenda','Solinftec RDM')" id="abcard-rdm">
+    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--purple)" onclick="abCardFilter('fazenda','Solinftec RDM')" id="abcard-rdm">
       <div class="kpi-label">📍 Rio do Meio (RDM)</div>
       <div class="kpi-value" id="ab-rdm">—</div>
       <div class="kpi-sub">em aberto</div>
@@ -637,9 +745,9 @@
     <button class="btn btn-ghost" id="ab-clear-cards" onclick="abCardFilter('total','')" style="display:none;font-size:11px;padding:5px 10px">✕ Limpar filtro</button>
     <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
       <span style="font-size:11px;color:var(--text3)">Legenda:</span>
-      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#fef2f2;color:#dc2626">+7 dias</span>
-      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#fffbeb;color:#d97706">3–7 dias</span>
-      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:#f0fdf4;color:#16a34a">&lt;3 dias</span>
+      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--red-bg);color:var(--red)">+7 dias</span>
+      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--amber-bg);color:var(--amber)">3–7 dias</span>
+      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green)">&lt;3 dias</span>
     </div>
   </div>
 
@@ -699,9 +807,9 @@
         </div>
       </div>
       <div class="legend" style="justify-content:center;margin-top:16px">
-        <div class="legend-item"><div class="leg-dot" style="background:#2563eb"></div>Grãos</div>
-        <div class="legend-item"><div class="leg-dot" style="background:#d97706"></div>Tabaco</div>
-        <div class="legend-item"><div class="leg-dot" style="background:#92400e"></div>Cacau</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--accent)"></div>Grãos</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--amber)"></div>Tabaco</div>
+        <div class="legend-item"><div class="leg-dot" style="background:var(--cacau)"></div>Cacau</div>
         <div class="legend-item"><div class="leg-dot" style="background:#94a3b8"></div>Outros</div>
       </div>
     </div>
@@ -828,7 +936,7 @@
           <div class="prio-opt" data-val="Baixa"    onclick="selectPrior(this)" style="border-color:var(--green);color:var(--green)">🟢 Baixa</div>
           <div class="prio-opt selected" data-val="Média"   onclick="selectPrior(this)" style="border-color:var(--amber);color:var(--amber)">🟡 Média</div>
           <div class="prio-opt" data-val="Alta"     onclick="selectPrior(this)" style="border-color:var(--red);color:var(--red)">🔴 Alta</div>
-          <div class="prio-opt" data-val="Urgente"  onclick="selectPrior(this)" style="border-color:#7c3aed;color:#7c3aed">⚡ Urgente</div>
+          <div class="prio-opt" data-val="Urgente"  onclick="selectPrior(this)" style="border-color:var(--purple);color:var(--purple)">⚡ Urgente</div>
         </div>
         <input type="hidden" id="f-prior" value="Média">
       </div>
@@ -1590,7 +1698,7 @@
       <div class="op-card-val" id="op-vencidos" style="color:var(--amber)">—</div>
       <div style="font-size:11px;color:var(--text3)">sem resolução</div>
     </div>
-    <div class="op-card" style="border-left:4px solid var(--blue,#2563eb)">
+    <div class="op-card" style="border-left:4px solid var(--accent)">
       <div class="op-card-title">📋 Abertos Hoje</div>
       <div class="op-card-val" id="op-hoje">—</div>
       <div style="font-size:11px;color:var(--text3)">novos chamados</div>
@@ -2417,7 +2525,7 @@
       </div>
     </div>
 
-    <div id="enc-confirm-msg" style="display:none;padding:12px 14px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;margin-bottom:4px;font-size:13px;color:#92400e;font-weight:500">
+    <div id="enc-confirm-msg" style="display:none;padding:12px 14px;border-radius:8px;background:var(--amber-bg);border:1px solid color-mix(in srgb,var(--amber) 35%,var(--surface));margin-bottom:4px;font-size:13px;color:var(--amber);font-weight:500">
       ⚠️ Tem certeza que deseja encerrar este chamado?
     </div>
     <div class="modal-footer">
@@ -2641,6 +2749,7 @@
         <span class="badge badge-neutral" id="fe-status" style="margin-top:4px;display:inline-block">—</span>
       </div>
       <div style="display:flex;gap:6px;align-items:center">
+        <button class="btn btn-ghost" id="fe-novo-chamado-btn" style="font-size:12px">🔧 Abrir Chamado</button>
         <button class="btn btn-primary" id="fe-editar-btn" style="font-size:12px">✏️ Editar</button>
         <button class="int-close" onclick="fecharFichaEquip()">×</button>
       </div>
@@ -2673,6 +2782,9 @@
         <div class="op-card"><div class="op-card-title">Em Aberto</div><div class="op-card-val" id="fe-kpi-aberto" style="color:var(--amber)">—</div></div>
         <div class="op-card"><div class="op-card-title">Tempo Médio</div><div class="op-card-val" id="fe-kpi-tempo" style="font-size:16px">—</div></div>
       </div>
+      <!-- Fase 4.6 — "Chamados Abertos" como lista, não só a contagem acima
+           (fe-kpi-aberto); reaproveita o mesmo array já filtrado. -->
+      <div style="margin-top:10px" id="fe-abertos-list"></div>
     </div>
 
     <div class="det-block" id="eqficha-hist-card" style="display:none">
@@ -2742,26 +2854,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260801b"></script>
-  <script src="js/data/equipamentos.js?v=20260801b"></script>
-  <script src="js/data/match_map.js?v=20260801b"></script>
-  <script src="js/data/equip_idx.js?v=20260801b"></script>
+  <script src="js/data/chamados_historico.js?v=20260801c"></script>
+  <script src="js/data/equipamentos.js?v=20260801c"></script>
+  <script src="js/data/match_map.js?v=20260801c"></script>
+  <script src="js/data/equip_idx.js?v=20260801c"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260801b"></script>
+  <script src="js/core/storage.js?v=20260801c"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260801b"></script>
-  <script src="js/modules/dashboard/index.js?v=20260801b"></script>
-  <script src="js/modules/chamados/index.js?v=20260801b"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260801b"></script>
-  <script src="js/modules/relatorios/index.js?v=20260801b"></script>
-  <script src="js/modules/config/index.js?v=20260801b"></script>
+  <script src="js/modules/usuarios/index.js?v=20260801c"></script>
+  <script src="js/modules/dashboard/index.js?v=20260801c"></script>
+  <script src="js/modules/chamados/index.js?v=20260801c"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260801c"></script>
+  <script src="js/modules/relatorios/index.js?v=20260801c"></script>
+  <script src="js/modules/config/index.js?v=20260801c"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260801b"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260801c"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260801b"></script>
+  <script src="js/core/init.js?v=20260801c"></script>
 </body>
 </html>
