@@ -1,0 +1,18 @@
+# dependências
+node_modules
+
+# build
+dist
+dev-dist
+
+# env local (contém nada secreto — config pública do Firebase — mas
+# fica fora do git por padrão; ver .env.example)
+.env
+.env.local
+
+# editor/SO
+.DS_Store
+*.local
+
+# logs
+npm-debug.log*

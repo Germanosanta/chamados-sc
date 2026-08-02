@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════════
+   DESIGN TOKENS — portados 1:1 de docs/css/style.css (V2).
+   Paleta derivada da logo Santa Colomba/COA: verde-pinheiro (--accent)
+   como cor interativa primária. Cores semânticas de status (verde/âmbar/
+   vermelho/teal/roxo) e de cultura (grãos/tabaco/cacau) preservadas com
+   os mesmos valores hex da V2 — mesma identidade visual, tema claro e
+   escuro, trocado via atributo [data-theme] na raiz (mesmo mecanismo).
+   ══════════════════════════════════════════════ */
+:root {
+  --bg: #f4f6fa;
+  --surface: #ffffff;
+  --surface2: #f8fafc;
+  --surface3: #f1f5f9;
+  --border: #e2e8f0;
+  --border2: #cbd5e1;
+  --text: #0f172a;
+  --text2: #475569;
+  --text3: #94a3b8;
+
+  --accent: #2f6b4f;
+  --accent-light: #e6f1ea;
+  --accent-text: #1f4a37;
+
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --amber: #d97706;
+  --amber-bg: #fffbeb;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --teal: #0d9488;
+  --teal-bg: #f0fdfa;
+  --purple: #7c3aed;
+  --purple-bg: #faf5ff;
+
+  --graos: #2563eb;
+  --tabaco: #d97706;
+  --cacau: #92400e;
+  --cacau-bg: #fdf3e3;
+  --outros: #64748b;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
+
+  --radius-xs: 5px;
+  --radius-sm: 7px;
+  --radius: 10px;
+  --radius-lg: 16px;
+}
+
+[data-theme='dark'] {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #21262d;
+  --surface3: #30363d;
+  --border: #30363d;
+  --border2: #484f58;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #6e7681;
+
+  --accent: #6fbf95;
+  --accent-light: #1c3327;
+  --accent-text: #8ed4ab;
+
+  --green: #3fb950;
+  --green-bg: #0d1f12;
+  --amber: #d29922;
+  --amber-bg: #1f1a0e;
+  --red: #f85149;
+  --red-bg: #1f1116;
+  --teal: #2dd4bf;
+  --teal-bg: #041815;
+  --purple: #bc8cff;
+  --purple-bg: #1a1230;
+
+  --cacau-bg: #2b2013;
+  /* graos/tabaco/cacau/outros mantêm o mesmo valor do claro — igual à V2,
+     que também não redefine essas 4 no escuro (gap conhecido, preservado
+     de propósito para não divergir visualmente entre as duas versões). */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.7);
+
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    font-size: 14px; /* mesma base da V2 — a maioria dos componentes usa px absoluto sobre essa base */
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: theme('fontFamily.sans');
+  }
+  * {
+    @apply border-border;
+  }
+  ::selection {
+    background: var(--accent-light);
+    color: var(--accent-text);
+  }
+}
+
+@layer utilities {
+  .font-mono-num {
+    font-family: theme('fontFamily.mono');
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
