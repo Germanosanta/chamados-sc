@@ -42,7 +42,7 @@ export function AuditoriaPage() {
   const [login, setLogin] = useState('');
 
   const logs = useMemo(() => [...logsRaw].sort((a, b) => (b.ts || '').localeCompare(a.ts || '')), [logsRaw]);
-  const usuarios = useMemo(() => [...new Set(logs.map((l) => l.login).filter(Boolean))], [logs]);
+  const usuarios = useMemo(() => [...new Set(logs.map((l) => l.login).filter((v): v is string => Boolean(v)))], [logs]);
   const tipos = useMemo(() => [...new Set(logs.map((l) => l.tipo).filter(Boolean))], [logs]);
 
   const filtrados = useMemo(() => {

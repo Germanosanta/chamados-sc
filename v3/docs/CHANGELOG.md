@@ -3,6 +3,21 @@
 Datas/commits reais (`git log -- v3/`). Cada linha resume o que o commit
 mudou; detalhe completo em cada mensagem de commit.
 
+## Correção do primeiro erro real do CI (`tsc -b`)
+Primeira execução real do GitHub Actions (Node 22/24) pegou um erro de
+tipagem que a revisão manual (sem Node no ambiente de escrita) não
+capturou: `AuditoriaPage.tsx` montava a lista de usuários do filtro com
+`logs.map(l => l.login).filter(Boolean)` — `login` é opcional em
+`Auditoria` (`login?: string`), e `.filter(Boolean)` não estreita o tipo
+pro TypeScript (ele não sabe que `Boolean` removeu os `undefined`), então
+o array continuava `(string | undefined)[]` e quebrava no `value={u}` do
+`SelectItem`, que exige `string`. Corrigido com um predicado de tipo
+(`.filter((v): v is string => Boolean(v))`), sem `as`/`!`/`@ts-ignore`.
+Revisão estática dos outros ~12 usos do mesmo padrão (`.filter(Boolean)`,
+`.get()`, `.find()`) no projeto não achou outra ocorrência real — todos os
+demais já filtram/mapeiam campos obrigatórios ou já têm fallback
+(`|| ''`, `?? 0`, `|| null`).
+
 ## RC-FINAL + CI/CD — preparação para produção
 Corrigido um erro real de `tsc -b` que não tinha sido pego nas rodadas
 anteriores: `sw.ts` era type-checado sob o mesmo projeto do app (lib
