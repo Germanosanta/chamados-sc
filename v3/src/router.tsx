@@ -19,6 +19,8 @@ import { KBPage } from '@/pages/kb/KBPage';
 import { TecnicosPage } from '@/pages/tecnicos/TecnicosPage';
 import { UsuariosPage } from '@/pages/usuarios/UsuariosPage';
 import { ConfigPage } from '@/pages/config/ConfigPage';
+import { AuditoriaPage } from '@/pages/auditoria/AuditoriaPage';
+import { ResponsaveisPage } from '@/pages/responsaveis/ResponsaveisPage';
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
 import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTOM, type SectionId } from '@/utils/sections';
 import type { Permissao } from '@/types/permissoes';
@@ -41,6 +43,8 @@ const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
   tecnicos: TecnicosPage,
   usuarios: UsuariosPage,
   config: ConfigPage,
+  auditoria: AuditoriaPage,
+  responsaveis: ResponsaveisPage,
 };
 
 const PERM_BY_SECTION: Partial<Record<SectionId, Permissao>> = {};
