@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Pencil } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
@@ -138,8 +139,8 @@ export function FrotasPage() {
           <div className="mb-3 flex items-center justify-between">
             <div className="text-base font-bold text-foreground">Histórico — {selecionada}</div>
             <div className="flex items-center gap-3">
-              <button onClick={() => setCrudOpen(true)} className="text-sm font-semibold text-primary hover:underline">
-                ✏️ Editar cadastro
+              <button onClick={() => setCrudOpen(true)} className="flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                <Pencil className="h-3.5 w-3.5" /> Editar cadastro
               </button>
               <button onClick={() => setSelecionada(null)} className="text-sm text-subtle hover:text-foreground">Fechar ✕</button>
             </div>

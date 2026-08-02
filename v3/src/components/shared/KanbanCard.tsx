@@ -3,7 +3,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/utils/cn';
 import { DiasChip, PrioridadeBadge } from './StatusBadge';
-import { diasAberto, frotaLabel } from '@/utils/chamado-helpers';
+import { diasAberto, diasBorderClass, frotaLabel, isFechado } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 interface KanbanCardProps {
@@ -25,6 +25,7 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
 
   const dias = diasAberto(chamado.data);
   const frota = frotaLabel(chamado.num, chamado.equipCodigo);
+  const fechado = isFechado(chamado);
 
   return (
     <div
@@ -47,19 +48,21 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
       }
       aria-label={onClick ? `Chamado ${chamado.num} — ${chamado.titulo}` : undefined}
       className={cn(
-        'cursor-grab select-none rounded-sm border border-border bg-surface p-2.5 shadow-sm transition active:cursor-grabbing',
+        'cursor-grab select-none rounded-sm border border-border border-l-[3px] bg-surface p-2.5 shadow-sm transition active:cursor-grabbing',
         'hover:border-primary hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
+        !fechado && diasBorderClass(dias),
         isDragging && 'opacity-50',
       )}
     >
-      <div className="flex items-center justify-between gap-2">
-        <span className="font-mono-num text-sm font-bold text-primary">{chamado.num}</span>
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0 font-mono-num text-sm">
+          <span className="font-bold text-primary">{chamado.num}</span>
+          {frota && <span className="ml-1 truncate text-xs text-muted-foreground">🚜 {frota}</span>}
+        </div>
         <PrioridadeBadge prioridade={chamado.prior} />
       </div>
       <div className="mt-1.5 line-clamp-2 text-base font-semibold text-foreground">{chamado.titulo}</div>
-      <div className="mt-1 truncate text-xs text-subtle">
-        {frota ? `🚜 ${frota}` : 'Sem equipamento vinculado'}
-      </div>
+      {!frota && <div className="mt-1 text-xs text-subtle">Sem equipamento vinculado</div>}
       <div className="mt-2 flex items-center justify-between gap-2 text-sm text-muted-foreground">
         <span className="truncate">{chamado.resp || 'Sem responsável'}</span>
         <DiasChip dias={dias} />

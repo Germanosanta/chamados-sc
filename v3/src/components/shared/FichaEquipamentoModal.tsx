@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Pencil } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from './StatusBadge';
@@ -55,7 +56,7 @@ export function FichaEquipamentoModal({
               🚜 {equipBase.c} · {equipBase.d}
             </DialogTitle>
             <div className="mr-6 flex gap-2">
-              <Button size="sm" variant="ghost" onClick={onEditar}>✏️ Editar</Button>
+              <Button size="sm" variant="ghost" onClick={onEditar}><Pencil className="h-3.5 w-3.5" /> Editar</Button>
               <Button size="sm" onClick={handleAbrirChamado}>🔧 Abrir Chamado</Button>
             </div>
           </div>

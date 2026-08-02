@@ -14,7 +14,7 @@ import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { usePermission } from '@/hooks/usePermission';
 import { useChamados, useAssumirChamado, useRegistrarEvento, useReabrirChamado } from '@/hooks/useChamados';
-import { diasAberto, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip } from '@/utils/chamado-helpers';
+import { diasAberto, diasBorderClass, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import type { Auditoria } from '@/types/auditoria';
@@ -116,7 +116,7 @@ export function CentroOperacionalModal() {
             <div className="grid max-h-[85vh] grid-cols-1 overflow-hidden lg:grid-cols-[1fr_320px]">
               <div className="flex flex-col gap-5 overflow-y-auto p-5">
                 {/* Bloco 1 — Cabeçalho */}
-                <div className="flex flex-col gap-2 border-b border-border pb-4">
+                <div className={cn('flex flex-col gap-2 border-b border-l-[3px] border-border pb-4 pl-3', !fechado && diasBorderClass(dias))}>
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-mono-num text-xl font-bold text-primary">{chamado.num}</span>
                     {equip && <Badge variant="neutral">🚜 {equip.codigo}</Badge>}
@@ -138,9 +138,7 @@ export function CentroOperacionalModal() {
                   <div className="mt-1 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm sm:grid-cols-3">
                     <Meta label="Fazenda/Sistema" value={fazendaLabel(chamado.bucket)} />
                     <Meta label="Cultura" value={chamado.cultura || '—'} />
-                    <Meta label="Responsável" value={chamado.resp || '—'} />
                     <Meta label="Solicitante" value={chamado.solicitante || '—'} />
-                    <Meta label="Técnico" value={chamado.tecnico || '—'} />
                     <Meta label="Categoria" value={chamado.categoria || '—'} />
                     <Meta label="Abertura" value={formatDataBR(chamado.data)} />
                   </div>
@@ -240,8 +238,16 @@ export function CentroOperacionalModal() {
                 </div>
               </div>
 
-              {/* Coluna lateral — equipamento + galeria */}
+              {/* Coluna lateral — responsáveis + equipamento + galeria */}
               <div className={cn('flex flex-col gap-5 overflow-y-auto border-t border-border bg-muted p-5 lg:border-l lg:border-t-0')}>
+                <div>
+                  <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">Responsáveis</div>
+                  <div className="flex flex-col gap-1.5 rounded-sm border border-border bg-surface p-3 text-sm">
+                    <Meta label="Responsável" value={chamado.resp || '—'} />
+                    <Meta label="Técnico" value={chamado.tecnico || '—'} />
+                    {chamado.assumidoPor && <Meta label="Assumido por" value={chamado.assumidoPor} />}
+                  </div>
+                </div>
                 <div>
                   <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">Equipamento vinculado</div>
                   {equip ? (

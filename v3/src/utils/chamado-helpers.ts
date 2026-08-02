@@ -34,6 +34,19 @@ export function diasVariant(dias: number): DiasVariant {
   return 'green';
 }
 
+const DIAS_BORDER_CLASS: Record<DiasVariant, string> = {
+  red: 'border-l-destructive',
+  amber: 'border-l-warning',
+  green: 'border-l-success',
+};
+
+/** Faixa colorida de SLA usada como indicador rápido (borda esquerda) em
+ * listas/cards de chamado — mesma paleta/limiares de `diasVariant`, só
+ * como classe Tailwind pronta pra usar em `className`. */
+export function diasBorderClass(dias: number): string {
+  return DIAS_BORDER_CLASS[diasVariant(dias)];
+}
+
 export function isSlaCritico(c: Chamado): boolean {
   return !isFechado(c) && diasAberto(c.data) > DIAS_ATRASO_CRITICO;
 }

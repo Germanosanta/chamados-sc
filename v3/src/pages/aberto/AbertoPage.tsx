@@ -10,12 +10,10 @@ import { KanbanBoard } from '@/components/shared/KanbanBoard';
 import { DiasChip, PrioridadeBadge, StatusBadge } from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAbertos, useAlterarStatusChamado, useAssumirChamado, useReatribuirResponsavel } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
-import { diasAberto, fazendaLabel, formatDataBR, frotaLabel } from '@/utils/chamado-helpers';
+import { diasAberto, diasBorderClass, fazendaLabel, formatDataBR, frotaLabel, isSlaCritico } from '@/utils/chamado-helpers';
 import { useDetalheStore } from '@/store/detalhe';
 import type { Chamado } from '@/types/chamado';
 import { cn } from '@/utils/cn';
@@ -49,13 +47,14 @@ export function AbertoPage() {
   const [avancado, setAvancado] = useState(false);
   const [prior, setPrior] = useState('');
   const [slaCritico, setSlaCritico] = useState(false);
+  const [semResp, setSemResp] = useState(false);
   const [fFrota, setFFrota] = useState('');
   const [fSolicitante, setFSolicitante] = useState('');
   const [fDe, setFDe] = useState('');
   const [fAte, setFAte] = useState('');
   const [page, setPage] = useState(1);
 
-  useEffect(() => setPage(1), [busca, status, resp, ordem, cultCard, fazendaCard, prior, slaCritico, fFrota, fSolicitante, fDe, fAte]);
+  useEffect(() => setPage(1), [busca, status, resp, ordem, cultCard, fazendaCard, prior, slaCritico, semResp, fFrota, fSolicitante, fDe, fAte]);
 
   const porCultura = useMemo(() => {
     const m = new Map<string, Chamado[]>();
@@ -66,6 +65,14 @@ export function AbertoPage() {
     }
     return m;
   }, [abertos]);
+
+  // KPIs secundários (críticos/vencidos/sem responsável): antes só
+  // apareciam como texto pequeno dentro dos cards de Cultura — agora são
+  // indicadores de primeira classe, que também funcionam como atalho de
+  // filtro (mesmo padrão de clique dos cards de Cultura/Fazenda).
+  const criticosCount = useMemo(() => abertos.filter((c) => c.prior === 'Urgente').length, [abertos]);
+  const vencidosCount = useMemo(() => abertos.filter(isSlaCritico).length, [abertos]);
+  const semRespCount = useMemo(() => abertos.filter((c) => !c.resp).length, [abertos]);
 
   const porFazenda = useMemo(() => {
     const m = new Map<string, Chamado[]>();
@@ -95,6 +102,7 @@ export function AbertoPage() {
       if (fazendaCard && c.bucket !== fazendaCard) return false;
       if (prior && (c.prior || 'Média') !== prior) return false;
       if (slaCritico && diasAberto(c.data) <= 7) return false;
+      if (semResp && c.resp) return false;
       if (fFrota && !frotaLabel(c.num, c.equipCodigo).toLowerCase().includes(fFrota.toLowerCase())) return false;
       if (fSolicitante && !(c.solicitante || '').toLowerCase().includes(fSolicitante.toLowerCase())) return false;
       if (fDe && c.data < fDe) return false;
@@ -103,7 +111,7 @@ export function AbertoPage() {
     });
     out = out.sort((a, b) => (ordem === 'antigos' ? a.data.localeCompare(b.data) : b.data.localeCompare(a.data)));
     return out;
-  }, [abertos, busca, status, resp, cultCard, fazendaCard, prior, slaCritico, fFrota, fSolicitante, fDe, fAte, ordem]);
+  }, [abertos, busca, status, resp, cultCard, fazendaCard, prior, slaCritico, semResp, fFrota, fSolicitante, fDe, fAte, ordem]);
 
   const paginados = useMemo(() => filtrados.slice((page - 1) * PER_PAGE, page * PER_PAGE), [filtrados, page]);
 
@@ -118,6 +126,7 @@ export function AbertoPage() {
     setFazendaCard('');
     setPrior('');
     setSlaCritico(false);
+    setSemResp(false);
     setFFrota('');
     setFSolicitante('');
     setFDe('');
@@ -267,6 +276,37 @@ export function AbertoPage() {
         </div>
       )}
 
+      <div>
+        <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">Indicadores</div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <KpiCard compact label="Total em Aberto" value={carregando ? '—' : abertos.length} color="blue" />
+          <KpiCard
+            compact
+            label="Críticos"
+            value={criticosCount}
+            color="red"
+            active={prior === 'Urgente'}
+            onClick={() => setPrior((v) => (v === 'Urgente' ? '' : 'Urgente'))}
+          />
+          <KpiCard
+            compact
+            label="SLA Vencido"
+            value={vencidosCount}
+            color="amber"
+            active={slaCritico}
+            onClick={() => setSlaCritico((v) => !v)}
+          />
+          <KpiCard
+            compact
+            label="Sem Responsável"
+            value={semRespCount}
+            color="purple"
+            active={semResp}
+            onClick={() => setSemResp((v) => !v)}
+          />
+        </div>
+      </div>
+
       <FilterBar>
         <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar número, frota, título…" className="w-56" />
         <Select value={status || 'todos'} onValueChange={(v) => setStatus(v === 'todos' ? '' : v)}>
@@ -338,9 +378,6 @@ export function AbertoPage() {
               <SelectItem value="Baixa">🟢 Baixa</SelectItem>
             </SelectContent>
           </Select>
-          <Label className="flex items-center gap-1.5 normal-case">
-            <Checkbox checked={slaCritico} onCheckedChange={(v) => setSlaCritico(!!v)} /> SLA crítico
-          </Label>
           <Input value={fFrota} onChange={(e) => setFFrota(e.target.value)} placeholder="Código/Frota contém…" className="w-44" />
           <Input value={fSolicitante} onChange={(e) => setFSolicitante(e.target.value)} placeholder="Solicitante contém…" className="w-44" />
           <Input type="date" value={fDe} onChange={(e) => setFDe(e.target.value)} className="w-36" />
@@ -358,6 +395,7 @@ export function AbertoPage() {
             loading={carregando}
             emptyTitle="Nenhum chamado em aberto"
             onRowClick={handleCardClick}
+            rowClassName={(c) => cn('border-l-[3px]', diasBorderClass(diasAberto(c.data)))}
           />
           <Pagination page={page} totalItems={filtrados.length} perPage={PER_PAGE} onPageChange={setPage} />
         </>

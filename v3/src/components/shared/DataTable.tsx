@@ -28,6 +28,9 @@ interface DataTableProps<T> {
   emptyDescription?: string;
   sort?: SortState;
   onSortChange?: (sort: SortState) => void;
+  /** classe extra por linha (ex. faixa de SLA na borda esquerda) — some
+   * com a classe padrão da linha, não substitui. */
+  rowClassName?: (row: T) => string;
 }
 
 /** Equivalente ao .data-table da V2 (thead sticky, hover de linha,
@@ -44,6 +47,7 @@ export function DataTable<T>({
   emptyDescription,
   sort,
   onSortChange,
+  rowClassName,
 }: DataTableProps<T>) {
   function handleSort(col: DataTableColumn<T>) {
     if (!col.sortable || !onSortChange) return;
@@ -139,6 +143,7 @@ export function DataTable<T>({
                   className={cn(
                     'border-b border-border last:border-none hover:bg-muted',
                     onRowClick && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                    rowClassName?.(row),
                   )}
                 >
                   {columns.map((col) => (

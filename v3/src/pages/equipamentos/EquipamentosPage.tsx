@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Pencil, Plus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
@@ -107,7 +107,7 @@ export function EquipamentosPage() {
     {
       key: 'chamados',
       header: 'Chamados',
-      render: (l) => (l.chamados ? <span className="rounded-full bg-primary-light px-2 py-0.5 text-xs font-bold text-primary-text">{l.chamados}</span> : '—'),
+      render: (l) => (l.chamados ? <Badge variant="graos">{l.chamados}</Badge> : '—'),
     },
     {
       key: 'acoes',
@@ -122,7 +122,7 @@ export function EquipamentosPage() {
             setCrudOpen(true);
           }}
         >
-          ✏️ Editar
+          <Pencil className="h-3.5 w-3.5" /> Editar
         </Button>
       ),
     },

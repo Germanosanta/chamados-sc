@@ -17,17 +17,31 @@ já foi corrigido nas rodadas anteriores (ver `CHANGELOG.md`).
   código (classes Tailwind, lógica dos handlers). É a lacuna real que
   falta pra fechar a Fase 6: alguém rodar `npm install && npm run dev`
   num navegador de verdade e passar pela tela em cada breakpoint/fluxo.
-- **Reorganização visual completa de "Chamados em Aberto" e "Centro
-  Operacional"** (pedida na Fase 6) foi deliberadamente **não executada
-  às cegas**: as duas telas já refletem decisões de layout tomadas em
-  rodadas anteriores (cards de KPI limitados a Cultura+Fazenda, ordem dos
-  blocos do Centro Operacional) e uma reconstrução completa de interface
-  sem conseguir renderizar o resultado é risco real de regressão visual
-  não detectável por `tsc`/`eslint`. Nesta rodada, o ganho de performance
-  da Kanban (memoização) e as adições ao Dashboard (dados já calculados,
-  antes não exibidos) foram priorizados por serem verificáveis sem
-  navegador; a reorganização visual mais ampla das duas telas fica para
-  quando houver como testar visualmente antes de publicar.
+- **Fase 7 reorganizou a hierarquia de informação de "Chamados em
+  Aberto", "Centro Operacional" e "Equipamentos"** (indicadores
+  secundários promovidos, faixa de SLA na borda, agrupamento de
+  Responsáveis) **por leitura/reescrita de código, sem poder renderizar o
+  resultado num navegador**. É estrutural (o que aparece, onde, e como é
+  agrupado) e não cosmético (nenhuma cor/espaçamento trocado só por
+  preferência), mas a única verificação real disponível foi `tsc`/
+  `eslint`/`vite build` via GitHub Actions — nenhum dos três detecta um
+  layout quebrado, uma classe Tailwind com efeito inesperado, ou um
+  problema de contraste/overflow. **Dashboard executivo** (reformulado na
+  Fase 6) e o pedido de reconstrução do **Kanban Card**/**Timeline**
+  também ficaram sem essa verificação. Continua sendo o item que falta
+  pra fechar as Fases 6+7: alguém abrir a V3 num navegador de verdade
+  (`npm install && npm run dev`) e conferir cada tela alterada nos
+  breakpoints pedidos (320–1440px) antes de considerar pronto pra
+  produção.
+- **Não coberto nesta rodada** (Fase 7 pedia também): reconstrução
+  completa do Dashboard como "painel de gestão" além do que a Fase 6 já
+  ligou (byYear/issues/vencidos/cancelados — ver entrada anterior do
+  Changelog); modernização das demais ~15 telas fora de Chamados em
+  Aberto/Centro Operacional/Equipamentos; auditoria de responsividade
+  tela a tela. Não foram tocadas por não haver como fazer isso com
+  qualidade real e verificável no volume pedido numa única entrega sem
+  navegador — melhor entregar um conjunto menor e sólido do que muitas
+  telas alteradas às cegas.
 - Sem `package-lock.json` ainda (nunca gerado, mesma causa acima) — o CI
   usa `npm install`; ao gerar e commitar o lockfile, o workflow já troca
   sozinho para `npm ci`.

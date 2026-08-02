@@ -3,6 +3,45 @@
 Datas/commits reais (`git log -- v3/`). Cada linha resume o que o commit
 mudou; detalhe completo em cada mensagem de commit.
 
+## Fase 7 — reorganização de UX (Chamados em Aberto, Centro Operacional, Equipamentos)
+Sem navegador disponível nesta sessão — mudanças de estrutura/hierarquia
+de informação, verificadas por leitura de código + CI (type-check/lint/
+build), não por inspeção visual. Ver `ROADMAP.md` para o que ainda
+depende de um navegador real.
+
+- **Design system**: `KpiCard` ganhou variante `compact` (menos padding/
+  peso — pra indicador secundário que não deve competir com o KPI
+  primário); `DataTable` ganhou `rowClassName` (classe extra por linha,
+  ex. faixa de SLA); novo helper `diasBorderClass()` (`chamado-helpers.ts`)
+  — mesma paleta/limiares de `diasVariant`, como classe Tailwind de borda
+  pronta pra usar. As 3 mudanças propagam pra qualquer tela que já usa
+  esses componentes, sem quebrar quem não passa as novas props (todas
+  opcionais).
+- **Chamados em Aberto**: os indicadores que só apareciam como texto
+  pequeno dentro dos cards de Cultura (críticos) viraram uma faixa de
+  "Indicadores" própria — Total/Críticos/SLA Vencido/Sem Responsável —,
+  cada um clicável como atalho de filtro (mesmo padrão dos cards de
+  Cultura/Fazenda). O checkbox "SLA crítico" dentro de "Filtros
+  avançados" foi removido — duplicava exatamente o novo KPI "SLA
+  Vencido" controlando o mesmo estado. Cards do Kanban e linhas da lista
+  ganharam uma faixa de cor na borda esquerda (verde/amber/vermelho,
+  `diasBorderClass`) pro SLA ficar visível sem precisar ler o número de
+  dias; no Kanban, número do chamado e frota/equipamento agora ficam
+  juntos no cabeçalho do card (identificação em 1 linha, não mais
+  espalhada entre 2 linhas).
+- **Centro Operacional**: "Responsável"/"Técnico"/"Assumido por" saíram
+  da grade de metadados do cabeçalho (que tinha 7 campos) e viraram uma
+  seção própria "Responsáveis" na coluna lateral, ao lado de "Equipamento
+  vinculado" — mesmo agrupamento conceitual (quem/o quê está envolvido no
+  chamado), cabeçalho com 2 campos a menos. O cabeçalho também ganhou a
+  mesma faixa de SLA na borda esquerda da lista/Kanban.
+- **Equipamentos**: os 3 botões "✏️ Editar" (Cadastro, Ficha do
+  Equipamento, Por Frota) trocaram o emoji por `Pencil` (lucide-react) —
+  mesmo ícone usado nas demais ações do sistema; o badge de contagem de
+  chamados em "Cadastro de Equipamentos" (que era um `<span>` reescrito
+  na mão) passou a usar o componente `Badge` compartilhado (mesma classe
+  computada, sem mudança visual, menos código duplicado).
+
 ## Fase 6 — estabilização, UX e performance
 Com o CI 100% verde (TypeScript + ESLint + Build), esta rodada focou em 2
 frentes concretas e verificáveis sem precisar de navegador:
