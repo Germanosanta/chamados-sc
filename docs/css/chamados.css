@@ -19,8 +19,12 @@
 
 /* ── NOVO CHAMADO — section labels */
 .novo-section-label{
-  font-size:10px;font-weight:700;text-transform:uppercase;
-  letter-spacing:.08em;color:var(--accent);
+  /* Fase Final (consolidação de UX/UI) — peso reduzido (9px, cor neutra em
+     vez de --accent): o mesmo texto já aparece destacado na barra de
+     etapas sticky logo acima; o título do bloco continua presente como
+     âncora de conteúdo, só compete menos visualmente com a barra. */
+  font-size:9px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--text3);
   padding:6px 0 10px;border-bottom:1px solid var(--border);
   margin-bottom:14px;display:flex;align-items:center;gap:7px;
   /* Compensa a barra de etapas sticky (Etapa 2C-i) — sem isso, clicar
@@ -206,6 +210,100 @@
   #sec-chamados .data-table th:nth-child(3), #sec-chamados .data-table td:nth-child(3),
   #sec-criticidade .data-table th:nth-child(4), #sec-criticidade .data-table td:nth-child(4) { display:none; }
 }
+/* Fase Final (consolidação de UX/UI) — cascata estendida: as duas telas
+   só escondiam Cultura antes, ficando com 6-7 colunas visíveis mesmo em
+   375px. Reduz mais, seguindo o mesmo padrão incremental de Encerrados
+   abaixo (essenciais sempre visíveis, secundárias somem antes). */
+@media (max-width:900px){
+  #sec-chamados .data-table th:nth-child(4), #sec-chamados .data-table td:nth-child(4),
+  #sec-criticidade .data-table th:nth-child(6), #sec-criticidade .data-table td:nth-child(6),
+  #sec-criticidade .data-table th:nth-child(7), #sec-criticidade .data-table td:nth-child(7){ display:none; }
+}
+@media (max-width:600px){
+  #sec-chamados .data-table th:nth-child(5), #sec-chamados .data-table td:nth-child(5),
+  #sec-chamados .data-table th:nth-child(7), #sec-chamados .data-table td:nth-child(7),
+  #sec-criticidade .data-table th:nth-child(5), #sec-criticidade .data-table td:nth-child(5){ display:none; }
+}
+
+/* Histórico de equipamento — 3 instâncias compartilhando a mesma função
+   renderHistoricoEquip(code, prefix) (Novo Chamado/Centro Operacional/
+   Ficha do Equipamento), 10 colunas cada, sem nenhum tratamento antes.
+   Colunas: 1 Número · 2 Descrição · 3 Prioridade · 4 Abertura · 5 Status ·
+   6 Responsável · 7 Técnico(s) · 8 Encerramento · 9 Tempo parado ·
+   10 Solução aplicada — essenciais (Número/Descrição/Abertura/Status)
+   ficam por último. */
+@media (max-width:1100px){
+  #equip-hist-tbl-wrap th:nth-child(3), #equip-hist-tbl-wrap td:nth-child(3),
+  #equip-hist-tbl-wrap th:nth-child(9), #equip-hist-tbl-wrap td:nth-child(9),
+  #det-equip-hist-tbl-wrap th:nth-child(3), #det-equip-hist-tbl-wrap td:nth-child(3),
+  #det-equip-hist-tbl-wrap th:nth-child(9), #det-equip-hist-tbl-wrap td:nth-child(9),
+  #eqficha-hist-tbl-wrap th:nth-child(3), #eqficha-hist-tbl-wrap td:nth-child(3),
+  #eqficha-hist-tbl-wrap th:nth-child(9), #eqficha-hist-tbl-wrap td:nth-child(9){ display:none; }
+}
+@media (max-width:900px){
+  #equip-hist-tbl-wrap th:nth-child(6), #equip-hist-tbl-wrap td:nth-child(6),
+  #equip-hist-tbl-wrap th:nth-child(7), #equip-hist-tbl-wrap td:nth-child(7),
+  #det-equip-hist-tbl-wrap th:nth-child(6), #det-equip-hist-tbl-wrap td:nth-child(6),
+  #det-equip-hist-tbl-wrap th:nth-child(7), #det-equip-hist-tbl-wrap td:nth-child(7),
+  #eqficha-hist-tbl-wrap th:nth-child(6), #eqficha-hist-tbl-wrap td:nth-child(6),
+  #eqficha-hist-tbl-wrap th:nth-child(7), #eqficha-hist-tbl-wrap td:nth-child(7){ display:none; }
+}
+@media (max-width:600px){
+  #equip-hist-tbl-wrap th:nth-child(8), #equip-hist-tbl-wrap td:nth-child(8),
+  #equip-hist-tbl-wrap th:nth-child(10), #equip-hist-tbl-wrap td:nth-child(10),
+  #det-equip-hist-tbl-wrap th:nth-child(8), #det-equip-hist-tbl-wrap td:nth-child(8),
+  #det-equip-hist-tbl-wrap th:nth-child(10), #det-equip-hist-tbl-wrap td:nth-child(10),
+  #eqficha-hist-tbl-wrap th:nth-child(8), #eqficha-hist-tbl-wrap td:nth-child(8),
+  #eqficha-hist-tbl-wrap th:nth-child(10), #eqficha-hist-tbl-wrap td:nth-child(10){ display:none; }
+}
+
+/* Relatórios → Responsáveis (#tbl-resp, 10 col., gerada 100% em JS) —
+   mesma técnica, aplicada só via CSS (sem tocar relatorios/index.js).
+   Colunas: 1 Responsável · 2 Atribuídos · 3 Abriu · 4 Encerrou ·
+   5 Em Aberto · 6 Em Andamento · 7 Encerrados · 8 T.Médio Atend. ·
+   9 T.Médio Conclusão · 10 % do Total. */
+@media (max-width:1100px){
+  #tbl-resp th:nth-child(3), #tbl-resp td:nth-child(3),
+  #tbl-resp th:nth-child(4), #tbl-resp td:nth-child(4){ display:none; }
+}
+@media (max-width:900px){
+  #tbl-resp th:nth-child(6), #tbl-resp td:nth-child(6),
+  #tbl-resp th:nth-child(9), #tbl-resp td:nth-child(9){ display:none; }
+}
+@media (max-width:600px){
+  #tbl-resp th:nth-child(8), #tbl-resp td:nth-child(8),
+  #tbl-resp th:nth-child(10), #tbl-resp td:nth-child(10){ display:none; }
+}
+
+/* "Chamados em Aberto" — Lista vira cards em mobile em vez de cascata de
+   colunas (pedido explícito: "substituir por Cards", tela operacional
+   principal). Reaproveita a mesma renderAberto()/mesmas <td data-label>
+   — só reflow via CSS, sem segunda função de renderização. */
+@media (max-width:768px){
+  #chamados-list-card table.data-table thead{ display:none; }
+  #chamados-list-card table.data-table,
+  #chamados-list-card table.data-table tbody{ display:block; width:100%; }
+  #tbl-aberto tr{
+    display:block; border:1px solid var(--border); border-radius:10px;
+    padding:12px; margin:10px; background:var(--surface);
+  }
+  #tbl-aberto td{
+    display:flex; justify-content:space-between; align-items:center;
+    gap:10px; padding:5px 0; border:none; white-space:normal;
+  }
+  #tbl-aberto td::before{
+    content:attr(data-label); font-weight:600; font-size:11px;
+    color:var(--text3); flex:0 0 auto;
+  }
+  #tbl-aberto td.td-num{
+    display:block; font-size:14px; font-weight:700; padding-bottom:8px;
+    border-bottom:1px solid var(--border); margin-bottom:6px;
+  }
+  #tbl-aberto td.td-num::before{ content:none; }
+  #tbl-aberto td.td-titulo{ max-width:none; overflow:visible; text-overflow:clip; white-space:normal; }
+  #tbl-aberto td[data-label="Ação"]{ flex-wrap:wrap; }
+  #tbl-aberto td[data-label="Ação"]::before{ flex:1 1 100%; }
+}
 
 /* Encerrados (Fase 4.5) — 10 colunas (Número/Título/Cultura/Fazenda/
    Responsável(is)/Abertura/Encerramento/Técnico(s)/Encerrado por/Tempo),
@@ -320,7 +418,10 @@
 @media (max-width:600px){
   .detalhe-box{ padding:14px 14px 16px; }
   .det-acao-btn{ padding:9px 12px; font-size:12px; flex:1 1 calc(50% - 8px); justify-content:center; }
-  .det-frota-grid{ grid-template-columns:1fr 1fr; }
+  /* Fase Final (consolidação de UX/UI) — bug corrigido: esta regra
+     redefinia pro mesmo valor de 2 colunas do padrão (.det-frota-grid,
+     acima), um no-op que nunca colapsava a grade em telas estreitas. */
+  .det-frota-grid{ grid-template-columns:1fr; }
 }
 
 /* ════════════════════════════════════════════

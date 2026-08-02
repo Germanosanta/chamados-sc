@@ -42,6 +42,14 @@
   .cols-3{grid-template-columns:1fr!important}
   .cols-2{grid-template-columns:1fr!important}
 
+  /* Fase Final (consolidação de UX/UI) — alvos de toque abaixo do
+     recomendado (~44px) em mobile: paginação (~20px), qtd. de peças
+     (22px) e ações do card do Kanban (~20px). Só dentro deste breakpoint
+     — tamanho desktop intocado. */
+  .pag-btn{min-width:36px;min-height:36px;padding:6px 11px}
+  .peca-qtd-btn{width:32px;height:32px}
+  .kanban-card-btn{min-height:32px;padding:6px 12px;font-size:11px}
+
   /* Sidebar recolhível (Fase 2 · Etapa 1) é um recurso de desktop — no
      off-canvas mobile (acima) a sidebar já abre/fecha por cima da tela
      inteira, então "recolhida" não faz sentido aqui: força sempre expandida
@@ -66,6 +74,10 @@
   #global-search-box{width:110px}
   .section.active{padding:14px 14px 14px}
   .ab-cultura-grid{grid-template-columns:1fr!important}
+  /* Fase Final (consolidação de UX/UI) — grade de Prioridade (Novo
+     Chamado) era fixa em 4 colunas em qualquer largura; 2 colunas evita
+     espremer os 4 botões em telas de 320-375px. */
+  .prio-opt-grid{grid-template-columns:repeat(2,1fr)!important}
 }
 
 @media(max-width:768px){

@@ -1400,20 +1400,20 @@ function renderAberto() {
       const _lrAb = getLocal().find(x=>x.num===r[0]);
       const _frAb = frotaLabel(r[0], _lrAb);
       return `<tr data-num="${r[0]}" style="${rowBg}cursor:pointer" onclick="openDetalhe('${r[0]}')">
-        <td class="td-num">
+        <td class="td-num" data-label="Número">
           ${r[0]}
           <div style="font-size:9px;color:${_frAb?'var(--accent)':'var(--text3)'};font-family:var(--font-mono);margin-top:1px">${_frAb?'🚜 '+_frAb:'Sem equipamento vinculado'}</div>
         </td>
-        <td class="td-titulo">
+        <td class="td-titulo" data-label="Título / Equipamento">
           ${_escHtml(r[1])}
           <div style="font-size:9px;color:var(--text3);margin-top:1px">${fazendaLabel(r[6])}</div>
         </td>
-        <td style="white-space:nowrap;font-weight:500">${r[3] || '<span style="color:var(--text3)">—</span>'}</td>
-        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${dataFmt}</td>
-        <td>${prioridadeBadge(prior)}</td>
-        <td><span class="badge ${statusPill(r[5])}">${r[5] || 'Não iniciado'}</span></td>
-        <td><span ${diasChip(dias)}>${dias}d</span></td>
-        <td style="white-space:nowrap;display:flex;gap:6px;align-items:center" onclick="event.stopPropagation()">
+        <td data-label="Responsável" style="white-space:nowrap;font-weight:500">${r[3] || '<span style="color:var(--text3)">—</span>'}</td>
+        <td data-label="Data Abertura" style="font-family:'JetBrains Mono',monospace;font-size:11px;white-space:nowrap">${dataFmt}</td>
+        <td data-label="Prioridade">${prioridadeBadge(prior)}</td>
+        <td data-label="Status"><span class="badge ${statusPill(r[5])}">${r[5] || 'Não iniciado'}</span></td>
+        <td data-label="Dias em Aberto"><span ${diasChip(dias)}>${dias}d</span></td>
+        <td data-label="Ação" style="white-space:nowrap;display:flex;gap:6px;align-items:center" onclick="event.stopPropagation()">
           <!-- Fase 4.6 (consolidação final) — opções vêm de _tecList
                (Técnicos ativos), não mais Guilherme/Walison fixos; o
                combo "Ambos" saiu (não escala pra N técnicos — reatribuir
@@ -1472,7 +1472,7 @@ function abCardFilter(type, val) {
 // buckets (r[6]) que realmente têm chamado aberto, em vez de 2 cards
 // fixos (Karitel/Rio do Meio) — Rádio/John Deere passam a aparecer
 // quando têm chamado, e o card some sozinho quando o bucket zera.
-const _FAZENDA_CORES = ['var(--teal)','var(--purple)','var(--accent)','var(--amber)'];
+const _FAZENDA_CORES = ['teal','purple','blue','amber'];
 function _renderFazendaCards(todos) {
   const wrap = document.getElementById('ab-fazenda-cards');
   if (!wrap) return;
@@ -1483,7 +1483,7 @@ function _renderFazendaCards(todos) {
   wrap.innerHTML = buckets.length ? buckets.map((bucket,i) => {
     const critCount = todos.filter(r=>r[6]===bucket && prioridadeReal(r[0])==='Urgente').length;
     const ativo = fazendaAtiva===bucket ? ' ab-active' : '';
-    return `<div class="kpi-card${ativo}" style="cursor:pointer;border-top:3px solid ${_FAZENDA_CORES[i%_FAZENDA_CORES.length]}" onclick="abCardFilter('fazenda','${_escHtml(bucket)}')">
+    return `<div class="kpi-card ${_FAZENDA_CORES[i%_FAZENDA_CORES.length]}${ativo}" style="cursor:pointer" onclick="abCardFilter('fazenda','${_escHtml(bucket)}')">
       <div class="kpi-label">📍 ${_escHtml(fazendaLabel(bucket))}</div>
       <div class="kpi-value">${counts[bucket].toLocaleString('pt-BR')}</div>
       <div class="kpi-sub">em aberto ${critCount>0?`<span class="badge badge-red" style="margin-left:4px">${critCount} crítico${critCount>1?'s':''}</span>`:''}</div>

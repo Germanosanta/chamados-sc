@@ -21,15 +21,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260802a">
-  <link rel="stylesheet" href="css/login.css?v=20260802a">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260802a">
-  <link rel="stylesheet" href="css/chamados.css?v=20260802a">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260802a">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260802a">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260802a">
-  <link rel="stylesheet" href="css/config.css?v=20260802a">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260802a">
+  <link rel="stylesheet" href="css/style.css?v=20260802b">
+  <link rel="stylesheet" href="css/login.css?v=20260802b">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260802b">
+  <link rel="stylesheet" href="css/chamados.css?v=20260802b">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260802b">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260802b">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260802b">
+  <link rel="stylesheet" href="css/config.css?v=20260802b">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260802b">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -207,12 +207,6 @@
           Banco de Soluções
         </div>
       </div>
-    </div>
-
-    <!-- 4. Frotas -->
-    <div class="nav-item" onclick="showSection('frotas',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      Frotas
     </div>
 
     <!-- 5. Técnicos -->
@@ -680,18 +674,18 @@
        crítico), e "Total" já é coberto pelo botão "Limpar". Só ficam os
        2 grandes agrupadores operacionais pedidos: Cultura e Fazenda. -->
   <div class="ab-group-label">🌱 Cultura</div>
-  <div class="ab-cultura-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--accent)" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
+  <div class="kpi-grid cols-3 ab-cultura-grid">
+    <div class="kpi-card blue" style="cursor:pointer" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
       <div class="kpi-label">🌾 Grãos e Fibras</div>
       <div class="kpi-value" id="ab-graos">—</div>
       <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-graos-crit" style="display:none;margin-left:4px"></span></div>
     </div>
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--amber)" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
+    <div class="kpi-card amber" style="cursor:pointer" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
       <div class="kpi-label">🌿 Tabaco</div>
       <div class="kpi-value" id="ab-tabaco">—</div>
       <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-tabaco-crit" style="display:none;margin-left:4px"></span></div>
     </div>
-    <div class="kpi-card" style="cursor:pointer;border-top:3px solid var(--cacau)" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
+    <div class="kpi-card cacau" style="cursor:pointer" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
       <div class="kpi-label">🍫 Cacau</div>
       <div class="kpi-value" id="ab-cacau">—</div>
       <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-cacau-crit" style="display:none;margin-left:4px"></span></div>
@@ -702,9 +696,11 @@
   <!-- Gerado por _renderFazendaCards() a partir dos buckets (r[6]) que
        realmente têm chamado aberto — antes só Karitel/Rio do Meio
        apareciam aqui; Rádio/John Deere ficavam sem card nenhum. -->
-  <div id="ab-fazenda-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px"></div>
+  <div id="ab-fazenda-cards" class="kpi-grid kpi-grid-fluid"></div>
 
-  <!-- Filtros -->
+  <!-- Filtros — agrupados em 3 blocos visuais (filtrar · avançado/limpar ·
+       visualização), separados por .filter-bar-sep, mesma barra/mesmos
+       campos de sempre, só reorganizados por hierarquia. -->
   <div class="filter-bar">
     <span class="filter-label">Filtros</span>
     <input class="search-box" type="text" id="ab-srch" placeholder="Buscar número, frota, título…" oninput="applyAbertoFilters()">
@@ -723,26 +719,30 @@
       <option value="antigos">Mais antigos primeiro</option>
       <option value="recentes">Mais recentes primeiro</option>
     </select>
+
+    <span class="filter-bar-sep"></span>
     <button class="btn btn-ghost" id="btn-ab-avancado" onclick="toggleAbertoAvancado()">Filtros avançados</button>
-    <button class="btn btn-ghost" onclick="clearAbertoFilters()">Limpar</button>
+    <button class="btn btn-ghost" onclick="clearAbertoFilters()">Limpar tudo</button>
     <!-- Fase 4.6 (consolidação final) — ab-resp-card/ab-venc-card
          removidos: "Vencidos" virou o checkbox SLA crítico (avançado) e
          "Responsável" já é o select ab-resp acima; os cards do topo
          agora só disparam type='cult'/'fazenda'. -->
     <input type="hidden" id="ab-cult-card" value="">
     <input type="hidden" id="ab-fazenda-card" value="">
-    <button class="btn btn-ghost" id="ab-clear-cards" onclick="abCardFilter('total','')" style="display:none;font-size:11px;padding:5px 10px">✕ Limpar filtro</button>
+    <button class="btn btn-ghost" id="ab-clear-cards" onclick="abCardFilter('total','')" style="display:none;font-size:11px;padding:5px 10px">✕ Remover filtro de card</button>
+
+    <span class="filter-bar-sep"></span>
     <!-- Kanban exclusivo desta tela; compartilha filtro/busca/ordenação/
          dados/paginação com a Lista via filteredAbertos/applyAbertoFilters(). -->
     <span class="view-toggle">
       <button type="button" class="view-toggle-btn active" id="btn-view-lista" onclick="toggleViewMode('lista')">📋 Lista</button>
       <button type="button" class="view-toggle-btn" id="btn-view-kanban" onclick="toggleViewMode('kanban')">🗂 Kanban</button>
     </span>
-    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <div class="ab-legenda" style="margin-left:auto;display:flex;gap:6px;align-items:center">
       <span style="font-size:11px;color:var(--text3)">Legenda:</span>
-      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--red-bg);color:var(--red)">+7 dias</span>
-      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--amber-bg);color:var(--amber)">3–7 dias</span>
-      <span style="padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;background:var(--green-bg);color:var(--green)">&lt;3 dias</span>
+      <span class="badge badge-red">+7 dias</span>
+      <span class="badge badge-amber">3–7 dias</span>
+      <span class="badge badge-green">&lt;3 dias</span>
     </div>
   </div>
 
@@ -953,8 +953,8 @@
 
       <!-- Prioridade -->
       <div class="form-field">
-        <div class="form-label">Prioridade <span class="req">*</span></div>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+        <div class="form-label">Prioridade</div>
+        <div class="prio-opt-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
           <div class="prio-opt" data-val="Baixa"    onclick="selectPrior(this)" style="border-color:var(--green);color:var(--green)">🟢 Baixa</div>
           <div class="prio-opt selected" data-val="Média"   onclick="selectPrior(this)" style="border-color:var(--amber);color:var(--amber)">🟡 Média</div>
           <div class="prio-opt" data-val="Alta"     onclick="selectPrior(this)" style="border-color:var(--red);color:var(--red)">🔴 Alta</div>
@@ -1052,7 +1052,7 @@
     <div class="form-grid" style="margin-bottom:20px">
 
       <div class="form-field">
-        <div class="form-label">Cultura <span class="req">*</span></div>
+        <div class="form-label">Cultura</div>
         <select class="form-select" id="f-nova-cultura">
           <option value="">Selecione…</option>
           <option>Grãos e Fibras</option>
@@ -1106,6 +1106,7 @@
           <div id="resp-opts" style="display:flex;gap:6px;flex-wrap:wrap"></div>
         </div>
         <input type="hidden" id="f-resp" value="">
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Quem responde pelo chamado — pode ser mais de um</div>
       </div>
 
       <!-- Técnico Responsável (quem executa o serviço) -->
@@ -1114,7 +1115,7 @@
         <select class="form-select" id="f-tecnico">
           <option value="">A definir…</option>
         </select>
-        <div style="font-size:10px;color:var(--text3);margin-top:3px">Técnico que irá executar o atendimento</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:3px">Quem executa o atendimento em campo</div>
       </div>
 
       <!-- Status inicial -->
@@ -1153,6 +1154,8 @@
     <div class="novo-section-label" id="novo-bloco-6">📷 Fotos</div>
     <div style="margin-bottom:20px">
       <div class="foto-drop-zone" id="foto-drop-zone"
+        style="cursor:pointer"
+        onclick="document.getElementById('foto-input').click()"
         ondragover="event.preventDefault();this.classList.add('drag-over')"
         ondragleave="this.classList.remove('drag-over')"
         ondrop="handleFotoDrop(event)">
@@ -1162,7 +1165,7 @@
         <input type="file" id="foto-input" accept="image/*,.pdf" multiple style="display:none"
           onchange="handleFotoInput(this.files)">
         <button class="btn btn-ghost" style="margin-top:12px;font-size:12px"
-          onclick="document.getElementById('foto-input').click()">
+          onclick="event.stopPropagation();document.getElementById('foto-input').click()">
           + Selecionar arquivos
         </button>
       </div>
@@ -2874,26 +2877,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260802a"></script>
-  <script src="js/data/equipamentos.js?v=20260802a"></script>
-  <script src="js/data/match_map.js?v=20260802a"></script>
-  <script src="js/data/equip_idx.js?v=20260802a"></script>
+  <script src="js/data/chamados_historico.js?v=20260802b"></script>
+  <script src="js/data/equipamentos.js?v=20260802b"></script>
+  <script src="js/data/match_map.js?v=20260802b"></script>
+  <script src="js/data/equip_idx.js?v=20260802b"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260802a"></script>
+  <script src="js/core/storage.js?v=20260802b"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260802a"></script>
-  <script src="js/modules/dashboard/index.js?v=20260802a"></script>
-  <script src="js/modules/chamados/index.js?v=20260802a"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260802a"></script>
-  <script src="js/modules/relatorios/index.js?v=20260802a"></script>
-  <script src="js/modules/config/index.js?v=20260802a"></script>
+  <script src="js/modules/usuarios/index.js?v=20260802b"></script>
+  <script src="js/modules/dashboard/index.js?v=20260802b"></script>
+  <script src="js/modules/chamados/index.js?v=20260802b"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260802b"></script>
+  <script src="js/modules/relatorios/index.js?v=20260802b"></script>
+  <script src="js/modules/config/index.js?v=20260802b"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260802a"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260802b"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260802a"></script>
+  <script src="js/core/init.js?v=20260802b"></script>
 </body>
 </html>

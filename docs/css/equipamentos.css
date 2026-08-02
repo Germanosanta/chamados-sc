@@ -85,5 +85,12 @@
   #sec-kb     .data-table th:nth-child(2), #sec-kb     .data-table td:nth-child(2){ display:none; }
 }
 
+/* Fase Final (consolidação de UX/UI) — .equip-info-card.show tinha 3
+   colunas fixas sem nenhum breakpoint (Novo Chamado/Equipamentos);
+   empilha em 1 coluna antes de espremer em telas de 320-375px. */
+@media (max-width:600px){
+  .equip-info-card.show{ grid-template-columns:1fr; }
+}
+
 /* Ficha do Equipamento — reaproveita .det-block/.det-cabecalho-grid/.op-card
    (Centro Operacional do Chamado / Histórico por Frota), sem CSS próprio. */
