@@ -3,15 +3,19 @@ import type { DocumentData } from 'firebase/firestore';
 import { escutarColecao, type ColName } from '@/services/firebase/firestore';
 import { useSessionStore } from '@/store/session';
 
-interface State<T> {
+/** Tipo público de retorno de `useFirestoreCollection` — precisa ser
+ * exportado: hooks como `useUsuarios`/`useTecnicos`/`usePecas`/
+ * `useCadastroEquipamentos` repassam esse retorno direto, e o TS exige
+ * poder nomear o tipo de retorno de toda função exportada (TS4058). */
+export interface FirestoreCollectionState<T> {
   data: (T & { id: string })[];
   carregando: boolean;
   erro: Error | null;
 }
 
 interface Entry {
-  state: State<unknown>;
-  listeners: Set<(s: State<unknown>) => void>;
+  state: FirestoreCollectionState<unknown>;
+  listeners: Set<(s: FirestoreCollectionState<unknown>) => void>;
   unsub: (() => void) | null;
 }
 
@@ -41,22 +45,22 @@ function getEntry(colName: ColName): Entry {
  * bastante pra isso ser viável). Só assina depois que há sessão (as
  * regras do Firestore exigem `request.auth != null` pra quase tudo).
  */
-export function useFirestoreCollection<T = DocumentData>(colName: ColName) {
+export function useFirestoreCollection<T = DocumentData>(colName: ColName): FirestoreCollectionState<T> {
   const usuario = useSessionStore((s) => s.usuario);
-  const [state, setState] = useState<State<T>>(() => getEntry(colName).state as State<T>);
+  const [state, setState] = useState<FirestoreCollectionState<T>>(() => getEntry(colName).state as FirestoreCollectionState<T>);
 
   useEffect(() => {
     const entry = getEntry(colName);
 
     if (!usuario) {
       entry.state = { data: [], carregando: false, erro: null };
-      setState(entry.state as State<T>);
+      setState(entry.state as FirestoreCollectionState<T>);
       return;
     }
 
-    const listener = (s: State<unknown>) => setState(s as State<T>);
+    const listener = (s: FirestoreCollectionState<unknown>) => setState(s as FirestoreCollectionState<T>);
     entry.listeners.add(listener);
-    setState(entry.state as State<T>);
+    setState(entry.state as FirestoreCollectionState<T>);
 
     if (!entry.unsub) {
       entry.state = { ...entry.state, carregando: true };

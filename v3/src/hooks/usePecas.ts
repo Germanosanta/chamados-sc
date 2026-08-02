@@ -1,14 +1,14 @@
 import { useMutation } from '@tanstack/react-query';
-import { useFirestoreCollection } from './useFirestoreCollection';
+import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge } from '@/services/firebase/firestore';
 import { useSessionStore } from '@/store/session';
 import type { Peca, Movimentacao } from '@/types/peca';
 
-export function usePecas() {
+export function usePecas(): FirestoreCollectionState<Peca> {
   return useFirestoreCollection<Peca>('pecas');
 }
 
-export function useMovimentacoes() {
+export function useMovimentacoes(): FirestoreCollectionState<Movimentacao> {
   return useFirestoreCollection<Movimentacao>('movimentacoes');
 }
 

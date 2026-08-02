@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { useFirestoreCollection } from './useFirestoreCollection';
+import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge } from '@/services/firebase/firestore';
 import { useSessionStore } from '@/store/session';
 import type { Tecnico } from '@/types';
 
-export function useTecnicos() {
+export function useTecnicos(): FirestoreCollectionState<Tecnico> {
   return useFirestoreCollection<Tecnico>('tecnicos');
 }
 

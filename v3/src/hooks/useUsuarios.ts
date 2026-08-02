@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
-import { useFirestoreCollection } from './useFirestoreCollection';
+import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge, excluirDocumento } from '@/services/firebase/firestore';
 import { criarContaAuth } from '@/services/firebase/auth';
 import { useSessionStore } from '@/store/session';
 import type { Usuario } from '@/types';
 
-export function useUsuarios() {
+export function useUsuarios(): FirestoreCollectionState<Usuario> {
   return useFirestoreCollection<Usuario>('usuarios');
 }
 

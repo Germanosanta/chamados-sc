@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useFirestoreCollection } from './useFirestoreCollection';
+import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge } from '@/services/firebase/firestore';
 import type { Equipamento, EquipamentoEstatico } from '@/types/equipamento';
 import equipamentosEstatico from '@/data/equipamentos.json';
@@ -9,7 +9,7 @@ const EQUIPAMENTOS_ESTATICO = equipamentosEstatico as unknown as EquipamentoEsta
 
 /** Cadastro em tempo real (overrides sobre a base estática) —
  * equivalente a getCadEq() na V2. */
-export function useCadastroEquipamentos() {
+export function useCadastroEquipamentos(): FirestoreCollectionState<Equipamento> {
   return useFirestoreCollection<Equipamento>('equipamentos');
 }
 

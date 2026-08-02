@@ -3,6 +3,27 @@
 Datas/commits reais (`git log -- v3/`). Cada linha resume o que o commit
 mudou; detalhe completo em cada mensagem de commit.
 
+## Correção do segundo grupo de erros reais do CI (`tsc -b`, TS4058)
+Depois do primeiro erro corrigido, o `tsc -b` avançou e encontrou 5
+ocorrências de TS4058 ("Return type of exported function has or is using
+name 'State' ... but cannot be named") em `useEquipamentos.ts`,
+`usePecas.ts` (2x), `useTecnicos.ts` e `useUsuarios.ts`. Causa raiz: a
+interface `State<T>` de `useFirestoreCollection.ts` não era exportada, mas
+5 hooks (`useCadastroEquipamentos`, `usePecas`, `useMovimentacoes`,
+`useTecnicos`, `useUsuarios`) repassam o retorno de
+`useFirestoreCollection` direto, sem envolver num objeto novo — o
+TypeScript exige poder nomear o tipo de retorno de toda função exportada
+pra emitir os `.d.ts` dos project references (`tsc -b`), e um tipo interno
+não-exportado não pode ser nomeado. Corrigido exportando a interface como
+`FirestoreCollectionState<T>` (renomeada de `State<T>`) e anotando
+explicitamente o tipo de retorno de `useFirestoreCollection` e dos 5 hooks
+que a repassam — sem `any`/`unknown`/`@ts-ignore`. Revisão dos demais
+hooks do projeto (todo `export function use...`) não achou outra função
+que exponha um tipo interno inferido: os que usam `useMutation` retornam
+um tipo público do TanStack Query, e os que compõem `{ data, carregando }`
+a partir de `useChamados`/`useFirestoreCollection` já usam tipos públicos
+(`Chamado[]`, `Tecnico[]`, `SolucaoKB[]`, `boolean`) nesse objeto novo.
+
 ## Correção do primeiro erro real do CI (`tsc -b`)
 Primeira execução real do GitHub Actions (Node 22/24) pegou um erro de
 tipagem que a revisão manual (sem Node no ambiente de escrita) não
