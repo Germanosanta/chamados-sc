@@ -20,7 +20,12 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      // argsIgnorePattern cobre parâmetros não usados (ex. callbacks);
+      // varsIgnorePattern cobre o padrão já usado no código pra excluir
+      // campos de um objeto via destructuring + rest (ex. `const { x: _x,
+      // ...resto } = obj`) — sem isso, esses `_x` intencionalmente não
+      // usados aparecem como warning no lint.
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
 );
