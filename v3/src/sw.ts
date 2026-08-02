@@ -19,7 +19,12 @@ import { registerRoute } from 'workbox-routing';
 import { CacheFirst, NetworkFirst } from 'workbox-strategies';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
-declare const self: ServiceWorkerGlobalScope;
+// self.__WB_MANIFEST não existe no tipo padrão de ServiceWorkerGlobalScope —
+// é injetado em build-time pelo vite-plugin-pwa/workbox-build (padrão
+// documentado do plugin para o modo injectManifest).
+declare const self: ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: Array<{ url: string; revision: string | null }>;
+};
 
 precacheAndRoute(self.__WB_MANIFEST);
 cleanupOutdatedCaches();

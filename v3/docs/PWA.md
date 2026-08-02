@@ -32,6 +32,16 @@ via JS e hasheados no build): `72, 96, 128, 144, 152, 192, 384, 512` +
 `index.html` referencia separadamente `favicon.ico`, `favicon-16x16.png`,
 `favicon-32x32.png` e `apple-touch-icon.png` (mesma pasta).
 
+## Tipagem do Service Worker
+
+`self.__WB_MANIFEST` (a lista de precache injetada em build-time pelo
+plugin) não existe no tipo padrão `ServiceWorkerGlobalScope` — é
+aumentado manualmente em `sw.ts`
+(`declare const self: ServiceWorkerGlobalScope & { __WB_MANIFEST: ... }`,
+padrão documentado do `vite-plugin-pwa`). `sw.ts` também é type-checado
+sob seu próprio projeto de referência (`tsconfig.sw.json`, lib
+`WebWorker`), separado do app principal — ver `ARQUITETURA.md`.
+
 ## Service Worker (`src/sw.ts`)
 
 - **Precache**: `precacheAndRoute(self.__WB_MANIFEST)` — todo o build,

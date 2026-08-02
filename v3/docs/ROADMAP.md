@@ -7,14 +7,16 @@ já foi corrigido nas rodadas anteriores (ver `CHANGELOG.md`).
 
 ## Bloqueado por ambiente
 
-- **`npm install && npm run lint && npm run build` nunca rodaram de
-  verdade** — o ambiente onde a V3 foi escrita não tem Node.js/npm
-  instalado. Todo o código foi revisado manualmente (resolução de
-  imports/exports, balanceamento de sintaxe, conferência de que cada
-  export importado existe de fato no módulo de origem) a cada
-  checkpoint, mas isso não substitui o compilador/linter reais. Rodar
-  essas 3 checagens localmente é o próximo passo obrigatório antes de
-  qualquer promoção da V3 a produção — ver `GUIA_DESENVOLVEDOR.md`.
+- **`npm install && npm run typecheck && npm run lint && npm run build`
+  nunca rodaram de verdade** — o ambiente onde a V3 foi escrita não tem
+  Node.js/npm instalado. Todo o código foi revisado manualmente
+  (resolução de imports/exports em todos os 105 módulos, balanceamento
+  de sintaxe, conferência de `tsconfig`/`vite.config`/`eslint.config`/
+  `tailwind.config` linha por linha) a cada checkpoint, mas isso não
+  substitui o compilador/linter reais. O workflow `.github/workflows/
+  v3-ci.yml` (ver `BUILD.md`) automatiza exatamente essas 3 checagens a
+  cada push — a primeira execução real dele é o próximo passo obrigatório
+  antes de qualquer promoção da V3 a produção.
 - Sem `package-lock.json` ainda (nunca gerado, mesma causa acima) — o CI
   usa `npm install`; ao gerar e commitar o lockfile, o workflow já troca
   sozinho para `npm ci`.

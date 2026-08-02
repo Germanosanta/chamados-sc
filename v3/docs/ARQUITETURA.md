@@ -61,6 +61,19 @@ coleção cria o listener; os seguintes reaproveitam o mesmo; o listener só
 normalização no cliente; os documentos gravados no Firestore continuam
 exatamente no formato que a V2 já lê/escreve (ver `FIRESTORE.md`).
 
+## `tsc -b` — 3 projetos, não 2
+
+`tsconfig.json` referencia 3 sub-projetos: `tsconfig.app.json` (`src/`,
+exceto `sw.ts`; lib `DOM`+`DOM.Iterable`), `tsconfig.node.json`
+(`vite.config.ts`; lib `ES2023`) e `tsconfig.sw.json` (só `src/sw.ts`;
+lib `WebWorker`, sem `DOM`). `sw.ts` precisa de tipos de Service Worker
+(`ServiceWorkerGlobalScope`, `self.clients`, etc.) que colidem com a lib
+`DOM` do projeto principal (as duas declaram `self` de formas
+incompatíveis) — por isso ele fica isolado no próprio projeto de
+referência, com sua própria lib e sem misturar com o app. Os 3 projetos
+têm `composite: true` (exigência do TypeScript para qualquer projeto
+referenciado por `tsc -b`).
+
 ## Estrutura de pastas
 
 ```

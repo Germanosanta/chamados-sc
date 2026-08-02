@@ -3,6 +3,22 @@
 Datas/commits reais (`git log -- v3/`). Cada linha resume o que o commit
 mudou; detalhe completo em cada mensagem de commit.
 
+## RC-FINAL + CI/CD — preparação para produção
+Corrigido um erro real de `tsc -b` que não tinha sido pego nas rodadas
+anteriores: `sw.ts` era type-checado sob o mesmo projeto do app (lib
+`DOM`), que conflita com os tipos de Service Worker que o arquivo usa —
+isolado agora em `tsconfig.sw.json` próprio (lib `WebWorker`), e
+`self.__WB_MANIFEST` (usado sem estar tipado) ganhou a augmentação
+correta. Adicionado `composite: true` nos 3 projetos referenciados por
+`tsc -b` (exigência do TypeScript para project references, ausente até
+aqui). `v3-ci.yml` reescrito: matrix de Node (22/24), cache chaveado por
+versão de Node, permissões mínimas (`contents: read`), timeout por job,
+nomes de job amigáveis, publicação do artefato de build
+(`v3-dist-node22`/`v3-dist-node24`), Job Summary por perna da matrix.
+Nova varredura de import/export cobrindo os 105 módulos do projeto (2
+falsos-positivos de alias verificados manualmente, 0 problemas reais).
+Novo documento `BUILD.md`.
+
 ## `bbe4409` — RC1: auditoria completa
 Code splitting por rota (`React.lazy` + `Suspense`), listeners Firestore
 compartilhados por coleção (`useFirestoreCollection`), correções de

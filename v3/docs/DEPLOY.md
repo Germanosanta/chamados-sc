@@ -3,9 +3,11 @@
 ## Estado atual: V3 não publica em lugar nenhum
 
 A V3 roda **CI apenas** (`.github/workflows/v3-ci.yml`, na raiz do
-projeto): instala dependências, roda type-check + lint + build a cada
-push/PR que toque `v3/**`. Não existe passo de deploy ativo — decisão
-explícita, porque o destino de Hosting da V3 ainda não foi definido.
+projeto): instala dependências, type-checka, linta, builda e publica o
+artefato do build (`v3-dist-node22`/`v3-dist-node24`) a cada push/PR que
+toque `v3/**` — em matrix de 2 versões de Node. Não existe passo de
+deploy ativo — decisão explícita, porque o destino de Hosting da V3
+ainda não foi definido. Detalhe completo do pipeline: `BUILD.md`.
 
 `firebase.json` (raiz do projeto) só conhece um site de Hosting hoje:
 
