@@ -1,11 +1,14 @@
+import { initializeApp, deleteApp } from 'firebase/app';
 import {
   signInWithEmailAndPassword,
   signOut as fbSignOut,
   updatePassword,
   sendPasswordResetEmail,
+  createUserWithEmailAndPassword,
+  getAuth,
   type User,
 } from 'firebase/auth';
-import { auth } from './app';
+import { auth, firebaseConfig } from './app';
 import { buscarPorCampo, getOne, setMerge } from './firestore';
 import type { LoginLookup, Usuario } from '@/types';
 
@@ -81,4 +84,22 @@ export async function trocarSenha(novaSenha: string): Promise<void> {
 
 export async function enviarResetSenha(email: string): Promise<void> {
   await sendPasswordResetEmail(auth, email);
+}
+
+/**
+ * Cria uma conta no Firebase Auth para OUTRO usuário (fluxo de
+ * Administração → Usuários) sem afetar a sessão do admin logado — mesmo
+ * truque da V2 (fbCreateAuthUser): usa um app secundário descartável só
+ * pra essa chamada, depois derruba esse app. Sem isso, criar um usuário
+ * novo trocaria a sessão ativa pela conta recém-criada.
+ */
+export async function criarContaAuth(email: string, senha: string): Promise<string> {
+  const secundario = initializeApp(firebaseConfig, `secundario-${Date.now()}`);
+  try {
+    const authSecundario = getAuth(secundario);
+    const cred = await createUserWithEmailAndPassword(authSecundario, email, senha);
+    return cred.user.uid;
+  } finally {
+    await deleteApp(secundario);
+  }
 }

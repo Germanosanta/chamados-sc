@@ -16,6 +16,9 @@ import { EquipamentosPage } from '@/pages/equipamentos/EquipamentosPage';
 import { FrotasPage } from '@/pages/frotas/FrotasPage';
 import { PecasPage } from '@/pages/pecas/PecasPage';
 import { KBPage } from '@/pages/kb/KBPage';
+import { TecnicosPage } from '@/pages/tecnicos/TecnicosPage';
+import { UsuariosPage } from '@/pages/usuarios/UsuariosPage';
+import { ConfigPage } from '@/pages/config/ConfigPage';
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
 import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTOM, type SectionId } from '@/utils/sections';
 import type { Permissao } from '@/types/permissoes';
@@ -35,6 +38,9 @@ const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
   frotas: FrotasPage,
   pecas: PecasPage,
   kb: KBPage,
+  tecnicos: TecnicosPage,
+  usuarios: UsuariosPage,
+  config: ConfigPage,
 };
 
 const PERM_BY_SECTION: Partial<Record<SectionId, Permissao>> = {};

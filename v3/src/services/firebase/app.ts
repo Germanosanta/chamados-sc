@@ -8,7 +8,7 @@ import { getFirestore } from 'firebase/firestore';
  * Lida via env do Vite (ver .env.example) pra seguir a prática padrão do
  * ecossistema, mas os valores em si são idênticos aos hardcoded na V2.
  */
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
   projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
