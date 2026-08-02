@@ -48,7 +48,7 @@ export function Topbar() {
 
   return (
     <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-surface px-4">
-      <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileMenuOpen(true)}>
+      <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Abrir menu" onClick={() => setMobileMenuOpen(true)}>
         <Menu className="h-4 w-4" />
       </Button>
       <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -64,7 +64,7 @@ export function Topbar() {
 
       <GlobalSearch />
 
-      <Button size="sm" onClick={() => navigate('/novo')} title="Novo Chamado">
+      <Button size="sm" onClick={() => navigate('/novo')} title="Novo Chamado" aria-label="Novo Chamado">
         <Plus className="h-3.5 w-3.5" />
         <span className="hidden sm:inline">Novo</span>
       </Button>
@@ -74,7 +74,7 @@ export function Topbar() {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="flex items-center gap-2 rounded-sm px-1.5 py-1 hover:bg-muted">
+          <button className="flex items-center gap-2 rounded-sm px-1.5 py-1 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1" aria-label="Menu do usuário">
             <Avatar>
               <AvatarFallback>{usuario ? iniciais(usuario.nome) : <User className="h-3.5 w-3.5" />}</AvatarFallback>
             </Avatar>

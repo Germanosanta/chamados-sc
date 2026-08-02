@@ -1,36 +1,41 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import type { ComponentType } from 'react';
+import { lazy, Suspense, type ComponentType } from 'react';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { AppShell } from '@/layouts/AppShell';
 import { ProtectedRoute } from '@/layouts/ProtectedRoute';
-import { LoginPage } from '@/pages/login/LoginPage';
-import { PortalPage } from '@/pages/portal/PortalPage';
-import { HomePage } from '@/pages/home/HomePage';
-import { AbertoPage } from '@/pages/aberto/AbertoPage';
-import { ChamadosPage } from '@/pages/chamados/ChamadosPage';
-import { NovoChamadoPage } from '@/pages/novo/NovoChamadoPage';
-import { EncerradosPage } from '@/pages/encerrados/EncerradosPage';
-import { CriticidadePage } from '@/pages/criticidade/CriticidadePage';
-import { AreaTecnicoPage } from '@/pages/area-tecnico/AreaTecnicoPage';
-import { EquipamentosPage } from '@/pages/equipamentos/EquipamentosPage';
-import { FrotasPage } from '@/pages/frotas/FrotasPage';
-import { PecasPage } from '@/pages/pecas/PecasPage';
-import { KBPage } from '@/pages/kb/KBPage';
-import { TecnicosPage } from '@/pages/tecnicos/TecnicosPage';
-import { UsuariosPage } from '@/pages/usuarios/UsuariosPage';
-import { ConfigPage } from '@/pages/config/ConfigPage';
-import { AuditoriaPage } from '@/pages/auditoria/AuditoriaPage';
-import { ResponsaveisPage } from '@/pages/responsaveis/ResponsaveisPage';
-import { DashboardPage } from '@/pages/dashboard/DashboardPage';
-import { PainelPage } from '@/pages/painel/PainelPage';
-import { PorMesPage } from '@/pages/pormes/PorMesPage';
-import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
+import { RouteLoading } from '@/components/shared/RouteLoading';
 import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTOM, type SectionId } from '@/utils/sections';
 import type { Permissao } from '@/types/permissoes';
 
+const LoginPage = lazy(() => import('@/pages/login/LoginPage').then((m) => ({ default: m.LoginPage })));
+const PortalPage = lazy(() => import('@/pages/portal/PortalPage').then((m) => ({ default: m.PortalPage })));
+const HomePage = lazy(() => import('@/pages/home/HomePage').then((m) => ({ default: m.HomePage })));
+const AbertoPage = lazy(() => import('@/pages/aberto/AbertoPage').then((m) => ({ default: m.AbertoPage })));
+const ChamadosPage = lazy(() => import('@/pages/chamados/ChamadosPage').then((m) => ({ default: m.ChamadosPage })));
+const NovoChamadoPage = lazy(() => import('@/pages/novo/NovoChamadoPage').then((m) => ({ default: m.NovoChamadoPage })));
+const EncerradosPage = lazy(() => import('@/pages/encerrados/EncerradosPage').then((m) => ({ default: m.EncerradosPage })));
+const CriticidadePage = lazy(() => import('@/pages/criticidade/CriticidadePage').then((m) => ({ default: m.CriticidadePage })));
+const AreaTecnicoPage = lazy(() => import('@/pages/area-tecnico/AreaTecnicoPage').then((m) => ({ default: m.AreaTecnicoPage })));
+const EquipamentosPage = lazy(() => import('@/pages/equipamentos/EquipamentosPage').then((m) => ({ default: m.EquipamentosPage })));
+const FrotasPage = lazy(() => import('@/pages/frotas/FrotasPage').then((m) => ({ default: m.FrotasPage })));
+const PecasPage = lazy(() => import('@/pages/pecas/PecasPage').then((m) => ({ default: m.PecasPage })));
+const KBPage = lazy(() => import('@/pages/kb/KBPage').then((m) => ({ default: m.KBPage })));
+const TecnicosPage = lazy(() => import('@/pages/tecnicos/TecnicosPage').then((m) => ({ default: m.TecnicosPage })));
+const UsuariosPage = lazy(() => import('@/pages/usuarios/UsuariosPage').then((m) => ({ default: m.UsuariosPage })));
+const ConfigPage = lazy(() => import('@/pages/config/ConfigPage').then((m) => ({ default: m.ConfigPage })));
+const AuditoriaPage = lazy(() => import('@/pages/auditoria/AuditoriaPage').then((m) => ({ default: m.AuditoriaPage })));
+const ResponsaveisPage = lazy(() => import('@/pages/responsaveis/ResponsaveisPage').then((m) => ({ default: m.ResponsaveisPage })));
+const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })));
+const PainelPage = lazy(() => import('@/pages/painel/PainelPage').then((m) => ({ default: m.PainelPage })));
+const PorMesPage = lazy(() => import('@/pages/pormes/PorMesPage').then((m) => ({ default: m.PorMesPage })));
+const PlaceholderPage = lazy(() => import('@/pages/placeholder/PlaceholderPage').then((m) => ({ default: m.PlaceholderPage })));
+
 /** Páginas 100% funcionais desta fase — o resto das rotas cai no mesmo
  * PlaceholderPage genérico (rota real, protegida, dentro do shell, sem
- * lógica ainda — ver Pendências no relatório). */
+ * lógica ainda — ver Pendências no relatório). Todas carregadas via
+ * React.lazy: cada tela vira seu próprio chunk (code splitting), só
+ * baixado quando o usuário navega até ela; o Suspense de cada layout
+ * (AuthLayout/AppShell) cobre o tempo de download com um fallback leve. */
 const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
   home: HomePage,
   aberto: AbertoPage,
@@ -67,7 +72,14 @@ export const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-      { path: '/portal', element: <PortalPage /> },
+      {
+        path: '/portal',
+        element: (
+          <Suspense fallback={<RouteLoading />}>
+            <PortalPage />
+          </Suspense>
+        ),
+      },
       {
         element: <AppShell />,
         children: SECTIONS.map((id) => {

@@ -69,6 +69,19 @@ export function ChamadosPage() {
 
   const paginados = useMemo(() => filtrados.slice((page - 1) * PER_PAGE, page * PER_PAGE), [filtrados, page]);
 
+  // memoizado porque `todos` pode ter milhares de registros históricos —
+  // sem isso, os 2 KPIs abaixo re-varreriam a lista inteira a cada
+  // digitação nos filtros, mesmo sem nenhuma relação com o texto buscado.
+  const { emAberto, encerrados } = useMemo(() => {
+    let emAberto = 0;
+    let encerrados = 0;
+    for (const c of todos) {
+      if (c.status === 'Encerrado' || c.status === 'Concluída') encerrados++;
+      else emAberto++;
+    }
+    return { emAberto, encerrados };
+  }, [todos]);
+
   function exportar() {
     downloadCSV('chamados_santa_colomba.csv', [
       ['Número', 'Título', 'Cultura', 'Responsável', 'Data', 'Status', 'Sistema'],
@@ -105,8 +118,8 @@ export function ChamadosPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Total" value={carregando ? '—' : todos.length} color="blue" />
-        <KpiCard label="Em Aberto" value={carregando ? '—' : todos.filter((c) => c.status !== 'Encerrado' && c.status !== 'Concluída').length} color="red" />
-        <KpiCard label="Encerrados" value={carregando ? '—' : todos.filter((c) => c.status === 'Encerrado' || c.status === 'Concluída').length} color="green" />
+        <KpiCard label="Em Aberto" value={carregando ? '—' : emAberto} color="red" />
+        <KpiCard label="Encerrados" value={carregando ? '—' : encerrados} color="green" />
         <KpiCard label="Filtrados" value={filtrados.length} color="amber" />
       </div>
 

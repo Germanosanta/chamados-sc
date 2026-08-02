@@ -1,5 +1,7 @@
+import { Suspense } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useSessionStore } from '@/store/session';
+import { RouteLoading } from '@/components/shared/RouteLoading';
 import { Loader2 } from 'lucide-react';
 
 /** Layout da tela de login — se já há sessão ativa, pula direto pro
@@ -21,7 +23,9 @@ export function AuthLayout() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Outlet />
+      <Suspense fallback={<RouteLoading />}>
+        <Outlet />
+      </Suspense>
     </div>
   );
 }

@@ -68,11 +68,11 @@ export function PorMesPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" disabled={ano <= 2022} onClick={() => setAno((a) => a - 1)}>
+        <Button variant="ghost" size="icon" aria-label="Ano anterior" disabled={ano <= 2022} onClick={() => setAno((a) => a - 1)}>
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <span className="font-mono-num text-lg font-bold text-foreground">{ano}</span>
-        <Button variant="ghost" size="icon" disabled={ano >= 2026} onClick={() => setAno((a) => a + 1)}>
+        <Button variant="ghost" size="icon" aria-label="Próximo ano" disabled={ano >= 2026} onClick={() => setAno((a) => a + 1)}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

@@ -61,9 +61,22 @@ export function DataTable<T>({
                 <th
                   key={col.key}
                   onClick={() => handleSort(col)}
+                  tabIndex={col.sortable ? 0 : undefined}
+                  role={col.sortable ? 'button' : undefined}
+                  aria-sort={col.sortable ? (sort?.key === col.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none') : undefined}
+                  onKeyDown={
+                    col.sortable
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleSort(col);
+                          }
+                        }
+                      : undefined
+                  }
                   className={cn(
                     'whitespace-nowrap px-3.5 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground',
-                    col.sortable && 'cursor-pointer select-none hover:text-foreground',
+                    col.sortable && 'cursor-pointer select-none hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
                     col.headClassName,
                   )}
                 >
@@ -107,7 +120,26 @@ export function DataTable<T>({
                 <tr
                   key={rowKey(row)}
                   onClick={onRowClick ? () => onRowClick(row) : undefined}
-                  className={cn('border-b border-border last:border-none hover:bg-muted', onRowClick && 'cursor-pointer')}
+                  tabIndex={onRowClick ? 0 : undefined}
+                  aria-label={onRowClick ? `Abrir detalhes — ${rowKey(row)}` : undefined}
+                  onKeyDown={
+                    onRowClick
+                      ? (e) => {
+                          // só reage a Enter/Espaço originado na própria linha —
+                          // uma ação aninhada (botão/select da coluna "Ação") já
+                          // trata sua própria tecla e não deve também abrir a linha.
+                          if (e.target !== e.currentTarget) return;
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            onRowClick(row);
+                          }
+                        }
+                      : undefined
+                  }
+                  className={cn(
+                    'border-b border-border last:border-none hover:bg-muted',
+                    onRowClick && 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
+                  )}
                 >
                   {columns.map((col) => (
                     <td key={col.key} className={cn('px-3.5 py-2.5 align-middle text-muted-foreground', col.className)}>

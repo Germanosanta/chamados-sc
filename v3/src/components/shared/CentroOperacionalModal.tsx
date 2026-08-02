@@ -13,7 +13,7 @@ import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { usePermission } from '@/hooks/usePermission';
 import { useChamados, useAssumirChamado, useRegistrarEvento, useReabrirChamado } from '@/hooks/useChamados';
-import { diasAberto, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, frotaLabel, getChamadoEquip } from '@/utils/chamado-helpers';
+import { diasAberto, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import type { Auditoria } from '@/types/auditoria';

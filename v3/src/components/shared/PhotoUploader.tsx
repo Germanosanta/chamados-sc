@@ -79,11 +79,13 @@ export function PhotoUploader({ value, onChange }: { value: FotoAnexo[]; onChang
                 <img src={f.data} alt={f.name} className="h-full w-full object-cover" />
               )}
               <button
+                type="button"
+                aria-label={`Remover ${f.name}`}
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange(value.filter((_, idx) => idx !== i));
                 }}
-                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/60 text-white opacity-0 transition-opacity focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white group-hover:opacity-100"
               >
                 <X className="h-3 w-3" />
               </button>

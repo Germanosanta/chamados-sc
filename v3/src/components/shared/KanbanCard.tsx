@@ -27,9 +27,22 @@ export function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
       {...listeners}
       {...attributes}
       onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick();
+              }
+            }
+          : undefined
+      }
+      aria-label={onClick ? `Chamado ${chamado.num} — ${chamado.titulo}` : undefined}
       className={cn(
         'cursor-grab select-none rounded-sm border border-border bg-surface p-2.5 shadow-sm transition active:cursor-grabbing',
-        'hover:border-primary hover:shadow',
+        'hover:border-primary hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
         isDragging && 'opacity-50',
       )}
     >

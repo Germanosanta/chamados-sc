@@ -33,8 +33,8 @@ export function Pagination({ page, totalItems, perPage, onPageChange }: Paginati
       <div className="text-sm text-muted-foreground">
         Exibindo {from.toLocaleString('pt-BR')}–{to.toLocaleString('pt-BR')} de {totalItems.toLocaleString('pt-BR')}
       </div>
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+      <nav className="flex items-center gap-1" aria-label="Paginação">
+        <Button variant="ghost" size="icon" aria-label="Página anterior" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
           <ChevronLeft className="h-3.5 w-3.5" />
         </Button>
         {pages.map((p, i) =>
@@ -46,8 +46,10 @@ export function Pagination({ page, totalItems, perPage, onPageChange }: Paginati
             <button
               key={p}
               onClick={() => onPageChange(p)}
+              aria-label={`Página ${p}`}
+              aria-current={p === page ? 'page' : undefined}
               className={cn(
-                'h-8 min-w-8 rounded-sm border border-border px-2 text-sm font-semibold transition-colors',
+                'h-8 min-w-8 rounded-sm border border-border px-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
                 p === page ? 'border-primary bg-primary text-primary-foreground' : 'bg-surface hover:border-border2',
               )}
             >
@@ -55,10 +57,10 @@ export function Pagination({ page, totalItems, perPage, onPageChange }: Paginati
             </button>
           ),
         )}
-        <Button variant="ghost" size="icon" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
+        <Button variant="ghost" size="icon" aria-label="Próxima página" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
           <ChevronRight className="h-3.5 w-3.5" />
         </Button>
-      </div>
+      </nav>
     </div>
   );
 }

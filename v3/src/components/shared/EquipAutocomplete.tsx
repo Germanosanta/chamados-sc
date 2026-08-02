@@ -68,6 +68,7 @@ export function EquipAutocomplete({ onSelect, placeholder }: EquipAutocompletePr
       {q && (
         <button
           type="button"
+          aria-label="Limpar busca"
           onClick={() => {
             setQ('');
             setFocusIdx(-1);

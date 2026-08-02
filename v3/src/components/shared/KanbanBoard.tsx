@@ -14,10 +14,11 @@ interface KanbanBoardProps {
 
 /**
  * Drag-and-drop real (@dnd-kit) entre as 4 raias — mesmas transições da
- * V2 (KANBAN_TRANSICOES). As 2 transições que terminam em "Encerrado"
- * exigem o checklist do Centro Operacional (fase seguinte da V3, ainda
- * não portada) — soltar um card lá mostra um aviso em vez de fingir
- * encerrar sem o checklist obrigatório.
+ * V2 (KANBAN_TRANSICOES). Encerrar e reabrir sempre exigem o checklist/
+ * confirmação do Centro Operacional (mesma regra da V2 — nunca uma
+ * mudança de status silenciosa), então soltar um card em "Concluído" (ou
+ * arrastar um card de lá) abre o Centro Operacional daquele chamado em
+ * vez de mudar o status direto.
  */
 export function KanbanBoard({ chamados, onStatusChange, onCardClick, onAssumir }: KanbanBoardProps) {
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -39,11 +40,13 @@ export function KanbanBoard({ chamados, onStatusChange, onCardClick, onAssumir }
     if (origem === destino) return;
 
     if (destino === 'concluido') {
-      toast('Encerramento com checklist chega na próxima fase (Centro Operacional).');
+      toast('Encerrar exige o checklist — abrindo o Centro Operacional…');
+      onCardClick?.(chamado);
       return;
     }
     if (origem === 'concluido') {
-      toast('Reabertura chega na próxima fase (Centro Operacional).');
+      toast('Reabrir um chamado encerrado exige confirmação — abrindo o Centro Operacional…');
+      onCardClick?.(chamado);
       return;
     }
 

@@ -9,6 +9,32 @@ interface State<T> {
   erro: Error | null;
 }
 
+interface Entry {
+  state: State<unknown>;
+  listeners: Set<(s: State<unknown>) => void>;
+  unsub: (() => void) | null;
+}
+
+// Registro compartilhado por coleção — várias telas pedem a mesma
+// coleção ao mesmo tempo (ex. "chamados" é lido por Aberto, Dashboard,
+// Painel e pelo Centro Operacional simultaneamente, já que este último é
+// um modal global sempre montado; "auditoria" é lido tanto pela própria
+// tela de Auditoria quanto pelo bloco de auditoria-por-chamado do Centro
+// Operacional). Sem isso, cada componente abriria seu próprio
+// onSnapshot para a mesma coleção. Aqui, todos os assinantes ativos de
+// uma coleção compartilham 1 único listener; ele só é desligado quando o
+// último assinante desmonta.
+const registry = new Map<ColName, Entry>();
+
+function getEntry(colName: ColName): Entry {
+  let entry = registry.get(colName);
+  if (!entry) {
+    entry = { state: { data: [], carregando: true, erro: null }, listeners: new Set(), unsub: null };
+    registry.set(colName, entry);
+  }
+  return entry;
+}
+
 /**
  * Escuta a coleção inteira em tempo real (mesmo padrão de
  * fsStartRealtime() da V2 — sem `where`/paginação, volumes pequenos o
@@ -17,19 +43,37 @@ interface State<T> {
  */
 export function useFirestoreCollection<T = DocumentData>(colName: ColName) {
   const usuario = useSessionStore((s) => s.usuario);
-  const [state, setState] = useState<State<T>>({ data: [], carregando: true, erro: null });
+  const [state, setState] = useState<State<T>>(() => getEntry(colName).state as State<T>);
 
   useEffect(() => {
+    const entry = getEntry(colName);
+
     if (!usuario) {
-      setState({ data: [], carregando: false, erro: null });
+      entry.state = { data: [], carregando: false, erro: null };
+      setState(entry.state as State<T>);
       return;
     }
-    setState((s) => ({ ...s, carregando: true }));
-    const unsub = escutarColecao<T>(
-      colName,
-      (items) => setState({ data: items, carregando: false, erro: null }),
-    );
-    return () => unsub();
+
+    const listener = (s: State<unknown>) => setState(s as State<T>);
+    entry.listeners.add(listener);
+    setState(entry.state as State<T>);
+
+    if (!entry.unsub) {
+      entry.state = { ...entry.state, carregando: true };
+      entry.unsub = escutarColecao<T>(colName, (items) => {
+        entry.state = { data: items, carregando: false, erro: null };
+        entry.listeners.forEach((l) => l(entry.state));
+      });
+    }
+
+    return () => {
+      entry.listeners.delete(listener);
+      if (entry.listeners.size === 0 && entry.unsub) {
+        entry.unsub();
+        entry.unsub = null;
+        registry.delete(colName);
+      }
+    };
   }, [colName, usuario]);
 
   return state;
