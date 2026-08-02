@@ -7,16 +7,27 @@ já foi corrigido nas rodadas anteriores (ver `CHANGELOG.md`).
 
 ## Bloqueado por ambiente
 
-- **`npm install && npm run typecheck && npm run lint && npm run build`
-  nunca rodaram de verdade** — o ambiente onde a V3 foi escrita não tem
-  Node.js/npm instalado. Todo o código foi revisado manualmente
-  (resolução de imports/exports em todos os 105 módulos, balanceamento
-  de sintaxe, conferência de `tsconfig`/`vite.config`/`eslint.config`/
-  `tailwind.config` linha por linha) a cada checkpoint, mas isso não
-  substitui o compilador/linter reais. O workflow `.github/workflows/
-  v3-ci.yml` (ver `BUILD.md`) automatiza exatamente essas 3 checagens a
-  cada push — a primeira execução real dele é o próximo passo obrigatório
-  antes de qualquer promoção da V3 a produção.
+- **`npm run typecheck`/`lint`/`build` já rodaram de verdade no GitHub
+  Actions e estão 100% verdes** (Node 22 e 24) — mas nunca rodaram
+  localmente nem num navegador real, porque o ambiente onde a V3 vem
+  sendo trabalhada não tem Node.js/npm/browser instalado. Isso significa
+  que responsividade real (320px–1440px), fluxos de clique (login, CRUD,
+  drag-and-drop do Kanban) e comportamento do PWA (instalação, offline,
+  atualização) nunca foram verificados visualmente — só por leitura de
+  código (classes Tailwind, lógica dos handlers). É a lacuna real que
+  falta pra fechar a Fase 6: alguém rodar `npm install && npm run dev`
+  num navegador de verdade e passar pela tela em cada breakpoint/fluxo.
+- **Reorganização visual completa de "Chamados em Aberto" e "Centro
+  Operacional"** (pedida na Fase 6) foi deliberadamente **não executada
+  às cegas**: as duas telas já refletem decisões de layout tomadas em
+  rodadas anteriores (cards de KPI limitados a Cultura+Fazenda, ordem dos
+  blocos do Centro Operacional) e uma reconstrução completa de interface
+  sem conseguir renderizar o resultado é risco real de regressão visual
+  não detectável por `tsc`/`eslint`. Nesta rodada, o ganho de performance
+  da Kanban (memoização) e as adições ao Dashboard (dados já calculados,
+  antes não exibidos) foram priorizados por serem verificáveis sem
+  navegador; a reorganização visual mais ampla das duas telas fica para
+  quando houver como testar visualmente antes de publicar.
 - Sem `package-lock.json` ainda (nunca gerado, mesma causa acima) — o CI
   usa `npm install`; ao gerar e commitar o lockfile, o workflow já troca
   sozinho para `npm ci`.

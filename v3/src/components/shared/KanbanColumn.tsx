@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { cn } from '@/utils/cn';
 import { KanbanCard } from './KanbanCard';
@@ -11,7 +12,7 @@ interface KanbanColumnProps {
   onAssumir?: (chamado: Chamado) => void;
 }
 
-export function KanbanColumn({ laneKey, label, chamados, onCardClick, onAssumir }: KanbanColumnProps) {
+export const KanbanColumn = memo(function KanbanColumn({ laneKey, label, chamados, onCardClick, onAssumir }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: laneKey });
 
   return (
@@ -28,14 +29,9 @@ export function KanbanColumn({ laneKey, label, chamados, onCardClick, onAssumir 
       </div>
       <div className="flex flex-1 flex-col gap-2">
         {chamados.map((c) => (
-          <KanbanCard
-            key={c.num}
-            chamado={c}
-            onClick={onCardClick ? () => onCardClick(c) : undefined}
-            onAssumir={onAssumir ? () => onAssumir(c) : undefined}
-          />
+          <KanbanCard key={c.num} chamado={c} onClick={onCardClick} onAssumir={onAssumir} />
         ))}
       </div>
     </div>
   );
-}
+});

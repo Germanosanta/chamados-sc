@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
 import { appendToArrayField, list, setMerge } from '@/services/firebase/firestore';
@@ -95,28 +95,35 @@ function useChamadoPatch() {
 }
 
 export function useReatribuirResponsavel() {
-  const patch = useChamadoPatch();
-  return (chamadoBase: Chamado, novoResp: string) => patch.mutateAsync({ chamadoBase, patch: { resp: novoResp } });
+  const { mutateAsync } = useChamadoPatch();
+  // useCallback (não só a função crua): quem consome isso é a Kanban
+  // (KanbanCard/KanbanColumn memoizados) — sem uma referência estável
+  // aqui, todo card re-renderiza a cada tecla digitada num filtro,
+  // mesmo sem nenhuma mudança real no card em si.
+  return useCallback((chamadoBase: Chamado, novoResp: string) => mutateAsync({ chamadoBase, patch: { resp: novoResp } }), [mutateAsync]);
 }
 
 /** Transição simples de status (Kanban) — as duas transições que exigem
  * checklist de encerramento não passam por aqui (ver KanbanBoard). */
 export function useAlterarStatusChamado() {
-  const patch = useChamadoPatch();
-  return (chamadoBase: Chamado, novoStatus: Chamado['status']) => patch.mutateAsync({ chamadoBase, patch: { status: novoStatus } });
+  const { mutateAsync } = useChamadoPatch();
+  return useCallback((chamadoBase: Chamado, novoStatus: Chamado['status']) => mutateAsync({ chamadoBase, patch: { status: novoStatus } }), [mutateAsync]);
 }
 
 export function useAssumirChamado() {
-  const patch = useChamadoPatch();
+  const { mutateAsync } = useChamadoPatch();
   const usuario = useSessionStore((s) => s.usuario);
-  return async (chamadoBase: Chamado) => {
-    if (!usuario) return Promise.reject(new Error('Sem sessão ativa.'));
-    await patch.mutateAsync({
-      chamadoBase,
-      patch: { assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), tecnico: usuario.nome },
-    });
-    await audit('assumiu', `Chamado ${chamadoBase.num} assumido`, usuario, chamadoBase.num);
-  };
+  return useCallback(
+    async (chamadoBase: Chamado) => {
+      if (!usuario) return Promise.reject(new Error('Sem sessão ativa.'));
+      await mutateAsync({
+        chamadoBase,
+        patch: { assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), tecnico: usuario.nome },
+      });
+      await audit('assumiu', `Chamado ${chamadoBase.num} assumido`, usuario, chamadoBase.num);
+    },
+    [mutateAsync, usuario],
+  );
 }
 
 /**
@@ -174,14 +181,17 @@ export function useCriarChamado() {
 export function useRegistrarEvento() {
   const queryClient = useQueryClient();
   const usuario = useSessionStore((s) => s.usuario);
-  const patch = useChamadoPatch();
-  return async (chamadoBase: Chamado, tipo: string, detail: string, novoStatus?: Chamado['status']) => {
-    const evento: EventoTimeline = { ts: new Date().toISOString(), type: tipo, actor: usuario?.nome || 'Sistema', detail };
-    await appendToArrayField('historico', chamadoBase.num, 'eventos', evento, { num: chamadoBase.num });
-    if (novoStatus) await patch.mutateAsync({ chamadoBase, patch: { status: novoStatus } });
-    await audit(tipo, `${EVT_LABELS[tipo as keyof typeof EVT_LABELS] || tipo}: ${detail}`, usuario, chamadoBase.num);
-    queryClient.invalidateQueries({ queryKey: ['historico'] });
-  };
+  const { mutateAsync } = useChamadoPatch();
+  return useCallback(
+    async (chamadoBase: Chamado, tipo: string, detail: string, novoStatus?: Chamado['status']) => {
+      const evento: EventoTimeline = { ts: new Date().toISOString(), type: tipo, actor: usuario?.nome || 'Sistema', detail };
+      await appendToArrayField('historico', chamadoBase.num, 'eventos', evento, { num: chamadoBase.num });
+      if (novoStatus) await mutateAsync({ chamadoBase, patch: { status: novoStatus } });
+      await audit(tipo, `${EVT_LABELS[tipo as keyof typeof EVT_LABELS] || tipo}: ${detail}`, usuario, chamadoBase.num);
+      queryClient.invalidateQueries({ queryKey: ['historico'] });
+    },
+    [queryClient, usuario, mutateAsync],
+  );
 }
 
 interface ChecklistPayload {
@@ -198,22 +208,25 @@ interface ChecklistPayload {
 export function useEncerrarChamado() {
   const queryClient = useQueryClient();
   const usuario = useSessionStore((s) => s.usuario);
-  const patch = useChamadoPatch();
-  return async (chamadoBase: Chamado, chk: ChecklistPayload) => {
-    const now = new Date();
-    const encerramento: Encerramento = {
-      encerradoEm: now.toISOString(),
-      dataEncerramento: now.toLocaleDateString('pt-BR'),
-      horaEncerramento: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      encerradoPor: usuario?.nome || 'Sistema',
-      status: 'Encerrado',
-      ...chk,
-    };
-    await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento });
-    await patch.mutateAsync({ chamadoBase, patch: { status: 'Encerrado' } });
-    await audit('encerrou', `Chamado ${chamadoBase.num} encerrado`, usuario, chamadoBase.num);
-    queryClient.invalidateQueries({ queryKey: ['historico'] });
-  };
+  const { mutateAsync } = useChamadoPatch();
+  return useCallback(
+    async (chamadoBase: Chamado, chk: ChecklistPayload) => {
+      const now = new Date();
+      const encerramento: Encerramento = {
+        encerradoEm: now.toISOString(),
+        dataEncerramento: now.toLocaleDateString('pt-BR'),
+        horaEncerramento: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        encerradoPor: usuario?.nome || 'Sistema',
+        status: 'Encerrado',
+        ...chk,
+      };
+      await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento });
+      await mutateAsync({ chamadoBase, patch: { status: 'Encerrado' } });
+      await audit('encerrou', `Chamado ${chamadoBase.num} encerrado`, usuario, chamadoBase.num);
+      queryClient.invalidateQueries({ queryKey: ['historico'] });
+    },
+    [queryClient, usuario, mutateAsync],
+  );
 }
 
 /** Reabertura — mesma lógica de reabrirChamado() (V2): limpa o
@@ -221,11 +234,14 @@ export function useEncerrarChamado() {
 export function useReabrirChamado() {
   const queryClient = useQueryClient();
   const registrarEvento = useRegistrarEvento();
-  const patch = useChamadoPatch();
-  return async (chamadoBase: Chamado) => {
-    await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento: null });
-    await patch.mutateAsync({ chamadoBase, patch: { status: 'Em Andamento' } });
-    await registrarEvento(chamadoBase, 'reabriu', '');
-    queryClient.invalidateQueries({ queryKey: ['historico'] });
-  };
+  const { mutateAsync } = useChamadoPatch();
+  return useCallback(
+    async (chamadoBase: Chamado) => {
+      await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento: null });
+      await mutateAsync({ chamadoBase, patch: { status: 'Em Andamento' } });
+      await registrarEvento(chamadoBase, 'reabriu', '');
+      queryClient.invalidateQueries({ queryKey: ['historico'] });
+    },
+    [queryClient, registrarEvento, mutateAsync],
+  );
 }

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/utils/cn';
@@ -7,11 +8,16 @@ import type { Chamado } from '@/types/chamado';
 
 interface KanbanCardProps {
   chamado: Chamado;
-  onClick?: () => void;
-  onAssumir?: () => void;
+  onClick?: (chamado: Chamado) => void;
+  onAssumir?: (chamado: Chamado) => void;
 }
 
-export function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
+/** memo: numa coluna com dezenas de cards, sem isso todo card re-renderiza
+ * a cada tecla digitada nos filtros da tela de Aberto (o pai inteiro
+ * re-renderiza) mesmo quando o card em si não mudou nada — só compensa
+ * porque `chamado`/`onClick`/`onAssumir` agora chegam com referência
+ * estável (ver useChamados.ts e KanbanColumn.tsx). */
+export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: chamado.num,
     data: { chamado },
@@ -26,7 +32,7 @@ export function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
       style={{ transform: CSS.Translate.toString(transform) }}
       {...listeners}
       {...attributes}
-      onClick={onClick}
+      onClick={onClick ? () => onClick(chamado) : undefined}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
       onKeyDown={
@@ -34,7 +40,7 @@ export function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
           ? (e) => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                onClick();
+                onClick(chamado);
               }
             }
           : undefined
@@ -62,7 +68,7 @@ export function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onAssumir();
+            onAssumir(chamado);
           }}
           className="mt-2 w-full rounded-full border border-border2 bg-muted px-2 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:bg-primary hover:border-primary hover:text-primary-foreground"
         >
@@ -71,4 +77,4 @@ export function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
       )}
     </div>
   );
-}
+});

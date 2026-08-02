@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { LayoutGrid, List, SlidersHorizontal, X } from 'lucide-react';
@@ -124,32 +124,47 @@ export function AbertoPage() {
     setFAte('');
   }
 
-  async function handleReatribuir(chamado: Chamado, novoResp: string) {
-    try {
-      await reatribuir(chamado, novoResp);
-      toast(`${chamado.num} → ${novoResp}`);
-    } catch {
-      toast.error('Não foi possível reatribuir. Tente novamente.');
-    }
-  }
+  const handleReatribuir = useCallback(
+    async (chamado: Chamado, novoResp: string) => {
+      try {
+        await reatribuir(chamado, novoResp);
+        toast(`${chamado.num} → ${novoResp}`);
+      } catch {
+        toast.error('Não foi possível reatribuir. Tente novamente.');
+      }
+    },
+    [reatribuir],
+  );
 
-  async function handleAssumir(chamado: Chamado) {
-    try {
-      await assumir(chamado);
-      toast(`⚡ Você assumiu o chamado ${chamado.num}`);
-    } catch {
-      toast.error('Não foi possível assumir o chamado.');
-    }
-  }
+  // useCallback nos 3 handlers abaixo (+ abrirDetalhe já é estável, vem do
+  // Zustand): é o que permite ao KanbanCard/KanbanColumn memoizados de
+  // fato pular re-render quando só o texto de busca muda, sem afetar o
+  // card em questão.
+  const handleAssumir = useCallback(
+    async (chamado: Chamado) => {
+      try {
+        await assumir(chamado);
+        toast(`⚡ Você assumiu o chamado ${chamado.num}`);
+      } catch {
+        toast.error('Não foi possível assumir o chamado.');
+      }
+    },
+    [assumir],
+  );
 
-  async function handleStatusChange(chamado: Chamado, novoStatus: Chamado['status']) {
-    try {
-      await alterarStatus(chamado, novoStatus);
-      toast(`${chamado.num} → ${novoStatus}`);
-    } catch {
-      toast.error('Não foi possível mover o chamado.');
-    }
-  }
+  const handleStatusChange = useCallback(
+    async (chamado: Chamado, novoStatus: Chamado['status']) => {
+      try {
+        await alterarStatus(chamado, novoStatus);
+        toast(`${chamado.num} → ${novoStatus}`);
+      } catch {
+        toast.error('Não foi possível mover o chamado.');
+      }
+    },
+    [alterarStatus],
+  );
+
+  const handleCardClick = useCallback((chamado: Chamado) => abrirDetalhe(chamado.num), [abrirDetalhe]);
 
   const columns: DataTableColumn<Chamado>[] = [
     {
@@ -342,7 +357,7 @@ export function AbertoPage() {
             rowKey={(c) => c.num}
             loading={carregando}
             emptyTitle="Nenhum chamado em aberto"
-            onRowClick={(c) => abrirDetalhe(c.num)}
+            onRowClick={handleCardClick}
           />
           <Pagination page={page} totalItems={filtrados.length} perPage={PER_PAGE} onPageChange={setPage} />
         </>
@@ -351,7 +366,7 @@ export function AbertoPage() {
           chamados={filtrados}
           onStatusChange={handleStatusChange}
           onAssumir={handleAssumir}
-          onCardClick={(c) => abrirDetalhe(c.num)}
+          onCardClick={handleCardClick}
         />
       )}
     </div>

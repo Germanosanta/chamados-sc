@@ -3,6 +3,45 @@
 Datas/commits reais (`git log -- v3/`). Cada linha resume o que o commit
 mudou; detalhe completo em cada mensagem de commit.
 
+## Fase 6 — estabilização, UX e performance
+Com o CI 100% verde (TypeScript + ESLint + Build), esta rodada focou em 2
+frentes concretas e verificáveis sem precisar de navegador:
+
+- **Performance da Kanban** (`useChamados.ts`, `KanbanCard.tsx`,
+  `KanbanColumn.tsx`, `AbertoPage.tsx`): `useReatribuirResponsavel`/
+  `useAlterarStatusChamado`/`useAssumirChamado`/`useRegistrarEvento`/
+  `useEncerrarChamado`/`useReabrirChamado` devolviam uma função nova a
+  cada render (nenhum estava memoizado), e `KanbanColumn` recriava um
+  closure por card a cada render (`() => onCardClick(c)`). Resultado:
+  toda a Kanban de "Chamados em Aberto" — a tela operacional principal —
+  re-renderizava por completo a cada tecla digitada em qualquer filtro,
+  mesmo sem nenhuma mudança real nos cards. Corrigido estabilizando as
+  referências (`useCallback` nos hooks de ação, usando
+  `mutation.mutateAsync`, que o TanStack Query já garante estável, como
+  dependência) e eliminando os closures por card em `KanbanColumn`
+  (`KanbanCard` passa a receber `onClick`/`onAssumir` como
+  `(chamado) => void` e resolve o `chamado` internamente). `KanbanCard` e
+  `KanbanColumn` agora são `React.memo`. Nenhuma mudança de comportamento
+  — só referência de função.
+- **Dashboard executivo** (`DashboardPage.tsx`): `useComputeStats()` já
+  calculava `byYear`, `issues`, `vencidos` e `cancelados`, mas nenhuma
+  tela usava — o próprio código antigo documentava isso como pendente.
+  Adicionados, com os mesmos dados já calculados (nada novo buscado no
+  Firestore, nada inventado): KPIs "Cancelados" e "Vencidos (+7d)",
+  gráfico "Comparativo Anual" (Total/Concluídos/Em Aberto por ano) e
+  ranking "Principais Problemas" (mesmo keyword-matching da V2), mais um
+  filtro de Cultura que reaproveita o parâmetro `records` que o hook já
+  aceitava. De caminho, corrigido um bug real de UX pré-existente: os
+  gráficos de barra com mais de 1 dataset (Evolução Mensal por Cultura, e
+  agora também o Comparativo Anual) herdavam `legend: { display: false }`
+  de `chartBaseOptions` — sem legenda, as séries empilhadas eram cores
+  sem significado. Agora usam uma variante com legenda ligada.
+
+Auditoria estática cobrindo o restante do escopo pedido (Centro
+Operacional, DataTable, dead code, acessibilidade) não encontrou mais
+nada de concreto e seguro pra mudar sem um navegador real disponível
+nesta sessão — ver `ROADMAP.md`.
+
 ## Correção do segundo grupo de erros reais do CI (`tsc -b`, TS4058)
 Depois do primeiro erro corrigido, o `tsc -b` avançou e encontrou 5
 ocorrências de TS4058 ("Return type of exported function has or is using
