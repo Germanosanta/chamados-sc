@@ -32,6 +32,11 @@ export default defineConfig({
         short_name: 'Chamados SC V3',
         description:
           'Central de Chamados da Santa Colomba Agropecuária — abertura, atendimento e histórico de chamados de campo.',
+        // vite-plugin-pwa usa "en" por padrão se não for setado — o app
+        // inteiro é pt-BR (mesmo idioma de <html lang="pt-BR"> em
+        // index.html), confirmado divergente ao inspecionar o
+        // manifest.webmanifest já publicado.
+        lang: 'pt-BR',
         start_url: '/',
         scope: '/',
         display: 'standalone',
