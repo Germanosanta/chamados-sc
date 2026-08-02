@@ -8,8 +8,8 @@ lendo/gravando o **mesmo Firebase** (projeto `chamdos-sc`) já usado pela
 V2 (`../docs/`). Enquanto a V3 não for promovida oficialmente, a **V2
 continua sendo a versão em produção** (`chamados-sc.web.app`) — a V3
 publica em **homologação**, num site de Hosting separado
-(`chamados-sc-v3.web.app`), sem afetar a V2. Detalhe completo do deploy
-(incluindo o único passo manual pendente): [`docs/DEPLOY.md`](docs/DEPLOY.md).
+(`chamados-sc-v3.web.app`), sem afetar a V2. Detalhe completo do deploy:
+[`docs/DEPLOY.md`](docs/DEPLOY.md).
 
 ## Stack
 
@@ -47,5 +47,4 @@ Detalhe completo de ambos + comandos do Firebase CLI + rollback:
 
 Ver [`docs/ROADMAP.md`](docs/ROADMAP.md) para a lista completa e
 atualizada (sync offline com paridade total à V2, notificações push
-reais, "Sugestão de IA" no Painel Operacional, criação manual do site
-`chamados-sc-v3` — único passo que falta pro deploy funcionar).
+reais, "Sugestão de IA" no Painel Operacional).

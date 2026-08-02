@@ -7,9 +7,8 @@ name: V3 Deploy (Homologação)
 # V2 (firebase-deploy.yml) — o papel "Firebase Hosting Admin" é por
 # projeto, não por site, então a mesma credencial já tem permissão aqui.
 #
-# Pré-requisito único (manual, uma vez só): o site "chamados-sc-v3" ainda
-# não existe — precisa ser criado antes do primeiro deploy. Ver
-# v3/docs/DEPLOY.md, "Passo 1".
+# O site "chamados-sc-v3" já existe (criado no Console do Firebase — ver
+# v3/docs/DEPLOY.md, "Passo 1", mantido lá como referência histórica).
 #
 # Só roda depois que V3 CI (v3-ci.yml) já validou type-check/lint/build
 # nas duas versões de Node — este workflow builda de novo (não reaproveita

@@ -116,9 +116,9 @@ Resumo:
 - Deploy (`.github/workflows/v3-deploy.yml`): builda e publica
   automaticamente em `chamados-sc-v3.web.app` a cada push em `main` que
   toque `v3/**` — reusa o mesmo secret `FIREBASE_SERVICE_ACCOUNT` da V2.
-- Único passo manual pendente: criar o site `chamados-sc-v3` no Console
-  do Firebase (mesmo procedimento do "Passo 1" acima, nome diferente) —
-  sem isso, o deploy falha até o site existir. Ver `v3/docs/DEPLOY.md`.
+- O site `chamados-sc-v3` já foi criado no Console do Firebase (mesmo
+  procedimento do "Passo 1" acima, nome diferente) — deploy automático
+  ativo. Ver `v3/docs/DEPLOY.md`.
 
 ## Firebase
 

@@ -1,16 +1,15 @@
 # Deploy — Central de Chamados V3
 
-## Estado atual: infraestrutura pronta, falta 1 passo manual
+## Estado atual: site criado, deploy automático ativo
 
 `firebase.json`/`.firebaserc` (raiz do projeto) e o workflow
-`.github/workflows/v3-deploy.yml` já estão configurados para publicar a
-V3 num **segundo site de Hosting** (`chamados-sc-v3`), dentro do mesmo
-projeto Firebase da V2 (`chamdos-sc`), sem tocar no site/target da V2
-(`chamados-sc` → `docs`). O único passo que falta é manual e não pode
-ser feito por automação: **criar o site `chamados-sc-v3` de verdade no
-Firebase** (ver "Passo 1" abaixo). Até isso acontecer, `v3-deploy.yml`
-falha no passo de deploy com "site not found" — o resto do pipeline
-(type-check/lint/build) roda normalmente.
+`.github/workflows/v3-deploy.yml` publicam a V3 num **segundo site de
+Hosting** (`chamados-sc-v3`), dentro do mesmo projeto Firebase da V2
+(`chamdos-sc`), sem tocar no site/target da V2 (`chamados-sc` → `docs`).
+O site `chamados-sc-v3` já foi criado no Console do Firebase — o "Passo
+1" abaixo é histórico/referência, não precisa ser repetido. Todo push em
+`main` que toque `v3/**`, `firebase.json` ou `.firebaserc` builda e
+publica automaticamente.
 
 ## Como o Hosting multi-site está configurado
 
@@ -59,10 +58,11 @@ Só `index.html`, `sw.js` e `manifest.webmanifest` continuam
 o fluxo de atualização do PWA; se o navegador os cachear,
 usuários ficam presos numa versão antiga do app.
 
-## Passo 1 — Criar o site de Hosting "chamados-sc-v3" (uma vez só)
+## Passo 1 — Criar o site de Hosting "chamados-sc-v3" (já feito ✅)
 
-Mesmo procedimento já documentado no `README.md` da raiz para o site da
-V2, aplicado a um site novo:
+**Já executado — este site existe.** Mantido aqui só como referência do
+procedimento (mesmo já documentado no `README.md` da raiz para o site
+da V2), caso seja preciso recriar num outro projeto Firebase no futuro:
 
 1. Acesse [console.firebase.google.com](https://console.firebase.google.com) → projeto **chamdos-sc**.
 2. Menu lateral → **Hosting** → **Adicionar site**.

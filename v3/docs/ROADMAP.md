@@ -46,17 +46,6 @@ já foi corrigido nas rodadas anteriores (ver `CHANGELOG.md`).
   usa `npm install`; ao gerar e commitar o lockfile, o workflow já troca
   sozinho para `npm ci`.
 
-## Bloqueado por ação manual (não é decisão de negócio — só falta executar)
-
-- **Site de Hosting `chamados-sc-v3` ainda não existe de verdade** —
-  `firebase.json`/`.firebaserc`/`v3-deploy.yml` já estão prontos e
-  apontando pra ele (homologação, site separado da V2), mas criar um
-  site de Hosting é uma ação no Console/CLI do Firebase que exige
-  credenciais reais — não pode ser feita por automação. Até alguém
-  rodar o "Passo 1" de `DEPLOY.md`, `v3-deploy.yml` builda com sucesso
-  mas falha no passo de publicação. Depois de criado, todo push em
-  `main` publica sozinho — não precisa repetir esse passo.
-
 ## Bloqueado por decisão de negócio
 
 - **Quando a V3 substitui a V2 oficialmente** — até essa decisão, a V2
