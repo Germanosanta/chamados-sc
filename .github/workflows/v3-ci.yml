@@ -1,0 +1,142 @@
+name: V3 CI
+
+# Valida a V3 (React/TS em v3/) a cada push/PR que a toque: instala
+# dependências, roda type-check, lint e build de produção. Não publica
+# nada ainda — a V3 é experimental até substituir oficialmente a V2. Não
+# afeta o workflow de deploy da V2 (firebase-deploy.yml), que continua
+# publicando só docs/.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "v3/**"
+      - ".github/workflows/v3-ci.yml"
+  pull_request:
+    paths:
+      - "v3/**"
+      - ".github/workflows/v3-ci.yml"
+  workflow_dispatch: {}
+
+concurrency:
+  group: v3-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Instalar, type-check, lint e build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: v3
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Marcar início da execução
+        run: echo "V3_CI_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Configurar Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # Cache manual da pasta de cache do npm (não do node_modules), porque
+      # o cache nativo de actions/setup-node exige um package-lock.json já
+      # existente para calcular a chave — e ele ainda não foi commitado
+      # (nenhum npm install rodou neste projeto até agora). hashFiles
+      # ignora arquivos inexistentes, então a chave já funciona hoje
+      # (baseada só em package.json) e passa a incluir o lockfile
+      # automaticamente assim que ele existir.
+      - name: Cache do npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-v3-${{ hashFiles('v3/package-lock.json', 'v3/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-v3-
+
+      # Usa "npm ci" automaticamente assim que v3/package-lock.json for
+      # commitado (instalação reprodutível); até lá, cai para "npm install".
+      - name: Instalar dependências
+        id: install
+        run: |
+          if [ -f package-lock.json ]; then
+            echo "package-lock.json encontrado — usando npm ci"
+            npm ci
+          else
+            echo "::warning::v3/package-lock.json não encontrado — usando npm install. Gere e commite o lockfile para builds reprodutíveis (troca automática para 'npm ci' já está configurada acima)."
+            npm install
+          fi
+
+      # noEmit já vem do tsconfig — esta etapa só type-checka, não gera
+      # artefatos (o build abaixo roda tsc -b de novo, mas incremental via
+      # .tsbuildinfo, então é praticamente instantâneo na 2ª vez).
+      - name: Type-check (tsc -b)
+        id: typecheck
+        run: npm run typecheck
+
+      - name: Lint (ESLint)
+        id: lint
+        run: npm run lint
+
+      # Config pública do client Firebase (mesmo projeto/valores já
+      # expostos no bundle da V2) — não é segredo, ver v3/.env.example.
+      - name: Preparar variáveis de ambiente
+        run: cp .env.example .env
+
+      - name: Build (Vite)
+        id: build
+        run: npm run build
+
+      - name: Resumo da execução
+        if: always()
+        run: |
+          END=$(date +%s)
+          DUR=$((END - V3_CI_START))
+          MIN=$((DUR / 60))
+          SEC=$((DUR % 60))
+          {
+            echo "## V3 CI — Resumo"
+            echo ""
+            echo "| Etapa | Resultado |"
+            echo "|---|---|"
+            echo "| Node.js | ${{ steps.setup-node.outputs.node-version }} |"
+            echo "| Type-check (tsc -b) | ${{ steps.typecheck.outcome }} |"
+            echo "| Lint (ESLint) | ${{ steps.lint.outcome }} |"
+            echo "| Build (Vite) | ${{ steps.build.outcome }} |"
+            echo "| Tempo total | ${MIN}m ${SEC}s |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+# ---------------------------------------------------------------------------
+# Job de deploy — INTENCIONALMENTE DESATIVADO (comentado) nesta fase.
+# A V3 ainda não tem site de Hosting definido nem foi validada em produção.
+# Quando a V3 for promovida a substituir oficialmente a V2, descomentar o
+# bloco abaixo, ajustar "site"/target no firebase.json (multi-site, sem
+# tocar no target "chamados-sc" da V2) e confirmar que o secret
+# FIREBASE_SERVICE_ACCOUNT tem permissão nesse site.
+#
+#  deploy:
+#    name: Deploy V3 (Firebase Hosting)
+#    needs: verify
+#    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+#    runs-on: ubuntu-latest
+#    defaults:
+#      run:
+#        working-directory: v3
+#    steps:
+#      - uses: actions/checkout@v4
+#      - uses: actions/setup-node@v4
+#        with:
+#          node-version: "20"
+#      - run: npm ci
+#      - run: cp .env.example .env
+#      - run: npm run build
+#      - uses: FirebaseExtended/action-hosting-deploy@v0
+#        with:
+#          repoToken: "${{ secrets.GITHUB_TOKEN }}"
+#          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
+#          projectId: chamdos-sc
+#          target: v3
+#          entryPoint: v3
+#          channelId: live
+# ---------------------------------------------------------------------------
