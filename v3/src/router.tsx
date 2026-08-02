@@ -12,6 +12,10 @@ import { NovoChamadoPage } from '@/pages/novo/NovoChamadoPage';
 import { EncerradosPage } from '@/pages/encerrados/EncerradosPage';
 import { CriticidadePage } from '@/pages/criticidade/CriticidadePage';
 import { AreaTecnicoPage } from '@/pages/area-tecnico/AreaTecnicoPage';
+import { EquipamentosPage } from '@/pages/equipamentos/EquipamentosPage';
+import { FrotasPage } from '@/pages/frotas/FrotasPage';
+import { PecasPage } from '@/pages/pecas/PecasPage';
+import { KBPage } from '@/pages/kb/KBPage';
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
 import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTOM, type SectionId } from '@/utils/sections';
 import type { Permissao } from '@/types/permissoes';
@@ -27,6 +31,10 @@ const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
   encerrados: EncerradosPage,
   criticidade: CriticidadePage,
   'area-tecnico': AreaTecnicoPage,
+  equipamentos: EquipamentosPage,
+  frotas: FrotasPage,
+  pecas: PecasPage,
+  kb: KBPage,
 };
 
 const PERM_BY_SECTION: Partial<Record<SectionId, Permissao>> = {};

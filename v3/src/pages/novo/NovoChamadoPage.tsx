@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { CheckCircle2, Minus, Plus, Search } from 'lucide-react';
@@ -14,6 +14,7 @@ import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useChamados, useCriarChamado, useProximoNumero } from '@/hooks/useChamados';
 import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import { useSessionStore } from '@/store/session';
+import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
 import { cn } from '@/utils/cn';
 import { formatDataBR } from '@/utils/chamado-helpers';
 import type { EquipamentoEstatico } from '@/types/equipamento';
@@ -66,6 +67,11 @@ export function NovoChamadoPage() {
   const [prioridade, setPrioridade] = useState<Prioridade>('Média');
 
   const [equip, setEquip] = useState<EquipamentoEstatico | null>(null);
+  const consumirPrefill = useNovoChamadoPrefill((s) => s.consumir);
+  useEffect(() => {
+    const pre = consumirPrefill();
+    if (pre) setEquip(pre);
+  }, [consumirPrefill]);
 
   const [cultura, setCultura] = useState('');
   const [bucket, setBucket] = useState('');

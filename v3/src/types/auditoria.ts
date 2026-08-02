@@ -19,13 +19,17 @@ export interface ConfiguracaoDoc {
   [key: string]: unknown;
 }
 
+/** Banco de Soluções — persistido em `configuracoes/kb__{id}` (campos
+ * conferidos contra equipamentos/index.js::salvarKB()). */
 export interface SolucaoKB {
   id: string;
   problema: string;
-  categoria?: string;
+  categoria: string;
   sistema?: string;
   solucao: string;
   materiais?: string;
-  tempoMedio?: string;
+  tempo?: string;
   obs?: string;
+  criadoEm?: string;
+  atualizadoEm?: string;
 }
