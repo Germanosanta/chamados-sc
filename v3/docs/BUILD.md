@@ -87,22 +87,23 @@ Rodar `npm run typecheck && npm run lint && npm run build` localmente
 antes de dar push é o jeito mais rápido de não esperar o CI pra
 descobrir um erro.
 
-## Publicando a V3 no futuro
+## Publicando a V3 (homologação)
 
-O CI **não publica nada** hoje — só valida. Existe um job `deploy`
-inteiro já escrito, porém comentado, no fim de `v3-ci.yml`, pronto para
-ativar quando a V3 for promovida a substituir a V2 oficialmente. Ver
-`DEPLOY.md` para os passos completos (criar site de Hosting dedicado,
-configurar target multi-site, descomentar o job, confirmar o secret
-`FIREBASE_SERVICE_ACCOUNT`).
+`v3-ci.yml` **não publica nada** — só valida. Quem publica é o workflow
+separado `v3-deploy.yml`: builda de novo e publica em
+`chamados-sc-v3.web.app` (Firebase Hosting, canal `live`) a cada push em
+`main` que toque `v3/**`. Único passo manual pendente: o site
+`chamados-sc-v3` precisa ser criado uma vez (Console do Firebase ou
+`firebase hosting:sites:create`) antes do primeiro deploy funcionar — ver
+`DEPLOY.md` para o passo a passo completo, comandos do Firebase CLI e
+rollback.
 
-## Limitação desta sessão de trabalho
+## Sobre a validação desta sessão de trabalho
 
-O ambiente onde a V3 foi escrita não tem Node.js/npm instalado — este
-workflow de CI **nunca rodou de verdade** ainda. Toda a validação até
-aqui foi manual (ver `ROADMAP.md`): resolução de import/export
-conferida em todos os módulos do projeto, balanceamento de sintaxe,
-ausência de `TODO`/`FIXME`/`console.log`, conferência de
-`tsconfig`/`vite.config`/`eslint.config`/`tailwind.config` linha por
-linha. Isso reduz o risco, mas não substitui a primeira execução real
-do pipeline acima.
+O ambiente onde grande parte da V3 foi escrita não tinha Node.js/npm
+instalado — por várias rodadas, a validação foi manual (resolução de
+import/export, balanceamento de sintaxe, conferência de
+`tsconfig`/`vite.config`/`eslint.config` linha por linha). Isso já não é
+mais o estado atual: o pipeline acima **já rodou de verdade** no GitHub
+Actions várias vezes, com type-check/lint/build 100% verdes nas duas
+versões de Node — é a fonte de verdade agora, não a revisão manual.

@@ -10,7 +10,9 @@ Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e 
 /
 ├── .github/workflows/
 │   └── firebase-deploy.yml # Deploy automático no Firebase Hosting a cada push na main
-├── firebase.json           # Config do Firebase Hosting/Firestore (hosting.public = "docs", hosting.site = "chamados-sc")
+├── firebase.json           # Config do Firebase Hosting/Firestore — hosting é uma lista de 2 sites:
+│                           #   [0] site "chamados-sc" / public "docs" (V2, produção — inalterado)
+│                           #   [1] target "v3" / public "v3/dist" (V3, homologação — ver v3/docs/DEPLOY.md)
 ├── .firebaserc              # Projeto Firebase padrão (chamdos-sc — ver aviso na seção Firebase)
 ├── firestore.rules          # Regras do Firestore (revisar antes de deploy — ver aviso no arquivo)
 │
@@ -95,6 +97,28 @@ Sirva a pasta `docs/` com qualquer servidor HTTP local (não abra `docs/index.ht
 
 ### Single-file legado (offline)
 `legacy/chamados_sc.html` continua funcionando como build standalone (não recebe as correções feitas no app modular a partir da reorganização).
+
+## V3 (homologação — React/TypeScript, pasta `v3/`)
+
+Reescrita em React 19 + TypeScript + Vite, isolada em `v3/`, lendo/
+escrevendo no **mesmo** Firestore/Auth da V2 (mesmas coleções, mesmas
+regras, mesmas permissões — nada duplicado). Publica num site de
+Hosting **separado** (`chamados-sc-v3.web.app`), dentro do mesmo projeto
+Firebase (`chamdos-sc`), sem afetar a V2 (`chamados-sc.web.app`, que
+continua sendo produção). Detalhe completo — arquitetura, como rodar
+localmente, como o CI/deploy funcionam, como fazer rollback, como
+promover a V3 a produção no futuro: **`v3/docs/DEPLOY.md`** e
+**`v3/docs/BUILD.md`**.
+
+Resumo:
+- CI (`.github/workflows/v3-ci.yml`): type-check/lint/build em toda
+  alteração de `v3/**`, não publica nada.
+- Deploy (`.github/workflows/v3-deploy.yml`): builda e publica
+  automaticamente em `chamados-sc-v3.web.app` a cada push em `main` que
+  toque `v3/**` — reusa o mesmo secret `FIREBASE_SERVICE_ACCOUNT` da V2.
+- Único passo manual pendente: criar o site `chamados-sc-v3` no Console
+  do Firebase (mesmo procedimento do "Passo 1" acima, nome diferente) —
+  sem isso, o deploy falha até o site existir. Ver `v3/docs/DEPLOY.md`.
 
 ## Firebase
 

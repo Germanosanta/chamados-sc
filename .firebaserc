@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "chamdos-sc"
+  },
+  "targets": {
+    "chamdos-sc": {
+      "hosting": {
+        "v3": [
+          "chamados-sc-v3"
+        ]
+      }
+    }
   }
 }

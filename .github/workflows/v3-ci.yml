@@ -3,9 +3,10 @@ name: V3 CI
 # Principal ferramenta de validação da V3 (React/TS em v3/): instala
 # dependências, type-checka, linta, builda e publica o artefato de build
 # — em 2 versões de Node (matrix) — a cada push/PR que toque v3/**. Não
-# publica em nenhum Hosting ainda (a V3 é experimental até substituir
-# oficialmente a V2). Não afeta o workflow de deploy da V2
-# (firebase-deploy.yml), que continua publicando só docs/.
+# publica em nenhum Hosting (deploy é responsabilidade só do
+# v3-deploy.yml, que builda de novo e publica no site "chamados-sc-v3").
+# Não afeta o workflow de deploy da V2 (firebase-deploy.yml), que
+# continua publicando só docs/.
 on:
   push:
     branches: [main]
@@ -137,41 +138,3 @@ jobs:
             echo "| Artefato | \`v3-dist-node${{ matrix.node-version }}\` (retenção 14 dias) |"
             echo "| Tempo total | ${MIN}m ${SEC}s |"
           } >> "$GITHUB_STEP_SUMMARY"
-
-# ---------------------------------------------------------------------------
-# Job de deploy — INTENCIONALMENTE DESATIVADO (comentado) nesta fase.
-# A V3 ainda não tem site de Hosting definido nem foi validada em produção
-# (ver v3/docs/DEPLOY.md para os passos completos de ativação). Quando a
-# V3 for promovida a substituir oficialmente a V2, descomentar o bloco
-# abaixo, ajustar "target"/"site" no firebase.json (multi-site, sem tocar
-# no target "chamados-sc" da V2) e confirmar que o secret
-# FIREBASE_SERVICE_ACCOUNT tem permissão nesse site.
-#
-#  deploy:
-#    name: Deploy V3 (Firebase Hosting)
-#    needs: verify
-#    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-#    runs-on: ubuntu-latest
-#    timeout-minutes: 10
-#    permissions:
-#      contents: read
-#    defaults:
-#      run:
-#        working-directory: v3
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions/setup-node@v4
-#        with:
-#          node-version: "22"
-#      - run: npm ci
-#      - run: cp .env.example .env
-#      - run: npm run build
-#      - uses: FirebaseExtended/action-hosting-deploy@v0
-#        with:
-#          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-#          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
-#          projectId: chamdos-sc
-#          target: v3
-#          entryPoint: v3
-#          channelId: live
-# ---------------------------------------------------------------------------

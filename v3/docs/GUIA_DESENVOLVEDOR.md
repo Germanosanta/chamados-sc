@@ -46,12 +46,15 @@ Auth/Firestore.
    `router.tsx` (não import estático) e usa `DataTable` + `Pagination`
    em vez de reinventar tabela/paginação.
 
-## CI
+## CI e Deploy
 
 Todo push/PR que toque `v3/**` roda `.github/workflows/v3-ci.yml`
 automaticamente (type-check + lint + build, em 2 versões de Node) — é a
-principal ferramenta de validação da V3 hoje. Detalhe completo do
-pipeline e como interpretar um erro: `BUILD.md`.
+principal ferramenta de validação da V3 hoje. Todo push em `main` roda
+também `.github/workflows/v3-deploy.yml`, que builda de novo e publica
+em `chamados-sc-v3.web.app` (Hosting de homologação, separado da V2).
+Detalhe completo de ambos, como interpretar um erro e como publicar/
+reverter manualmente: `BUILD.md` e `DEPLOY.md`.
 
 ## Sem Node.js no ambiente de build da sessão que gerou este código
 
