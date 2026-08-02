@@ -21,6 +21,9 @@ import { UsuariosPage } from '@/pages/usuarios/UsuariosPage';
 import { ConfigPage } from '@/pages/config/ConfigPage';
 import { AuditoriaPage } from '@/pages/auditoria/AuditoriaPage';
 import { ResponsaveisPage } from '@/pages/responsaveis/ResponsaveisPage';
+import { DashboardPage } from '@/pages/dashboard/DashboardPage';
+import { PainelPage } from '@/pages/painel/PainelPage';
+import { PorMesPage } from '@/pages/pormes/PorMesPage';
 import { PlaceholderPage } from '@/pages/placeholder/PlaceholderPage';
 import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTOM, type SectionId } from '@/utils/sections';
 import type { Permissao } from '@/types/permissoes';
@@ -45,6 +48,9 @@ const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
   config: ConfigPage,
   auditoria: AuditoriaPage,
   responsaveis: ResponsaveisPage,
+  dashboard: DashboardPage,
+  painel: PainelPage,
+  pormes: PorMesPage,
 };
 
 const PERM_BY_SECTION: Partial<Record<SectionId, Permissao>> = {};
