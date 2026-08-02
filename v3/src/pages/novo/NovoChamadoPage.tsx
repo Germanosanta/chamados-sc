@@ -5,6 +5,7 @@ import { CheckCircle2, Minus, Plus, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Campo, Meta } from '@/components/shared/FormField';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EquipAutocomplete } from '@/components/shared/EquipAutocomplete';
 import { PhotoUploader } from '@/components/shared/PhotoUploader';
@@ -220,24 +221,26 @@ export function NovoChamadoPage() {
 
       <Bloco titulo="📋 Identificação">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Campo label="Solicitante">
+          <Campo label="Solicitante" htmlFor="novo-solicitante">
             <input
+              id="novo-solicitante"
               value={solicitante}
               onChange={(e) => setSolicitante(e.target.value)}
               className="h-9 rounded-sm border border-border bg-muted px-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </Campo>
-          <Campo label="Data de Abertura">
+          <Campo label="Data de Abertura" htmlFor="novo-data">
             <input
+              id="novo-data"
               type="date"
               value={data}
               onChange={(e) => setData(e.target.value)}
               className="h-9 rounded-sm border border-border bg-muted px-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </Campo>
-          <Campo label="Categoria *">
+          <Campo label="Categoria *" htmlFor="novo-categoria">
             <Select value={categoria || undefined} onValueChange={setCategoria}>
-              <SelectTrigger><SelectValue placeholder="Selecione a categoria…" /></SelectTrigger>
+              <SelectTrigger id="novo-categoria"><SelectValue placeholder="Selecione a categoria…" /></SelectTrigger>
               <SelectContent>
                 {CATEGORIAS.map((c) => (
                   <SelectItem key={c} value={c}>{c}</SelectItem>
@@ -246,11 +249,12 @@ export function NovoChamadoPage() {
             </Select>
           </Campo>
           <Campo label="Prioridade">
-            <div className="grid grid-cols-4 gap-1.5">
+            <div className="grid grid-cols-4 gap-1.5" role="group" aria-label="Prioridade">
               {PRIORIDADES.map((p) => (
                 <button
                   key={p.key}
                   type="button"
+                  aria-pressed={prioridade === p.key}
                   onClick={() => setPrioridade(p.key)}
                   className={cn('rounded-sm border px-2 py-1.5 text-xs font-semibold', prioridade === p.key ? p.cls : 'border-border text-muted-foreground')}
                 >
@@ -263,8 +267,8 @@ export function NovoChamadoPage() {
       </Bloco>
 
       <Bloco titulo="🚜 Equipamento">
-        <Campo label="Equipamento *">
-          <EquipAutocomplete onSelect={setEquip} />
+        <Campo label="Equipamento *" htmlFor="novo-equip">
+          <EquipAutocomplete id="novo-equip" onSelect={setEquip} />
         </Campo>
         {equip && (
           <div className="mt-3 grid grid-cols-2 gap-3 rounded-sm border border-border bg-muted p-3 text-sm sm:grid-cols-4">
@@ -286,9 +290,9 @@ export function NovoChamadoPage() {
 
       <Bloco titulo="📍 Alocação">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Campo label="Cultura">
+          <Campo label="Cultura" htmlFor="novo-cultura">
             <Select value={cultura || undefined} onValueChange={setCultura}>
-              <SelectTrigger><SelectValue placeholder="Selecione…" /></SelectTrigger>
+              <SelectTrigger id="novo-cultura"><SelectValue placeholder="Selecione…" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Grãos e Fibras">Grãos e Fibras</SelectItem>
                 <SelectItem value="Tabaco">Tabaco</SelectItem>
@@ -298,11 +302,12 @@ export function NovoChamadoPage() {
             </Select>
           </Campo>
           <Campo label="Fazenda / Sistema *">
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-2 gap-1.5" role="group" aria-label="Fazenda / Sistema">
               {BUCKETS.map((b) => (
                 <button
                   key={b.key}
                   type="button"
+                  aria-pressed={bucket === b.key}
                   onClick={() => setBucket(b.key)}
                   className={cn(
                     'flex flex-col items-center gap-0.5 rounded-sm border px-2 py-2 text-center text-xs',
@@ -322,11 +327,12 @@ export function NovoChamadoPage() {
       <Bloco titulo="👷 Responsáveis">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Campo label="Responsável pelo Chamado *">
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Responsável pelo chamado">
               {tecnicos.map((t) => (
                 <button
                   key={t.key}
                   type="button"
+                  aria-pressed={respSelecionados.includes(t.apelido || t.nome)}
                   onClick={() => toggleResp(t.apelido || t.nome)}
                   className={cn(
                     'rounded-full border px-2.5 py-1 text-sm font-semibold',
@@ -339,9 +345,9 @@ export function NovoChamadoPage() {
             </div>
             <p className="mt-1 text-xs text-subtle">Quem responde pelo chamado — pode ser mais de um</p>
           </Campo>
-          <Campo label="Técnico Responsável">
+          <Campo label="Técnico Responsável" htmlFor="novo-tecnico">
             <Select value={tecnico || undefined} onValueChange={setTecnico}>
-              <SelectTrigger><SelectValue placeholder="A definir…" /></SelectTrigger>
+              <SelectTrigger id="novo-tecnico"><SelectValue placeholder="A definir…" /></SelectTrigger>
               <SelectContent>
                 {tecnicos.map((t) => (
                   <SelectItem key={t.key} value={t.apelido || t.nome}>{t.nome}</SelectItem>
@@ -350,9 +356,9 @@ export function NovoChamadoPage() {
             </Select>
             <p className="mt-1 text-xs text-subtle">Quem executa o atendimento em campo</p>
           </Campo>
-          <Campo label="Status inicial">
+          <Campo label="Status inicial" htmlFor="novo-status">
             <Select value={statusInicial} onValueChange={setStatusInicial}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectTrigger id="novo-status"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Aberto">Aberto</SelectItem>
                 <SelectItem value="Em Atendimento">Em Atendimento</SelectItem>
@@ -365,16 +371,18 @@ export function NovoChamadoPage() {
 
       <Bloco titulo="📝 Detalhes">
         <div className="flex flex-col gap-4">
-          <Campo label="Descrição do Problema *">
+          <Campo label="Descrição do Problema *" htmlFor="novo-desc">
             <textarea
+              id="novo-desc"
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               rows={4}
               className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </Campo>
-          <Campo label="Observações">
+          <Campo label="Observações" htmlFor="novo-obs">
             <textarea
+              id="novo-obs"
               value={observacoes}
               onChange={(e) => setObservacoes(e.target.value)}
               rows={2}
@@ -457,20 +465,3 @@ function Bloco({ titulo, children }: { titulo: string; children: React.ReactNode
   );
 }
 
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      {children}
-    </div>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-xs font-semibold uppercase text-subtle">{label}</span>
-      <span className="text-foreground">{value}</span>
-    </div>
-  );
-}

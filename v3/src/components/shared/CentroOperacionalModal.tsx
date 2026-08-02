@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PrioridadeBadge, DiasChip } from './StatusBadge';
+import { Meta } from './FormField';
 import { StatusStepper } from './StatusStepper';
 import { Timeline } from './Timeline';
 import { PhotoGallery } from './PhotoGallery';
@@ -122,7 +123,10 @@ export function CentroOperacionalModal() {
                     <PrioridadeBadge prioridade={chamado.prior} />
                     {!fechado && <DiasChip dias={dias} />}
                   </div>
-                  <h2 className="text-lg font-bold text-foreground">{chamado.titulo}</h2>
+                  <DialogTitle className="text-lg font-bold text-foreground">{chamado.titulo}</DialogTitle>
+                  <DialogDescription className="sr-only">
+                    Centro Operacional do chamado {chamado.num} — status {chamado.status}
+                  </DialogDescription>
                   <StatusStepper
                     status={chamado.status}
                     selos={
@@ -262,14 +266,5 @@ export function CentroOperacionalModal() {
       </Dialog>
       {chamado && <ChecklistDialog chamado={chamado} open={checklistOpen} onOpenChange={setChecklistOpen} />}
     </>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-xs font-semibold uppercase tracking-wide text-subtle">{label}</span>
-      <span className="truncate text-sm text-foreground">{value}</span>
-    </div>
   );
 }

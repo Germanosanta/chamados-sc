@@ -7,9 +7,9 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Campo } from '@/components/shared/FormField';
 import { useTecnicos, useSalvarTecnico } from '@/hooks/useTecnicos';
 import { useChamados } from '@/hooks/useChamados';
 import { isFechado } from '@/utils/chamado-helpers';
@@ -160,27 +160,27 @@ export function TecnicosPage() {
             <DialogTitle>{editKey ? 'Editar Técnico' : 'Novo Técnico'}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
-            <Campo label="Nome completo *">
-              <Input value={form.nome || ''} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))} />
+            <Campo label="Nome completo *" htmlFor="tec-nome">
+              <Input id="tec-nome" value={form.nome || ''} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))} />
             </Campo>
-            <Campo label="Apelido">
-              <Input value={form.apelido || ''} onChange={(e) => setForm((f) => ({ ...f, apelido: e.target.value }))} placeholder="Usado como chave nos chamados" />
+            <Campo label="Apelido" htmlFor="tec-apelido">
+              <Input id="tec-apelido" value={form.apelido || ''} onChange={(e) => setForm((f) => ({ ...f, apelido: e.target.value }))} placeholder="Usado como chave nos chamados" />
             </Campo>
-            <Campo label="Telefone">
-              <Input value={form.telefone || ''} onChange={(e) => setForm((f) => ({ ...f, telefone: e.target.value }))} />
+            <Campo label="Telefone" htmlFor="tec-telefone">
+              <Input id="tec-telefone" value={form.telefone || ''} onChange={(e) => setForm((f) => ({ ...f, telefone: e.target.value }))} />
             </Campo>
-            <Campo label="E-mail">
-              <Input value={form.email || ''} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
+            <Campo label="E-mail" htmlFor="tec-email">
+              <Input id="tec-email" value={form.email || ''} onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
             </Campo>
-            <Campo label="Área">
-              <Input value={form.area || ''} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} />
+            <Campo label="Área" htmlFor="tec-area">
+              <Input id="tec-area" value={form.area || ''} onChange={(e) => setForm((f) => ({ ...f, area: e.target.value }))} />
             </Campo>
-            <Campo label="Cargo">
-              <Input value={form.cargo || ''} onChange={(e) => setForm((f) => ({ ...f, cargo: e.target.value }))} />
+            <Campo label="Cargo" htmlFor="tec-cargo">
+              <Input id="tec-cargo" value={form.cargo || ''} onChange={(e) => setForm((f) => ({ ...f, cargo: e.target.value }))} />
             </Campo>
-            <Campo label="Status">
+            <Campo label="Status" htmlFor="tec-status">
               <Select value={form.status || 'Ativo'} onValueChange={(v) => setForm((f) => ({ ...f, status: v as Tecnico['status'] }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="tec-status"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Ativo">Ativo</SelectItem>
                   <SelectItem value="Inativo">Inativo</SelectItem>
@@ -189,12 +189,13 @@ export function TecnicosPage() {
                 </SelectContent>
               </Select>
             </Campo>
-            <Campo label="Admissão">
-              <Input type="date" value={form.admissao || ''} onChange={(e) => setForm((f) => ({ ...f, admissao: e.target.value }))} />
+            <Campo label="Admissão" htmlFor="tec-admissao">
+              <Input id="tec-admissao" type="date" value={form.admissao || ''} onChange={(e) => setForm((f) => ({ ...f, admissao: e.target.value }))} />
             </Campo>
           </div>
-          <Campo label="Observações">
+          <Campo label="Observações" htmlFor="tec-obs">
             <textarea
+              id="tec-obs"
               value={form.obs || ''}
               onChange={(e) => setForm((f) => ({ ...f, obs: e.target.value }))}
               rows={2}
@@ -207,15 +208,6 @@ export function TecnicosPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      {children}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EquipAutocomplete } from './EquipAutocomplete';
+import { Campo } from './FormField';
 import { useSalvarEquipamento } from '@/hooks/useEquipamentos';
 import { useSessionStore } from '@/store/session';
 import type { Equipamento, EquipamentoEstatico } from '@/types/equipamento';
@@ -79,35 +80,35 @@ export function EquipCrudDialog({
         <div className="flex max-h-[65vh] flex-col gap-3.5 overflow-y-auto pr-1">
           {!frota && (
             <div className="flex flex-col gap-1.5">
-              <Label>Equipamento *</Label>
-              <EquipAutocomplete onSelect={setEquipBase} />
+              <Label htmlFor="equip-crud-autocomplete">Equipamento *</Label>
+              <EquipAutocomplete id="equip-crud-autocomplete" onSelect={setEquipBase} />
             </div>
           )}
           <div className="grid grid-cols-2 gap-3">
-            <Campo label="Patrimônio">
-              <Input value={form.patrimonio || ''} onChange={(e) => setForm((f) => ({ ...f, patrimonio: e.target.value }))} />
+            <Campo label="Patrimônio" htmlFor="equip-patrimonio">
+              <Input id="equip-patrimonio" value={form.patrimonio || ''} onChange={(e) => setForm((f) => ({ ...f, patrimonio: e.target.value }))} />
             </Campo>
-            <Campo label="Série">
-              <Input value={form.serie || ''} onChange={(e) => setForm((f) => ({ ...f, serie: e.target.value }))} />
+            <Campo label="Série" htmlFor="equip-serie">
+              <Input id="equip-serie" value={form.serie || ''} onChange={(e) => setForm((f) => ({ ...f, serie: e.target.value }))} />
             </Campo>
-            <Campo label="Modelo">
-              <Input value={form.modelo || ''} onChange={(e) => setForm((f) => ({ ...f, modelo: e.target.value }))} />
+            <Campo label="Modelo" htmlFor="equip-modelo">
+              <Input id="equip-modelo" value={form.modelo || ''} onChange={(e) => setForm((f) => ({ ...f, modelo: e.target.value }))} />
             </Campo>
-            <Campo label="Fabricante">
-              <Input value={form.fabricante || ''} onChange={(e) => setForm((f) => ({ ...f, fabricante: e.target.value }))} />
+            <Campo label="Fabricante" htmlFor="equip-fabricante">
+              <Input id="equip-fabricante" value={form.fabricante || ''} onChange={(e) => setForm((f) => ({ ...f, fabricante: e.target.value }))} />
             </Campo>
-            <Campo label="Ano">
-              <Input value={form.ano || ''} onChange={(e) => setForm((f) => ({ ...f, ano: e.target.value }))} />
+            <Campo label="Ano" htmlFor="equip-ano">
+              <Input id="equip-ano" value={form.ano || ''} onChange={(e) => setForm((f) => ({ ...f, ano: e.target.value }))} />
             </Campo>
-            <Campo label="Horímetro">
-              <Input value={form.horimetro || ''} onChange={(e) => setForm((f) => ({ ...f, horimetro: e.target.value }))} />
+            <Campo label="Horímetro" htmlFor="equip-horimetro">
+              <Input id="equip-horimetro" value={form.horimetro || ''} onChange={(e) => setForm((f) => ({ ...f, horimetro: e.target.value }))} />
             </Campo>
-            <Campo label="Tipo">
-              <Input value={form.tipo || ''} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))} />
+            <Campo label="Tipo" htmlFor="equip-tipo">
+              <Input id="equip-tipo" value={form.tipo || ''} onChange={(e) => setForm((f) => ({ ...f, tipo: e.target.value }))} />
             </Campo>
-            <Campo label="Status">
+            <Campo label="Status" htmlFor="equip-status">
               <Select value={form.status || 'Ativo'} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="equip-status"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Ativo">Ativo</SelectItem>
                   <SelectItem value="Inativo">Inativo</SelectItem>
@@ -115,18 +116,19 @@ export function EquipCrudDialog({
                 </SelectContent>
               </Select>
             </Campo>
-            <Campo label="Fazenda">
-              <Input value={form.fazenda || ''} onChange={(e) => setForm((f) => ({ ...f, fazenda: e.target.value }))} />
+            <Campo label="Fazenda" htmlFor="equip-fazenda">
+              <Input id="equip-fazenda" value={form.fazenda || ''} onChange={(e) => setForm((f) => ({ ...f, fazenda: e.target.value }))} />
             </Campo>
-            <Campo label="Cultura">
-              <Input value={form.cultura || ''} onChange={(e) => setForm((f) => ({ ...f, cultura: e.target.value }))} />
+            <Campo label="Cultura" htmlFor="equip-cultura">
+              <Input id="equip-cultura" value={form.cultura || ''} onChange={(e) => setForm((f) => ({ ...f, cultura: e.target.value }))} />
             </Campo>
-            <Campo label="Responsável">
-              <Input value={form.responsavel || ''} onChange={(e) => setForm((f) => ({ ...f, responsavel: e.target.value }))} />
+            <Campo label="Responsável" htmlFor="equip-responsavel">
+              <Input id="equip-responsavel" value={form.responsavel || ''} onChange={(e) => setForm((f) => ({ ...f, responsavel: e.target.value }))} />
             </Campo>
           </div>
-          <Campo label="Observações">
+          <Campo label="Observações" htmlFor="equip-obs">
             <textarea
+              id="equip-obs"
               value={form.obs || ''}
               onChange={(e) => setForm((f) => ({ ...f, obs: e.target.value }))}
               rows={2}
@@ -141,14 +143,5 @@ export function EquipCrudDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      {children}
-    </div>
   );
 }

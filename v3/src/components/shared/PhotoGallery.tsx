@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Download, FileText, Image } from 'lucide-react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { EmptyState } from './EmptyState';
 import type { FotoAnexo } from '@/types/chamado';
 
@@ -17,8 +17,10 @@ export function PhotoGallery({ fotos }: { fotos: FotoAnexo[] }) {
         {fotos.map((f, i) => (
           <button
             key={i}
+            type="button"
+            aria-label={`Abrir anexo ${f.name}`}
             onClick={() => setAberta(f)}
-            className="aspect-square overflow-hidden rounded-sm border border-border bg-muted transition hover:border-primary"
+            className="aspect-square overflow-hidden rounded-sm border border-border bg-muted transition hover:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
           >
             {f.type === 'application/pdf' ? (
               <div className="flex h-full items-center justify-center">
@@ -35,6 +37,7 @@ export function PhotoGallery({ fotos }: { fotos: FotoAnexo[] }) {
         <DialogContent className="max-w-2xl">
           {aberta && (
             <div className="flex flex-col gap-3">
+              <DialogTitle className="sr-only">{aberta.name}</DialogTitle>
               {aberta.type === 'application/pdf' ? (
                 <div className="flex h-64 items-center justify-center rounded-sm bg-muted">
                   <FileText className="h-10 w-10 text-subtle" />

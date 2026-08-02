@@ -31,9 +31,9 @@ export function Timeline({ chamado }: { chamado: Chamado }) {
   }
 
   return (
-    <div className="flex flex-col">
+    <ol className="flex flex-col list-none">
       {items.map((ev, i) => (
-        <div key={i} className="flex gap-3">
+        <li key={i} className="flex gap-3">
           <div className="flex flex-col items-center">
             <div className={cn('flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 bg-surface text-sm', COLOR_CLASS[ev.color])}>
               {ev.icon}
@@ -68,8 +68,8 @@ export function Timeline({ chamado }: { chamado: Chamado }) {
               </div>
             )}
           </div>
-        </div>
+        </li>
       ))}
-    </div>
+    </ol>
   );
 }

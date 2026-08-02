@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { StatusBadge } from './StatusBadge';
+import { Meta } from './FormField';
 import { useChamados } from '@/hooks/useChamados';
 import { useCadastroEquipamentos, useEquipUniverso } from '@/hooks/useEquipamentos';
 import { useDetalheStore } from '@/store/detalhe';
@@ -110,15 +111,6 @@ export function FichaEquipamentoModal({
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function Meta({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col">
-      <span className="text-xs font-semibold uppercase text-subtle">{label}</span>
-      <span className="truncate text-foreground">{value}</span>
-    </div>
   );
 }
 

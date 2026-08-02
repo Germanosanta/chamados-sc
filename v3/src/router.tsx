@@ -4,7 +4,7 @@ import { AuthLayout } from '@/layouts/AuthLayout';
 import { AppShell } from '@/layouts/AppShell';
 import { ProtectedRoute } from '@/layouts/ProtectedRoute';
 import { RouteLoading } from '@/components/shared/RouteLoading';
-import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTOM, type SectionId } from '@/utils/sections';
+import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTTOM, type SectionId } from '@/utils/sections';
 import type { Permissao } from '@/types/permissoes';
 
 const LoginPage = lazy(() => import('@/pages/login/LoginPage').then((m) => ({ default: m.LoginPage })));
@@ -59,7 +59,7 @@ const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
 };
 
 const PERM_BY_SECTION: Partial<Record<SectionId, Permissao>> = {};
-for (const item of [...NAV_TOP, ...NAV_GROUPS.flatMap((g) => g.items), ...NAV_BOTOM]) {
+for (const item of [...NAV_TOP, ...NAV_GROUPS.flatMap((g) => g.items), ...NAV_BOTTOM]) {
   if (item.perm) PERM_BY_SECTION[item.id] = item.perm;
 }
 

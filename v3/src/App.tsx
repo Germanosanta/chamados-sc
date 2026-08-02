@@ -5,6 +5,11 @@ import { Toaster } from '@/components/ui/sonner';
 import { router } from './router';
 import { useAuthListener } from '@/hooks/useAuth';
 
+// TanStack Query aqui só orquestra `useMutation` (loading/erro de
+// escritas) — leituras são tempo-real via onSnapshot (useFirestoreCollection),
+// não useQuery. defaultOptions.queries fica como padrão são caso uma
+// tela futura precise buscar algo que não seja uma coleção inteira
+// (ex. paginação server-side); hoje nenhum useQuery existe no app.
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

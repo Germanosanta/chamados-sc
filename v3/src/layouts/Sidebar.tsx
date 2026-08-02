@@ -38,6 +38,7 @@ function Group({ label, items, collapsed }: { label: string; items: NavItem[]; c
       {!collapsed && (
         <button
           onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
           className="flex items-center justify-between px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-subtle"
         >
           {label}
@@ -90,6 +91,7 @@ export function Sidebar({ inSheet = false }: { inSheet?: boolean }) {
       {!inSheet && (
         <button
           onClick={toggle}
+          aria-label={collapsed ? 'Expandir menu' : 'Recolher menu'}
           className="flex items-center justify-center gap-2 border-t border-border p-2.5 text-sm text-muted-foreground hover:bg-muted"
         >
           {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}

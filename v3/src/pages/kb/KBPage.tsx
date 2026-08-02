@@ -6,8 +6,8 @@ import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Campo } from '@/components/shared/FormField';
 import { useBancoSolucoes, useSalvarSolucaoKB } from '@/hooks/useBancoSolucoes';
 import type { SolucaoKB } from '@/types/auditoria';
 
@@ -114,19 +114,20 @@ export function KBPage() {
             <DialogTitle>{editando ? 'Editar Solução' : 'Nova Solução'}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3">
-            <Campo label="Problema *">
-              <Input value={form.problema || ''} onChange={(e) => setForm((f) => ({ ...f, problema: e.target.value }))} />
+            <Campo label="Problema *" htmlFor="kb-problema">
+              <Input id="kb-problema" value={form.problema || ''} onChange={(e) => setForm((f) => ({ ...f, problema: e.target.value }))} />
             </Campo>
             <div className="grid grid-cols-2 gap-3">
-              <Campo label="Categoria *">
-                <Input value={form.categoria || ''} onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))} />
+              <Campo label="Categoria *" htmlFor="kb-categoria">
+                <Input id="kb-categoria" value={form.categoria || ''} onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))} />
               </Campo>
-              <Campo label="Sistema">
-                <Input value={form.sistema || ''} onChange={(e) => setForm((f) => ({ ...f, sistema: e.target.value }))} />
+              <Campo label="Sistema" htmlFor="kb-sistema">
+                <Input id="kb-sistema" value={form.sistema || ''} onChange={(e) => setForm((f) => ({ ...f, sistema: e.target.value }))} />
               </Campo>
             </div>
-            <Campo label="Solução *">
+            <Campo label="Solução *" htmlFor="kb-solucao">
               <textarea
+                id="kb-solucao"
                 value={form.solucao || ''}
                 onChange={(e) => setForm((f) => ({ ...f, solucao: e.target.value }))}
                 rows={3}
@@ -134,11 +135,11 @@ export function KBPage() {
               />
             </Campo>
             <div className="grid grid-cols-2 gap-3">
-              <Campo label="Materiais">
-                <Input value={form.materiais || ''} onChange={(e) => setForm((f) => ({ ...f, materiais: e.target.value }))} />
+              <Campo label="Materiais" htmlFor="kb-materiais">
+                <Input id="kb-materiais" value={form.materiais || ''} onChange={(e) => setForm((f) => ({ ...f, materiais: e.target.value }))} />
               </Campo>
-              <Campo label="Tempo médio">
-                <Input value={form.tempo || ''} onChange={(e) => setForm((f) => ({ ...f, tempo: e.target.value }))} />
+              <Campo label="Tempo médio" htmlFor="kb-tempo">
+                <Input id="kb-tempo" value={form.tempo || ''} onChange={(e) => setForm((f) => ({ ...f, tempo: e.target.value }))} />
               </Campo>
             </div>
           </div>
@@ -148,15 +149,6 @@ export function KBPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      {children}
     </div>
   );
 }

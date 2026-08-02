@@ -7,9 +7,9 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Campo } from '@/components/shared/FormField';
 import { usePecas, useMovimentacoes, useSalvarPeca, useRegistrarMovimentacao } from '@/hooks/usePecas';
 import type { Peca } from '@/types/peca';
 
@@ -159,29 +159,29 @@ export function PecasPage() {
             <DialogTitle>{editando ? 'Editar Peça' : 'Nova Peça'}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-3">
-            <Campo label="Nome *">
-              <Input value={form.nome || ''} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))} />
+            <Campo label="Nome *" htmlFor="peca-nome">
+              <Input id="peca-nome" value={form.nome || ''} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))} />
             </Campo>
-            <Campo label="Código">
-              <Input value={form.codigo || ''} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} />
+            <Campo label="Código" htmlFor="peca-codigo">
+              <Input id="peca-codigo" value={form.codigo || ''} onChange={(e) => setForm((f) => ({ ...f, codigo: e.target.value }))} />
             </Campo>
-            <Campo label="Categoria">
-              <Input value={form.categoria || ''} onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))} />
+            <Campo label="Categoria" htmlFor="peca-categoria">
+              <Input id="peca-categoria" value={form.categoria || ''} onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))} />
             </Campo>
-            <Campo label="Unidade">
-              <Input value={form.unidade || 'un'} onChange={(e) => setForm((f) => ({ ...f, unidade: e.target.value }))} />
+            <Campo label="Unidade" htmlFor="peca-unidade">
+              <Input id="peca-unidade" value={form.unidade || 'un'} onChange={(e) => setForm((f) => ({ ...f, unidade: e.target.value }))} />
             </Campo>
-            <Campo label="Estoque atual">
-              <Input type="number" value={form.qtd ?? 0} onChange={(e) => setForm((f) => ({ ...f, qtd: Number(e.target.value) }))} />
+            <Campo label="Estoque atual" htmlFor="peca-qtd">
+              <Input id="peca-qtd" type="number" value={form.qtd ?? 0} onChange={(e) => setForm((f) => ({ ...f, qtd: Number(e.target.value) }))} />
             </Campo>
-            <Campo label="Estoque mínimo">
-              <Input type="number" value={form.minimo ?? 2} onChange={(e) => setForm((f) => ({ ...f, minimo: Number(e.target.value) }))} />
+            <Campo label="Estoque mínimo" htmlFor="peca-minimo">
+              <Input id="peca-minimo" type="number" value={form.minimo ?? 2} onChange={(e) => setForm((f) => ({ ...f, minimo: Number(e.target.value) }))} />
             </Campo>
-            <Campo label="Local">
-              <Input value={form.local || ''} onChange={(e) => setForm((f) => ({ ...f, local: e.target.value }))} />
+            <Campo label="Local" htmlFor="peca-local">
+              <Input id="peca-local" value={form.local || ''} onChange={(e) => setForm((f) => ({ ...f, local: e.target.value }))} />
             </Campo>
-            <Campo label="Fornecedor">
-              <Input value={form.fornecedor || ''} onChange={(e) => setForm((f) => ({ ...f, fornecedor: e.target.value }))} />
+            <Campo label="Fornecedor" htmlFor="peca-fornecedor">
+              <Input id="peca-fornecedor" value={form.fornecedor || ''} onChange={(e) => setForm((f) => ({ ...f, fornecedor: e.target.value }))} />
             </Campo>
           </div>
           <DialogFooter>
@@ -197,23 +197,23 @@ export function PecasPage() {
             <DialogTitle>Movimentar estoque — {movPeca?.nome}</DialogTitle>
           </DialogHeader>
           <div className="flex flex-col gap-3">
-            <Campo label="Tipo">
+            <Campo label="Tipo" htmlFor="mov-tipo">
               <Select value={movTipo} onValueChange={(v) => setMovTipo(v as 'entrada' | 'saida')}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger id="mov-tipo"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="entrada">Entrada</SelectItem>
                   <SelectItem value="saida">Saída</SelectItem>
                 </SelectContent>
               </Select>
             </Campo>
-            <Campo label="Quantidade">
-              <Input type="number" value={movQtd} onChange={(e) => setMovQtd(Number(e.target.value))} />
+            <Campo label="Quantidade" htmlFor="mov-qtd">
+              <Input id="mov-qtd" type="number" value={movQtd} onChange={(e) => setMovQtd(Number(e.target.value))} />
             </Campo>
-            <Campo label="Chamado vinculado (opcional)">
-              <Input value={movChamado} onChange={(e) => setMovChamado(e.target.value)} placeholder="CHM-0000" />
+            <Campo label="Chamado vinculado (opcional)" htmlFor="mov-chamado">
+              <Input id="mov-chamado" value={movChamado} onChange={(e) => setMovChamado(e.target.value)} placeholder="CHM-0000" />
             </Campo>
-            <Campo label="Observação">
-              <Input value={movObs} onChange={(e) => setMovObs(e.target.value)} />
+            <Campo label="Observação" htmlFor="mov-obs">
+              <Input id="mov-obs" value={movObs} onChange={(e) => setMovObs(e.target.value)} />
             </Campo>
           </div>
           <DialogFooter>
@@ -222,15 +222,6 @@ export function PecasPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      {children}
     </div>
   );
 }

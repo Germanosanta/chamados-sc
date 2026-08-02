@@ -11,6 +11,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Campo } from '@/components/shared/FormField';
 import { useUsuarios, useSalvarUsuario, useAlterarStatusUsuario, SalvarUsuarioError } from '@/hooks/useUsuarios';
 import { enviarResetSenha } from '@/services/firebase/auth';
 import { useSessionStore } from '@/store/session';
@@ -170,30 +171,30 @@ export function UsuariosPage() {
           </DialogHeader>
           <div className="flex max-h-[65vh] flex-col gap-3.5 overflow-y-auto pr-1">
             <div className="grid grid-cols-2 gap-3">
-              <Campo label="Nome *">
-                <Input value={nome} onChange={(e) => setNome(e.target.value)} />
+              <Campo label="Nome *" htmlFor="user-nome">
+                <Input id="user-nome" value={nome} onChange={(e) => setNome(e.target.value)} />
               </Campo>
-              <Campo label="Login *">
-                <Input value={login} onChange={(e) => setLogin(e.target.value)} />
+              <Campo label="Login *" htmlFor="user-login">
+                <Input id="user-login" value={login} onChange={(e) => setLogin(e.target.value)} />
               </Campo>
-              <Campo label="E-mail *">
-                <Input value={email} onChange={(e) => setEmail(e.target.value)} disabled={!!editando} />
+              <Campo label="E-mail *" htmlFor="user-email">
+                <Input id="user-email" value={email} onChange={(e) => setEmail(e.target.value)} disabled={!!editando} />
               </Campo>
               {!editando ? (
-                <Campo label="Senha * (mín. 6)">
-                  <Input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
+                <Campo label="Senha * (mín. 6)" htmlFor="user-senha">
+                  <Input id="user-senha" type="password" value={senha} onChange={(e) => setSenha(e.target.value)} />
                 </Campo>
               ) : (
                 <Campo label="Senha">
                   <Button variant="ghost" size="sm" onClick={handleResetSenha}>Enviar link de redefinição</Button>
                 </Campo>
               )}
-              <Campo label="Cargo">
-                <Input value={cargo} onChange={(e) => setCargo(e.target.value)} />
+              <Campo label="Cargo" htmlFor="user-cargo">
+                <Input id="user-cargo" value={cargo} onChange={(e) => setCargo(e.target.value)} />
               </Campo>
-              <Campo label="Perfil de acesso">
+              <Campo label="Perfil de acesso" htmlFor="user-perfil">
                 <Select value={perfil} onValueChange={(v) => aplicarPerfilPadrao(v as Perfil)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="user-perfil"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {(Object.keys(PERFIL_LABEL) as Perfil[]).map((p) => (
                       <SelectItem key={p} value={p}>{PERFIL_LABEL[p]}</SelectItem>
@@ -201,9 +202,9 @@ export function UsuariosPage() {
                   </SelectContent>
                 </Select>
               </Campo>
-              <Campo label="Status">
+              <Campo label="Status" htmlFor="user-status">
                 <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="user-status"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Ativo">Ativo</SelectItem>
                     <SelectItem value="Inativo">Inativo</SelectItem>
@@ -237,15 +238,6 @@ export function UsuariosPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
-  );
-}
-
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label>{label}</Label>
-      {children}
     </div>
   );
 }

@@ -308,13 +308,6 @@ export function AbertoPage() {
             <LayoutGrid className="h-3.5 w-3.5" /> Kanban
           </button>
         </div>
-
-        <div className="ml-auto flex items-center gap-1.5">
-          <span className="text-xs text-subtle">Legenda:</span>
-          <DiasChip dias={8} />
-          <DiasChip dias={5} />
-          <DiasChip dias={1} />
-        </div>
       </FilterBar>
 
       {avancado && (
