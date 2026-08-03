@@ -89,7 +89,7 @@ export function FrotasPage() {
 
   const columns: DataTableColumn<FrotaLinha>[] = [
     { key: 'code', header: 'Código', render: (l) => <span className="font-mono-num font-semibold text-primary">{l.code}</span> },
-    { key: 'd', header: 'Descrição', render: (l) => <span className="max-w-[220px] truncate">{l.d}</span> },
+    { key: 'd', header: 'Descrição', render: (l) => <div className="max-w-[220px] truncate">{l.d}</div> },
     { key: 'g', header: 'Grupo', render: (l) => l.g },
     { key: 's', header: 'Status', render: (l) => <StatusBadge status={l.s} /> },
     { key: 'count', header: 'Chamados', render: (l) => <span className="font-mono-num font-bold">{l.count}</span> },
@@ -97,7 +97,7 @@ export function FrotasPage() {
 
   const detColumns: DataTableColumn<Chamado>[] = [
     { key: 'num', header: 'Chamado', render: (c) => <span className="font-mono-num font-semibold text-primary">{c.num}</span> },
-    { key: 'titulo', header: 'Título', render: (c) => <span className="max-w-[200px] truncate">{c.titulo}</span> },
+    { key: 'titulo', header: 'Título', render: (c) => <div className="max-w-[200px] truncate">{c.titulo}</div> },
     { key: 'data', header: 'Data', render: (c) => formatDataBR(c.data) },
     { key: 'status', header: 'Status', render: (c) => <StatusBadge status={c.status} /> },
   ];
@@ -106,9 +106,9 @@ export function FrotasPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Frotas com Chamados" value={carregando ? '—' : linhas.length} color="blue" />
-        <KpiCard label="Chamados Vinculados" value={[...frotaMap.values()].reduce((a, v) => a + v.length, 0)} color="amber" />
-        <KpiCard label="Mais Chamados" value={linhas[0]?.code || '—'} color="green" />
-        <KpiCard label="Frotas Inativas" value={linhas.filter((l) => l.s !== 'Ativo').length} color="red" />
+        <KpiCard label="Chamados Vinculados" value={carregando ? '—' : [...frotaMap.values()].reduce((a, v) => a + v.length, 0)} color="amber" />
+        <KpiCard label="Mais Chamados" value={carregando ? '—' : linhas[0]?.code || '—'} color="green" />
+        <KpiCard label="Frotas Inativas" value={carregando ? '—' : linhas.filter((l) => l.s !== 'Ativo').length} color="red" />
       </div>
 
       <FilterBar>

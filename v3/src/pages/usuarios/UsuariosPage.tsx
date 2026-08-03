@@ -25,6 +25,7 @@ import type { Usuario } from '@/types/usuario';
 export function UsuariosPage() {
   const { data: usuarios, carregando } = useUsuarios();
   const usuarioLogado = useSessionStore((s) => s.usuario);
+  const souAdmin = usuarioLogado?.perfil === 'admin';
   const salvar = useSalvarUsuario();
   const alterarStatus = useAlterarStatusUsuario();
 
@@ -137,12 +138,15 @@ export function UsuariosPage() {
     {
       key: 'acoes',
       header: 'Ações',
-      render: (u) => (
-        <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
-          <Button variant="ghost" size="sm" onClick={() => abrirEditar(u)}>Editar</Button>
-          <Button variant="ghost" size="sm" onClick={() => handleToggleStatus(u)}>{u.status === 'Ativo' ? 'Desativar' : 'Ativar'}</Button>
-        </div>
-      ),
+      render: (u) =>
+        souAdmin ? (
+          <div className="flex gap-1.5" onClick={(e) => e.stopPropagation()}>
+            <Button variant="ghost" size="sm" onClick={() => abrirEditar(u)}>Editar</Button>
+            <Button variant="ghost" size="sm" onClick={() => handleToggleStatus(u)}>{u.status === 'Ativo' ? 'Desativar' : 'Ativar'}</Button>
+          </div>
+        ) : (
+          <span className="text-subtle">—</span>
+        ),
     },
   ];
 
@@ -150,16 +154,18 @@ export function UsuariosPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Total" value={carregando ? '—' : usuarios.length} color="blue" />
-        <KpiCard label="Ativos" value={usuarios.filter((u) => u.status === 'Ativo').length} color="green" />
-        <KpiCard label="Administradores" value={usuarios.filter((u) => u.perfil === 'admin').length} color="purple" />
-        <KpiCard label="Inativos" value={usuarios.filter((u) => u.status !== 'Ativo').length} color="red" />
+        <KpiCard label="Ativos" value={carregando ? '—' : usuarios.filter((u) => u.status === 'Ativo').length} color="green" />
+        <KpiCard label="Administradores" value={carregando ? '—' : usuarios.filter((u) => u.perfil === 'admin').length} color="purple" />
+        <KpiCard label="Inativos" value={carregando ? '—' : usuarios.filter((u) => u.status !== 'Ativo').length} color="red" />
       </div>
 
       <FilterBar>
         <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nome, login, e-mail…" className="w-64" />
-        <Button className="ml-auto" size="sm" onClick={abrirNovo}>
-          <Plus className="h-3.5 w-3.5" /> Novo Usuário
-        </Button>
+        {souAdmin && (
+          <Button className="ml-auto" size="sm" onClick={abrirNovo}>
+            <Plus className="h-3.5 w-3.5" /> Novo Usuário
+          </Button>
+        )}
       </FilterBar>
 
       <DataTable columns={columns} rows={filtrados} rowKey={(u) => u.id} loading={carregando} emptyTitle="Nenhum usuário cadastrado" />
@@ -170,7 +176,7 @@ export function UsuariosPage() {
             <DialogTitle>{editando ? 'Editar Usuário' : 'Novo Usuário'}</DialogTitle>
           </DialogHeader>
           <div className="flex max-h-[65vh] flex-col gap-3.5 overflow-y-auto pr-1">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Campo label="Nome *" htmlFor="user-nome">
                 <Input id="user-nome" value={nome} onChange={(e) => setNome(e.target.value)} />
               </Campo>

@@ -94,6 +94,12 @@ export function CentroOperacionalModal() {
 
   async function handleReabrir() {
     if (!chamado) return;
+    // Reabertura muda o status de "Encerrado" de volta pra "Em Andamento"
+    // e apaga o registro de encerramento — mesma classe de ação
+    // (irreversível sem refazer o encerramento do zero) que Encerrar já
+    // protege com o checklist; Reabrir precisa de pelo menos uma
+    // confirmação explícita antes de disparar.
+    if (!window.confirm(`Reabrir o chamado ${chamado.num}? O encerramento registrado será desfeito.`)) return;
     try {
       await reabrir(chamado);
       toast(`Chamado ${chamado.num} reaberto.`);

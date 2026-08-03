@@ -68,8 +68,14 @@ export function useSalvarUsuario() {
 }
 
 export function useAlterarStatusUsuario() {
+  const usuarioLogado = useSessionStore((s) => s.usuario);
   return useMutation({
     mutationFn: async ({ usuario, status }: { usuario: Usuario; status: string }) => {
+      // Mesma checagem de useSalvarUsuario: sem ela, o único bloqueio real
+      // era a Firestore rule — um usuário sem perfil admin via botão
+      // (visível a qualquer um com a permissão p_usuarios) clicava e só
+      // via um erro genérico, sem entender por quê.
+      if (usuarioLogado?.perfil !== 'admin') throw new SalvarUsuarioError('Apenas administradores podem alterar o status de usuários.');
       // `id` não entra no payload — é só a chave do doc, mesma convenção
       // da V2 (ver _rewrapShadowed em firebase.js).
       const { id: _id, ...resto } = usuario;

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useChamados } from '@/hooks/useChamados';
 import { chartBaseOptions } from '@/utils/chartSetup';
 
@@ -81,7 +82,9 @@ export function PorMesPage() {
         <Card className="lg:col-span-2">
           <CardHeader><CardTitle>Chamados por Mês — {ano}</CardTitle></CardHeader>
           <CardContent style={{ height: 280 }}>
-            {carregando ? null : (
+            {carregando ? (
+              <Skeleton className="h-full w-full" />
+            ) : (
               <Bar
                 data={barData}
                 options={{ ...chartBaseOptions, scales: { x: { ...chartBaseOptions.scales.x, stacked: true }, y: { ...chartBaseOptions.scales.y, stacked: true } } }}
@@ -90,9 +93,13 @@ export function PorMesPage() {
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Total em {ano}: {totalAno.toLocaleString('pt-BR')}</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Total em {ano}: {carregando ? '—' : totalAno.toLocaleString('pt-BR')}</CardTitle></CardHeader>
           <CardContent style={{ height: 280 }}>
-            <Doughnut data={donutData} options={{ responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: true, position: 'bottom' } } }} />
+            {carregando ? (
+              <Skeleton className="h-full w-full" />
+            ) : (
+              <Doughnut data={donutData} options={{ responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: true, position: 'bottom' } } }} />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -103,9 +110,9 @@ export function PorMesPage() {
           <table className="w-full border-collapse text-sm">
             <thead>
               <tr>
-                <th className="p-1 text-left text-xs text-subtle">Cultura</th>
+                <th className="p-1 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cultura</th>
                 {MESES_PT.map((m) => (
-                  <th key={m} className="p-1 text-center text-xs text-subtle">{m}</th>
+                  <th key={m} className="p-1 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground">{m}</th>
                 ))}
               </tr>
             </thead>
@@ -120,7 +127,7 @@ export function PorMesPage() {
                         style={{ background: heatColor(v, maxCell), color: v / maxCell > 0.5 ? '#fff' : 'var(--text)' }}
                         title={`${v} chamado(s)`}
                       >
-                        {v || ''}
+                        {v || '—'}
                       </div>
                     </td>
                   ))}

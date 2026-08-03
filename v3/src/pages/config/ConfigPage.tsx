@@ -16,8 +16,8 @@ import { downloadCSV } from '@/utils/csv';
  */
 export function ConfigPage() {
   const { theme, toggle } = useThemeStore();
-  const { data: chamados } = useChamados();
-  const { data: equipamentos } = useCadastroEquipamentos();
+  const { data: chamados, carregando: carregandoChamados } = useChamados();
+  const { data: equipamentos, carregando: carregandoEquip } = useCadastroEquipamentos();
 
   async function ativarNotificacoes() {
     if (!('Notification' in window)) {
@@ -53,8 +53,8 @@ export function ConfigPage() {
           <CardTitle className="text-base">Sistema</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-1 text-sm text-muted-foreground">
-          <div className="flex justify-between"><span>Chamados</span><span className="font-mono-num font-semibold text-foreground">{chamados.length}</span></div>
-          <div className="flex justify-between"><span>Equipamentos cadastrados</span><span className="font-mono-num font-semibold text-foreground">{equipamentos.length}</span></div>
+          <div className="flex justify-between"><span>Chamados</span><span className="font-mono-num font-semibold text-foreground">{carregandoChamados ? '—' : chamados.length}</span></div>
+          <div className="flex justify-between"><span>Equipamentos cadastrados</span><span className="font-mono-num font-semibold text-foreground">{carregandoEquip ? '—' : equipamentos.length}</span></div>
           <div className="flex justify-between"><span>Armazenamento</span><span className="font-semibold text-foreground">Firestore (tempo real)</span></div>
         </CardContent>
       </Card>

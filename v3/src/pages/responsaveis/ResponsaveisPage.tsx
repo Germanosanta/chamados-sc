@@ -109,8 +109,8 @@ export function ResponsaveisPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <KpiCard label="Técnicos Ativos" value={carregando ? '—' : tecnicos.length} color="blue" />
-        <KpiCard label="Total de Atribuições" value={totalAtribuicoes} color="amber" />
-        <KpiCard label="Chamados Considerados" value={todos.length} color="green" />
+        <KpiCard label="Total de Atribuições" value={carregando ? '—' : totalAtribuicoes} color="amber" />
+        <KpiCard label="Chamados Considerados" value={carregando ? '—' : todos.length} color="green" />
       </div>
       <DataTable columns={columns} rows={linhas} rowKey={(l) => l.name} loading={carregando} emptyTitle="Nenhum técnico ativo cadastrado" />
     </div>

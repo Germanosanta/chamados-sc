@@ -140,9 +140,9 @@ export function TecnicosPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Total" value={carregando ? '—' : tecnicos.length} color="blue" />
-        <KpiCard label="Mais Produtivo" value={maisProdutivo} color="green" />
-        <KpiCard label="Ativos" value={tecnicos.filter((t) => t.status === 'Ativo').length} color="amber" />
-        <KpiCard label="Pendentes (total)" value={[...stats.values()].reduce((a, s) => a + s.pendentes, 0)} color="purple" />
+        <KpiCard label="Mais Produtivo" value={carregando ? '—' : maisProdutivo} color="green" />
+        <KpiCard label="Ativos" value={carregando ? '—' : tecnicos.filter((t) => t.status === 'Ativo').length} color="amber" />
+        <KpiCard label="Pendentes (total)" value={carregando ? '—' : [...stats.values()].reduce((a, s) => a + s.pendentes, 0)} color="purple" />
       </div>
 
       <FilterBar>
@@ -159,7 +159,7 @@ export function TecnicosPage() {
           <DialogHeader>
             <DialogTitle>{editKey ? 'Editar Técnico' : 'Novo Técnico'}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Campo label="Nome completo *" htmlFor="tec-nome">
               <Input id="tec-nome" value={form.nome || ''} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))} />
             </Campo>

@@ -139,9 +139,9 @@ export function PecasPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <KpiCard label="Itens Cadastrados" value={carregando ? '—' : pecas.length} color="blue" />
-        <KpiCard label="Estoque Baixo" value={baixoEstoque.length} color="red" />
-        <KpiCard label="Mais Consumida" value={maisConsumida} color="green" />
-        <KpiCard label="Movimentações" value={movs.length} color="amber" />
+        <KpiCard label="Estoque Baixo" value={carregando ? '—' : baixoEstoque.length} color="red" />
+        <KpiCard label="Mais Consumida" value={carregando ? '—' : maisConsumida} color="green" />
+        <KpiCard label="Movimentações" value={carregando ? '—' : movs.length} color="amber" />
       </div>
 
       <FilterBar>
@@ -158,7 +158,7 @@ export function PecasPage() {
           <DialogHeader>
             <DialogTitle>{editando ? 'Editar Peça' : 'Nova Peça'}</DialogTitle>
           </DialogHeader>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Campo label="Nome *" htmlFor="peca-nome">
               <Input id="peca-nome" value={form.nome || ''} onChange={(e) => setForm((f) => ({ ...f, nome: e.target.value }))} />
             </Campo>

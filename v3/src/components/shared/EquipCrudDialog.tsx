@@ -84,7 +84,7 @@ export function EquipCrudDialog({
               <EquipAutocomplete id="equip-crud-autocomplete" onSelect={setEquipBase} />
             </div>
           )}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Campo label="Patrimônio" htmlFor="equip-patrimonio">
               <Input id="equip-patrimonio" value={form.patrimonio || ''} onChange={(e) => setForm((f) => ({ ...f, patrimonio: e.target.value }))} />
             </Campo>

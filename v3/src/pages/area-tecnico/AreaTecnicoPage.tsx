@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/utils/cn';
 import { KanbanCard } from '@/components/shared/KanbanCard';
@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { useAbertos, useAssumirChamado, useEncerradosLista } from '@/hooks/useChamados';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
+import { usePermission } from '@/hooks/usePermission';
 import type { Chamado } from '@/types/chamado';
 
 type Filtro = 'meus' | 'urgentes' | 'atendimento' | 'peca' | 'concluidos';
@@ -33,6 +34,7 @@ export function AreaTecnicoPage() {
   const { data: encerrados } = useEncerradosLista();
   const abrirDetalhe = useDetalheStore((s) => s.abrir);
   const assumir = useAssumirChamado();
+  const podeEditar = usePermission('p_editar');
   const [filtro, setFiltro] = useState<Filtro>('meus');
 
   const nome = usuario?.nome || '';
@@ -50,14 +52,22 @@ export function AreaTecnicoPage() {
 
   const itens = conjuntos[filtro];
 
-  async function handleAssumir(c: Chamado) {
-    try {
-      await assumir(c);
-      toast(`⚡ Você assumiu o chamado ${c.num}`);
-    } catch {
-      toast.error('Não foi possível assumir o chamado.');
-    }
-  }
+  // useCallback (referência estável): KanbanCard é memoizado — sem isso,
+  // toda troca de filtro/re-render da página recria a função e invalida
+  // o memo de cada card (mesmo raciocínio de AbertoPage.tsx).
+  const handleCardClick = useCallback((c: Chamado) => abrirDetalhe(c.num), [abrirDetalhe]);
+
+  const handleAssumir = useCallback(
+    async (c: Chamado) => {
+      try {
+        await assumir(c);
+        toast(`⚡ Você assumiu o chamado ${c.num}`);
+      } catch {
+        toast.error('Não foi possível assumir o chamado.');
+      }
+    },
+    [assumir],
+  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -88,7 +98,12 @@ export function AreaTecnicoPage() {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {itens.map((c) => (
-          <KanbanCard key={c.num} chamado={c} onClick={() => abrirDetalhe(c.num)} onAssumir={filtro !== 'concluidos' ? () => handleAssumir(c) : undefined} />
+          <KanbanCard
+            key={c.num}
+            chamado={c}
+            onClick={handleCardClick}
+            onAssumir={filtro !== 'concluidos' && podeEditar ? handleAssumir : undefined}
+          />
         ))}
       </div>
     </div>

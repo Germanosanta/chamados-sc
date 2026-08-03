@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Bar, Doughnut } from 'react-chartjs-2';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { RankingBars } from '@/components/shared/RankingBars';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { StatusBadge, CulturaBadge } from '@/components/shared/StatusBadge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -91,13 +92,13 @@ export function DashboardPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-8">
         <KpiCard label="Total" value={carregando ? '—' : stats.total} color="blue" onClick={() => navigate('/chamados')} />
-        <KpiCard label="Em Aberto" value={stats.emAberto} color="red" onClick={() => navigate('/aberto')} />
-        <KpiCard label="Em Atendimento" value={stats.atendimento} color="amber" />
-        <KpiCard label="Aguardando Peça" value={stats.aguardando} color="purple" />
-        <KpiCard label="Concluídos" value={stats.concluidos} color="green" onClick={() => navigate('/encerrados')} />
-        <KpiCard label="Cancelados" value={stats.cancelados} color="cacau" />
-        <KpiCard label="Vencidos (+7d)" value={stats.vencidos} color="red" />
-        <KpiCard label="Tempo Médio" value={stats.tempoMedio === '—' ? '—' : `${stats.tempoMedio}d`} color="teal" />
+        <KpiCard label="Em Aberto" value={carregando ? '—' : stats.emAberto} color="red" onClick={() => navigate('/aberto')} />
+        <KpiCard label="Em Atendimento" value={carregando ? '—' : stats.atendimento} color="amber" />
+        <KpiCard label="Aguardando Peça" value={carregando ? '—' : stats.aguardando} color="purple" />
+        <KpiCard label="Concluídos" value={carregando ? '—' : stats.concluidos} color="green" onClick={() => navigate('/encerrados')} />
+        <KpiCard label="Cancelados" value={carregando ? '—' : stats.cancelados} color="cacau" />
+        <KpiCard label="Vencidos (+7d)" value={carregando ? '—' : stats.vencidos} color="red" />
+        <KpiCard label="Tempo Médio" value={carregando || stats.tempoMedio === '—' ? '—' : `${stats.tempoMedio}d`} color="teal" />
       </div>
 
       <div className="flex items-center gap-2">
@@ -166,6 +167,7 @@ export function DashboardPage() {
       <Card>
         <CardHeader><CardTitle>Últimos 10 Chamados</CardTitle></CardHeader>
         <CardContent className="flex flex-col gap-1">
+          {!carregando && recentes.length === 0 && <EmptyState title="Nenhum chamado registrado ainda" />}
           {recentes.map((c) => (
             <button
               key={c.num}

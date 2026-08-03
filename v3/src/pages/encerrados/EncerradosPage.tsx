@@ -108,7 +108,7 @@ export function EncerradosPage() {
         <KpiCard label="Total" value={carregando ? '—' : encerrados.length} color="green" />
         <KpiCard label="Este Mês" value={carregando ? '—' : esteMes} color="blue" />
         <KpiCard label="Tempo Médio" value={carregando ? '—' : tempoMedio} color="amber" />
-        <KpiCard label="Filtrados" value={filtrados.length} color="purple" />
+        <KpiCard label="Filtrados" value={carregando ? '—' : filtrados.length} color="purple" />
       </div>
 
       <FilterBar>

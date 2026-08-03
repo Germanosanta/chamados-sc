@@ -18,7 +18,7 @@ export function StatusStepper({ status, selos }: { status: string; selos?: React
 
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center">
+      <div className="flex items-center overflow-x-auto">
         {KANBAN_LANES.map((l, i) => (
           <div key={l.key} className="flex items-center">
             <span

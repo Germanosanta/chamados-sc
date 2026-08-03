@@ -98,7 +98,7 @@ export function EquipamentosPage() {
 
   const columns: DataTableColumn<Linha>[] = [
     { key: 'frota', header: 'Frota', render: (l) => <span className="font-mono-num font-semibold text-primary">{l.frota}</span> },
-    { key: 'descricao', header: 'Descrição', render: (l) => <span className="max-w-[200px] truncate">{l.descricao}</span> },
+    { key: 'descricao', header: 'Descrição', render: (l) => <div className="max-w-[200px] truncate">{l.descricao}</div> },
     { key: 'modelo', header: 'Modelo', render: (l) => l.modelo || '—' },
     { key: 'fabricante', header: 'Fabricante', render: (l) => l.fabricante || '—' },
     { key: 'tipo', header: 'Tipo', render: (l) => <Badge variant="graos">{l.tipo || '—'}</Badge> },
@@ -132,10 +132,10 @@ export function EquipamentosPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <KpiCard label="Total" value={carregando ? '—' : linhas.length} color="blue" />
-        <KpiCard label="Ativos" value={linhas.filter((l) => l.status === 'Ativo').length} color="green" />
-        <KpiCard label="Inativos" value={linhas.filter((l) => l.status !== 'Ativo').length} color="red" />
-        <KpiCard label="Com Chamados" value={chCount.size} color="amber" />
-        <KpiCard label="Com Cadastro" value={cadastro.length} color="purple" />
+        <KpiCard label="Ativos" value={carregando ? '—' : linhas.filter((l) => l.status === 'Ativo').length} color="green" />
+        <KpiCard label="Inativos" value={carregando ? '—' : linhas.filter((l) => l.status !== 'Ativo').length} color="red" />
+        <KpiCard label="Com Chamados" value={carregando ? '—' : chCount.size} color="amber" />
+        <KpiCard label="Com Cadastro" value={carregando ? '—' : cadastro.length} color="purple" />
       </div>
 
       <FilterBar>

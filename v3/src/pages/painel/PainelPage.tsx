@@ -77,12 +77,12 @@ export function PainelPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
         <KpiCard label="Críticos Abertos" value={carregando ? '—' : stats.criticos} color="red" />
-        <KpiCard label="Vencidos (+7d)" value={stats.vencidos} color="amber" />
-        <KpiCard label="Abertos Hoje" value={stats.abertosHoje} color="blue" />
-        <KpiCard label="Encerrados Hoje" value={stats.encerradosHoje} color="green" />
+        <KpiCard label="Vencidos (+7d)" value={carregando ? '—' : stats.vencidos} color="amber" />
+        <KpiCard label="Abertos Hoje" value={carregando ? '—' : stats.abertosHoje} color="blue" />
+        <KpiCard label="Encerrados Hoje" value={carregando ? '—' : stats.encerradosHoje} color="green" />
         <KpiCard
           label="SLA Geral"
-          value={`${stats.slaPct}%`}
+          value={carregando ? '—' : `${stats.slaPct}%`}
           color={stats.slaPct >= 90 ? 'green' : stats.slaPct >= 70 ? 'amber' : 'red'}
         />
       </div>
@@ -95,7 +95,7 @@ export function PainelPage() {
             {stats.criticosList.map((c) => (
               <OpRow key={c.num} onClick={() => abrirDetalhe(c.num)}>
                 <span className="font-mono-num text-xs text-primary">{c.num}</span>
-                <span className="flex-1 truncate text-xs">{c.titulo}</span>
+                <span className="min-w-0 flex-1 truncate text-xs">{c.titulo}</span>
                 <span className={cn('text-xs font-semibold', diasAberto(c.data) > 7 ? 'text-destructive' : 'text-warning')}>{diasAberto(c.data)}d</span>
               </OpRow>
             ))}
@@ -109,7 +109,7 @@ export function PainelPage() {
             {stats.ranking.map(([nome, v], i) => (
               <OpRow key={nome}>
                 <span className="min-w-5 font-bold text-subtle">{i + 1}º</span>
-                <span className="flex-1 truncate">{nome.split(' ')[0]}</span>
+                <span className="min-w-0 flex-1 truncate">{nome.split(' ')[0]}</span>
                 <span className="font-bold text-primary">{v}</span>
               </OpRow>
             ))}
@@ -122,7 +122,7 @@ export function PainelPage() {
             {stats.sistemas.length === 0 && <p className="text-sm text-subtle">Sem chamados abertos.</p>}
             {stats.sistemas.map(([bucket, v]) => (
               <OpRow key={bucket}>
-                <span className="flex-1 truncate text-xs">{fazendaLabel(bucket)}</span>
+                <span className="min-w-0 flex-1 truncate text-xs">{fazendaLabel(bucket)}</span>
                 <span className="font-bold text-foreground">{v}</span>
               </OpRow>
             ))}

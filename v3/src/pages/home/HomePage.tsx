@@ -80,9 +80,9 @@ export function HomePage() {
                   onClick={() => abrirDetalhe(c.num)}
                   className="flex items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-left text-base hover:bg-muted"
                 >
-                  <span className="min-w-0">
-                    <span className="font-mono-num font-semibold text-primary">{c.num}</span>{' '}
-                    <span className="truncate text-muted-foreground">{c.titulo}</span>
+                  <span className="flex min-w-0 items-baseline gap-1">
+                    <span className="shrink-0 font-mono-num font-semibold text-primary">{c.num}</span>
+                    <span className="min-w-0 truncate text-muted-foreground">{c.titulo}</span>
                   </span>
                   <StatusBadge status={c.status} />
                 </button>
@@ -97,6 +97,7 @@ export function HomePage() {
           <CardContent className="flex flex-col gap-1.5">
             {carregandoTodos &&
               Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
+            {!carregandoTodos && ultimasAtividades.length === 0 && <EmptyState title="Nenhuma atividade registrada ainda" />}
             {!carregandoTodos &&
               ultimasAtividades.map((c) => (
                 <button
@@ -104,9 +105,9 @@ export function HomePage() {
                   onClick={() => abrirDetalhe(c.num)}
                   className="flex items-center justify-between gap-2 rounded-sm px-2 py-1.5 text-left text-base hover:bg-muted"
                 >
-                  <span className="min-w-0">
-                    <span className="font-mono-num font-semibold text-primary">{c.num}</span>{' '}
-                    <span className="truncate text-muted-foreground">{c.titulo}</span>
+                  <span className="flex min-w-0 items-baseline gap-1">
+                    <span className="shrink-0 font-mono-num font-semibold text-primary">{c.num}</span>
+                    <span className="min-w-0 truncate text-muted-foreground">{c.titulo}</span>
                   </span>
                   <span className="whitespace-nowrap text-sm text-subtle">{formatDataBR(c.data)}</span>
                 </button>

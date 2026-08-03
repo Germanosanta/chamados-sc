@@ -55,9 +55,9 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0 font-mono-num text-sm">
-          <span className="font-bold text-primary">{chamado.num}</span>
-          {frota && <span className="ml-1 truncate text-xs text-muted-foreground">🚜 {frota}</span>}
+        <div className="flex min-w-0 items-baseline gap-1 font-mono-num text-sm">
+          <span className="shrink-0 font-bold text-primary">{chamado.num}</span>
+          {frota && <span className="min-w-0 truncate text-xs text-muted-foreground">🚜 {frota}</span>}
         </div>
         <PrioridadeBadge prioridade={chamado.prior} />
       </div>
@@ -68,11 +68,11 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
       <div className="mt-1.5 line-clamp-2 text-base font-semibold text-foreground">{chamado.titulo}</div>
       {!frota && <div className="mt-1 text-xs text-subtle">Sem equipamento vinculado</div>}
       <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-subtle">
-        <span className="truncate">{chamado.solicitante || 'Sem solicitante'}</span>
+        <span className="min-w-0 truncate">{chamado.solicitante || 'Sem solicitante'}</span>
         <span className="shrink-0 font-mono-num">{formatDataBR(chamado.data)}</span>
       </div>
       <div className="mt-2 flex items-center justify-between gap-2 text-sm text-muted-foreground">
-        <span className="truncate">{chamado.resp || 'Sem responsável'}</span>
+        <span className="min-w-0 truncate">{chamado.resp || 'Sem responsável'}</span>
         <DiasChip dias={dias} />
       </div>
       {!chamado.assumidoPor && onAssumir && (

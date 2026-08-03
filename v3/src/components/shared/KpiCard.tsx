@@ -42,7 +42,7 @@ export function KpiCard({ label, value, sub, color = 'blue', onClick, active, co
         )}
       >
         <div className="flex items-baseline justify-between gap-2">
-          <span className="truncate text-xs font-semibold uppercase tracking-wide text-subtle">{label}</span>
+          <span className="min-w-0 truncate text-xs font-semibold uppercase tracking-wide text-subtle">{label}</span>
           <span className="shrink-0 font-mono-num text-lg font-bold text-foreground">{value}</span>
         </div>
         {sub && <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">{sub}</div>}

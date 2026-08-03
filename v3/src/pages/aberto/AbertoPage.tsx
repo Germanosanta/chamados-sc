@@ -7,6 +7,7 @@ import { FilterBar, FilterBarSeparator } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Pagination } from '@/components/shared/Pagination';
 import { KanbanBoard } from '@/components/shared/KanbanBoard';
+import { RouteLoading } from '@/components/shared/RouteLoading';
 import { CulturaBadge, DiasChip, PrioridadeBadge, StatusBadge } from '@/components/shared/StatusBadge';
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAbertos, useAlterarStatusChamado, useAssumirChamado, useReatribuirResponsavel } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
+import { usePermission } from '@/hooks/usePermission';
 import { diasAberto, diasBorderClass, fazendaLabel, formatDataBR, frotaLabel, isSlaCritico } from '@/utils/chamado-helpers';
 import { useDetalheStore } from '@/store/detalhe';
 import type { Chamado } from '@/types/chamado';
@@ -37,6 +39,7 @@ export function AbertoPage() {
   const assumir = useAssumirChamado();
   const alterarStatus = useAlterarStatusChamado();
   const abrirDetalhe = useDetalheStore((s) => s.abrir);
+  const podeEditar = usePermission('p_editar');
 
   const [view, setView] = useState<'lista' | 'kanban'>('lista');
   const [busca, setBusca] = useState(searchParams.get('q') || '');
@@ -171,6 +174,14 @@ export function AbertoPage() {
 
   const handleStatusChange = useCallback(
     async (chamado: Chamado, novoStatus: Chamado['status']) => {
+      // Botão/drag já ficam escondidos/sem efeito pra quem não tem
+      // p_editar (ver `podeEditar` abaixo) — esse guard é só a segunda
+      // linha de defesa, pra dar feedback claro em vez de deixar a regra
+      // do Firestore rejeitar a escrita em silêncio.
+      if (!podeEditar) {
+        toast.error('Você não tem permissão para alterar o status de chamados.');
+        return;
+      }
       try {
         await alterarStatus(chamado, novoStatus);
         toast(`${chamado.num} → ${novoStatus}`);
@@ -178,7 +189,7 @@ export function AbertoPage() {
         toast.error('Não foi possível mover o chamado.');
       }
     },
-    [alterarStatus],
+    [alterarStatus, podeEditar],
   );
 
   const handleCardClick = useCallback((chamado: Chamado) => abrirDetalhe(chamado.num), [abrirDetalhe]);
@@ -221,20 +232,22 @@ export function AbertoPage() {
       header: 'Ação',
       render: (c) => (
         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-          <Select value="" onValueChange={(v) => handleReatribuir(c, v)}>
-            <SelectTrigger className="h-7 w-24 text-sm">
-              <SelectValue placeholder="Resp." />
-            </SelectTrigger>
-            <SelectContent>
-              {tecnicos.map((t) => (
-                <SelectItem key={t.key} value={t.apelido || t.nome}>
-                  {t.nome}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {podeEditar && (
+            <Select value="" onValueChange={(v) => handleReatribuir(c, v)}>
+              <SelectTrigger className="h-7 w-24 text-sm">
+                <SelectValue placeholder="Resp." />
+              </SelectTrigger>
+              <SelectContent>
+                {tecnicos.map((t) => (
+                  <SelectItem key={t.key} value={t.apelido || t.nome}>
+                    {t.nome}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
           <Button variant="ghost" size="sm" onClick={() => abrirDetalhe(c.num)}>
-            Encerrar
+            {podeEditar ? 'Encerrar' : 'Ver'}
           </Button>
         </div>
       ),
@@ -405,11 +418,13 @@ export function AbertoPage() {
           />
           <Pagination page={page} totalItems={filtrados.length} perPage={PER_PAGE} onPageChange={setPage} />
         </>
+      ) : carregando ? (
+        <RouteLoading />
       ) : (
         <KanbanBoard
           chamados={filtrados}
           onStatusChange={handleStatusChange}
-          onAssumir={handleAssumir}
+          onAssumir={podeEditar ? handleAssumir : undefined}
           onCardClick={handleCardClick}
         />
       )}

@@ -13,7 +13,7 @@ export function RankingBars({ items, emptyLabel }: { items: [string, number][]; 
       {items.map(([nome, valor], i) => (
         <div key={nome} className="flex flex-col gap-1">
           <div className="flex items-center justify-between text-sm">
-            <span className="truncate font-medium text-foreground">{nome}</span>
+            <span className="min-w-0 truncate font-medium text-foreground">{nome}</span>
             <span className="font-mono-num font-bold text-muted-foreground">{valor.toLocaleString('pt-BR')}</span>
           </div>
           <div className="h-1.5 overflow-hidden rounded-full bg-surface3">

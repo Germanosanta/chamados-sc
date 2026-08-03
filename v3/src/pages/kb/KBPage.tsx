@@ -75,10 +75,10 @@ export function KBPage() {
   }
 
   const columns: DataTableColumn<SolucaoKB>[] = [
-    { key: 'problema', header: 'Problema', render: (k) => <span className="max-w-[220px] truncate font-medium text-foreground">{k.problema}</span> },
+    { key: 'problema', header: 'Problema', render: (k) => <div className="max-w-[220px] truncate font-medium text-foreground">{k.problema}</div> },
     { key: 'categoria', header: 'Categoria', render: (k) => k.categoria },
     { key: 'sistema', header: 'Sistema', render: (k) => k.sistema || '—' },
-    { key: 'solucao', header: 'Solução', render: (k) => <span className="max-w-[260px] truncate">{k.solucao}</span> },
+    { key: 'solucao', header: 'Solução', render: (k) => <div className="max-w-[260px] truncate">{k.solucao}</div> },
     { key: 'tempo', header: 'Tempo', render: (k) => k.tempo || '—' },
     {
       key: 'acoes',
@@ -95,8 +95,8 @@ export function KBPage() {
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <KpiCard label="Total de Soluções" value={carregando ? '—' : solucoes.length} color="blue" />
-        <KpiCard label="Categorias" value={categorias.length} color="green" />
-        <KpiCard label="Mais Frequente" value={topCategoria} color="amber" />
+        <KpiCard label="Categorias" value={carregando ? '—' : categorias.length} color="green" />
+        <KpiCard label="Mais Frequente" value={carregando ? '—' : topCategoria} color="amber" />
       </div>
 
       <FilterBar>
@@ -117,7 +117,7 @@ export function KBPage() {
             <Campo label="Problema *" htmlFor="kb-problema">
               <Input id="kb-problema" value={form.problema || ''} onChange={(e) => setForm((f) => ({ ...f, problema: e.target.value }))} />
             </Campo>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Campo label="Categoria *" htmlFor="kb-categoria">
                 <Input id="kb-categoria" value={form.categoria || ''} onChange={(e) => setForm((f) => ({ ...f, categoria: e.target.value }))} />
               </Campo>
@@ -134,7 +134,7 @@ export function KBPage() {
                 className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
               />
             </Campo>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <Campo label="Materiais" htmlFor="kb-materiais">
                 <Input id="kb-materiais" value={form.materiais || ''} onChange={(e) => setForm((f) => ({ ...f, materiais: e.target.value }))} />
               </Campo>

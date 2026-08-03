@@ -120,7 +120,7 @@ export function ChamadosPage() {
         <KpiCard label="Total" value={carregando ? '—' : todos.length} color="blue" />
         <KpiCard label="Em Aberto" value={carregando ? '—' : emAberto} color="red" />
         <KpiCard label="Encerrados" value={carregando ? '—' : encerrados} color="green" />
-        <KpiCard label="Filtrados" value={filtrados.length} color="amber" />
+        <KpiCard label="Filtrados" value={carregando ? '—' : filtrados.length} color="amber" />
       </div>
 
       <FilterBar>

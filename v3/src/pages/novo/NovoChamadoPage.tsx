@@ -208,7 +208,7 @@ export function NovoChamadoPage() {
 
   const equipColumns: DataTableColumn<Chamado>[] = [
     { key: 'num', header: 'Número', render: (c) => <span className="font-mono-num font-semibold text-primary">{c.num}</span> },
-    { key: 'titulo', header: 'Descrição', render: (c) => <span className="max-w-[200px] truncate">{c.titulo}</span> },
+    { key: 'titulo', header: 'Descrição', render: (c) => <div className="max-w-[200px] truncate">{c.titulo}</div> },
     { key: 'data', header: 'Abertura', render: (c) => formatDataBR(c.data) },
     { key: 'status', header: 'Status', render: (c) => <StatusBadge status={c.status} /> },
   ];
@@ -250,7 +250,7 @@ export function NovoChamadoPage() {
             </Select>
           </Campo>
           <Campo label="Prioridade">
-            <div className="grid grid-cols-4 gap-1.5" role="group" aria-label="Prioridade">
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4" role="group" aria-label="Prioridade">
               {PRIORIDADES.map((p) => (
                 <button
                   key={p.key}
