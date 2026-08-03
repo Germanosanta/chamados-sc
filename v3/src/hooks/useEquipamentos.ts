@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge } from '@/services/firebase/firestore';
 import type { Equipamento, EquipamentoEstatico } from '@/types/equipamento';
@@ -49,12 +49,12 @@ export function useEquipUniverso(): EquipamentoEstatico[] {
   }, [cadastro]);
 }
 
+// Sem invalidação manual de cache: `useFirestoreCollection` já escuta
+// `equipamentos` em tempo real (onSnapshot), mesmo padrão de usePecas.ts.
 export function useSalvarEquipamento() {
-  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (equipamento: Equipamento) => {
       await setMerge('equipamentos', equipamento.frota, equipamento);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['equipamentos'] }),
   });
 }

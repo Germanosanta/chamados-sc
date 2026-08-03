@@ -1,10 +1,10 @@
 import { useCallback, useMemo } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
-import { appendToArrayField, list, setMerge } from '@/services/firebase/firestore';
+import { appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
-import { EVT_LABELS, isFechado, normalizarChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
+import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
 import type { Chamado, ChamadoHistoricoTupla, ChecklistEncerramento, Encerramento, EventoTimeline, PecaUsada } from '@/types/chamado';
 import type { Peca, Movimentacao } from '@/types/peca';
 import chamadosHistorico from '@/data/chamados_historico.json';
@@ -90,13 +90,14 @@ export function useProximoNumero(): string {
  * assumirChamado). `chamadoBase` é o registro atual (já mesclado) usado
  * como seed quando ainda não existe doc em `chamados/{num}`. */
 function useChamadoPatch() {
-  const queryClient = useQueryClient();
+  // Sem invalidação manual de cache: `useFirestoreCollection` já escuta
+  // `chamados` em tempo real (onSnapshot) — a UI atualiza sozinha assim
+  // que o write é confirmado (mesmo padrão documentado em usePecas.ts).
   return useMutation({
     mutationFn: async ({ chamadoBase, patch }: { chamadoBase: Chamado; patch: Partial<Chamado> }) => {
       const { encerramento: _encerramento, eventos: _eventos, ...seed } = chamadoBase;
       await setMerge('chamados', chamadoBase.num, { ...seed, ...patch });
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['chamados'] }),
   });
 }
 
@@ -135,15 +136,25 @@ export function useAssumirChamado() {
 /**
  * Abertura de chamado — mesma lógica de submitChamado() (V2): grava o
  * registro completo em `chamados/{num}` e dá baixa das peças
- * selecionadas no estoque (pecas/{id} + novo doc em movimentacoes),
- * exatamente como a V2 faz antes de gravar o chamado.
+ * selecionadas no estoque (pecas/{id} + novo doc em movimentacoes).
+ * Tudo num único `writeBatch` (gravarEmLoteMisto): antes, cada peça era
+ * gravada com um `setMerge` isolado e só no final vinha o chamado — uma
+ * falha no meio do loop (rede, permissão) deixava estoque decrementado
+ * sem nenhum chamado correspondente. Em lote, ou tudo é gravado, ou nada.
  */
 export function useCriarChamado() {
-  const queryClient = useQueryClient();
   const usuario = useSessionStore((s) => s.usuario);
   return useMutation({
     mutationFn: async ({ chamado, pecasUsadas }: { chamado: Chamado; pecasUsadas: PecaUsada[] }) => {
+      const itens: Parameters<typeof gravarEmLoteMisto>[0] = [{ col: 'chamados', id: chamado.num, data: chamado }];
+
       if (pecasUsadas.length) {
+        // list() em vez de reaproveitar o cache do useFirestoreCollection já
+        // assinado por quem chama isso (NovoChamadoPage): decrementar estoque
+        // é uma escrita, então precisa do saldo mais recente possível no
+        // momento do envio, não do que estava em cache quando a tela abriu
+        // (evita baixa duplicada se o snapshot local ainda não tiver
+        // refletido uma venda concorrente).
         const estoqueAtual = await list<Peca>('pecas');
         const now = new Date().toISOString();
         for (const pu of pecasUsadas) {
@@ -151,9 +162,9 @@ export function useCriarChamado() {
           if (!peca) continue;
           const before = Number(peca.qtd) || 0;
           const after = Math.max(0, before - pu.qtd);
-          await setMerge('pecas', pu.id, { ...peca, qtd: after });
+          itens.push({ col: 'pecas', id: pu.id, data: { ...peca, qtd: after } });
           const movId = `m${Date.now()}_${pu.id}`;
-          await setMerge<Movimentacao>('movimentacoes', movId, {
+          const movimentacao: Movimentacao = {
             id: movId,
             pecaId: pu.id,
             pecaNome: pu.nome,
@@ -165,15 +176,13 @@ export function useCriarChamado() {
             obs: 'Registrado na abertura do chamado',
             ts: now,
             usuario: usuario?.nome || 'Sistema',
-          });
+          };
+          itens.push({ col: 'movimentacoes', id: movId, data: movimentacao });
         }
       }
-      await setMerge('chamados', chamado.num, chamado);
+
+      await gravarEmLoteMisto(itens);
       await audit('abriu', `Chamado ${chamado.num} aberto: ${chamado.titulo}`, usuario, chamado.num);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['chamados'] });
-      queryClient.invalidateQueries({ queryKey: ['pecas'] });
     },
   });
 }
@@ -185,7 +194,6 @@ export function useCriarChamado() {
  * (arrayUnion) e, se o tipo mexe em status, atualiza `chamados/{num}`.
  */
 export function useRegistrarEvento() {
-  const queryClient = useQueryClient();
   const usuario = useSessionStore((s) => s.usuario);
   const { mutateAsync } = useChamadoPatch();
   return useCallback(
@@ -194,9 +202,8 @@ export function useRegistrarEvento() {
       await appendToArrayField('historico', chamadoBase.num, 'eventos', evento, { num: chamadoBase.num });
       if (novoStatus) await mutateAsync({ chamadoBase, patch: { status: novoStatus } });
       await audit(tipo, `${EVT_LABELS[tipo as keyof typeof EVT_LABELS] || tipo}: ${detail}`, usuario, chamadoBase.num);
-      queryClient.invalidateQueries({ queryKey: ['historico'] });
     },
-    [queryClient, usuario, mutateAsync],
+    [usuario, mutateAsync],
   );
 }
 
@@ -212,16 +219,16 @@ interface ChecklistPayload {
 /** Encerramento com checklist — mesma lógica de _doEncerramento() (V2):
  * grava `historico/{num}.encerramento` e atualiza `chamados/{num}.status`. */
 export function useEncerrarChamado() {
-  const queryClient = useQueryClient();
   const usuario = useSessionStore((s) => s.usuario);
   const { mutateAsync } = useChamadoPatch();
   return useCallback(
     async (chamadoBase: Chamado, chk: ChecklistPayload) => {
       const now = new Date();
+      const { date: dataEncerramento, time: horaEncerramento } = fmtDateHora(now);
       const encerramento: Encerramento = {
         encerradoEm: now.toISOString(),
-        dataEncerramento: now.toLocaleDateString('pt-BR'),
-        horaEncerramento: now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        dataEncerramento,
+        horaEncerramento,
         encerradoPor: usuario?.nome || 'Sistema',
         status: 'Encerrado',
         ...chk,
@@ -229,16 +236,14 @@ export function useEncerrarChamado() {
       await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento });
       await mutateAsync({ chamadoBase, patch: { status: 'Encerrado' } });
       await audit('encerrou', `Chamado ${chamadoBase.num} encerrado`, usuario, chamadoBase.num);
-      queryClient.invalidateQueries({ queryKey: ['historico'] });
     },
-    [queryClient, usuario, mutateAsync],
+    [usuario, mutateAsync],
   );
 }
 
 /** Reabertura — mesma lógica de reabrirChamado() (V2): limpa o
  * encerramento e volta o status pra "Em Andamento". */
 export function useReabrirChamado() {
-  const queryClient = useQueryClient();
   const registrarEvento = useRegistrarEvento();
   const { mutateAsync } = useChamadoPatch();
   return useCallback(
@@ -246,8 +251,7 @@ export function useReabrirChamado() {
       await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento: null });
       await mutateAsync({ chamadoBase, patch: { status: 'Em Andamento' } });
       await registrarEvento(chamadoBase, 'reabriu', '');
-      queryClient.invalidateQueries({ queryKey: ['historico'] });
     },
-    [queryClient, registrarEvento, mutateAsync],
+    [registrarEvento, mutateAsync],
   );
 }

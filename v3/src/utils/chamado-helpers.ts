@@ -244,7 +244,11 @@ export interface TimelineItem {
   checklist?: import('@/types/chamado').ChecklistEncerramento;
 }
 
-function fmtDateHora(d: Date | null): { date: string; time: string } {
+/** Única fonte de formatação de data+hora pt-BR a partir de um `Date` —
+ * reutilizada por `buildTimeline` e por quem grava data/hora "amigável"
+ * em texto (`useEncerrarChamado`, abertura de chamado), pra não haver 2
+ * implementações que podem divergir no formato exibido ao usuário. */
+export function fmtDateHora(d: Date | null): { date: string; time: string } {
   if (!d || isNaN(d.getTime())) return { date: '—', time: '' };
   return {
     date: d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }),

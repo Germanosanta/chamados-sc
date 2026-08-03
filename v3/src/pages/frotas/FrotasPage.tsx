@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pencil } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
+import { Pagination } from '@/components/shared/Pagination';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -18,6 +19,7 @@ import type { Equipamento } from '@/types/equipamento';
 
 const MATCH_MAP = matchMap as unknown as Record<string, string>;
 const EQUIP_IDX = equipIdx as unknown as Record<string, EquipIdxEntry>;
+const PER_PAGE = 25;
 
 interface FrotaLinha {
   code: string;
@@ -39,6 +41,9 @@ export function FrotasPage() {
   const [statusF, setStatusF] = useState('');
   const [selecionada, setSelecionada] = useState<string | null>(null);
   const [crudOpen, setCrudOpen] = useState(false);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => setPage(1), [busca, grupo, statusF]);
 
   const frotaMap = useMemo(() => {
     const m = new Map<string, Chamado[]>();
@@ -74,6 +79,8 @@ export function FrotasPage() {
       })
       .sort((a, b) => b.count - a.count);
   }, [linhas, busca, grupo, statusF]);
+
+  const paginadas = useMemo(() => filtradas.slice((page - 1) * PER_PAGE, page * PER_PAGE), [filtradas, page]);
 
   const historicoSelecionado = useMemo(
     () => (selecionada ? (frotaMap.get(selecionada) || []).sort((a, b) => (b.data || '').localeCompare(a.data || '')) : []),
@@ -127,12 +134,13 @@ export function FrotasPage() {
 
       <DataTable
         columns={columns}
-        rows={filtradas}
+        rows={paginadas}
         rowKey={(l) => l.code}
         loading={carregando}
         onRowClick={(l) => setSelecionada(l.code)}
         emptyTitle="Nenhuma frota com chamados encontrada"
       />
+      <Pagination page={page} totalItems={filtradas.length} perPage={PER_PAGE} onPageChange={setPage} />
 
       {selecionada && (
         <div className="rounded-lg border border-border bg-surface p-4 shadow-sm">

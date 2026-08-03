@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Download } from 'lucide-react';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
+import { Pagination } from '@/components/shared/Pagination';
 import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +11,8 @@ import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import { downloadCSV } from '@/utils/csv';
 import type { Auditoria } from '@/types/auditoria';
 import type { VariantProps } from 'class-variance-authority';
+
+const PER_PAGE = 50;
 
 const TYPE_LABELS: Record<string, string> = {
   abriu: 'Abertura',
@@ -40,6 +43,7 @@ export function AuditoriaPage() {
   const [busca, setBusca] = useState('');
   const [tipo, setTipo] = useState('');
   const [login, setLogin] = useState('');
+  const [page, setPage] = useState(1);
 
   const logs = useMemo(() => [...logsRaw].sort((a, b) => (b.ts || '').localeCompare(a.ts || '')), [logsRaw]);
   const usuarios = useMemo(() => [...new Set(logs.map((l) => l.login).filter((v): v is string => Boolean(v)))], [logs]);
@@ -54,6 +58,10 @@ export function AuditoriaPage() {
       return true;
     });
   }, [logs, busca, tipo, login]);
+
+  useEffect(() => setPage(1), [busca, tipo, login]);
+
+  const paginados = useMemo(() => filtrados.slice((page - 1) * PER_PAGE, page * PER_PAGE), [filtrados, page]);
 
   function exportar() {
     downloadCSV('auditoria_santa_colomba.csv', [
@@ -97,8 +105,8 @@ export function AuditoriaPage() {
         </Button>
       </FilterBar>
 
-      <DataTable columns={columns} rows={filtrados.slice(0, 200)} rowKey={(l) => l.id} loading={carregando} emptyTitle="Nenhum log encontrado" />
-      {filtrados.length > 200 && <p className="text-center text-sm text-subtle">Mostrando os 200 mais recentes de {filtrados.length.toLocaleString('pt-BR')}.</p>}
+      <DataTable columns={columns} rows={paginados} rowKey={(l) => l.id} loading={carregando} emptyTitle="Nenhum log encontrado" />
+      <Pagination page={page} totalItems={filtrados.length} perPage={PER_PAGE} onPageChange={setPage} />
     </div>
   );
 }

@@ -17,7 +17,7 @@ import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import { useSessionStore } from '@/store/session';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
 import { cn } from '@/utils/cn';
-import { formatDataBR } from '@/utils/chamado-helpers';
+import { fmtDateHora, formatDataBR } from '@/utils/chamado-helpers';
 import type { EquipamentoEstatico } from '@/types/equipamento';
 import type { Chamado, FotoAnexo, PecaUsada, Prioridade } from '@/types/chamado';
 import type { Peca } from '@/types/peca';
@@ -131,6 +131,7 @@ export function NovoChamadoPage() {
 
     setEnviando(true);
     const now = new Date();
+    const { date: dataAbertura, time: horaAbertura } = fmtDateHora(now);
     const chamado: Chamado = {
       num: proximoNumero,
       titulo: equip.e || `${equip.c} ${equip.d}`,
@@ -152,7 +153,7 @@ export function NovoChamadoPage() {
       equipGrupo: equip.g,
       equipStatus: equip.s,
       abertoPor: usuario?.nome || 'Sistema',
-      dataHoraAbertura: now.toLocaleDateString('pt-BR') + ' às ' + now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      dataHoraAbertura: `${dataAbertura} às ${horaAbertura}`,
       dataHoraISO: now.toISOString(),
     };
 

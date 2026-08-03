@@ -108,3 +108,19 @@ export async function gravarEmLote(colName: ColName, items: { id: string; data: 
     await batch.commit();
   }
 }
+
+/** Igual a `gravarEmLote`, mas aceita gravações em coleções diferentes no
+ * mesmo lote (ex.: baixa de estoque em `pecas` + registro em
+ * `movimentacoes` + criação do doc em `chamados`, tudo atômico — ou tudo
+ * falha, ou nada é gravado, evitando estoque decrementado sem chamado
+ * correspondente). */
+export async function gravarEmLoteMisto(items: { col: ColName; id: string; data: DocumentData }[]): Promise<void> {
+  const CHUNK = 500;
+  for (let i = 0; i < items.length; i += CHUNK) {
+    const batch = writeBatch(db);
+    for (const item of items.slice(i, i + CHUNK)) {
+      batch.set(doc(db, item.col, item.id), { ...item.data, _updatedAt: serverTimestamp() }, { merge: true });
+    }
+    await batch.commit();
+  }
+}
