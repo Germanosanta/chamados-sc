@@ -8,6 +8,7 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Pagination } from '@/components/shared/Pagination';
 import { KanbanBoard } from '@/components/shared/KanbanBoard';
 import { CulturaBadge, DiasChip, PrioridadeBadge, StatusBadge } from '@/components/shared/StatusBadge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -285,35 +286,29 @@ export function AbertoPage() {
         </div>
       )}
 
-      <div>
-        <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">Indicadores</div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <KpiCard compact label="Total em Aberto" value={carregando ? '—' : abertos.length} color="blue" />
-          <KpiCard
-            compact
-            label="Críticos"
-            value={criticosCount}
-            color="red"
-            active={prior === 'Urgente'}
-            onClick={() => setPrior((v) => (v === 'Urgente' ? '' : 'Urgente'))}
-          />
-          <KpiCard
-            compact
-            label="SLA Vencido"
-            value={vencidosCount}
-            color="amber"
-            active={slaCritico}
-            onClick={() => setSlaCritico((v) => !v)}
-          />
-          <KpiCard
-            compact
-            label="Sem Responsável"
-            value={semRespCount}
-            color="purple"
-            active={semResp}
-            onClick={() => setSemResp((v) => !v)}
-          />
-        </div>
+      <div className="flex flex-wrap items-center gap-2">
+        <IndicadorChip label="Total em Aberto" value={carregando ? '—' : abertos.length} variant="graos" />
+        <IndicadorChip
+          label="Críticos"
+          value={criticosCount}
+          variant="red"
+          active={prior === 'Urgente'}
+          onClick={() => setPrior((v) => (v === 'Urgente' ? '' : 'Urgente'))}
+        />
+        <IndicadorChip
+          label="SLA Vencido"
+          value={vencidosCount}
+          variant="amber"
+          active={slaCritico}
+          onClick={() => setSlaCritico((v) => !v)}
+        />
+        <IndicadorChip
+          label="Sem Responsável"
+          value={semRespCount}
+          variant="purple"
+          active={semResp}
+          onClick={() => setSemResp((v) => !v)}
+        />
       </div>
 
       <FilterBar>
@@ -417,5 +412,40 @@ export function AbertoPage() {
         />
       )}
     </div>
+  );
+}
+
+/** Indicador secundário como badge/chip — bem menor que um KpiCard de
+ * propósito: acompanha os cards de Cultura/Fazenda sem competir com
+ * eles visualmente (um card cheio pra "Críticos"/"SLA Vencido" ficava
+ * do mesmo tamanho dos indicadores primários, ocupando espaço demais
+ * antes da lista/Kanban de verdade). */
+function IndicadorChip({
+  label,
+  value,
+  variant,
+  active,
+  onClick,
+}: {
+  label: string;
+  value: React.ReactNode;
+  variant: BadgeProps['variant'];
+  active?: boolean;
+  onClick?: () => void;
+}) {
+  const Comp = onClick ? 'button' : 'div';
+  return (
+    <Comp
+      type={onClick ? 'button' : undefined}
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold transition-colors',
+        onClick && 'cursor-pointer hover:border-border2',
+        active ? 'border-primary bg-primary-light' : 'border-border bg-surface text-muted-foreground',
+      )}
+    >
+      {label}
+      <Badge variant={variant}>{value}</Badge>
+    </Comp>
   );
 }
