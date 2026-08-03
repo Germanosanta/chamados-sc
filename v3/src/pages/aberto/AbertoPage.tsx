@@ -242,19 +242,20 @@ export function AbertoPage() {
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
       <div>
-        <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">🌱 Cultura</div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="mb-1 text-xs font-bold uppercase tracking-wide text-subtle">🌱 Cultura</div>
+        <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-3">
           {CULTURAS.map((cu) => {
             const itens = porCultura.get(cu.key) || [];
             const criticos = itens.filter((c) => c.prior === 'Urgente').length;
             return (
               <KpiCard
+                compact
                 key={cu.key}
                 label={cu.label}
                 value={carregando ? '—' : itens.length}
-                sub={criticos > 0 ? <span className="font-semibold text-destructive">{criticos} crítico{criticos > 1 ? 's' : ''}</span> : 'em aberto'}
+                sub={criticos > 0 ? <span className="font-semibold text-destructive">{criticos} crítico{criticos > 1 ? 's' : ''}</span> : undefined}
                 color={cu.color}
                 active={cultCard === cu.key}
                 onClick={() => setCultCard((v) => (v === cu.key ? '' : cu.key))}
@@ -266,16 +267,17 @@ export function AbertoPage() {
 
       {porFazenda.length > 0 && (
         <div>
-          <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">🚜 Fazenda</div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mb-1 text-xs font-bold uppercase tracking-wide text-subtle">🚜 Fazenda</div>
+          <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2 lg:grid-cols-4">
             {porFazenda.map(([bucket, itens], i) => {
               const criticos = itens.filter((c) => c.prior === 'Urgente').length;
               return (
                 <KpiCard
+                  compact
                   key={bucket}
                   label={`📍 ${fazendaLabel(bucket)}`}
                   value={itens.length}
-                  sub={criticos > 0 ? <span className="font-semibold text-destructive">{criticos} crítico{criticos > 1 ? 's' : ''}</span> : 'em aberto'}
+                  sub={criticos > 0 ? <span className="font-semibold text-destructive">{criticos} crítico{criticos > 1 ? 's' : ''}</span> : undefined}
                   color={FAZENDA_CORES[i % FAZENDA_CORES.length]}
                   active={fazendaCard === bucket}
                   onClick={() => setFazendaCard((v) => (v === bucket ? '' : bucket))}

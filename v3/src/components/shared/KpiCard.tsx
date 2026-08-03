@@ -17,30 +17,52 @@ interface KpiCardProps {
   color?: keyof typeof BAR_COLOR;
   onClick?: () => void;
   active?: boolean;
-  /** versão reduzida (menos padding/peso) — pra indicadores secundários
-   * que acompanham um bloco de KPIs primários (ex. Críticos/SLA vencido
-   * ao lado dos cards de Cultura/Fazenda em "Chamados em Aberto"), sem
-   * competir visualmente com eles. */
+  /** layout horizontal (label e valor na mesma linha, `sub` só aparece
+   * se houver) em vez do empilhado padrão — pra grades com muitos cards
+   * lado a lado (ex. Cultura/Fazenda em "Chamados em Aberto") sem cada
+   * um ocupar uma fatia grande da tela. */
   compact?: boolean;
 }
 
 /** Equivalente ao .kpi-card da V2 — card com barra colorida no topo,
  * opcionalmente clicável como atalho de filtro. */
 export function KpiCard({ label, value, sub, color = 'blue', onClick, active, compact }: KpiCardProps) {
+  if (compact) {
+    // layout horizontal (label ... valor numa linha só) em vez de
+    // empilhado — é o que de fato reduz a altura, não só a fonte.
+    return (
+      <div
+        onClick={onClick}
+        className={cn(
+          'relative overflow-hidden rounded-lg border border-border bg-surface px-3 py-2 shadow-sm transition',
+          'before:absolute before:inset-x-0 before:top-0 before:h-[3px]',
+          BAR_COLOR[color],
+          onClick && 'cursor-pointer hover:-translate-y-px hover:shadow',
+          active && 'ring-2 ring-primary',
+        )}
+      >
+        <div className="flex items-baseline justify-between gap-2">
+          <span className="truncate text-xs font-semibold uppercase tracking-wide text-subtle">{label}</span>
+          <span className="shrink-0 font-mono-num text-lg font-bold text-foreground">{value}</span>
+        </div>
+        {sub && <div className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">{sub}</div>}
+      </div>
+    );
+  }
+
   return (
     <div
       onClick={onClick}
       className={cn(
-        'relative overflow-hidden rounded-lg border border-border bg-surface shadow-sm transition',
+        'relative overflow-hidden rounded-lg border border-border bg-surface p-4 shadow-sm transition',
         'before:absolute before:inset-x-0 before:top-0 before:h-[3px]',
-        compact ? 'p-3' : 'p-4',
         BAR_COLOR[color],
         onClick && 'cursor-pointer hover:-translate-y-px hover:shadow',
         active && 'ring-2 ring-primary',
       )}
     >
       <div className="text-xs font-semibold uppercase tracking-wide text-subtle">{label}</div>
-      <div className={cn('mt-1.5 font-mono-num font-bold text-foreground', compact ? 'text-xl' : 'text-3xl')}>{value}</div>
+      <div className="mt-1.5 font-mono-num text-3xl font-bold text-foreground">{value}</div>
       {sub && <div className="mt-1.5 flex items-center gap-1 text-sm text-muted-foreground">{sub}</div>}
     </div>
   );
