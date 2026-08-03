@@ -163,6 +163,7 @@ export function NovoChamadoPage() {
       toast.error(`⚠ Antes de continuar: ${frase}.`);
       return;
     }
+    if (!equip) return; // já coberto por `erros` acima — só pro TS estreitar o tipo
 
     setEnviando(true);
     const now = new Date();
