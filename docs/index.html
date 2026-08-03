@@ -21,15 +21,15 @@
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <!-- Styles (base primeiro, responsivo.css por último — sobrescreve os demais em media query) -->
-  <link rel="stylesheet" href="css/style.css?v=20260802b">
-  <link rel="stylesheet" href="css/login.css?v=20260802b">
-  <link rel="stylesheet" href="css/dashboard.css?v=20260802b">
-  <link rel="stylesheet" href="css/chamados.css?v=20260802b">
-  <link rel="stylesheet" href="css/equipamentos.css?v=20260802b">
-  <link rel="stylesheet" href="css/usuarios.css?v=20260802b">
-  <link rel="stylesheet" href="css/relatorios.css?v=20260802b">
-  <link rel="stylesheet" href="css/config.css?v=20260802b">
-  <link rel="stylesheet" href="css/responsivo.css?v=20260802b">
+  <link rel="stylesheet" href="css/style.css?v=20260803a">
+  <link rel="stylesheet" href="css/login.css?v=20260803a">
+  <link rel="stylesheet" href="css/dashboard.css?v=20260803a">
+  <link rel="stylesheet" href="css/chamados.css?v=20260803a">
+  <link rel="stylesheet" href="css/equipamentos.css?v=20260803a">
+  <link rel="stylesheet" href="css/usuarios.css?v=20260803a">
+  <link rel="stylesheet" href="css/relatorios.css?v=20260803a">
+  <link rel="stylesheet" href="css/config.css?v=20260803a">
+  <link rel="stylesheet" href="css/responsivo.css?v=20260803a">
 </head>
 <body>
 <!-- SIDEBAR -->
@@ -673,30 +673,36 @@
        filtros de verdade na barra abaixo (Técnico Responsável/SLA
        crítico), e "Total" já é coberto pelo botão "Limpar". Só ficam os
        2 grandes agrupadores operacionais pedidos: Cultura e Fazenda. -->
-  <div class="ab-group-label">🌱 Cultura</div>
-  <div class="kpi-grid cols-3 ab-cultura-grid">
-    <div class="kpi-card blue" style="cursor:pointer" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
-      <div class="kpi-label">🌾 Grãos e Fibras</div>
-      <div class="kpi-value" id="ab-graos">—</div>
-      <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-graos-crit" style="display:none;margin-left:4px"></span></div>
+  <!-- Fase 4.7 — envolvidos em #ab-kpi-resumo: toggleViewMode() esconde
+       este bloco ao entrar em Kanban (ele empurrava o board para baixo da
+       dobra) e reexibe ao voltar para Lista; toggleAbertoResumo() permite
+       reabrir manualmente em qualquer modo (botão "Resumo" na filter-bar). -->
+  <div id="ab-kpi-resumo">
+    <div class="ab-group-label">🌱 Cultura</div>
+    <div class="kpi-grid cols-3 ab-cultura-grid">
+      <div class="kpi-card blue" style="cursor:pointer" onclick="abCardFilter('cult','Grãos e Fibras')" id="abcard-graos">
+        <div class="kpi-label">🌾 Grãos e Fibras</div>
+        <div class="kpi-value" id="ab-graos">—</div>
+        <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-graos-crit" style="display:none;margin-left:4px"></span></div>
+      </div>
+      <div class="kpi-card amber" style="cursor:pointer" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
+        <div class="kpi-label">🌿 Tabaco</div>
+        <div class="kpi-value" id="ab-tabaco">—</div>
+        <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-tabaco-crit" style="display:none;margin-left:4px"></span></div>
+      </div>
+      <div class="kpi-card cacau" style="cursor:pointer" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
+        <div class="kpi-label">🍫 Cacau</div>
+        <div class="kpi-value" id="ab-cacau">—</div>
+        <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-cacau-crit" style="display:none;margin-left:4px"></span></div>
+      </div>
     </div>
-    <div class="kpi-card amber" style="cursor:pointer" onclick="abCardFilter('cult','Tabaco')" id="abcard-tabaco">
-      <div class="kpi-label">🌿 Tabaco</div>
-      <div class="kpi-value" id="ab-tabaco">—</div>
-      <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-tabaco-crit" style="display:none;margin-left:4px"></span></div>
-    </div>
-    <div class="kpi-card cacau" style="cursor:pointer" onclick="abCardFilter('cult','Cacau')" id="abcard-cacau">
-      <div class="kpi-label">🍫 Cacau</div>
-      <div class="kpi-value" id="ab-cacau">—</div>
-      <div class="kpi-sub">em aberto <span class="badge badge-red" id="ab-cacau-crit" style="display:none;margin-left:4px"></span></div>
-    </div>
-  </div>
 
-  <div class="ab-group-label">🚜 Fazenda</div>
-  <!-- Gerado por _renderFazendaCards() a partir dos buckets (r[6]) que
-       realmente têm chamado aberto — antes só Karitel/Rio do Meio
-       apareciam aqui; Rádio/John Deere ficavam sem card nenhum. -->
-  <div id="ab-fazenda-cards" class="kpi-grid kpi-grid-fluid"></div>
+    <div class="ab-group-label">🚜 Fazenda</div>
+    <!-- Gerado por _renderFazendaCards() a partir dos buckets (r[6]) que
+         realmente têm chamado aberto — antes só Karitel/Rio do Meio
+         apareciam aqui; Rádio/John Deere ficavam sem card nenhum. -->
+    <div id="ab-fazenda-cards" class="kpi-grid kpi-grid-fluid"></div>
+  </div>
 
   <!-- Filtros — agrupados em 3 blocos visuais (filtrar · avançado/limpar ·
        visualização), separados por .filter-bar-sep, mesma barra/mesmos
@@ -721,6 +727,7 @@
     </select>
 
     <span class="filter-bar-sep"></span>
+    <button class="btn btn-ghost" id="btn-ab-resumo" onclick="toggleAbertoResumo()" title="Mostrar/ocultar os cards de Cultura e Fazenda">📊 Resumo</button>
     <button class="btn btn-ghost" id="btn-ab-avancado" onclick="toggleAbertoAvancado()">Filtros avançados</button>
     <button class="btn btn-ghost" onclick="clearAbertoFilters()">Limpar tudo</button>
     <!-- Fase 4.6 (consolidação final) — ab-resp-card/ab-venc-card
@@ -2877,26 +2884,26 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- ── DATA (loaded inline for offline use) -->
-  <script src="js/data/chamados_historico.js?v=20260802b"></script>
-  <script src="js/data/equipamentos.js?v=20260802b"></script>
-  <script src="js/data/match_map.js?v=20260802b"></script>
-  <script src="js/data/equip_idx.js?v=20260802b"></script>
+  <script src="js/data/chamados_historico.js?v=20260803a"></script>
+  <script src="js/data/equipamentos.js?v=20260803a"></script>
+  <script src="js/data/match_map.js?v=20260803a"></script>
+  <script src="js/data/equip_idx.js?v=20260803a"></script>
 
   <!-- ── CORE -->
-  <script src="js/core/storage.js?v=20260802b"></script>
+  <script src="js/core/storage.js?v=20260803a"></script>
 
   <!-- ── MODULES -->
-  <script src="js/modules/usuarios/index.js?v=20260802b"></script>
-  <script src="js/modules/dashboard/index.js?v=20260802b"></script>
-  <script src="js/modules/chamados/index.js?v=20260802b"></script>
-  <script src="js/modules/equipamentos/index.js?v=20260802b"></script>
-  <script src="js/modules/relatorios/index.js?v=20260802b"></script>
-  <script src="js/modules/config/index.js?v=20260802b"></script>
+  <script src="js/modules/usuarios/index.js?v=20260803a"></script>
+  <script src="js/modules/dashboard/index.js?v=20260803a"></script>
+  <script src="js/modules/chamados/index.js?v=20260803a"></script>
+  <script src="js/modules/equipamentos/index.js?v=20260803a"></script>
+  <script src="js/modules/relatorios/index.js?v=20260803a"></script>
+  <script src="js/modules/config/index.js?v=20260803a"></script>
 
   <!-- ── FIREBASE (module — loads after everything else) -->
-  <script type="module" src="js/firebase/firebase.js?v=20260802b"></script>
+  <script type="module" src="js/firebase/firebase.js?v=20260803a"></script>
 
   <!-- ── INIT -->
-  <script src="js/core/init.js?v=20260802b"></script>
+  <script src="js/core/init.js?v=20260803a"></script>
 </body>
 </html>

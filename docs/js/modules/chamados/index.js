@@ -515,7 +515,27 @@ function toggleViewMode(mode) {
   const board    = document.getElementById('kanban-board');
   if (listCard) listCard.style.display = mode==='lista' ? '' : 'none';
   if (board)    board.style.display    = mode==='kanban' ? '' : 'none';
+  // Fase 4.7 — os cards de Cultura/Fazenda empurravam o board para baixo
+  // da dobra no Kanban; recolhe automaticamente ao entrar em Kanban e
+  // reexibe ao voltar para Lista (usuário ainda pode reabrir com o botão
+  // "Resumo" via toggleAbertoResumo()).
+  const resumo = document.getElementById('ab-kpi-resumo');
+  const btnResumo = document.getElementById('btn-ab-resumo');
+  if (resumo) resumo.style.display = mode==='kanban' ? 'none' : '';
+  if (btnResumo) btnResumo.classList.toggle('btn-ghost-active', mode!=='kanban');
   if (mode === 'kanban') renderKanban();
+}
+
+// Fase 4.7 — reabre/recolhe manualmente #ab-kpi-resumo (cards de Cultura/
+// Fazenda), independente do modo de visualização; mesmo padrão de
+// toggleAbertoAvancado().
+function toggleAbertoResumo() {
+  const el = document.getElementById('ab-kpi-resumo');
+  const btn = document.getElementById('btn-ab-resumo');
+  if (!el) return;
+  const open = el.style.display === 'none';
+  el.style.display = open ? '' : 'none';
+  if (btn) btn.classList.toggle('btn-ghost-active', open);
 }
 
 // Raia (lane) de um chamado a partir do status real — mesmo mapeamento de
