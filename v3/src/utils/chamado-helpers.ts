@@ -12,6 +12,34 @@ import type { EquipIdxEntry } from '@/types/equipamento';
 export const DIAS_ATRASO_ALERTA = 3;
 export const DIAS_ATRASO_CRITICO = 7;
 
+/**
+ * Normaliza um chamado vindo do Firestore antes de qualquer renderização/
+ * ordenação. O tipo `Chamado` declara `num`/`titulo`/`cultura`/`resp`/
+ * `data`/`status`/`bucket` como `string` obrigatória, mas isso é só uma
+ * garantia de compilação — um documento gravado fora do fluxo normal da
+ * V2/V3 (edição manual no Console, script externo, doc antigo/
+ * incompleto) pode chegar em runtime com qualquer um desses campos
+ * ausente. Sem essa normalização, código que assume `c.data.localeCompare`
+ * (ou qualquer outro método de string) quebra a tela inteira com um
+ * documento só. Chamada uma única vez, na origem dos dados
+ * (`useChamados.ts`), pra todo o resto do app poder confiar nos campos.
+ */
+export function normalizarChamado(c: Chamado): Chamado {
+  return {
+    ...c,
+    num: c.num || '',
+    titulo: c.titulo || '',
+    cultura: c.cultura || '',
+    resp: c.resp || '',
+    data: c.data || '',
+    status: c.status || 'Não iniciado',
+    bucket: c.bucket || '',
+    solicitante: c.solicitante || '',
+    categoria: c.categoria || '',
+    tecnico: c.tecnico || '',
+  };
+}
+
 const STATUS_TERMINAIS = new Set<ChamadoStatus>(['Concluída', 'Encerrado', 'Cancelado']);
 
 export function isFechado(c: Chamado): boolean {

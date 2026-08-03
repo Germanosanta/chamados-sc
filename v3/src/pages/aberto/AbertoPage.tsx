@@ -109,7 +109,14 @@ export function AbertoPage() {
       if (fAte && c.data > fAte) return false;
       return true;
     });
-    out = out.sort((a, b) => (ordem === 'antigos' ? a.data.localeCompare(b.data) : b.data.localeCompare(a.data)));
+    // String(x || '') — defesa extra além da normalização em
+    // useChamados.ts: mesmo que um chamado malformado chegue até aqui
+    // (fonte de dados nova, teste, etc.), o sort nunca quebra a tela.
+    out = out.sort((a, b) => {
+      const da = String(a.data || '');
+      const db = String(b.data || '');
+      return ordem === 'antigos' ? da.localeCompare(db) : db.localeCompare(da);
+    });
     return out;
   }, [abertos, busca, status, resp, cultCard, fazendaCard, prior, slaCritico, semResp, fFrota, fSolicitante, fDe, fAte, ordem]);
 

@@ -4,7 +4,7 @@ import { useFirestoreCollection } from './useFirestoreCollection';
 import { appendToArrayField, list, setMerge } from '@/services/firebase/firestore';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
-import { EVT_LABELS, isFechado, tuplaParaChamado } from '@/utils/chamado-helpers';
+import { EVT_LABELS, isFechado, normalizarChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
 import type { Chamado, ChamadoHistoricoTupla, ChecklistEncerramento, Encerramento, EventoTimeline, PecaUsada } from '@/types/chamado';
 import type { Peca, Movimentacao } from '@/types/peca';
 import chamadosHistorico from '@/data/chamados_historico.json';
@@ -44,10 +44,16 @@ export function useChamados() {
     const numsBase = new Set(base.map((c) => c.num));
     const novos = chamadosFs.data.filter((c) => !numsBase.has(c.num));
 
+    // normalizarChamado por último: cobre tanto os registros do dataset
+    // histórico (já bem formados, mas sem custo revalidar) quanto —
+    // principalmente — os `novos` (só existem no Firestore, então vêm
+    // exatamente como o documento foi gravado, sem passar por
+    // tuplaParaChamado; um doc antigo/incompleto sem `data`/`titulo`/etc.
+    // não pode derrubar nenhuma tela que ordene ou renderize esses campos).
     return [...base, ...novos].map((c) => {
       const h = historicoMap.get(c.num);
-      if (!h?.encerramento) return c;
-      return { ...c, status: 'Concluída' as const, encerramento: h.encerramento, eventos: h.eventos };
+      const withEncerramento = h?.encerramento ? { ...c, status: 'Concluída' as const, encerramento: h.encerramento, eventos: h.eventos } : c;
+      return normalizarChamado(withEncerramento);
     });
   }, [chamadosFs.data, historicoFs.data]);
 
