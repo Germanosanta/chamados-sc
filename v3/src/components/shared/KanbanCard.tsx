@@ -2,8 +2,8 @@ import { memo } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/utils/cn';
-import { DiasChip, PrioridadeBadge } from './StatusBadge';
-import { diasAberto, diasBorderClass, frotaLabel, isFechado } from '@/utils/chamado-helpers';
+import { CulturaBadge, DiasChip, PrioridadeBadge, StatusBadge } from './StatusBadge';
+import { diasAberto, diasBorderClass, formatDataBR, frotaLabel, isFechado } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 interface KanbanCardProps {
@@ -61,8 +61,16 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
         </div>
         <PrioridadeBadge prioridade={chamado.prior} />
       </div>
+      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+        <CulturaBadge cultura={chamado.cultura} />
+        <StatusBadge status={chamado.status} />
+      </div>
       <div className="mt-1.5 line-clamp-2 text-base font-semibold text-foreground">{chamado.titulo}</div>
       {!frota && <div className="mt-1 text-xs text-subtle">Sem equipamento vinculado</div>}
+      <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-subtle">
+        <span className="truncate">{chamado.solicitante || 'Sem solicitante'}</span>
+        <span className="shrink-0 font-mono-num">{formatDataBR(chamado.data)}</span>
+      </div>
       <div className="mt-2 flex items-center justify-between gap-2 text-sm text-muted-foreground">
         <span className="truncate">{chamado.resp || 'Sem responsável'}</span>
         <DiasChip dias={dias} />

@@ -7,7 +7,7 @@ import { FilterBar, FilterBarSeparator } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Pagination } from '@/components/shared/Pagination';
 import { KanbanBoard } from '@/components/shared/KanbanBoard';
-import { DiasChip, PrioridadeBadge, StatusBadge } from '@/components/shared/StatusBadge';
+import { CulturaBadge, DiasChip, PrioridadeBadge, StatusBadge } from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -208,6 +208,8 @@ export function AbertoPage() {
         </div>
       ),
     },
+    { key: 'solicitante', header: 'Solicitante', render: (c) => c.solicitante || <span className="text-subtle">—</span> },
+    { key: 'cultura', header: 'Setor', render: (c) => <CulturaBadge cultura={c.cultura} /> },
     { key: 'resp', header: 'Responsável', render: (c) => c.resp || <span className="text-subtle">—</span> },
     { key: 'data', header: 'Data Abertura', render: (c) => <span className="font-mono-num text-sm">{formatDataBR(c.data)}</span> },
     { key: 'prior', header: 'Prioridade', render: (c) => <PrioridadeBadge prioridade={c.prior} /> },
