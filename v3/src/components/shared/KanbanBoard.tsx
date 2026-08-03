@@ -7,7 +7,10 @@ import type { Chamado } from '@/types/chamado';
 
 interface KanbanBoardProps {
   chamados: Chamado[];
-  onStatusChange: (chamado: Chamado, novoStatus: Chamado['status']) => void;
+  /** Ausente = drag-and-drop desligado (ex.: usuário sem `p_editar`) —
+   * os cards nascem sem o `useDraggable` ativo em vez de só rejeitar o
+   * drop depois de arrastar. */
+  onStatusChange?: (chamado: Chamado, novoStatus: Chamado['status']) => void;
   onCardClick?: (chamado: Chamado) => void;
   onAssumir?: (chamado: Chamado) => void;
 }
@@ -55,7 +58,7 @@ export function KanbanBoard({ chamados, onStatusChange, onCardClick, onAssumir }
       toast('Ação não disponível — avance uma etapa por vez.');
       return;
     }
-    onStatusChange(chamado, novoStatus);
+    onStatusChange?.(chamado, novoStatus);
   }
 
   return (
@@ -69,6 +72,7 @@ export function KanbanBoard({ chamados, onStatusChange, onCardClick, onAssumir }
             chamados={porLane[lane.key]}
             onCardClick={onCardClick}
             onAssumir={onAssumir}
+            dragDisabled={!onStatusChange}
           />
         ))}
       </div>

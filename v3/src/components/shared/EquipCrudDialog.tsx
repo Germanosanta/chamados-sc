@@ -139,7 +139,7 @@ export function EquipCrudDialog({
         </div>
         <DialogFooter>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Cancelar</Button>
-          <Button onClick={handleSalvar}>Salvar</Button>
+          <Button onClick={handleSalvar} disabled={salvar.isPending}>{salvar.isPending ? 'Salvando…' : 'Salvar'}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

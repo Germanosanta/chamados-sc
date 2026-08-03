@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useChamados } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
-import { diasAberto, fazendaLabel, formatDataBR, frotaLabel } from '@/utils/chamado-helpers';
+import { diasAberto, fazendaLabel, formatDataBR, frotaLabel, isFechado } from '@/utils/chamado-helpers';
 import { downloadCSV } from '@/utils/csv';
 import type { Chamado } from '@/types/chamado';
 
@@ -41,6 +41,18 @@ export function ChamadosPage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => setPage(1), [busca, cultura, status, bucket, resp, prior, slaCritico, fDe, fAte]);
+
+  function limparFiltros() {
+    setBusca('');
+    setCultura('');
+    setStatus('');
+    setBucket('');
+    setResp('');
+    setPrior('');
+    setSlaCritico(false);
+    setFDe('');
+    setFAte('');
+  }
 
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
@@ -76,7 +88,10 @@ export function ChamadosPage() {
     let emAberto = 0;
     let encerrados = 0;
     for (const c of todos) {
-      if (c.status === 'Encerrado' || c.status === 'Concluída') encerrados++;
+      // isFechado() — não só 'Encerrado'/'Concluída': também considera
+      // 'Cancelado' e `encerramento` preenchido, senão um chamado
+      // cancelado entrava indevidamente na contagem de "Em Aberto".
+      if (isFechado(c)) encerrados++;
       else emAberto++;
     }
     return { emAberto, encerrados };
@@ -159,6 +174,9 @@ export function ChamadosPage() {
         <FilterBarSeparator />
         <Button variant="ghost" onClick={() => setAvancado((v) => !v)}>
           <SlidersHorizontal className="h-3.5 w-3.5" /> Filtros avançados
+        </Button>
+        <Button variant="ghost" onClick={limparFiltros}>
+          Limpar filtros
         </Button>
         <Button variant="ghost" onClick={exportar}>
           <Download className="h-3.5 w-3.5" /> Exportar CSV

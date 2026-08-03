@@ -2,7 +2,7 @@ const CORES = ['#2563eb', '#0d9488', '#7c3aed', '#16a34a', '#d97706', '#dc2626']
 
 /** Equivalente a .prog-item/.prog-track/.prog-fill da V2 — usado nos
  * rankings de Responsáveis/Equipamentos/Principais Problemas do
- * Dashboard e Painel Operacional. */
+ * Dashboard. */
 export function RankingBars({ items, emptyLabel }: { items: [string, number][]; emptyLabel?: string }) {
   if (!items.length) {
     return <p className="text-sm text-subtle">{emptyLabel || 'Sem dados suficientes ainda.'}</p>;

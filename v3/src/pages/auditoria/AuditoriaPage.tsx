@@ -75,7 +75,7 @@ export function AuditoriaPage() {
     { key: 'usuario', header: 'Usuário', render: (l) => <span className="font-medium text-foreground">{l.usuario}</span> },
     { key: 'tipo', header: 'Tipo', render: (l) => <Badge variant={TYPE_VARIANTS[l.tipo] || 'neutral'}>{TYPE_LABELS[l.tipo] || l.tipo}</Badge> },
     { key: 'chamado', header: 'Chamado', render: (l) => l.chamado || '—' },
-    { key: 'detalhe', header: 'Detalhe', render: (l) => <div className="max-w-[360px] truncate">{l.detalhe}</div> },
+    { key: 'detalhe', header: 'Detalhe', render: (l) => <div className="max-w-[360px] truncate" title={l.detalhe}>{l.detalhe}</div> },
   ];
 
   return (

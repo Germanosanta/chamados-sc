@@ -14,7 +14,7 @@ import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { usePermission } from '@/hooks/usePermission';
 import { useChamados, useAssumirChamado, useRegistrarEvento, useReabrirChamado } from '@/hooks/useChamados';
-import { diasAberto, diasBorderClass, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip } from '@/utils/chamado-helpers';
+import { diasAberto, diasBorderClass, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip, isFechado } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import type { Auditoria } from '@/types/auditoria';
@@ -52,7 +52,7 @@ export function CentroOperacionalModal() {
 
   if (!num) return null;
 
-  const fechado = chamado ? chamado.status === 'Encerrado' || chamado.status === 'Concluída' : false;
+  const fechado = chamado ? isFechado(chamado) : false;
   const equip = chamado ? getChamadoEquip(chamado.num, chamado.equipCodigo) : null;
   const dias = chamado ? diasAberto(chamado.data) : 0;
 

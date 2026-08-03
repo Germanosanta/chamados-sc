@@ -10,9 +10,10 @@ interface KanbanColumnProps {
   chamados: Chamado[];
   onCardClick?: (chamado: Chamado) => void;
   onAssumir?: (chamado: Chamado) => void;
+  dragDisabled?: boolean;
 }
 
-export const KanbanColumn = memo(function KanbanColumn({ laneKey, label, chamados, onCardClick, onAssumir }: KanbanColumnProps) {
+export const KanbanColumn = memo(function KanbanColumn({ laneKey, label, chamados, onCardClick, onAssumir, dragDisabled }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: laneKey });
 
   return (
@@ -29,7 +30,7 @@ export const KanbanColumn = memo(function KanbanColumn({ laneKey, label, chamado
       </div>
       <div className="flex flex-1 flex-col gap-2">
         {chamados.map((c) => (
-          <KanbanCard key={c.num} chamado={c} onClick={onCardClick} onAssumir={onAssumir} />
+          <KanbanCard key={c.num} chamado={c} onClick={onCardClick} onAssumir={onAssumir} dragDisabled={dragDisabled} />
         ))}
       </div>
     </div>

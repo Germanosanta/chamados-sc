@@ -15,7 +15,3 @@ export function FilterBar({ className, children }: { className?: string; childre
 export function FilterBarSeparator() {
   return <span className="mx-0.5 hidden h-5 w-px self-stretch bg-border sm:block" />;
 }
-
-export function FilterLabel({ children }: { children: React.ReactNode }) {
-  return <span className="text-xs font-semibold uppercase tracking-wide text-subtle">{children}</span>;
-}

@@ -4,6 +4,7 @@ import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Pagination } from '@/components/shared/Pagination';
 import { CulturaBadge, PrioridadeBadge, StatusBadge } from '@/components/shared/StatusBadge';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useChamados } from '@/hooks/useChamados';
@@ -36,6 +37,14 @@ export function CriticidadePage() {
   const [page, setPage] = useState(1);
 
   useEffect(() => setPage(1), [nivelCard, busca, cultura, fazenda, statusF]);
+
+  function limparFiltros() {
+    setNivelCard('');
+    setBusca('');
+    setCultura('');
+    setFazenda('');
+    setStatusF('');
+  }
 
   const porNivel = useMemo(() => {
     const m = new Map<string, Chamado[]>();
@@ -133,6 +142,9 @@ export function CriticidadePage() {
             <SelectItem value="Encerrado">Encerrado</SelectItem>
           </SelectContent>
         </Select>
+        <Button variant="ghost" onClick={limparFiltros}>
+          Limpar filtros
+        </Button>
       </FilterBar>
 
       <DataTable

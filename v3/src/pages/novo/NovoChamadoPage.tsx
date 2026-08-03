@@ -109,25 +109,60 @@ export function NovoChamadoPage() {
 
   function adicionarPeca(p: Peca) {
     setBuscaPeca('');
+    if (Number(p.qtd) <= 0) {
+      toast.error(`${p.nome} está sem estoque.`);
+      return;
+    }
     setPecasSelecionadas((prev) => {
       const existe = prev.find((x) => x.id === p.id);
-      if (existe) return prev.map((x) => (x.id === p.id ? { ...x, qtd: x.qtd + 1 } : x));
+      if (existe) {
+        if (existe.qtd >= Number(p.qtd)) {
+          toast.error(`Estoque de ${p.nome}: só ${p.qtd} disponível(is).`);
+          return prev;
+        }
+        return prev.map((x) => (x.id === p.id ? { ...x, qtd: x.qtd + 1 } : x));
+      }
       return [...prev, { id: p.id, nome: p.nome, qtd: 1, unidade: p.unidade }];
     });
   }
 
+  // Trava a quantidade no estoque disponível (`pecasEstoque` — mesma
+  // coleção lida na abertura do chamado): sem isso, o usuário podia pedir
+  // mais do que existe e a baixa era silenciosamente zerada no servidor
+  // (Math.max(0, ...) em useCriarChamado), sem nenhum aviso na tela.
   function alterarQtdPeca(id: string, delta: number) {
     setPecasSelecionadas((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, qtd: Math.max(0, p.qtd + delta) } : p)).filter((p) => p.qtd > 0),
+      prev
+        .map((p) => {
+          if (p.id !== id) return p;
+          const disponivel = Number(pecasEstoque.find((e) => e.id === id)?.qtd) || 0;
+          const novaQtd = Math.max(0, p.qtd + delta);
+          if (delta > 0 && novaQtd > disponivel) {
+            toast.error(`Estoque de ${p.nome}: só ${disponivel} disponível(is).`);
+            return p;
+          }
+          return { ...p, qtd: novaQtd };
+        })
+        .filter((p) => p.qtd > 0),
     );
   }
 
   async function handleSubmit() {
-    if (!equip) return toast('⚠ Selecione um equipamento da lista.');
-    if (!categoria) return toast('⚠ Selecione a categoria do chamado.');
-    if (!respSelecionados.length) return toast('⚠ Selecione pelo menos um responsável.');
-    if (!bucket) return toast('⚠ Selecione a Fazenda / Sistema.');
-    if (!desc.trim()) return toast('⚠ Descreva o problema no campo Descrição.');
+    // Junta todos os campos faltando numa mensagem só — antes cada
+    // validação retornava (e mostrava um toast) na primeira falha, então
+    // um formulário com 3 campos vazios exigia 3 cliques em "Criar
+    // Chamado" pra descobrir os 3 problemas, um de cada vez.
+    const erros: string[] = [];
+    if (!equip) erros.push('selecione um equipamento');
+    if (!categoria) erros.push('selecione a categoria');
+    if (!respSelecionados.length) erros.push('selecione pelo menos um responsável');
+    if (!bucket) erros.push('selecione a Fazenda/Sistema');
+    if (!desc.trim()) erros.push('descreva o problema');
+    if (erros.length) {
+      const frase = erros.length === 1 ? erros[0] : `${erros.slice(0, -1).join(', ')} e ${erros.at(-1)}`;
+      toast.error(`⚠ Antes de continuar: ${frase}.`);
+      return;
+    }
 
     setEnviando(true);
     const now = new Date();

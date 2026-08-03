@@ -33,6 +33,14 @@ export function EncerradosPage() {
 
   useEffect(() => setPage(1), [busca, resp, cultura, fDe, fAte]);
 
+  function limparFiltros() {
+    setBusca('');
+    setResp('');
+    setCultura('');
+    setFDe('');
+    setFAte('');
+  }
+
   const esteMes = useMemo(() => {
     const now = new Date();
     const ym = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -134,6 +142,9 @@ export function EncerradosPage() {
         <Input type="date" value={fDe} onChange={(e) => setFDe(e.target.value)} className="w-36" />
         <span className="text-sm text-subtle">até</span>
         <Input type="date" value={fAte} onChange={(e) => setFAte(e.target.value)} className="w-36" />
+        <Button variant="ghost" onClick={limparFiltros}>
+          Limpar filtros
+        </Button>
         <Button variant="ghost" onClick={exportar}>
           <Download className="h-3.5 w-3.5" /> Exportar CSV
         </Button>

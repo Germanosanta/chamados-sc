@@ -91,7 +91,7 @@ export function PainelPage() {
         <Card>
           <CardHeader><CardTitle>🚨 Chamados Críticos</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-1">
-            {stats.criticosList.length === 0 && <p className="text-sm text-subtle">Nenhum chamado crítico.</p>}
+            {!carregando && stats.criticosList.length === 0 && <p className="text-sm text-subtle">Nenhum chamado crítico.</p>}
             {stats.criticosList.map((c) => (
               <OpRow key={c.num} onClick={() => abrirDetalhe(c.num)}>
                 <span className="font-mono-num text-xs text-primary">{c.num}</span>
@@ -105,7 +105,7 @@ export function PainelPage() {
         <Card>
           <CardHeader><CardTitle>🏆 Ranking de Técnicos (semana)</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-1">
-            {stats.ranking.length === 0 && <p className="text-sm text-subtle">Sem dados nesta semana.</p>}
+            {!carregando && stats.ranking.length === 0 && <p className="text-sm text-subtle">Sem dados nesta semana.</p>}
             {stats.ranking.map(([nome, v], i) => (
               <OpRow key={nome}>
                 <span className="min-w-5 font-bold text-subtle">{i + 1}º</span>
@@ -119,7 +119,7 @@ export function PainelPage() {
         <Card>
           <CardHeader><CardTitle>📡 Por Sistema</CardTitle></CardHeader>
           <CardContent className="flex flex-col gap-1">
-            {stats.sistemas.length === 0 && <p className="text-sm text-subtle">Sem chamados abertos.</p>}
+            {!carregando && stats.sistemas.length === 0 && <p className="text-sm text-subtle">Sem chamados abertos.</p>}
             {stats.sistemas.map(([bucket, v]) => (
               <OpRow key={bucket}>
                 <span className="min-w-0 flex-1 truncate text-xs">{fazendaLabel(bucket)}</span>
@@ -133,7 +133,7 @@ export function PainelPage() {
       <Card>
         <CardHeader><CardTitle>⏱ Tempo Médio por Técnico</CardTitle></CardHeader>
         <CardContent className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-          {stats.tempoTecnico.length === 0 && <p className="text-sm text-subtle">Sem chamados encerrados suficientes ainda.</p>}
+          {!carregando && stats.tempoTecnico.length === 0 && <p className="text-sm text-subtle">Sem chamados encerrados suficientes ainda.</p>}
           {stats.tempoTecnico.map(([nome, dias]) => (
             <div key={nome} className="rounded-sm border border-border bg-muted p-2.5 text-center">
               <div className="font-mono-num text-lg font-bold text-foreground">{dias.toFixed(1)}d</div>

@@ -145,7 +145,7 @@ export function KBPage() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSalvar}>Salvar</Button>
+            <Button onClick={handleSalvar} disabled={salvar.isPending}>{salvar.isPending ? 'Salvando…' : 'Salvar'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

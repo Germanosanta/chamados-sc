@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
-import { setMerge, excluirDocumento } from '@/services/firebase/firestore';
+import { setMerge } from '@/services/firebase/firestore';
 import type { SolucaoKB, ConfiguracaoDoc } from '@/types/auditoria';
 
 const PREFIXO = 'kb__';
@@ -25,14 +25,6 @@ export function useSalvarSolucaoKB() {
   return useMutation({
     mutationFn: async (solucao: SolucaoKB) => {
       await setMerge('configuracoes', PREFIXO + solucao.id, solucao);
-    },
-  });
-}
-
-export function useExcluirSolucaoKB() {
-  return useMutation({
-    mutationFn: async (id: string) => {
-      await excluirDocumento('configuracoes', PREFIXO + id);
     },
   });
 }

@@ -6,6 +6,7 @@ import { RankingBars } from '@/components/shared/RankingBars';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { StatusBadge, CulturaBadge } from '@/components/shared/StatusBadge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useChamados } from '@/hooks/useChamados';
 import { useComputeStats, MONTHS } from '@/hooks/useDashboardStats';
@@ -118,16 +119,24 @@ export function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader><CardTitle>Evolução Mensal por Cultura</CardTitle></CardHeader>
           <CardContent style={{ height: 280 }}>
-            <Bar
-              data={evolucaoData}
-              options={{ ...multiSeriesOptions, scales: { x: { ...chartBaseOptions.scales.x, stacked: true, ticks: { maxRotation: 45 } }, y: { ...chartBaseOptions.scales.y, stacked: true } } }}
-            />
+            {carregando ? (
+              <Skeleton className="h-full w-full" />
+            ) : (
+              <Bar
+                data={evolucaoData}
+                options={{ ...multiSeriesOptions, scales: { x: { ...chartBaseOptions.scales.x, stacked: true, ticks: { maxRotation: 45 } }, y: { ...chartBaseOptions.scales.y, stacked: true } } }}
+              />
+            )}
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Distribuição por Cultura</CardTitle></CardHeader>
           <CardContent style={{ height: 280 }}>
-            <Doughnut data={donutData} options={{ responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: true, position: 'bottom' } } }} />
+            {carregando ? (
+              <Skeleton className="h-full w-full" />
+            ) : (
+              <Doughnut data={donutData} options={{ responsive: true, maintainAspectRatio: false, cutout: '72%', plugins: { legend: { display: true, position: 'bottom' } } }} />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -136,13 +145,17 @@ export function DashboardPage() {
         <Card className="lg:col-span-2">
           <CardHeader><CardTitle>Comparativo Anual</CardTitle></CardHeader>
           <CardContent style={{ height: 240 }}>
-            <Bar data={anoData} options={multiSeriesOptions} />
+            {carregando ? <Skeleton className="h-full w-full" /> : <Bar data={anoData} options={multiSeriesOptions} />}
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Principais Problemas</CardTitle></CardHeader>
           <CardContent>
-            <RankingBars items={problemasTop} emptyLabel="Sem padrão identificável ainda." />
+            {carregando ? (
+              <Skeleton className="h-32 w-full" />
+            ) : (
+              <RankingBars items={problemasTop} emptyLabel="Sem padrão identificável ainda." />
+            )}
           </CardContent>
         </Card>
       </div>
@@ -151,24 +164,31 @@ export function DashboardPage() {
         <Card>
           <CardHeader><CardTitle>Por Fazenda / Sistema</CardTitle></CardHeader>
           <CardContent style={{ height: 220 }}>
-            <Bar data={bucketData} options={{ ...chartBaseOptions, indexAxis: 'y' as const }} />
+            {carregando ? <Skeleton className="h-full w-full" /> : <Bar data={bucketData} options={{ ...chartBaseOptions, indexAxis: 'y' as const }} />}
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Top 5 Responsáveis</CardTitle></CardHeader>
-          <CardContent><RankingBars items={respTop5} /></CardContent>
+          <CardContent>{carregando ? <Skeleton className="h-32 w-full" /> : <RankingBars items={respTop5} />}</CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>Ranking de Equipamentos</CardTitle></CardHeader>
-          <CardContent><RankingBars items={equipTop6} emptyLabel="Sem chamados vinculados a equipamento ainda." /></CardContent>
+          <CardContent>
+            {carregando ? (
+              <Skeleton className="h-32 w-full" />
+            ) : (
+              <RankingBars items={equipTop6} emptyLabel="Sem chamados vinculados a equipamento ainda." />
+            )}
+          </CardContent>
         </Card>
       </div>
 
       <Card>
         <CardHeader><CardTitle>Últimos 10 Chamados</CardTitle></CardHeader>
         <CardContent className="flex flex-col gap-1">
+          {carregando && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-9 w-full" />)}
           {!carregando && recentes.length === 0 && <EmptyState title="Nenhum chamado registrado ainda" />}
-          {recentes.map((c) => (
+          {!carregando && recentes.map((c) => (
             <button
               key={c.num}
               onClick={() => abrirDetalhe(c.num)}

@@ -423,7 +423,7 @@ export function AbertoPage() {
       ) : (
         <KanbanBoard
           chamados={filtrados}
-          onStatusChange={handleStatusChange}
+          onStatusChange={podeEditar ? handleStatusChange : undefined}
           onAssumir={podeEditar ? handleAssumir : undefined}
           onCardClick={handleCardClick}
         />

@@ -10,6 +10,10 @@ interface KanbanCardProps {
   chamado: Chamado;
   onClick?: (chamado: Chamado) => void;
   onAssumir?: (chamado: Chamado) => void;
+  /** Desliga o drag-and-drop (ex.: usuário sem `p_editar`) — sem isso o
+   * card dava cursor de "arrastável" e feedback visual completo pra quem
+   * não tinha permissão, que só descobria isso depois de soltar o card. */
+  dragDisabled?: boolean;
 }
 
 /** memo: numa coluna com dezenas de cards, sem isso todo card re-renderiza
@@ -17,10 +21,11 @@ interface KanbanCardProps {
  * re-renderiza) mesmo quando o card em si não mudou nada — só compensa
  * porque `chamado`/`onClick`/`onAssumir` agora chegam com referência
  * estável (ver useChamados.ts e KanbanColumn.tsx). */
-export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir }: KanbanCardProps) {
+export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir, dragDisabled }: KanbanCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: chamado.num,
     data: { chamado },
+    disabled: dragDisabled,
   });
 
   const dias = diasAberto(chamado.data);
@@ -48,7 +53,8 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
       }
       aria-label={onClick ? `Chamado ${chamado.num} — ${chamado.titulo}` : undefined}
       className={cn(
-        'cursor-grab select-none rounded-sm border border-border border-l-[3px] bg-surface p-2.5 shadow-sm transition active:cursor-grabbing',
+        'select-none rounded-sm border border-border border-l-[3px] bg-surface p-2.5 shadow-sm transition',
+        dragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
         'hover:border-primary hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
         !fechado && diasBorderClass(dias),
         isDragging && 'opacity-50',

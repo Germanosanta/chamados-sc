@@ -9,7 +9,7 @@ import { useChamados } from '@/hooks/useChamados';
 import { useCadastroEquipamentos, useEquipUniverso } from '@/hooks/useEquipamentos';
 import { useDetalheStore } from '@/store/detalhe';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
-import { formatDataBR } from '@/utils/chamado-helpers';
+import { formatDataBR, isFechado } from '@/utils/chamado-helpers';
 
 /** Ficha do Equipamento — modal somente-leitura que compõe cadastro +
  * histórico de chamados + KPIs, portado de abrirFichaEquip()
@@ -36,7 +36,7 @@ export function FichaEquipamentoModal({
   const equipBase = useMemo(() => universo.find((e) => e.c === frota), [universo, frota]);
   const cad = useMemo(() => cadastro.find((c) => c.frota === frota), [cadastro, frota]);
   const historico = useMemo(() => todos.filter((c) => c.equipCodigo === frota).sort((a, b) => (b.data || '').localeCompare(a.data || '')), [todos, frota]);
-  const abertosCount = historico.filter((c) => c.status !== 'Encerrado' && c.status !== 'Concluída').length;
+  const abertosCount = historico.filter((c) => !isFechado(c)).length;
 
   if (!frota || !equipBase) return null;
 

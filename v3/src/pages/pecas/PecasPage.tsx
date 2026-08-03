@@ -99,6 +99,13 @@ export function PecasPage() {
       toast.error('Informe a quantidade.');
       return;
     }
+    // Sem essa checagem, uma saída maior que o estoque era silenciosamente
+    // zerada no servidor (Math.max(0, ...) em useRegistrarMovimentacao),
+    // gravando um registro com `qtd` pedida ≠ `after` real, sem aviso.
+    if (movTipo === 'saida' && movQtd > Number(movPeca.qtd)) {
+      toast.error(`Estoque insuficiente: só ${movPeca.qtd} ${movPeca.unidade} disponível(is).`);
+      return;
+    }
     try {
       await movimentar.mutateAsync({ peca: movPeca, tipo: movTipo, qtd: movQtd, obs: movObs.trim(), chamado: movChamado.trim() });
       toast(`✓ ${movTipo === 'entrada' ? 'Entrada' : 'Saída'} de ${movQtd} ${movPeca.nome} registrada.`);
@@ -186,7 +193,7 @@ export function PecasPage() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setCrudOpen(false)}>Cancelar</Button>
-            <Button onClick={handleSalvar}>Salvar</Button>
+            <Button onClick={handleSalvar} disabled={salvar.isPending}>{salvar.isPending ? 'Salvando…' : 'Salvar'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -206,7 +213,7 @@ export function PecasPage() {
                 </SelectContent>
               </Select>
             </Campo>
-            <Campo label="Quantidade" htmlFor="mov-qtd">
+            <Campo label={movPeca ? `Quantidade (estoque atual: ${movPeca.qtd} ${movPeca.unidade})` : 'Quantidade'} htmlFor="mov-qtd">
               <Input id="mov-qtd" type="number" value={movQtd} onChange={(e) => setMovQtd(Number(e.target.value))} />
             </Campo>
             <Campo label="Chamado vinculado (opcional)" htmlFor="mov-chamado">
@@ -218,7 +225,7 @@ export function PecasPage() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setMovOpen(false)}>Cancelar</Button>
-            <Button onClick={handleMovimentar}>Confirmar</Button>
+            <Button onClick={handleMovimentar} disabled={movimentar.isPending}>{movimentar.isPending ? 'Registrando…' : 'Confirmar'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -51,6 +51,14 @@ export function EquipamentosPage() {
 
   useEffect(() => setPage(1), [busca, tipo, fazenda, status, semCad]);
 
+  function limparFiltros() {
+    setBusca('');
+    setTipo('');
+    setFazenda('');
+    setStatus('');
+    setSemCad(false);
+  }
+
   const cadMap = useMemo(() => new Map(cadastro.map((c) => [c.frota, c])), [cadastro]);
   const chCount = useMemo(() => {
     const m = new Map<string, number>();
@@ -170,6 +178,9 @@ export function EquipamentosPage() {
         <Label className="flex items-center gap-1.5 normal-case">
           <Checkbox checked={semCad} onCheckedChange={(v) => setSemCad(!!v)} /> Sem cadastro
         </Label>
+        <Button variant="ghost" onClick={limparFiltros}>
+          Limpar filtros
+        </Button>
         <Button className="ml-auto" size="sm" onClick={() => { setCrudFrota(null); setCrudOpen(true); }}>
           <Plus className="h-3.5 w-3.5" /> Novo Equipamento
         </Button>
