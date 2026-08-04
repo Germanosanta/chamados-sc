@@ -3,6 +3,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/utils/cn';
 import { CulturaBadge, DiasChip, PrioridadeBadge, StatusBadge } from './StatusBadge';
+import { RespAvatar } from './RespAvatar';
 import { diasAberto, diasBorderClass, formatDataBR, frotaLabel, isFechado } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
@@ -20,7 +21,13 @@ interface KanbanCardProps {
  * a cada tecla digitada nos filtros da tela de Aberto (o pai inteiro
  * re-renderiza) mesmo quando o card em si não mudou nada — só compensa
  * porque `chamado`/`onClick`/`onAssumir` agora chegam com referência
- * estável (ver useChamados.ts e KanbanColumn.tsx). */
+ * estável (ver useChamados.ts e KanbanColumn.tsx).
+ *
+ * Hierarquia reorganizada (era número → badges → título → rodapé): o
+ * título agora vem logo abaixo do cabeçalho, como leitura principal do
+ * card — número/frota e prioridade viram metadado no topo, cultura/status
+ * viram tags abaixo do título, e o rodapé ganha avatar de responsável +
+ * divisor, no mesmo padrão de card usado por Jira/Linear/Trello. */
 export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir, dragDisabled }: KanbanCardProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: chamado.num,
@@ -53,7 +60,7 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
       }
       aria-label={onClick ? `Chamado ${chamado.num} — ${chamado.titulo}` : undefined}
       className={cn(
-        'select-none rounded-sm border border-border border-l-[3px] bg-surface p-2.5 shadow-sm transition',
+        'select-none rounded-md border border-border border-l-[3px] bg-surface p-2.5 shadow-sm transition',
         dragDisabled ? 'cursor-default' : 'cursor-grab active:cursor-grabbing',
         'hover:border-primary hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
         !fechado && diasBorderClass(dias),
@@ -61,26 +68,34 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <div className="flex min-w-0 items-baseline gap-1 font-mono-num text-sm">
-          <span className="shrink-0 font-bold text-primary">{chamado.num}</span>
-          {frota && <span className="min-w-0 truncate text-xs text-muted-foreground">🚜 {frota}</span>}
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="font-mono-num text-xs font-bold text-primary">{chamado.num}</span>
+          {frota && <span className="min-w-0 truncate text-[10px] text-subtle">🚜 {frota}</span>}
         </div>
         <PrioridadeBadge prioridade={chamado.prior} />
       </div>
-      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+
+      <div className="mt-1.5 line-clamp-2 text-sm font-semibold leading-snug text-foreground">{chamado.titulo}</div>
+      {!frota && <div className="mt-1 text-[10px] text-subtle">Sem equipamento vinculado</div>}
+
+      <div className="mt-2 flex flex-wrap items-center gap-1">
         <CulturaBadge cultura={chamado.cultura} />
         <StatusBadge status={chamado.status} />
       </div>
-      <div className="mt-1.5 line-clamp-2 text-base font-semibold text-foreground">{chamado.titulo}</div>
-      {!frota && <div className="mt-1 text-xs text-subtle">Sem equipamento vinculado</div>}
-      <div className="mt-1.5 flex items-center justify-between gap-2 text-xs text-subtle">
+
+      <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-[10px] text-subtle">
         <span className="min-w-0 truncate">{chamado.solicitante || 'Sem solicitante'}</span>
         <span className="shrink-0 font-mono-num">{formatDataBR(chamado.data)}</span>
       </div>
-      <div className="mt-2 flex items-center justify-between gap-2 text-sm text-muted-foreground">
-        <span className="min-w-0 truncate">{chamado.resp || 'Sem responsável'}</span>
+
+      <div className="mt-1.5 flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <RespAvatar nome={chamado.resp} />
+          <span className="min-w-0 truncate text-xs font-medium text-muted-foreground">{chamado.resp || 'Sem responsável'}</span>
+        </div>
         <DiasChip dias={dias} />
       </div>
+
       {!chamado.assumidoPor && onAssumir && (
         <button
           onClick={(e) => {

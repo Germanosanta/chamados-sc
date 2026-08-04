@@ -13,6 +13,17 @@ interface KanbanColumnProps {
   dragDisabled?: boolean;
 }
 
+// Mesma paleta semântica já usada por statusVariant() (StatusBadge) — a
+// raia herda a cor do status que ela representa, então a barra no topo da
+// coluna e o badge de status dentro do card sempre concordam (nunca uma
+// raia "Em Atendimento" âmbar com um badge de status de outra cor).
+const LANE_BAR: Record<string, string> = {
+  aberto: 'before:bg-destructive',
+  atendimento: 'before:bg-warning',
+  peca: 'before:bg-purple',
+  concluido: 'before:bg-success',
+};
+
 export const KanbanColumn = memo(function KanbanColumn({ laneKey, label, chamados, onCardClick, onAssumir, dragDisabled }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: laneKey });
 
@@ -20,7 +31,9 @@ export const KanbanColumn = memo(function KanbanColumn({ laneKey, label, chamado
     <div
       ref={setNodeRef}
       className={cn(
-        'flex min-h-[200px] flex-col gap-2 rounded-lg border border-border bg-muted p-2.5 transition-colors',
+        'relative flex min-h-[200px] flex-col gap-2 overflow-hidden rounded-lg border border-border bg-muted px-2.5 pb-2.5 pt-3.5 transition-colors',
+        'before:absolute before:inset-x-0 before:top-0 before:h-[3px]',
+        LANE_BAR[laneKey],
         isOver && 'border-primary bg-primary-light',
       )}
     >
