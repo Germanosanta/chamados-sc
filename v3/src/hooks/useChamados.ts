@@ -105,11 +105,14 @@ function useChamadoPatch() {
 /**
  * Reatribuição administrativa — único jeito de trocar o responsável de um
  * chamado já assumido (ver AbertoPage: o seletor só aparece pra quem é
- * admin). `resp`/`assumidoPor` são gravados juntos, sempre em sincronia
- * (mesma fonte única — ver temResponsavel/souResponsavelDoChamado em
- * chamado-helpers.ts); `assumidoPorUid` é limpo porque o administrador
- * não tem como saber o uid da conta do técnico escolhido (só o nome
- * cadastrado em `tecnicos`, sem vínculo direto com usuarios/{uid}).
+ * admin, e lista `tecnicos` ativos — cada um carregando seu próprio
+ * `usuarioUid` do cadastro, ver types/tecnico.ts). `resp`/`assumidoPor`
+ * são gravados juntos, sempre em sincronia, mas servem só pra exibição —
+ * `assumidoPorUid` é quem passa a valer pra autorização
+ * (souResponsavelDoChamado, chamado-helpers.ts). Quando o técnico
+ * escolhido ainda não tem `usuarioUid` vinculado (cadastro pendente de
+ * migração), grava `null` explicitamente em vez de inventar um uid —
+ * mais honesto que fingir um vínculo que não existe.
  */
 export function useReatribuirResponsavel() {
   const { mutateAsync } = useChamadoPatch();
@@ -119,11 +122,11 @@ export function useReatribuirResponsavel() {
   // aqui, todo card re-renderiza a cada tecla digitada num filtro,
   // mesmo sem nenhuma mudança real no card em si.
   return useCallback(
-    (chamadoBase: Chamado, novoResp: string) => {
+    (chamadoBase: Chamado, novoResp: string, novoUid?: string | null) => {
       if (usuario?.perfil !== 'admin') return Promise.reject(new Error('Somente administradores podem reatribuir o responsável.'));
       return mutateAsync({
         chamadoBase,
-        patch: { resp: novoResp, assumidoPor: novoResp, assumidoEm: new Date().toISOString(), assumidoPorUid: null },
+        patch: { resp: novoResp, assumidoPor: novoResp, assumidoEm: new Date().toISOString(), assumidoPorUid: novoUid ?? null },
       });
     },
     [mutateAsync, usuario],

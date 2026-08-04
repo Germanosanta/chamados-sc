@@ -7,6 +7,7 @@ import { useAbertos, useAssumirChamado, useEncerradosLista } from '@/hooks/useCh
 import { useSouTecnicoAtivo } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
+import { souResponsavelDoChamado } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 type Filtro = 'meus' | 'urgentes' | 'atendimento' | 'peca' | 'concluidos';
@@ -18,14 +19,6 @@ const CHIPS: { key: Filtro; label: string }[] = [
   { key: 'peca', label: 'Aguardando Peça' },
   { key: 'concluidos', label: 'Encerrados' },
 ];
-
-function souEnvolvido(c: Chamado, nome: string): boolean {
-  const nomes = (c.resp || '').split(',').map((n) => n.trim());
-  // c.assumidoPor entra como fallback pra chamados assumidos antes da
-  // unificação de responsável (ver temResponsavel em chamado-helpers.ts)
-  // — daqui em diante os dois campos são sempre gravados juntos.
-  return nomes.includes(nome) || c.assumidoPor === nome;
-}
 
 /** Área do Técnico — espaço de trabalho pessoal, separado do cadastro
  * administrativo (Técnicos/RH). Portado de renderAreaTecnico()
@@ -40,18 +33,16 @@ export function AreaTecnicoPage() {
   const souTecnicoAtivo = useSouTecnicoAtivo();
   const [filtro, setFiltro] = useState<Filtro>('meus');
 
-  const nome = usuario?.nome || '';
-
   const conjuntos = useMemo(() => {
-    const meus = abertos.filter((c) => souEnvolvido(c, nome));
+    const meus = abertos.filter((c) => souResponsavelDoChamado(c, usuario));
     return {
       meus,
       urgentes: abertos.filter((c) => c.prior === 'Urgente'),
       atendimento: abertos.filter((c) => c.status === 'Em Atendimento' || c.status === 'Em Andamento'),
       peca: abertos.filter((c) => c.status === 'Aguardando Peça'),
-      concluidos: encerrados.filter((c) => souEnvolvido(c, nome)),
+      concluidos: encerrados.filter((c) => souResponsavelDoChamado(c, usuario)),
     };
-  }, [abertos, encerrados, nome]);
+  }, [abertos, encerrados, usuario]);
 
   const itens = conjuntos[filtro];
 

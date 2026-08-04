@@ -19,6 +19,7 @@ import { useSessionStore } from '@/store/session';
 import { diasAberto, diasBorderClass, fazendaLabel, formatDataBR, frotaLabel, isSlaCritico, podeAgirNoChamado } from '@/utils/chamado-helpers';
 import { useDetalheStore } from '@/store/detalhe';
 import type { Chamado } from '@/types/chamado';
+import type { Tecnico } from '@/types/tecnico';
 import { cn } from '@/utils/cn';
 
 const CULTURAS = [
@@ -154,10 +155,11 @@ export function AbertoPage() {
   }
 
   const handleReatribuir = useCallback(
-    async (chamado: Chamado, novoResp: string) => {
+    async (chamado: Chamado, tecnico: Tecnico) => {
+      const nome = tecnico.apelido || tecnico.nome;
       try {
-        await reatribuir(chamado, novoResp);
-        toast(`${chamado.num} → ${novoResp}`);
+        await reatribuir(chamado, nome, tecnico.usuarioUid);
+        toast(`${chamado.num} → ${nome}`);
       } catch {
         toast.error('Não foi possível reatribuir. Tente novamente.');
       }
@@ -254,13 +256,19 @@ export function AbertoPage() {
       render: (c) => (
         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
           {souAdmin && (
-            <Select value="" onValueChange={(v) => handleReatribuir(c, v)}>
+            <Select
+              value=""
+              onValueChange={(v) => {
+                const t = tecnicos.find((x) => x.key === v);
+                if (t) handleReatribuir(c, t);
+              }}
+            >
               <SelectTrigger className="h-7 w-24 text-sm">
                 <SelectValue placeholder="Resp." />
               </SelectTrigger>
               <SelectContent>
                 {tecnicos.map((t) => (
-                  <SelectItem key={t.key} value={t.apelido || t.nome}>
+                  <SelectItem key={t.key} value={t.key}>
                     {t.nome}
                   </SelectItem>
                 ))}

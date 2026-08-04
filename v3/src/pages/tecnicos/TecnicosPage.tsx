@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Link2, Plus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
@@ -10,46 +10,72 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useTecnicos, useSalvarTecnico } from '@/hooks/useTecnicos';
+import { useTecnicos, useSalvarTecnico, useVincularTecnicos } from '@/hooks/useTecnicos';
+import { useUsuarios } from '@/hooks/useUsuarios';
 import { useChamados } from '@/hooks/useChamados';
-import { isFechado } from '@/utils/chamado-helpers';
+import { useSessionStore } from '@/store/session';
+import { chamadoPertenceATecnico, isFechado } from '@/utils/chamado-helpers';
 import type { Tecnico } from '@/types/tecnico';
+
+const SEM_VINCULO = 'sem-vinculo';
 
 /** Cadastro de Técnicos (RH) — portado de renderTecnicos()/salvarTec()
  * (config/index.js). Distinto de "Área do Técnico" (workspace pessoal):
- * esta é a tela administrativa de equipe, com ranking de performance. */
+ * esta é a tela administrativa de equipe, com ranking de performance.
+ *
+ * `usuarioUid` (ver types/tecnico.ts) é o vínculo oficial com a conta de
+ * login correspondente (usuarios/{uid}) — nunca digitado à mão, só
+ * escolhido num seletor restrito a contas com perfil "tecnico" ativas.
+ * "Assumir Chamado" continua decidido pela própria conta logada (não
+ * depende deste vínculo) — este campo é o que permite à reatribuição
+ * administrativa gravar o uid certo e aos relatórios de produtividade
+ * contar os chamados de cada técnico por UID em vez de nome/e-mail. */
 export function TecnicosPage() {
   const { data: tecnicos, carregando } = useTecnicos();
+  const { data: usuarios } = useUsuarios();
   const { data: chamados } = useChamados();
   const salvar = useSalvarTecnico();
+  const vincular = useVincularTecnicos();
+  const usuarioLogado = useSessionStore((s) => s.usuario);
+  const souAdmin = usuarioLogado?.perfil === 'admin';
 
   const [busca, setBusca] = useState('');
   const [open, setOpen] = useState(false);
   const [editKey, setEditKey] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<Tecnico>>({});
 
+  const usuariosPorId = useMemo(() => new Map(usuarios.map((u) => [u.id, u])), [usuarios]);
+  const usuariosElegiveis = useMemo(
+    () => usuarios.filter((u) => u.perfil === 'tecnico' && u.status === 'Ativo').sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')),
+    [usuarios],
+  );
+
+  // Itera técnicos × chamados usando chamadoPertenceATecnico (UID quando
+  // o técnico já está vinculado, nome como fallback só pra cadastros
+  // ainda não migrados) — antes agrupava direto por texto de `resp`,
+  // que sub-contava qualquer divergência de grafia entre o cadastro e o
+  // nome gravado no chamado.
   const stats = useMemo(() => {
     const m = new Map<string, { total: number; encerrados: number; pendentes: number; somaDias: number; cntDias: number }>();
-    for (const t of tecnicos) m.set(t.apelido || t.nome, { total: 0, encerrados: 0, pendentes: 0, somaDias: 0, cntDias: 0 });
-    for (const c of chamados) {
-      const nomes = (c.resp || '').split(',').map((n) => n.trim());
-      for (const n of nomes) {
-        const s = m.get(n);
-        if (!s) continue;
-        s.total++;
+    for (const t of tecnicos) {
+      const acc = { total: 0, encerrados: 0, pendentes: 0, somaDias: 0, cntDias: 0 };
+      for (const c of chamados) {
+        if (!chamadoPertenceATecnico(c, t)) continue;
+        acc.total++;
         if (isFechado(c)) {
-          s.encerrados++;
+          acc.encerrados++;
           if (c.encerramento?.encerradoEm && c.data) {
             const dias = Math.round((new Date(c.encerramento.encerradoEm).getTime() - new Date(c.data + 'T00:00').getTime()) / 86400000);
             if (dias >= 0) {
-              s.somaDias += dias;
-              s.cntDias++;
+              acc.somaDias += dias;
+              acc.cntDias++;
             }
           }
         } else {
-          s.pendentes++;
+          acc.pendentes++;
         }
       }
+      m.set(t.apelido || t.nome, acc);
     }
     return m;
   }, [tecnicos, chamados]);
@@ -99,6 +125,7 @@ export function TecnicosPage() {
           status: (form.status as Tecnico['status']) || 'Ativo',
           admissao: form.admissao || '',
           obs: form.obs?.trim() || '',
+          usuarioUid: form.usuarioUid || null,
         },
       });
       toast('✓ Técnico salvo no cadastro!');
@@ -108,12 +135,44 @@ export function TecnicosPage() {
     }
   }
 
+  async function handleVincular() {
+    try {
+      const r = await vincular.mutateAsync({ tecnicos, usuarios });
+      if (r.vinculados.length === 0 && r.naoVinculados.length === 0) {
+        toast('Todos os técnicos já estavam vinculados.');
+        return;
+      }
+      const partes: string[] = [];
+      if (r.vinculados.length) partes.push(`${r.vinculados.length} vinculado(s) agora: ${r.vinculados.map((v) => v.tecnico.nome).join(', ')}`);
+      if (r.naoVinculados.length) partes.push(`${r.naoVinculados.length} sem conta correspondente: ${r.naoVinculados.map((t) => t.nome).join(', ')}`);
+      toast(partes.join(' · ') || 'Nenhuma vinculação pendente.');
+    } catch {
+      toast.error('Não foi possível rodar a vinculação automática.');
+    }
+  }
+
   const columns: DataTableColumn<Tecnico>[] = [
     { key: 'nome', header: 'Nome', render: (t) => <span className="font-medium text-foreground">{t.nome}</span> },
     { key: 'apelido', header: 'Apelido', render: (t) => t.apelido || '—' },
     { key: 'area', header: 'Área', render: (t) => t.area || '—' },
     { key: 'cargo', header: 'Cargo', render: (t) => t.cargo || '—' },
     { key: 'status', header: 'Status', render: (t) => <Badge variant={t.status === 'Ativo' ? 'green' : t.status === 'Férias' ? 'amber' : 'neutral'}>{t.status}</Badge> },
+    {
+      key: 'usuario',
+      header: 'Usuário Vinculado',
+      render: (t) =>
+        t.usuarioUid ? (
+          usuariosPorId.get(t.usuarioUid) ? (
+            <span className="inline-flex items-center gap-1 text-foreground">
+              <Link2 className="h-3 w-3 text-success" /> {usuariosPorId.get(t.usuarioUid)!.nome}
+            </span>
+          ) : (
+            <span className="text-destructive">Conta não encontrada</span>
+          )
+        ) : (
+          <span className="text-subtle">Não vinculado</span>
+        ),
+    },
     { key: 'total', header: 'Total', render: (t) => stats.get(t.apelido || t.nome)?.total ?? 0 },
     { key: 'encerrados', header: 'Encerrados', render: (t) => stats.get(t.apelido || t.nome)?.encerrados ?? 0 },
     { key: 'pendentes', header: 'Pendentes', render: (t) => stats.get(t.apelido || t.nome)?.pendentes ?? 0 },
@@ -128,11 +187,14 @@ export function TecnicosPage() {
     {
       key: 'acoes',
       header: 'Ações',
-      render: (t) => (
-        <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); abrirEditar(t); }}>
-          Editar
-        </Button>
-      ),
+      render: (t) =>
+        souAdmin ? (
+          <Button variant="ghost" size="sm" onClick={(e) => { e.stopPropagation(); abrirEditar(t); }}>
+            Editar
+          </Button>
+        ) : (
+          <span className="text-subtle">—</span>
+        ),
     },
   ];
 
@@ -147,9 +209,16 @@ export function TecnicosPage() {
 
       <FilterBar>
         <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nome, apelido…" className="w-56" />
-        <Button className="ml-auto" size="sm" onClick={abrirNovo}>
-          <Plus className="h-3.5 w-3.5" /> Novo Técnico
-        </Button>
+        {souAdmin && (
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleVincular} disabled={vincular.isPending}>
+              <Link2 className="h-3.5 w-3.5" /> {vincular.isPending ? 'Vinculando…' : 'Vincular Usuários'}
+            </Button>
+            <Button size="sm" onClick={abrirNovo}>
+              <Plus className="h-3.5 w-3.5" /> Novo Técnico
+            </Button>
+          </div>
+        )}
       </FilterBar>
 
       <DataTable columns={columns} rows={filtrados} rowKey={(t) => t.key} loading={carregando} emptyTitle="Nenhum técnico cadastrado" />
@@ -193,6 +262,23 @@ export function TecnicosPage() {
               <Input id="tec-admissao" type="date" value={form.admissao || ''} onChange={(e) => setForm((f) => ({ ...f, admissao: e.target.value }))} />
             </Campo>
           </div>
+          <Campo label="Usuário vinculado (login no sistema)" htmlFor="tec-usuario">
+            <Select
+              value={form.usuarioUid || SEM_VINCULO}
+              onValueChange={(v) => setForm((f) => ({ ...f, usuarioUid: v === SEM_VINCULO ? null : v }))}
+            >
+              <SelectTrigger id="tec-usuario"><SelectValue placeholder="Nenhum" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value={SEM_VINCULO}>Nenhum</SelectItem>
+                {usuariosElegiveis.map((u) => (
+                  <SelectItem key={u.id} value={u.id}>{u.nome} ({u.login})</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="mt-1 text-xs text-subtle">
+              Só contas com perfil Técnico e status Ativo aparecem aqui — é esse vínculo (não nome/e-mail) que faz a reatribuição administrativa e os relatórios de produtividade identificarem este técnico pelo UID da própria conta.
+            </p>
+          </Campo>
           <Campo label="Observações" htmlFor="tec-obs">
             <textarea
               id="tec-obs"

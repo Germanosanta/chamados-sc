@@ -13,4 +13,11 @@ export interface Tecnico {
   obs?: string;
   atualizadoEm?: string;
   atualizadoPor?: string;
+  /** Vínculo oficial com a conta de login correspondente (usuarios/{uid})
+   * — única fonte de identidade usada em autorização. nome/apelido/email
+   * continuam existindo aqui só para cadastro/exibição (RH), nunca mais
+   * para identificar alguém em uma decisão de permissão. Preenchido pelo
+   * seletor de usuário no cadastro (nunca digitado à mão) ou pela
+   * migração automática (ver hooks/useTecnicos.ts). */
+  usuarioUid?: string | null;
 }

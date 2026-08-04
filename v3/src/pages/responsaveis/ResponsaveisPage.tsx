@@ -4,7 +4,7 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { useChamados } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
-import { isFechado } from '@/utils/chamado-helpers';
+import { chamadoPertenceATecnico, isFechado } from '@/utils/chamado-helpers';
 
 interface LinhaResp {
   name: string;
@@ -17,10 +17,6 @@ interface LinhaResp {
   encerrados: number;
   tempoAtend: string;
   tempoConc: string;
-}
-
-function hasResp(respStr: string | undefined, name: string): boolean {
-  return (respStr || '').split(',').map((s) => s.trim()).some((s) => s === name);
 }
 
 function daysBetween(d1?: string, d2?: string): number | null {
@@ -44,7 +40,7 @@ export function ResponsaveisPage() {
     const hoje = new Date().toISOString().slice(0, 10);
     return tecnicos.map((t) => {
       const name = t.apelido || t.nome;
-      const atribuidos = todos.filter((r) => hasResp(r.resp, name));
+      const atribuidos = todos.filter((r) => chamadoPertenceATecnico(r, t));
       const abertosPor = todos.filter((r) => r.abertoPor?.includes(name)).length;
       const encerradosPor = todos.filter((r) => r.encerramento?.encerradoPor?.includes(name)).length;
       const emAberto = atribuidos.filter((r) => r.status === 'Não iniciado').length;

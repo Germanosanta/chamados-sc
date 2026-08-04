@@ -1,5 +1,6 @@
 import type { Chamado, ChamadoHistoricoTupla, ChamadoStatus, Prioridade } from '@/types/chamado';
 import type { Usuario } from '@/types/usuario';
+import type { Tecnico } from '@/types/tecnico';
 import matchMap from '@/data/match_map.json';
 import equipIdx from '@/data/equip_idx.json';
 import type { EquipIdxEntry } from '@/types/equipamento';
@@ -47,19 +48,29 @@ export function isFechado(c: Chamado): boolean {
 }
 
 /**
- * Único conceito de responsável do chamado: `resp` é sempre a fonte de
- * verdade (gravado por useAssumirChamado/useReatribuirResponsavel, os
- * únicos dois pontos de escrita); `assumidoPor` entra só como fallback de
- * leitura pra chamados assumidos antes desta unificação (onde só o campo
- * antigo ficou gravado). Nada mais no app deve ler resp/assumidoPor
- * separadamente — sempre por estas funções.
+ * Único conceito de responsável do chamado: `resp`/`assumidoPor` são
+ * sempre gravados juntos (por useAssumirChamado/useReatribuirResponsavel,
+ * os únicos dois pontos de escrita) e servem só para EXIBIÇÃO — nunca
+ * para decidir permissão. Quem tem valor de verdade pra autorização é
+ * `assumidoPorUid` (ver souResponsavelDoChamado abaixo).
  */
 export function temResponsavel(c: Chamado): boolean {
   return !!(c.resp || c.assumidoPor);
 }
 
-export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'nome'> | null | undefined): boolean {
+/**
+ * Identidade oficial: UID do Firebase Auth (`assumidoPorUid`), comparado
+ * com `usuario.id` — nunca nome/e-mail/apelido. O fallback por nome só
+ * existe pra chamados assumidos antes desta arquitetura (pela V2, que não
+ * conhece `assumidoPorUid`, ou por uma versão anterior da V3): quando o
+ * chamado já tem `assumidoPorUid` gravado, o fallback nem é avaliado —
+ * a comparação é 100% por UID. É uma ponte de compatibilidade que some
+ * sozinha à medida que esses chamados legados forem reatribuídos ou
+ * reassumidos dentro da arquitetura nova, não um mecanismo paralelo.
+ */
+export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'id' | 'nome'> | null | undefined): boolean {
   if (!usuario) return false;
+  if (c.assumidoPorUid) return c.assumidoPorUid === usuario.id;
   const alvo = usuario.nome.trim().toLowerCase();
   const resp = (c.resp || '').trim().toLowerCase();
   const assumido = (c.assumidoPor || '').trim().toLowerCase();
@@ -68,9 +79,26 @@ export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'nome
 
 /** Técnico responsável (se houver) OU administrador — regra usada em
  * todas as ações de encerramento (peças/observações/solução/encerrar) e
- * na reatribuição administrativa. */
-export function podeAgirNoChamado(c: Chamado, usuario: Pick<Usuario, 'nome' | 'perfil'> | null | undefined): boolean {
+ * na reatribuição administrativa. `perfil` também vem de usuarios/{uid}
+ * (resolvido no login pelo próprio uid autenticado), então esta função
+ * inteira depende só de identidade por UID, nunca de texto. */
+export function podeAgirNoChamado(c: Chamado, usuario: Pick<Usuario, 'id' | 'nome' | 'perfil'> | null | undefined): boolean {
   return usuario?.perfil === 'admin' || souResponsavelDoChamado(c, usuario);
+}
+
+/**
+ * Mesma regra de identidade que souResponsavelDoChamado, mas pro sentido
+ * inverso: "este chamado pertence a este técnico do cadastro RH?" — usada
+ * pelos relatórios de produtividade (Responsáveis/Técnicos). Prioriza
+ * `usuarioUid` do cadastro quando ele existe (comparação por UID, exata);
+ * cai pro nome/apelido só quando o técnico ainda não foi vinculado a uma
+ * conta (ver migração em hooks/useTecnicos.ts) ou o chamado é legado.
+ */
+export function chamadoPertenceATecnico(c: Chamado, t: Pick<Tecnico, 'nome' | 'apelido' | 'usuarioUid'>): boolean {
+  if (t.usuarioUid && c.assumidoPorUid) return c.assumidoPorUid === t.usuarioUid;
+  const nome = t.apelido || t.nome;
+  const nomes = (c.resp || '').split(',').map((n) => n.trim());
+  return nomes.includes(nome) || c.assumidoPor === nome;
 }
 
 export function diasAberto(dataStr?: string): number {
