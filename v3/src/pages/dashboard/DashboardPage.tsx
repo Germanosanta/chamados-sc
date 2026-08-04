@@ -12,7 +12,7 @@ import { useChamados } from '@/hooks/useChamados';
 import { useComputeStats, MONTHS } from '@/hooks/useDashboardStats';
 import { useDetalheStore } from '@/store/detalhe';
 import { chartBaseOptions } from '@/utils/chartSetup';
-import { fazendaLabel } from '@/utils/chamado-helpers';
+import { fazendaLabel, formatDataBR, isFechado } from '@/utils/chamado-helpers';
 
 const MESES_ABR = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
@@ -198,6 +198,9 @@ export function DashboardPage() {
                 <span className="font-mono-num font-semibold text-primary">{c.num}</span> {c.titulo}
               </span>
               <span className="flex shrink-0 items-center gap-2">
+                <span className="hidden font-mono-num text-xs text-subtle sm:inline">
+                  {isFechado(c) ? c.encerramento?.dataEncerramento || 'Data não registrada' : formatDataBR(c.data)}
+                </span>
                 <CulturaBadge cultura={c.cultura} />
                 <StatusBadge status={c.status} />
               </span>

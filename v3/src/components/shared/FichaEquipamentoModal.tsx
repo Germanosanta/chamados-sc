@@ -102,7 +102,9 @@ export function FichaEquipamentoModal({
                     <span className="font-mono-num font-semibold text-primary">{c.num}</span> {c.titulo}
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
-                    <span className="text-xs text-subtle">{formatDataBR(c.data)}</span>
+                    <span className="text-xs text-subtle">
+                      {isFechado(c) ? c.encerramento?.dataEncerramento || 'Data não registrada' : formatDataBR(c.data)}
+                    </span>
                     <StatusBadge status={c.status} />
                   </span>
                 </button>

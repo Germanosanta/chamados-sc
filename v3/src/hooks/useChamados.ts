@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
-import { useMeuTecnico } from './useTecnicos';
+import { useSouTecnicoAtivo } from './useTecnicos';
 import { appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
@@ -139,28 +139,28 @@ export function useAlterarStatusChamado() {
 
 /**
  * Assumir chamado — único jeito de um chamado ganhar responsável (além da
- * reatribuição administrativa). Só o técnico ativo cadastrado que está
- * logado pode fazer isso (useMeuTecnico resolve a conta atual pro
- * cadastro em `tecnicos` — ver hooks/useTecnicos.ts); `resp` e
- * `assumidoPor` são gravados juntos com o mesmo nome (fonte única — ver
- * temResponsavel/souResponsavelDoChamado em chamado-helpers.ts), e o uid
- * da própria conta fica registrado em `assumidoPorUid`.
+ * reatribuição administrativa). Só quem está logado como técnico ativo
+ * pode fazer isso (useSouTecnicoAtivo — checa perfil/status direto em
+ * usuarios/{uid}, ver hooks/useTecnicos.ts); `resp` e `assumidoPor` são
+ * gravados juntos com o mesmo nome (fonte única — ver temResponsavel/
+ * souResponsavelDoChamado em chamado-helpers.ts), e o uid da própria
+ * conta fica registrado em `assumidoPorUid`.
  */
 export function useAssumirChamado() {
   const { mutateAsync } = useChamadoPatch();
   const usuario = useSessionStore((s) => s.usuario);
-  const meuTecnico = useMeuTecnico();
+  const souTecnicoAtivo = useSouTecnicoAtivo();
   return useCallback(
     async (chamadoBase: Chamado) => {
       if (!usuario) return Promise.reject(new Error('Sem sessão ativa.'));
-      if (!meuTecnico) return Promise.reject(new Error('Somente técnicos ativos cadastrados podem assumir chamados.'));
+      if (!souTecnicoAtivo) return Promise.reject(new Error('Somente técnicos ativos podem assumir chamados.'));
       await mutateAsync({
         chamadoBase,
         patch: { resp: usuario.nome, assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), assumidoPorUid: usuario.id },
       });
       await audit('assumiu', `Chamado ${chamadoBase.num} assumido`, usuario, chamadoBase.num);
     },
-    [mutateAsync, usuario, meuTecnico],
+    [mutateAsync, usuario, souTecnicoAtivo],
   );
 }
 

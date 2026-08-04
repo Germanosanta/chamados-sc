@@ -85,7 +85,9 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
 
       <div className="mt-2 flex items-center justify-between gap-2 border-t border-border pt-2 text-[10px] text-subtle">
         <span className="min-w-0 truncate">{chamado.solicitante || 'Sem solicitante'}</span>
-        <span className="shrink-0 font-mono-num">{formatDataBR(chamado.data)}</span>
+        <span className="shrink-0 font-mono-num">
+          {fechado ? chamado.encerramento?.dataEncerramento || 'Data não registrada' : formatDataBR(chamado.data)}
+        </span>
       </div>
 
       <div className="mt-1.5 flex items-center justify-between gap-2">

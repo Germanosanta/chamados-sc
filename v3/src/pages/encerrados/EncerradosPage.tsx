@@ -13,6 +13,7 @@ import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
 import { fazendaLabel, formatDataBR, frotaLabel } from '@/utils/chamado-helpers';
 import { downloadCSV } from '@/utils/csv';
+import { cn } from '@/utils/cn';
 import type { Chamado } from '@/types/chamado';
 
 const PER_PAGE = 50;
@@ -105,7 +106,17 @@ export function EncerradosPage() {
     { key: 'fazenda', header: 'Fazenda', render: (c) => fazendaLabel(c.bucket) },
     { key: 'resp', header: 'Responsável(is)', render: (c) => c.resp || '—' },
     { key: 'abertura', header: 'Abertura', render: (c) => <span className="font-mono-num text-sm">{formatDataBR(c.data)}</span> },
-    { key: 'encerramento', header: 'Encerramento', render: (c) => <span className="font-mono-num text-sm">{c.encerramento?.dataEncerramento || '—'}</span> },
+    {
+      key: 'encerramento',
+      header: 'Data de Encerramento',
+      render: (c) => (
+        <span className={cn('font-mono-num text-sm', !c.encerramento?.dataEncerramento && 'text-subtle')}>
+          {c.encerramento?.dataEncerramento
+            ? `${c.encerramento.dataEncerramento}${c.encerramento.horaEncerramento ? ` ${c.encerramento.horaEncerramento}` : ''}`
+            : 'Data não registrada'}
+        </span>
+      ),
+    },
     { key: 'tecnicos', header: 'Técnico(s)', render: (c) => c.encerramento?.tecnicos || '—' },
     { key: 'encerradoPor', header: 'Encerrado por', render: (c) => c.encerramento?.encerradoPor || '—' },
   ];

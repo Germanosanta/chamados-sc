@@ -153,6 +153,16 @@ export function CentroOperacionalModal() {
                     <Meta label="Solicitante" value={chamado.solicitante || '—'} />
                     <Meta label="Categoria" value={chamado.categoria || '—'} />
                     <Meta label="Abertura" value={formatDataBR(chamado.data)} />
+                    {fechado && (
+                      <Meta
+                        label="Encerrado em"
+                        value={
+                          chamado.encerramento?.dataEncerramento
+                            ? `${chamado.encerramento.dataEncerramento}${chamado.encerramento.horaEncerramento ? ` às ${chamado.encerramento.horaEncerramento}` : ''}`
+                            : 'Data não registrada'
+                        }
+                      />
+                    )}
                   </div>
                   {chamado.desc && <p className="rounded-sm bg-muted p-2.5 text-sm text-muted-foreground">{chamado.desc}</p>}
                 </div>

@@ -24,30 +24,22 @@ export function useTecnicosAtivos() {
 }
 
 /**
- * Liga a conta logada (usuarios/{uid}, autenticação) ao cadastro
- * correspondente em `tecnicos` (fonte única de responsáveis) — casamento
- * por e-mail, com fallback por nome, sem exigir nenhum campo novo de
- * vínculo no Firestore (as duas coleções continuam independentes). É o
- * que permite responder "quem está logado é um dos técnicos ativos
- * cadastrados?" — usado por useAssumirChamado e por toda tela que
- * precisa decidir se mostra o botão "Assumir".
+ * true se a conta logada é um técnico ativo — único perfil autorizado a
+ * assumir chamados. Checagem direta em usuarios/{uid} (perfil + status),
+ * a mesma fonte que já rege todo o resto do RBAC da V3.
+ *
+ * Versão anterior tentava casar a conta logada com um cadastro em
+ * `tecnicos` (RH) por e-mail/nome — sem nenhum campo de vínculo real
+ * entre as duas coleções, isso dependia dos dois cadastros terem e-mail/
+ * nome idênticos em produção. Quando não bateram, o botão "Assumir"
+ * sumiu pra técnicos reais (regressão). `tecnicos` continua sendo a
+ * fonte da lista de reatribuição (useTecnicosAtivos, usado só pelo
+ * administrador escolher um nome), mas não é mais usado pra decidir
+ * "quem pode assumir".
  */
-export function useMeuTecnico(): Tecnico | null {
-  const usuario = useSessionStore((s) => s.usuario);
-  const { data: ativos } = useTecnicosAtivos();
-  return useMemo(() => {
-    if (!usuario) return null;
-    const email = usuario.email.trim().toLowerCase();
-    const nome = usuario.nome.trim().toLowerCase();
-    const porEmail = email ? ativos.find((t) => t.email && t.email.trim().toLowerCase() === email) : undefined;
-    return porEmail || ativos.find((t) => t.nome.trim().toLowerCase() === nome) || null;
-  }, [usuario, ativos]);
-}
-
-/** true se a conta logada corresponde a um técnico ativo cadastrado —
- * único perfil autorizado a assumir chamados. */
 export function useSouTecnicoAtivo(): boolean {
-  return !!useMeuTecnico();
+  const usuario = useSessionStore((s) => s.usuario);
+  return usuario?.perfil === 'tecnico' && usuario?.status === 'Ativo';
 }
 
 /** Portado de salvarTec() (config/index.js) — chave do doc é o apelido
