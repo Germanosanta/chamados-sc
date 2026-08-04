@@ -11,7 +11,6 @@ import { EquipAutocomplete } from '@/components/shared/EquipAutocomplete';
 import { PhotoUploader } from '@/components/shared/PhotoUploader';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
-import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useChamados, useCriarChamado, useProximoNumero } from '@/hooks/useChamados';
 import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import { useSessionStore } from '@/store/session';
@@ -50,13 +49,14 @@ const BUCKETS = [
 ];
 
 /** Novo Chamado — formulário completo em 7 blocos, portado 1:1 de
- * submitChamado() (chamados/index.js): mesmos 5 campos obrigatórios
- * (categoria/equipamento/fazenda-sistema/responsável/descrição), mesma
- * baixa de estoque quando há peças selecionadas. */
+ * submitChamado() (chamados/index.js): mesmos 4 campos obrigatórios
+ * (categoria/equipamento/fazenda-sistema/descrição), mesma baixa de
+ * estoque quando há peças selecionadas. Nasce sempre sem responsável —
+ * só um técnico ativo cadastrado (via "Assumir") ou um administrador
+ * (via reatribuição) atribuem alguém depois da abertura. */
 export function NovoChamadoPage() {
   const navigate = useNavigate();
   const usuario = useSessionStore((s) => s.usuario);
-  const { data: tecnicos } = useTecnicosAtivos();
   const { data: todos } = useChamados();
   const { data: pecasEstoque } = useFirestoreCollection<Peca>('pecas');
   const proximoNumero = useProximoNumero();
@@ -77,8 +77,6 @@ export function NovoChamadoPage() {
   const [cultura, setCultura] = useState('');
   const [bucket, setBucket] = useState('');
 
-  const [respSelecionados, setRespSelecionados] = useState<string[]>([]);
-  const [tecnico, setTecnico] = useState('');
   const [statusInicial, setStatusInicial] = useState('Aberto');
 
   const [desc, setDesc] = useState('');
@@ -102,10 +100,6 @@ export function NovoChamadoPage() {
     if (q.length < 2) return [];
     return pecasEstoque.filter((p) => p.nome.toLowerCase().includes(q) || (p.codigo || '').toLowerCase().includes(q)).slice(0, 8);
   }, [pecasEstoque, buscaPeca]);
-
-  function toggleResp(nome: string) {
-    setRespSelecionados((prev) => (prev.includes(nome) ? prev.filter((r) => r !== nome) : [...prev, nome]));
-  }
 
   function adicionarPeca(p: Peca) {
     setBuscaPeca('');
@@ -155,7 +149,6 @@ export function NovoChamadoPage() {
     const erros: string[] = [];
     if (!equip) erros.push('selecione um equipamento');
     if (!categoria) erros.push('selecione a categoria');
-    if (!respSelecionados.length) erros.push('selecione pelo menos um responsável');
     if (!bucket) erros.push('selecione a Fazenda/Sistema');
     if (!desc.trim()) erros.push('descreva o problema');
     if (erros.length) {
@@ -172,14 +165,16 @@ export function NovoChamadoPage() {
       num: proximoNumero,
       titulo: equip.e || `${equip.c} ${equip.d}`,
       cultura: cultura as Chamado['cultura'],
-      resp: respSelecionados.join(', '),
+      // Chamado sempre nasce sem responsável — só passa a ter um quando
+      // um técnico ativo cadastrado clica em "Assumir" (ou um
+      // administrador reatribui), nunca na abertura (ver useChamados.ts).
+      resp: '',
       data,
       status: statusInicial as Chamado['status'],
       bucket,
       desc: desc.trim(),
       prior: prioridade,
       categoria,
-      tecnico,
       solicitante: solicitante || usuario?.nome || 'Sistema',
       observacoes: observacoes.trim(),
       fotos,
@@ -208,8 +203,6 @@ export function NovoChamadoPage() {
     setEquip(null);
     setCultura('');
     setBucket('');
-    setRespSelecionados([]);
-    setTecnico('');
     setStatusInicial('Aberto');
     setDesc('');
     setObservacoes('');
@@ -361,38 +354,8 @@ export function NovoChamadoPage() {
         </div>
       </Bloco>
 
-      <Bloco titulo="👷 Responsáveis">
+      <Bloco titulo="🚦 Status">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Campo label="Responsável pelo Chamado *">
-            <div className="flex flex-wrap gap-1.5" role="group" aria-label="Responsável pelo chamado">
-              {tecnicos.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  aria-pressed={respSelecionados.includes(t.apelido || t.nome)}
-                  onClick={() => toggleResp(t.apelido || t.nome)}
-                  className={cn(
-                    'rounded-full border px-2.5 py-1 text-sm font-semibold',
-                    respSelecionados.includes(t.apelido || t.nome) ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground',
-                  )}
-                >
-                  {t.nome}
-                </button>
-              ))}
-            </div>
-            <p className="mt-1 text-xs text-subtle">Quem responde pelo chamado — pode ser mais de um</p>
-          </Campo>
-          <Campo label="Técnico Responsável" htmlFor="novo-tecnico">
-            <Select value={tecnico || undefined} onValueChange={setTecnico}>
-              <SelectTrigger id="novo-tecnico"><SelectValue placeholder="A definir…" /></SelectTrigger>
-              <SelectContent>
-                {tecnicos.map((t) => (
-                  <SelectItem key={t.key} value={t.apelido || t.nome}>{t.nome}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="mt-1 text-xs text-subtle">Quem executa o atendimento em campo</p>
-          </Campo>
           <Campo label="Status inicial" htmlFor="novo-status">
             <Select value={statusInicial} onValueChange={setStatusInicial}>
               <SelectTrigger id="novo-status"><SelectValue /></SelectTrigger>
@@ -402,6 +365,9 @@ export function NovoChamadoPage() {
                 <SelectItem value="Aguardando Peça">Aguardando Peça</SelectItem>
               </SelectContent>
             </Select>
+            <p className="mt-1 text-xs text-subtle">
+              O chamado nasce sem responsável — um técnico ativo cadastrado assume no Kanban de Chamados em Aberto.
+            </p>
           </Campo>
         </div>
       </Bloco>

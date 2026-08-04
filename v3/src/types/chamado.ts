@@ -94,7 +94,6 @@ export interface Chamado {
   desc?: string;
   prior?: Prioridade;
   categoria?: string;
-  tecnico?: string;
   solicitante?: string;
   observacoes?: string;
   fotos?: FotoAnexo[];
@@ -109,8 +108,16 @@ export interface Chamado {
   dataHoraAbertura?: string;
   dataHoraISO?: string;
 
+  /** único responsável possível: um técnico ativo cadastrado (`tecnicos`)
+   * — gravado ao clicar "Assumir" (ver useAssumirChamado) ou por
+   * reatribuição administrativa (useReatribuirResponsavel). `resp`
+   * sempre reflete o mesmo nome, em sincronia — ver
+   * utils/chamado-helpers.ts (temResponsavel/souResponsavelDoChamado). */
   assumidoPor?: string;
   assumidoEm?: string;
+  /** uid da conta que clicou "Assumir" — null após reatribuição manual
+   * (administrador não tem como saber o uid de quem está reatribuindo). */
+  assumidoPorUid?: string | null;
 
   encerramento?: Encerramento;
   eventos?: EventoTimeline[];

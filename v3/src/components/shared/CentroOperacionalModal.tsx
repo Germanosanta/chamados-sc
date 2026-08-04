@@ -13,8 +13,9 @@ import { ChecklistDialog } from './ChecklistDialog';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { usePermission } from '@/hooks/usePermission';
+import { useSouTecnicoAtivo } from '@/hooks/useTecnicos';
 import { useChamados, useAssumirChamado, useRegistrarEvento, useReabrirChamado } from '@/hooks/useChamados';
-import { diasAberto, diasBorderClass, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip, isFechado } from '@/utils/chamado-helpers';
+import { diasAberto, diasBorderClass, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, getChamadoEquip, isFechado, podeAgirNoChamado, temResponsavel } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import type { Auditoria } from '@/types/auditoria';
@@ -33,6 +34,7 @@ export function CentroOperacionalModal() {
   const podeEditar = usePermission('p_editar');
   const podeEncerrar = usePermission('p_encerrar');
   const podeReabrir = usePermission('p_reabrir');
+  const souTecnicoAtivo = useSouTecnicoAtivo();
 
   const assumir = useAssumirChamado();
   const registrarEvento = useRegistrarEvento();
@@ -55,6 +57,10 @@ export function CentroOperacionalModal() {
   const fechado = chamado ? isFechado(chamado) : false;
   const equip = chamado ? getChamadoEquip(chamado.num, chamado.equipCodigo) : null;
   const dias = chamado ? diasAberto(chamado.data) : 0;
+  // Peças/observações/fotos/solução/encerrar: só o técnico que assumiu o
+  // chamado (ou um administrador) — nunca qualquer conta com p_editar.
+  const souResponsavelOuAdmin = chamado ? podeAgirNoChamado(chamado, usuario) : false;
+  const podeAssumir = chamado ? !temResponsavel(chamado) && souTecnicoAtivo : false;
 
   async function handleAssumir() {
     if (!chamado) return;
@@ -157,27 +163,38 @@ export function CentroOperacionalModal() {
                     <div className="text-xs font-bold uppercase tracking-wide text-subtle">Ações rápidas</div>
                     {!fechado ? (
                       <div className="flex flex-wrap gap-2">
-                        {!chamado.assumidoPor && (
+                        {podeAssumir && (
                           <Button size="sm" variant="ghost" onClick={handleAssumir}>
                             Assumir
                           </Button>
                         )}
-                        <Button size="sm" variant="ghost" onClick={() => iniciarAcao('iniciou')}>
-                          Iniciar
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => iniciarAcao('peca_solicitada')}>
-                          Solicitar Peça
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => iniciarAcao('peca_recebida')}>
-                          Peça Recebida
-                        </Button>
-                        <Button size="sm" variant="ghost" onClick={() => iniciarAcao('obs')}>
-                          Observação
-                        </Button>
-                        {podeEncerrar && (
-                          <Button size="sm" onClick={() => setChecklistOpen(true)}>
-                            Encerrar
-                          </Button>
+                        {souResponsavelOuAdmin && (
+                          <>
+                            <Button size="sm" variant="ghost" onClick={() => iniciarAcao('iniciou')}>
+                              Iniciar
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => iniciarAcao('peca_solicitada')}>
+                              Solicitar Peça
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => iniciarAcao('peca_recebida')}>
+                              Peça Recebida
+                            </Button>
+                            <Button size="sm" variant="ghost" onClick={() => iniciarAcao('obs')}>
+                              Observação
+                            </Button>
+                            {podeEncerrar && (
+                              <Button size="sm" onClick={() => setChecklistOpen(true)}>
+                                Encerrar
+                              </Button>
+                            )}
+                          </>
+                        )}
+                        {!podeAssumir && !souResponsavelOuAdmin && (
+                          <p className="text-sm text-subtle">
+                            {temResponsavel(chamado)
+                              ? `Apenas ${chamado.resp || chamado.assumidoPor} ou um administrador pode agir neste chamado.`
+                              : 'Aguardando um técnico ativo assumir este chamado.'}
+                          </p>
                         )}
                       </div>
                     ) : (
@@ -247,11 +264,16 @@ export function CentroOperacionalModal() {
               {/* Coluna lateral — responsáveis + equipamento + galeria */}
               <div className={cn('flex flex-col gap-5 overflow-y-auto border-t border-border bg-muted p-5 lg:border-l lg:border-t-0')}>
                 <div>
-                  <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">Responsáveis</div>
+                  <div className="mb-2 text-xs font-bold uppercase tracking-wide text-subtle">Responsável</div>
                   <div className="flex flex-col gap-1.5 rounded-sm border border-border bg-surface p-3 text-sm">
-                    <Meta label="Responsável" value={chamado.resp || '—'} />
-                    <Meta label="Técnico" value={chamado.tecnico || '—'} />
-                    {chamado.assumidoPor && <Meta label="Assumido por" value={chamado.assumidoPor} />}
+                    {temResponsavel(chamado) ? (
+                      <>
+                        <Meta label="Técnico" value={chamado.resp || chamado.assumidoPor || '—'} />
+                        {chamado.assumidoEm && <Meta label="Desde" value={new Date(chamado.assumidoEm).toLocaleString('pt-BR')} />}
+                      </>
+                    ) : (
+                      <p className="text-sm text-subtle">Ainda não assumido.</p>
+                    )}
                   </div>
                 </div>
                 <div>

@@ -23,6 +23,33 @@ export function useTecnicosAtivos() {
   return { data: ativos, carregando };
 }
 
+/**
+ * Liga a conta logada (usuarios/{uid}, autenticação) ao cadastro
+ * correspondente em `tecnicos` (fonte única de responsáveis) — casamento
+ * por e-mail, com fallback por nome, sem exigir nenhum campo novo de
+ * vínculo no Firestore (as duas coleções continuam independentes). É o
+ * que permite responder "quem está logado é um dos técnicos ativos
+ * cadastrados?" — usado por useAssumirChamado e por toda tela que
+ * precisa decidir se mostra o botão "Assumir".
+ */
+export function useMeuTecnico(): Tecnico | null {
+  const usuario = useSessionStore((s) => s.usuario);
+  const { data: ativos } = useTecnicosAtivos();
+  return useMemo(() => {
+    if (!usuario) return null;
+    const email = usuario.email.trim().toLowerCase();
+    const nome = usuario.nome.trim().toLowerCase();
+    const porEmail = email ? ativos.find((t) => t.email && t.email.trim().toLowerCase() === email) : undefined;
+    return porEmail || ativos.find((t) => t.nome.trim().toLowerCase() === nome) || null;
+  }, [usuario, ativos]);
+}
+
+/** true se a conta logada corresponde a um técnico ativo cadastrado —
+ * único perfil autorizado a assumir chamados. */
+export function useSouTecnicoAtivo(): boolean {
+  return !!useMeuTecnico();
+}
+
 /** Portado de salvarTec() (config/index.js) — chave do doc é o apelido
  * (ou primeiro nome), pra bater com o valor gravado no campo `resp` dos
  * chamados; ao editar, a chave existente é preservada. */

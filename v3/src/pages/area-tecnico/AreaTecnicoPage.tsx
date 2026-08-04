@@ -4,9 +4,9 @@ import { cn } from '@/utils/cn';
 import { KanbanCard } from '@/components/shared/KanbanCard';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useAbertos, useAssumirChamado, useEncerradosLista } from '@/hooks/useChamados';
+import { useSouTecnicoAtivo } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
-import { usePermission } from '@/hooks/usePermission';
 import type { Chamado } from '@/types/chamado';
 
 type Filtro = 'meus' | 'urgentes' | 'atendimento' | 'peca' | 'concluidos';
@@ -21,7 +21,10 @@ const CHIPS: { key: Filtro; label: string }[] = [
 
 function souEnvolvido(c: Chamado, nome: string): boolean {
   const nomes = (c.resp || '').split(',').map((n) => n.trim());
-  return nomes.includes(nome) || c.tecnico === nome || c.assumidoPor === nome;
+  // c.assumidoPor entra como fallback pra chamados assumidos antes da
+  // unificação de responsável (ver temResponsavel em chamado-helpers.ts)
+  // — daqui em diante os dois campos são sempre gravados juntos.
+  return nomes.includes(nome) || c.assumidoPor === nome;
 }
 
 /** Área do Técnico — espaço de trabalho pessoal, separado do cadastro
@@ -34,7 +37,7 @@ export function AreaTecnicoPage() {
   const { data: encerrados } = useEncerradosLista();
   const abrirDetalhe = useDetalheStore((s) => s.abrir);
   const assumir = useAssumirChamado();
-  const podeEditar = usePermission('p_editar');
+  const souTecnicoAtivo = useSouTecnicoAtivo();
   const [filtro, setFiltro] = useState<Filtro>('meus');
 
   const nome = usuario?.nome || '';
@@ -102,7 +105,7 @@ export function AreaTecnicoPage() {
             key={c.num}
             chamado={c}
             onClick={handleCardClick}
-            onAssumir={filtro !== 'concluidos' && podeEditar ? handleAssumir : undefined}
+            onAssumir={filtro !== 'concluidos' && souTecnicoAtivo ? handleAssumir : undefined}
           />
         ))}
       </div>

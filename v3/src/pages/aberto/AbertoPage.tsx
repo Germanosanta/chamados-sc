@@ -13,9 +13,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAbertos, useAlterarStatusChamado, useAssumirChamado, useReatribuirResponsavel } from '@/hooks/useChamados';
-import { useTecnicosAtivos } from '@/hooks/useTecnicos';
+import { useTecnicosAtivos, useSouTecnicoAtivo } from '@/hooks/useTecnicos';
 import { usePermission } from '@/hooks/usePermission';
-import { diasAberto, diasBorderClass, fazendaLabel, formatDataBR, frotaLabel, isSlaCritico } from '@/utils/chamado-helpers';
+import { useSessionStore } from '@/store/session';
+import { diasAberto, diasBorderClass, fazendaLabel, formatDataBR, frotaLabel, isSlaCritico, podeAgirNoChamado } from '@/utils/chamado-helpers';
 import { useDetalheStore } from '@/store/detalhe';
 import type { Chamado } from '@/types/chamado';
 import { cn } from '@/utils/cn';
@@ -44,6 +45,9 @@ export function AbertoPage() {
   const abrirDetalhe = useDetalheStore((s) => s.abrir);
   const podeEditar = usePermission('p_editar');
   const podeCriar = usePermission('p_novo');
+  const usuario = useSessionStore((s) => s.usuario);
+  const souAdmin = usuario?.perfil === 'admin';
+  const souTecnicoAtivo = useSouTecnicoAtivo();
 
   const [view, setView] = useState<'lista' | 'kanban'>('lista');
   const [busca, setBusca] = useState(searchParams.get('q') || '');
@@ -249,7 +253,7 @@ export function AbertoPage() {
       header: 'Ação',
       render: (c) => (
         <div className="flex items-center gap-1.5" onClick={(e) => e.stopPropagation()}>
-          {podeEditar && (
+          {souAdmin && (
             <Select value="" onValueChange={(v) => handleReatribuir(c, v)}>
               <SelectTrigger className="h-7 w-24 text-sm">
                 <SelectValue placeholder="Resp." />
@@ -264,7 +268,7 @@ export function AbertoPage() {
             </Select>
           )}
           <Button variant="ghost" size="sm" onClick={() => abrirDetalhe(c.num)}>
-            {podeEditar ? 'Encerrar' : 'Ver'}
+            {podeEditar && podeAgirNoChamado(c, usuario) ? 'Encerrar' : 'Ver'}
           </Button>
         </div>
       ),
@@ -466,7 +470,7 @@ export function AbertoPage() {
         <KanbanBoard
           chamados={filtrados}
           onStatusChange={podeEditar ? handleStatusChange : undefined}
-          onAssumir={podeEditar ? handleAssumir : undefined}
+          onAssumir={souTecnicoAtivo ? handleAssumir : undefined}
           onCardClick={handleCardClick}
         />
       )}

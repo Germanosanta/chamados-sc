@@ -1,4 +1,5 @@
 import type { Chamado, ChamadoHistoricoTupla, ChamadoStatus, Prioridade } from '@/types/chamado';
+import type { Usuario } from '@/types/usuario';
 import matchMap from '@/data/match_map.json';
 import equipIdx from '@/data/equip_idx.json';
 import type { EquipIdxEntry } from '@/types/equipamento';
@@ -36,7 +37,6 @@ export function normalizarChamado(c: Chamado): Chamado {
     bucket: c.bucket || '',
     solicitante: c.solicitante || '',
     categoria: c.categoria || '',
-    tecnico: c.tecnico || '',
   };
 }
 
@@ -44,6 +44,33 @@ const STATUS_TERMINAIS = new Set<ChamadoStatus>(['Concluída', 'Encerrado', 'Can
 
 export function isFechado(c: Chamado): boolean {
   return STATUS_TERMINAIS.has(c.status) || !!c.encerramento;
+}
+
+/**
+ * Único conceito de responsável do chamado: `resp` é sempre a fonte de
+ * verdade (gravado por useAssumirChamado/useReatribuirResponsavel, os
+ * únicos dois pontos de escrita); `assumidoPor` entra só como fallback de
+ * leitura pra chamados assumidos antes desta unificação (onde só o campo
+ * antigo ficou gravado). Nada mais no app deve ler resp/assumidoPor
+ * separadamente — sempre por estas funções.
+ */
+export function temResponsavel(c: Chamado): boolean {
+  return !!(c.resp || c.assumidoPor);
+}
+
+export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'nome'> | null | undefined): boolean {
+  if (!usuario) return false;
+  const alvo = usuario.nome.trim().toLowerCase();
+  const resp = (c.resp || '').trim().toLowerCase();
+  const assumido = (c.assumidoPor || '').trim().toLowerCase();
+  return (!!resp && resp === alvo) || (!!assumido && assumido === alvo);
+}
+
+/** Técnico responsável (se houver) OU administrador — regra usada em
+ * todas as ações de encerramento (peças/observações/solução/encerrar) e
+ * na reatribuição administrativa. */
+export function podeAgirNoChamado(c: Chamado, usuario: Pick<Usuario, 'nome' | 'perfil'> | null | undefined): boolean {
+  return usuario?.perfil === 'admin' || souResponsavelDoChamado(c, usuario);
 }
 
 export function diasAberto(dataStr?: string): number {
@@ -268,7 +295,6 @@ export function buildTimeline(c: Chamado): TimelineItem[] {
     const detail = [
       c.categoria ? `Categoria: ${c.categoria}` : '',
       c.prior ? `Prioridade: ${c.prior}` : '',
-      c.tecnico ? `Técnico: ${c.tecnico}` : '',
     ]
       .filter(Boolean)
       .join(' · ');
@@ -310,17 +336,10 @@ export function buildTimeline(c: Chamado): TimelineItem[] {
   return items.sort((a, b) => (a.ts || '').localeCompare(b.ts || ''));
 }
 
-/** Portado de getTecnicoResponsavel() (chamados/index.js) — cascata:
- * campo tecnico → assumidoPor → último evento assumiu/iniciou. Usado
- * pra pré-selecionar o técnico no checklist de encerramento. */
+/** Técnico responsável, pra pré-selecionar no checklist de encerramento —
+ * mesma fonte única de resp/assumidoPor (ver temResponsavel acima). */
 export function getTecnicoResponsavel(c: Chamado): string | null {
-  if (c.tecnico) return c.tecnico;
-  if (c.assumidoPor) return c.assumidoPor;
-  const eventos = c.eventos || [];
-  for (let i = eventos.length - 1; i >= 0; i--) {
-    if ((eventos[i].type === 'assumiu' || eventos[i].type === 'iniciou') && eventos[i].actor) return eventos[i].actor;
-  }
-  return null;
+  return c.resp || c.assumidoPor || null;
 }
 
 export function tuplaParaChamado(t: ChamadoHistoricoTupla): Chamado {

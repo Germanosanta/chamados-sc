@@ -1,10 +1,11 @@
 import { useCallback, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
+import { useMeuTecnico } from './useTecnicos';
 import { appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
-import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
+import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
 import type { Chamado, ChamadoHistoricoTupla, ChecklistEncerramento, Encerramento, EventoTimeline, PecaUsada } from '@/types/chamado';
 import type { Peca, Movimentacao } from '@/types/peca';
 import chamadosHistorico from '@/data/chamados_historico.json';
@@ -101,13 +102,32 @@ function useChamadoPatch() {
   });
 }
 
+/**
+ * Reatribuição administrativa — único jeito de trocar o responsável de um
+ * chamado já assumido (ver AbertoPage: o seletor só aparece pra quem é
+ * admin). `resp`/`assumidoPor` são gravados juntos, sempre em sincronia
+ * (mesma fonte única — ver temResponsavel/souResponsavelDoChamado em
+ * chamado-helpers.ts); `assumidoPorUid` é limpo porque o administrador
+ * não tem como saber o uid da conta do técnico escolhido (só o nome
+ * cadastrado em `tecnicos`, sem vínculo direto com usuarios/{uid}).
+ */
 export function useReatribuirResponsavel() {
   const { mutateAsync } = useChamadoPatch();
+  const usuario = useSessionStore((s) => s.usuario);
   // useCallback (não só a função crua): quem consome isso é a Kanban
   // (KanbanCard/KanbanColumn memoizados) — sem uma referência estável
   // aqui, todo card re-renderiza a cada tecla digitada num filtro,
   // mesmo sem nenhuma mudança real no card em si.
-  return useCallback((chamadoBase: Chamado, novoResp: string) => mutateAsync({ chamadoBase, patch: { resp: novoResp } }), [mutateAsync]);
+  return useCallback(
+    (chamadoBase: Chamado, novoResp: string) => {
+      if (usuario?.perfil !== 'admin') return Promise.reject(new Error('Somente administradores podem reatribuir o responsável.'));
+      return mutateAsync({
+        chamadoBase,
+        patch: { resp: novoResp, assumidoPor: novoResp, assumidoEm: new Date().toISOString(), assumidoPorUid: null },
+      });
+    },
+    [mutateAsync, usuario],
+  );
 }
 
 /** Transição simples de status (Kanban) — as duas transições que exigem
@@ -117,19 +137,30 @@ export function useAlterarStatusChamado() {
   return useCallback((chamadoBase: Chamado, novoStatus: Chamado['status']) => mutateAsync({ chamadoBase, patch: { status: novoStatus } }), [mutateAsync]);
 }
 
+/**
+ * Assumir chamado — único jeito de um chamado ganhar responsável (além da
+ * reatribuição administrativa). Só o técnico ativo cadastrado que está
+ * logado pode fazer isso (useMeuTecnico resolve a conta atual pro
+ * cadastro em `tecnicos` — ver hooks/useTecnicos.ts); `resp` e
+ * `assumidoPor` são gravados juntos com o mesmo nome (fonte única — ver
+ * temResponsavel/souResponsavelDoChamado em chamado-helpers.ts), e o uid
+ * da própria conta fica registrado em `assumidoPorUid`.
+ */
 export function useAssumirChamado() {
   const { mutateAsync } = useChamadoPatch();
   const usuario = useSessionStore((s) => s.usuario);
+  const meuTecnico = useMeuTecnico();
   return useCallback(
     async (chamadoBase: Chamado) => {
       if (!usuario) return Promise.reject(new Error('Sem sessão ativa.'));
+      if (!meuTecnico) return Promise.reject(new Error('Somente técnicos ativos cadastrados podem assumir chamados.'));
       await mutateAsync({
         chamadoBase,
-        patch: { assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), tecnico: usuario.nome },
+        patch: { resp: usuario.nome, assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), assumidoPorUid: usuario.id },
       });
       await audit('assumiu', `Chamado ${chamadoBase.num} assumido`, usuario, chamadoBase.num);
     },
-    [mutateAsync, usuario],
+    [mutateAsync, usuario, meuTecnico],
   );
 }
 
@@ -192,6 +223,12 @@ export function useCriarChamado() {
  * Recebida/Observação) — mesma lógica de registrarEvento()+
  * confirmarEvento() (V2): grava o evento em `historico/{num}.eventos`
  * (arrayUnion) e, se o tipo mexe em status, atualiza `chamados/{num}`.
+ *
+ * Sem guarda de "técnico responsável ou admin" aqui dentro (diferente de
+ * useEncerrarChamado): este hook também é reaproveitado por
+ * useReabrirChamado, que tem sua própria regra de permissão (p_reabrir,
+ * não exige ser o responsável) — a guarda de responsável fica só na UI
+ * que chama isso pras ações rápidas (CentroOperacionalModal).
  */
 export function useRegistrarEvento() {
   const usuario = useSessionStore((s) => s.usuario);
@@ -223,6 +260,9 @@ export function useEncerrarChamado() {
   const { mutateAsync } = useChamadoPatch();
   return useCallback(
     async (chamadoBase: Chamado, chk: ChecklistPayload) => {
+      if (!podeAgirNoChamado(chamadoBase, usuario)) {
+        return Promise.reject(new Error('Somente o técnico responsável ou um administrador pode encerrar este chamado.'));
+      }
       const now = new Date();
       const { date: dataEncerramento, time: horaEncerramento } = fmtDateHora(now);
       const encerramento: Encerramento = {

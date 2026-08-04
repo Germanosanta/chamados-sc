@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { cn } from '@/utils/cn';
 import { CulturaBadge, DiasChip, PrioridadeBadge, StatusBadge } from './StatusBadge';
 import { RespAvatar } from './RespAvatar';
-import { diasAberto, diasBorderClass, formatDataBR, frotaLabel, isFechado } from '@/utils/chamado-helpers';
+import { diasAberto, diasBorderClass, formatDataBR, frotaLabel, isFechado, temResponsavel } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 interface KanbanCardProps {
@@ -96,7 +96,7 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
         <DiasChip dias={dias} />
       </div>
 
-      {!chamado.assumidoPor && onAssumir && (
+      {!temResponsavel(chamado) && onAssumir && (
         <button
           onClick={(e) => {
             e.stopPropagation();
