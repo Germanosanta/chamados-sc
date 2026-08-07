@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useChamados } from './useChamados';
-import { equipamentoDoChamado, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico } from '@/utils/chamado-helpers';
+import { equipamentoDoChamado, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico, tempoMedioDias } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 /**
@@ -144,18 +144,10 @@ export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; c
     const monthsC = MONTHS.map((m) => mc[m] || 0);
     const monthsO = MONTHS.map((m) => mo[m] || 0);
 
-    let somaDias = 0;
-    let cntDias = 0;
-    for (const r of all) {
-      if (r.encerramento?.encerradoEm && r.data) {
-        const d = Math.round((new Date(r.encerramento.encerradoEm).getTime() - new Date(r.data + 'T00:00').getTime()) / 86400000);
-        if (d >= 0) {
-          somaDias += d;
-          cntDias++;
-        }
-      }
-    }
-    const tempoMedio = cntDias ? (somaDias / cntDias).toFixed(1) : '—';
+    // tempoMedioDias (chamado-helpers.ts) — mesma fórmula usada por
+    // Encerrados/Painel/Responsáveis/Técnicos, ver auditoria final.
+    const mediaDias = tempoMedioDias(all);
+    const tempoMedio = mediaDias === null ? '—' : mediaDias.toFixed(1);
 
     // isSlaCritico (chamado-helpers.ts) — mesmo critério de "vencido"
     // usado por Home/Painel/KanbanCard, em vez do cálculo de dias em

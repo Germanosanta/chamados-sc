@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useEncerradosLista } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
-import { fazendaLabel, formatDataBR, frotaLabel } from '@/utils/chamado-helpers';
+import { fazendaLabel, formatDataBR, frotaLabel, tempoMedioDias } from '@/utils/chamado-helpers';
 import { downloadCSV } from '@/utils/csv';
 import { cn } from '@/utils/cn';
 import type { Chamado } from '@/types/chamado';
@@ -48,14 +48,13 @@ export function EncerradosPage() {
     return encerrados.filter((c) => c.encerramento?.encerradoEm?.startsWith(ym)).length;
   }, [encerrados]);
 
+  // tempoMedioDias (chamado-helpers.ts) — mesma fórmula do Dashboard/
+  // Painel/Responsáveis/Técnicos (ver auditoria final); antes somava sem
+  // descartar um par de datas invertido (encerramento antes da
+  // abertura), o que distorcia a média pra baixo num dado inconsistente.
   const tempoMedio = useMemo(() => {
-    const validos = encerrados.filter((c) => c.data && c.encerramento?.encerradoEm);
-    if (!validos.length) return '—';
-    const total = validos.reduce((acc, c) => {
-      const dias = Math.round((new Date(c.encerramento!.encerradoEm).getTime() - new Date(c.data + 'T00:00').getTime()) / 86400000);
-      return acc + dias;
-    }, 0);
-    return `${Math.round(total / validos.length)}d`;
+    const media = tempoMedioDias(encerrados);
+    return media === null ? '—' : `${media.toFixed(1)}d`;
   }, [encerrados]);
 
   const filtrados = useMemo(() => {

@@ -10,11 +10,11 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useTecnicosCadastro, useTecnicosDuplicados, useSalvarTecnico, useVincularTecnicos } from '@/hooks/useTecnicos';
+import { useTecnicosCadastro, useTecnicosDuplicados, useSalvarTecnico, useVincularTecnicos, SalvarTecnicoError } from '@/hooks/useTecnicos';
 import { useUsuarios } from '@/hooks/useUsuarios';
 import { useChamados } from '@/hooks/useChamados';
 import { useSessionStore } from '@/store/session';
-import { chamadoPertenceATecnico, isFechado } from '@/utils/chamado-helpers';
+import { chamadoPertenceATecnico, diasEntre, isFechado } from '@/utils/chamado-helpers';
 import type { Tecnico } from '@/types/tecnico';
 
 const SEM_VINCULO = 'sem-vinculo';
@@ -69,12 +69,12 @@ export function TecnicosPage() {
         acc.total++;
         if (isFechado(c)) {
           acc.encerrados++;
-          if (c.encerramento?.encerradoEm && c.data) {
-            const dias = Math.round((new Date(c.encerramento.encerradoEm).getTime() - new Date(c.data + 'T00:00').getTime()) / 86400000);
-            if (dias >= 0) {
-              acc.somaDias += dias;
-              acc.cntDias++;
-            }
+          // diasEntre (chamado-helpers.ts) — mesma fórmula do resto da
+          // V3, ver auditoria final.
+          const dias = diasEntre(c.data, c.encerramento?.encerradoEm);
+          if (dias !== null) {
+            acc.somaDias += dias;
+            acc.cntDias++;
           }
         } else {
           acc.pendentes++;
@@ -135,8 +135,8 @@ export function TecnicosPage() {
       });
       toast('✓ Técnico salvo no cadastro!');
       setOpen(false);
-    } catch {
-      toast.error('Não foi possível salvar.');
+    } catch (e) {
+      toast.error(e instanceof SalvarTecnicoError ? e.message : 'Não foi possível salvar.');
     }
   }
 
@@ -151,8 +151,8 @@ export function TecnicosPage() {
       if (r.vinculados.length) partes.push(`${r.vinculados.length} vinculado(s) agora: ${r.vinculados.map((v) => v.tecnico.nome).join(', ')}`);
       if (r.naoVinculados.length) partes.push(`${r.naoVinculados.length} sem conta correspondente: ${r.naoVinculados.map((t) => t.nome).join(', ')}`);
       toast(partes.join(' · ') || 'Nenhuma vinculação pendente.');
-    } catch {
-      toast.error('Não foi possível rodar a vinculação automática.');
+    } catch (e) {
+      toast.error(e instanceof SalvarTecnicoError ? e.message : 'Não foi possível rodar a vinculação automática.');
     }
   }
 

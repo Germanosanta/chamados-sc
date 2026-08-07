@@ -179,6 +179,36 @@ export function diasAberto(dataStr?: string): number {
   return Math.floor((hoje.getTime() - d.getTime()) / 86400000);
 }
 
+/**
+ * Dias corridos entre a abertura (`Chamado.data`, "YYYY-MM-DD") e um
+ * timestamp ISO de encerramento — mesma fórmula em qualquer lugar que
+ * precisa de "quanto tempo esse chamado levou". Achado na auditoria
+ * final: existiam 5 reimplementações independentes disso (Dashboard,
+ * Encerrados, Painel, Responsáveis, Técnicos) e uma delas (Painel)
+ * arredondava pra baixo (`Math.floor`) enquanto as outras arredondavam
+ * pro mais próximo (`Math.round`) — o mesmo par de datas podia mostrar
+ * um número de dias diferente dependendo da tela. `null` quando falta
+ * uma das datas ou o resultado seria negativo (encerramento registrado
+ * antes da abertura — dado inconsistente, não deve entrar em nenhuma
+ * média em vez de distorcer o resultado pra baixo).
+ */
+export function diasEntre(dataAbertura?: string, encerradoEmISO?: string): number | null {
+  if (!dataAbertura || !encerradoEmISO) return null;
+  const dias = Math.round((new Date(encerradoEmISO).getTime() - new Date(dataAbertura + 'T00:00').getTime()) / 86400000);
+  return dias >= 0 ? dias : null;
+}
+
+/** Tempo médio (em dias) de um conjunto de chamados — só considera os
+ * que têm abertura e encerramento válidos (`diasEntre` acima); `null`
+ * quando nenhum chamado do conjunto tem os dois dados. */
+export function tempoMedioDias(chamados: Pick<Chamado, 'data' | 'encerramento'>[]): number | null {
+  const validos = chamados
+    .map((c) => diasEntre(c.data, c.encerramento?.encerradoEm))
+    .filter((d): d is number => d !== null);
+  if (!validos.length) return null;
+  return validos.reduce((a, b) => a + b, 0) / validos.length;
+}
+
 export type DiasVariant = 'red' | 'amber' | 'green';
 
 export function diasVariant(dias: number): DiasVariant {

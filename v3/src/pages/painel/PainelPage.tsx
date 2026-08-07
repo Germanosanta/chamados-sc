@@ -3,7 +3,7 @@ import { KpiCard } from '@/components/shared/KpiCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAbertos, useChamados } from '@/hooks/useChamados';
 import { useDetalheStore } from '@/store/detalhe';
-import { diasAberto, fazendaLabel, isSlaCritico } from '@/utils/chamado-helpers';
+import { diasAberto, diasEntre, fazendaLabel, isSlaCritico } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 
 /**
@@ -31,9 +31,9 @@ export function PainelPage() {
     let slaOk = 0;
     let slaTotal = 0;
     for (const c of todos) {
-      if (!c.data || !c.encerramento?.encerradoEm) continue;
+      const dias = diasEntre(c.data, c.encerramento?.encerradoEm);
+      if (dias === null) continue;
       slaTotal++;
-      const dias = Math.floor((new Date(c.encerramento.encerradoEm).getTime() - new Date(c.data + 'T00:00').getTime()) / 86400000);
       if (dias <= 7) slaOk++;
     }
     const slaPct = slaTotal ? Math.round((slaOk / slaTotal) * 100) : 0;
@@ -60,9 +60,9 @@ export function PainelPage() {
 
     const tempoPorTecnico = new Map<string, { soma: number; cnt: number }>();
     for (const c of todos) {
-      if (!c.data || !c.encerramento?.encerradoEm || !c.encerramento.encerradoPor) continue;
-      const dias = Math.floor((new Date(c.encerramento.encerradoEm).getTime() - new Date(c.data + 'T00:00').getTime()) / 86400000);
-      if (dias < 0) continue;
+      if (!c.encerramento?.encerradoPor) continue;
+      const dias = diasEntre(c.data, c.encerramento.encerradoEm);
+      if (dias === null) continue;
       const atual = tempoPorTecnico.get(c.encerramento.encerradoPor) || { soma: 0, cnt: 0 };
       atual.soma += dias;
       atual.cnt++;

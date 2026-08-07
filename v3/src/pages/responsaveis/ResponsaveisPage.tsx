@@ -4,7 +4,7 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { useChamados } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
-import { chamadoPertenceATecnico, isAbertoStatus, isEmAtendimento, isFechado } from '@/utils/chamado-helpers';
+import { chamadoPertenceATecnico, diasAberto, diasEntre, isAbertoStatus, isEmAtendimento, isFechado } from '@/utils/chamado-helpers';
 
 interface LinhaResp {
   name: string;
@@ -19,12 +19,6 @@ interface LinhaResp {
   tempoConc: string;
 }
 
-function daysBetween(d1?: string, d2?: string): number | null {
-  if (!d1 || !d2) return null;
-  const diff = (new Date(d2).getTime() - new Date(d1 + 'T00:00').getTime()) / 86400000;
-  return diff >= 0 ? Math.round(diff) : null;
-}
-
 /**
  * Relatórios → Responsáveis — portado de renderRespSection()
  * (relatorios/index.js), mesmos cálculos, mesma fonte única de
@@ -37,7 +31,6 @@ export function ResponsaveisPage() {
   const { data: tecnicos } = useTecnicosAtivos();
 
   const linhas: LinhaResp[] = useMemo(() => {
-    const hoje = new Date().toISOString().slice(0, 10);
     return tecnicos.map((t) => {
       const name = t.apelido || t.nome;
       const atribuidos = todos.filter((r) => chamadoPertenceATecnico(r, t));
@@ -47,27 +40,25 @@ export function ResponsaveisPage() {
       const emAndamento = atribuidos.filter(isEmAtendimento).length;
       const encerrados = atribuidos.filter(isFechado).length;
 
+      // diasAberto/diasEntre (chamado-helpers.ts) — mesmas fórmulas do
+      // resto da V3 (ver auditoria final); antes esta tela tinha sua
+      // própria diasBetween() local, reimplementando os dois cálculos.
       let somaAtend = 0;
       let cntAtend = 0;
       for (const r of atribuidos) {
         if (isEmAtendimento(r) && r.data) {
-          const d = daysBetween(r.data, hoje);
-          if (d !== null) {
-            somaAtend += d;
-            cntAtend++;
-          }
+          somaAtend += diasAberto(r.data);
+          cntAtend++;
         }
       }
 
       let somaConc = 0;
       let cntConc = 0;
       for (const r of atribuidos) {
-        if (r.encerramento?.encerradoEm && r.data) {
-          const d = daysBetween(r.data, r.encerramento.encerradoEm.slice(0, 10));
-          if (d !== null) {
-            somaConc += d;
-            cntConc++;
-          }
+        const d = diasEntre(r.data, r.encerramento?.encerradoEm);
+        if (d !== null) {
+          somaConc += d;
+          cntConc++;
         }
       }
 

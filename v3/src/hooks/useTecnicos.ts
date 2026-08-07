@@ -146,6 +146,21 @@ export function useSouTecnicoAtivo(): boolean {
   return usuario?.perfil === 'tecnico' && usuario?.status === 'Ativo';
 }
 
+/**
+ * Achado na auditoria final: `useSalvarTecnico`/`useVincularTecnicos`
+ * não tinham nenhuma checagem de permissão dentro do próprio hook — só o
+ * botão em TecnicosPage era escondido de quem não é admin (`souAdmin &&
+ * ...`). Isso viola a própria regra desta fase ("nenhuma ação
+ * administrativa deve depender só da ocultação do botão"): qualquer
+ * conta ativa que soubesse chamar o hook diretamente (ex. via console do
+ * navegador) conseguia escrever no cadastro de técnicos sem ser admin —
+ * a regra do Firestore para `tecnicos` continua igual (decisão explícita
+ * de rodada anterior: só V3, sem mexer em firestore.rules), então esta
+ * era a única barreira que faltava. Mesmo padrão já usado em
+ * useSalvarUsuario/useAlterarStatusUsuario (useUsuarios.ts).
+ */
+export class SalvarTecnicoError extends Error {}
+
 export interface VinculacaoTecnicos {
   vinculados: { tecnico: Tecnico; usuario: Usuario }[];
   jaVinculados: Tecnico[];
@@ -170,8 +185,10 @@ export interface VinculacaoTecnicos {
  * entra em `naoVinculados` em vez de adivinhar.
  */
 export function useVincularTecnicos() {
+  const usuarioLogado = useSessionStore((s) => s.usuario);
   return useMutation({
     mutationFn: async ({ tecnicos, usuarios }: { tecnicos: Tecnico[]; usuarios: Usuario[] }): Promise<VinculacaoTecnicos> => {
+      if (usuarioLogado?.perfil !== 'admin') throw new SalvarTecnicoError('Apenas administradores podem vincular técnicos a usuários.');
       const candidatos = usuarios.filter((u) => u.perfil === 'tecnico');
       const resultado: VinculacaoTecnicos = { vinculados: [], jaVinculados: [], naoVinculados: [] };
 
@@ -214,6 +231,7 @@ export function useSalvarTecnico() {
   const usuario = useSessionStore((s) => s.usuario);
   return useMutation({
     mutationFn: async ({ key, tecnico }: { key: string | null; tecnico: Omit<Tecnico, 'key'> }) => {
+      if (usuario?.perfil !== 'admin') throw new SalvarTecnicoError('Apenas administradores podem editar o cadastro de técnicos.');
       const chave = key || tecnico.apelido || tecnico.nome.split(' ')[0];
       const doc: Tecnico = {
         ...tecnico,
