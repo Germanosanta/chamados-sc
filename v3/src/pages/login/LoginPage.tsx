@@ -74,7 +74,7 @@ export function LoginPage() {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader className="items-center text-center">
-        <img src={logo} alt="Santa Colomba" className="mb-2 h-24 w-24 rounded-lg object-cover shadow-sm" />
+        <img src={logo} alt="Santa Colomba" className="mb-2 h-auto w-full max-w-[220px] object-contain" />
         <CardTitle>Central de Chamados</CardTitle>
         <CardDescription>Santa Colomba Agropecuária — V3</CardDescription>
       </CardHeader>
