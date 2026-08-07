@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { AlertTriangle, Plus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useUsuarios, useSalvarUsuario, useAlterarStatusUsuario, SalvarUsuarioError } from '@/hooks/useUsuarios';
+import { useUsuariosCadastro, useUsuariosDuplicados, useSalvarUsuario, useAlterarStatusUsuario, SalvarUsuarioError } from '@/hooks/useUsuarios';
 import { enviarResetSenha } from '@/services/firebase/auth';
 import { useSessionStore } from '@/store/session';
 import { ALL_PERMS, PERFIL_LABEL, PERFIL_PERMS, type Perfil, type Permissao } from '@/types/permissoes';
@@ -23,7 +23,11 @@ import type { Usuario } from '@/types/usuario';
  * secundário, ver services/firebase/auth.ts), grade de permissões
  * granulares com preset por perfil, reset de senha por e-mail. */
 export function UsuariosPage() {
-  const { data: usuarios, carregando } = useUsuarios();
+  // Cadastro: lista crua (1 linha por documento real, só sem os docs
+  // "migrado") — não a versão deduplicada por identidade usada no resto
+  // da V3. Mesmo raciocínio de TecnicosPage (ver useUsuariosCadastro).
+  const { data: usuarios, carregando } = useUsuariosCadastro();
+  const duplicatas = useUsuariosDuplicados();
   const usuarioLogado = useSessionStore((s) => s.usuario);
   const souAdmin = usuarioLogado?.perfil === 'admin';
   const salvar = useSalvarUsuario();
@@ -158,6 +162,28 @@ export function UsuariosPage() {
         <KpiCard label="Administradores" value={carregando ? '—' : usuarios.filter((u) => u.perfil === 'admin').length} color="purple" />
         <KpiCard label="Inativos" value={carregando ? '—' : usuarios.filter((u) => u.status !== 'Ativo').length} color="red" />
       </div>
+
+      {souAdmin && duplicatas.length > 0 && (
+        <div className="flex flex-col gap-2 rounded-sm border border-warning bg-warning-bg p-3 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-warning">
+            <AlertTriangle className="h-4 w-4" />
+            {duplicatas.length} possível(is) duplicata(s) no cadastro — revisão manual necessária
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Cada e-mail abaixo tem mais de um documento na coleção <code>usuarios</code> do Firestore que não é um
+            "doc sombra" de migração (<code>migrado: true</code> já é filtrado à parte). A V3 mostra só um deles nas
+            outras telas; os dois continuam intactos e visíveis aqui pra você decidir se são a mesma conta duplicada
+            (mesclar/desativar manualmente) ou contas diferentes com e-mail coincidente. Nada é apagado automaticamente.
+          </p>
+          <ul className="flex flex-col gap-1">
+            {duplicatas.map((d) => (
+              <li key={d.identidade} className="font-mono-num text-xs text-foreground">
+                {d.usuarios[0].email || d.usuarios[0].login} — {d.usuarios.length} documentos: {d.usuarios.map((u) => u.id).join(', ')}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <FilterBar>
         <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nome, login, e-mail…" className="w-64" />

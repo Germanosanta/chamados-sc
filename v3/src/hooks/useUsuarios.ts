@@ -4,6 +4,7 @@ import { useFirestoreCollection, type FirestoreCollectionState } from './useFire
 import { setMerge, excluirDocumento } from '@/services/firebase/firestore';
 import { criarContaAuth } from '@/services/firebase/auth';
 import { useSessionStore } from '@/store/session';
+import { normalizarNome } from '@/utils/chamado-helpers';
 import type { Usuario } from '@/types';
 
 /**
@@ -22,11 +23,82 @@ import type { Usuario } from '@/types';
  * usuário com o mesmo login" e bloqueava a edição do usuário real.
  * Replicando o mesmo filtro da V2 aqui — na origem, pra nenhuma tela
  * precisar lembrar disso sozinha.
+ *
+ * "Todos os usuários aparecem duplicados" (relatado depois desse fix):
+ * o filtro `migrado` cobre a causa mais comum, mas não cobre outros
+ * jeitos de existir mais de um documento pra mesma pessoa (ex.: conta
+ * recriada no Firebase Auth com um novo uid, mesmo e-mail; edição feita
+ * direto no Console). Mesma solução já usada em técnicos
+ * (useTecnicos.ts): agrupar por identidade (e-mail normalizado — é o
+ * campo que o próprio Firebase Auth trata como único) e mostrar só 1
+ * representante por grupo em toda a V3, sem apagar nenhum documento —
+ * os grupos com mais de 1 doc ficam disponíveis à parte
+ * (useUsuariosDuplicados) pra um admin decidir o que fazer.
  */
+export interface UsuarioDuplicata {
+  identidade: string;
+  usuarios: (Usuario & { id: string })[];
+}
+
+function agruparPorIdentidade(data: (Usuario & { id: string })[]): {
+  unicos: (Usuario & { id: string })[];
+  duplicatas: UsuarioDuplicata[];
+} {
+  const grupos = new Map<string, (Usuario & { id: string })[]>();
+  for (const u of data) {
+    const identidade = normalizarNome(u.email || u.login || u.id);
+    const lista = grupos.get(identidade);
+    if (lista) lista.push(u);
+    else grupos.set(identidade, [u]);
+  }
+  const unicos: (Usuario & { id: string })[] = [];
+  const duplicatas: UsuarioDuplicata[] = [];
+  for (const [identidade, lista] of grupos) {
+    // Sem atualizadoEm em Usuario — mantém a ordem de chegada do
+    // Firestore; o primeiro representante é só uma escolha estável, não
+    // uma afirmação de qual conta é "a certa" (por isso o aviso de
+    // duplicata sempre mostra todos os IDs, pra decisão humana).
+    unicos.push(lista[0]);
+    if (lista.length > 1) duplicatas.push({ identidade, usuarios: lista });
+  }
+  return { unicos, duplicatas };
+}
+
 export function useUsuarios(): FirestoreCollectionState<Usuario> {
+  const { data, carregando, erro } = useFirestoreCollection<Usuario>('usuarios');
+  const { unicos } = useMemo(() => {
+    const ativos = data.filter((u) => !u.migrado);
+    return agruparPorIdentidade(ativos);
+  }, [data]);
+  return { data: unicos, carregando, erro };
+}
+
+/**
+ * Lista crua (só sem os docs `migrado`), sem o agrupamento por
+ * identidade de `useUsuarios()` — exclusiva pra tela de Cadastro de
+ * Usuários (UsuariosPage). Mesmo raciocínio de useTecnicosCadastro
+ * (hooks/useTecnicos.ts): a tela onde um admin efetivamente gerencia
+ * as contas não pode esconder um documento por trás de outro, senão
+ * vira impossível editar/investigar exatamente o duplicado que precisa
+ * de atenção. Em qualquer outro lugar (ex.: seletor de vínculo em
+ * Técnicos), 1 representante por pessoa é o certo — por isso
+ * `useUsuarios()` continua deduplicado pros demais consumidores.
+ */
+export function useUsuariosCadastro(): FirestoreCollectionState<Usuario> {
   const { data, carregando, erro } = useFirestoreCollection<Usuario>('usuarios');
   const ativos = useMemo(() => data.filter((u) => !u.migrado), [data]);
   return { data: ativos, carregando, erro };
+}
+
+/** Grupos de documentos que parecem ser o mesmo usuário cadastrado mais
+ * de uma vez no Firestore — só leitura/diagnóstico, nunca apaga nada.
+ * Mesmo padrão de useTecnicosDuplicados (hooks/useTecnicos.ts). */
+export function useUsuariosDuplicados(): UsuarioDuplicata[] {
+  const { data } = useFirestoreCollection<Usuario>('usuarios');
+  return useMemo(() => {
+    const ativos = data.filter((u) => !u.migrado);
+    return agruparPorIdentidade(ativos).duplicatas;
+  }, [data]);
 }
 
 export class SalvarUsuarioError extends Error {}
