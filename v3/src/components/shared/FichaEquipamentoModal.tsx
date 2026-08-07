@@ -56,14 +56,18 @@ export function FichaEquipamentoModal({
   // cai pro que existir em `cad`, e o pior caso vira "poucos dados", não
   // "tela em branco".
   if (!frota) return null;
+  // Capturado numa const própria: `frota` continua tipado `string | null`
+  // nas closures abaixo (o narrowing do `if` acima não atravessa a
+  // fronteira de uma função aninhada), então handleAbrirChamado usa este
+  // `codigo` (já garantido `string`) em vez do parâmetro original.
+  const codigo = frota;
 
   function handleAbrirChamado() {
-    const descricao = cad?.modelo || frota;
     setPrefill(
       equipBase || {
-        c: frota,
-        d: descricao,
-        e: [frota, cad?.modelo, cad?.fabricante, cad?.patrimonio].filter(Boolean).join(' '),
+        c: codigo,
+        d: cad?.modelo || codigo,
+        e: [codigo, cad?.modelo, cad?.fabricante, cad?.patrimonio].filter(Boolean).join(' '),
         m: cad?.modelo || '',
         t: cad?.tipo || '',
         g: cad?.tipo || '',
@@ -80,7 +84,7 @@ export function FichaEquipamentoModal({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>
-              🚜 {frota} {(equipBase?.d || cad?.modelo) && `· ${equipBase?.d || cad?.modelo}`}
+              🚜 {codigo} {(equipBase?.d || cad?.modelo) && `· ${equipBase?.d || cad?.modelo}`}
             </DialogTitle>
             <div className="mr-6 flex gap-2">
               <Button size="sm" variant="ghost" onClick={onEditar}><Pencil className="h-3.5 w-3.5" /> Editar</Button>
@@ -90,7 +94,7 @@ export function FichaEquipamentoModal({
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-3 rounded-sm border border-border bg-muted p-3 text-sm sm:grid-cols-4">
-          <Meta label="Código/Frota" value={frota} />
+          <Meta label="Código/Frota" value={codigo} />
           <Meta label="Modelo" value={cad?.modelo || equipBase?.m || '—'} />
           <Meta label="Fabricante" value={cad?.fabricante || '—'} />
           <Meta label="Patrimônio" value={cad?.patrimonio || '—'} />
