@@ -58,7 +58,7 @@ export function ChamadosPage() {
     const termo = busca.trim().toLowerCase();
     let out = todos.filter((c) => {
       if (termo) {
-        const frota = frotaLabel(c.num, c.equipCodigo).toLowerCase();
+        const frota = frotaLabel(c).toLowerCase();
         if (!c.num.toLowerCase().includes(termo) && !c.titulo?.toLowerCase().includes(termo) && !frota.includes(termo)) return false;
       }
       if (cultura && c.cultura !== cultura) return false;
@@ -118,7 +118,7 @@ export function ChamadosPage() {
       render: (c) => (
         <div>
           <div className="max-w-[260px] truncate font-medium text-foreground">{c.titulo}</div>
-          <div className="font-mono-num text-xs text-subtle">{frotaLabel(c.num, c.equipCodigo) || '—'}</div>
+          <div className="font-mono-num text-xs text-subtle">{frotaLabel(c) || '—'}</div>
         </div>
       ),
     },

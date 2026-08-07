@@ -10,14 +10,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { EquipCrudDialog } from '@/components/shared/EquipCrudDialog';
 import { useChamados } from '@/hooks/useChamados';
 import { useCadastroEquipamentos } from '@/hooks/useEquipamentos';
-import { formatDataBR } from '@/utils/chamado-helpers';
-import matchMap from '@/data/match_map.json';
+import { codigoEquipDoChamado, formatDataBR } from '@/utils/chamado-helpers';
 import equipIdx from '@/data/equip_idx.json';
 import type { EquipIdxEntry } from '@/types/equipamento';
 import type { Chamado } from '@/types/chamado';
 import type { Equipamento } from '@/types/equipamento';
 
-const MATCH_MAP = matchMap as unknown as Record<string, string>;
 const EQUIP_IDX = equipIdx as unknown as Record<string, EquipIdxEntry>;
 const PER_PAGE = 25;
 
@@ -48,7 +46,7 @@ export function FrotasPage() {
   const frotaMap = useMemo(() => {
     const m = new Map<string, Chamado[]>();
     for (const c of todos) {
-      const code = c.equipCodigo || MATCH_MAP[c.num];
+      const code = codigoEquipDoChamado(c);
       if (!code) continue;
       const arr = m.get(code) || [];
       if (!arr.some((x) => x.num === c.num)) arr.push(c);

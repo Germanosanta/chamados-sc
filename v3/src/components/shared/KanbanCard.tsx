@@ -36,7 +36,7 @@ export const KanbanCard = memo(function KanbanCard({ chamado, onClick, onAssumir
   });
 
   const dias = diasAberto(chamado.data);
-  const frota = frotaLabel(chamado.num, chamado.equipCodigo);
+  const frota = frotaLabel(chamado);
   const fechado = isFechado(chamado);
 
   return (

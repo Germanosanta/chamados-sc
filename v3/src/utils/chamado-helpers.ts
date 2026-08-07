@@ -96,6 +96,38 @@ export function temResponsavel(c: Chamado): boolean {
   return !!(c.resp || c.assumidoPor);
 }
 
+export function normalizarNome(nome: string): string {
+  return nome.trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+}
+
+/**
+ * Duas strings de nome "são a mesma pessoa" — usado nos dois fallbacks
+ * de identidade por texto que ainda restam no sistema (chamado legado
+ * sem `assumidoPorUid`/sem `usuarioUid`). Bate exato (ignorando acento/
+ * maiúscula) OU quando o mais curto é prefixo do mais longo, palavra por
+ * palavra (ex.: "Walison" ⊂ "Walison Alves Silva").
+ *
+ * Achado na fase de homologação: `c.resp` (campo de texto gravado pela
+ * V2) quase sempre tem só o primeiro nome/apelido — inclusive vários
+ * nomes juntos, separados por vírgula, quando mais de um técnico atendeu
+ * ("Walison,Guilherme") — enquanto o cadastro de usuários/técnicos
+ * costuma ter o nome completo. A comparação exata usada antes aqui e em
+ * `chamadoPertenceATecnico` praticamente nunca batia pra chamados
+ * antigos: o próprio técnico "não pertencia" aos seus chamados legados,
+ * e Relatórios → Responsáveis contava zero pra quase todo mundo (cada
+ * célula da tabela depende de `chamadoPertenceATecnico` bater).
+ */
+export function nomesEquivalentes(a: string, b: string): boolean {
+  const na = normalizarNome(a);
+  const nb = normalizarNome(b);
+  if (!na || !nb) return false;
+  if (na === nb) return true;
+  const wa = na.split(' ');
+  const wb = nb.split(' ');
+  const [curta, longa] = wa.length <= wb.length ? [wa, wb] : [wb, wa];
+  return curta.every((w, i) => longa[i] === w);
+}
+
 /**
  * Identidade oficial: UID do Firebase Auth (`assumidoPorUid`), comparado
  * com `usuario.id` — nunca nome/e-mail/apelido. O fallback por nome só
@@ -105,14 +137,14 @@ export function temResponsavel(c: Chamado): boolean {
  * a comparação é 100% por UID. É uma ponte de compatibilidade que some
  * sozinha à medida que esses chamados legados forem reatribuídos ou
  * reassumidos dentro da arquitetura nova, não um mecanismo paralelo.
+ * `resp` pode ter mais de um nome separado por vírgula — compara cada um.
  */
 export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'id' | 'nome'> | null | undefined): boolean {
   if (!usuario) return false;
   if (c.assumidoPorUid) return c.assumidoPorUid === usuario.id;
-  const alvo = usuario.nome.trim().toLowerCase();
-  const resp = (c.resp || '').trim().toLowerCase();
-  const assumido = (c.assumidoPor || '').trim().toLowerCase();
-  return (!!resp && resp === alvo) || (!!assumido && assumido === alvo);
+  const respNomes = (c.resp || '').split(',').map((n) => n.trim()).filter(Boolean);
+  const assumido = (c.assumidoPor || '').trim();
+  return respNomes.some((n) => nomesEquivalentes(n, usuario.nome)) || (!!assumido && nomesEquivalentes(assumido, usuario.nome));
 }
 
 /** Técnico responsável (se houver) OU administrador — regra usada em
@@ -135,8 +167,8 @@ export function podeAgirNoChamado(c: Chamado, usuario: Pick<Usuario, 'id' | 'nom
 export function chamadoPertenceATecnico(c: Chamado, t: Pick<Tecnico, 'nome' | 'apelido' | 'usuarioUid'>): boolean {
   if (t.usuarioUid && c.assumidoPorUid) return c.assumidoPorUid === t.usuarioUid;
   const nome = t.apelido || t.nome;
-  const nomes = (c.resp || '').split(',').map((n) => n.trim());
-  return nomes.includes(nome) || c.assumidoPor === nome;
+  const nomes = (c.resp || '').split(',').map((n) => n.trim()).filter(Boolean);
+  return nomes.some((n) => nomesEquivalentes(n, nome)) || nomesEquivalentes(c.assumidoPor || '', nome);
 }
 
 export function diasAberto(dataStr?: string): number {
@@ -222,18 +254,59 @@ interface EquipRef {
 const EQUIP_IDX = equipIdx as unknown as Record<string, EquipIdxEntry>;
 const MATCH_MAP = matchMap as unknown as Record<string, string>;
 
-export function getChamadoEquip(num: string, equipCodigo?: string): EquipRef | null {
-  const code = equipCodigo || MATCH_MAP[num];
-  if (!code) return null;
-  const eq = EQUIP_IDX[code];
-  if (!eq) return null;
-  return { codigo: code, descricao: eq.d ?? '', modelo: eq.m ?? '', grupo: eq.g ?? '', status: eq.s ?? '' };
+type ChamadoEquipFields = Pick<Chamado, 'num' | 'equipCodigo' | 'equipModelo' | 'equipGrupo' | 'equipStatus'>;
+
+/**
+ * Fonte única de "qual equipamento/frota pertence a este chamado" — antes
+ * cada tela reimplementava sua própria chamada solta a `getChamadoEquip`,
+ * passando só `(num, equipCodigo)` e perdendo o resto do que o próprio
+ * chamado já capturou na abertura (equipModelo/equipGrupo/equipStatus,
+ * gravados juntos por submitChamado tanto na V2 quanto na V3).
+ *
+ * "Frota não aparece em chamados antigos" (achado na homologação):
+ * investigado a fundo — não é um campo com nome diferente escondido em
+ * algum lugar (confirmado lendo submitChamado() na V2: os únicos campos
+ * gravados são exatamente equipCodigo/equipModelo/equipGrupo/
+ * equipStatus, os mesmos que a V3 já lê). A causa real é dado ausente:
+ * `match_map.json` — o mapa estático num→código de equipamento pro
+ * dataset histórico — tem só 125 entradas pra milhares de chamados
+ * antigos, e essas 125 são IDÊNTICAS às 125 do arquivo equivalente da
+ * própria V2 (docs/js/data/match_map.js, mesma contagem, conferido byte
+ * a byte). A V2 mostra "Frota" em branco pros mesmos chamados, com a
+ * mesma regra (getChamadoEquip em docs/js/modules/equipamentos/
+ * index.js) — não é uma regressão da V3, é uma lacuna do snapshot em si.
+ *
+ * O que esta função melhora de verdade (código, não dado): quando existe
+ * um código (do próprio chamado ou do match_map) mas ele não está no
+ * índice estático de equipamentos (`equip_idx.json` também é um
+ * snapshot, pode não cobrir 100% dos códigos), ou quando não existe
+ * código nenhum mas o chamado já capturou modelo/grupo na abertura,
+ * mostra o que existir em vez de tratar como "sem equipamento vinculado"
+ * — isso recupera Frota pra alguns chamados sem inventar nenhum dado que
+ * não esteja realmente gravado.
+ */
+/** Só o código do equipamento (sem resolver a ficha completa) — usado
+ * por telas que agrupam chamados por frota (ex. FrotasPage) e não
+ * precisavam duplicar `equipCodigo || MATCH_MAP[num]` cada uma com sua
+ * própria cópia do match_map. */
+export function codigoEquipDoChamado(c: Pick<Chamado, 'num' | 'equipCodigo'>): string | undefined {
+  return c.equipCodigo || MATCH_MAP[c.num];
 }
 
-export function frotaLabel(num: string, equipCodigo?: string): string {
-  const eq = getChamadoEquip(num, equipCodigo);
+export function equipamentoDoChamado(c: ChamadoEquipFields): EquipRef | null {
+  const code = codigoEquipDoChamado(c);
+  const eq = code ? EQUIP_IDX[code] : undefined;
+  if (eq) return { codigo: code!, descricao: eq.d ?? '', modelo: eq.m ?? '', grupo: eq.g ?? '', status: eq.s ?? '' };
+  if (code || c.equipModelo) {
+    return { codigo: code || '', descricao: c.equipModelo || '', modelo: c.equipModelo || '', grupo: c.equipGrupo || '', status: c.equipStatus || '' };
+  }
+  return null;
+}
+
+export function frotaLabel(c: ChamadoEquipFields): string {
+  const eq = equipamentoDoChamado(c);
   if (!eq) return '';
-  return `${eq.codigo} · ${eq.descricao}`;
+  return [eq.codigo, eq.descricao].filter(Boolean).join(' · ');
 }
 
 export function formatDataBR(iso?: string): string {

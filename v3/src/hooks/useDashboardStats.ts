@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useChamados } from './useChamados';
-import { getChamadoEquip, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico } from '@/utils/chamado-helpers';
+import { equipamentoDoChamado, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 /**
@@ -168,9 +168,9 @@ export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; c
 
     const equipMap: Record<string, number> = {};
     for (const r of all) {
-      const eq = getChamadoEquip(r.num, r.equipCodigo);
+      const eq = equipamentoDoChamado(r);
       if (eq) {
-        const label = `${eq.codigo} · ${eq.descricao}`;
+        const label = [eq.codigo, eq.descricao].filter(Boolean).join(' · ');
         equipMap[label] = (equipMap[label] || 0) + 1;
       }
     }

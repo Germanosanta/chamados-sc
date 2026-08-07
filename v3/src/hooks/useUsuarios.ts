@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge, excluirDocumento } from '@/services/firebase/firestore';
@@ -5,8 +6,27 @@ import { criarContaAuth } from '@/services/firebase/auth';
 import { useSessionStore } from '@/store/session';
 import type { Usuario } from '@/types';
 
+/**
+ * Causa raiz do "já existe usuário" ao editar (fase de homologação): a
+ * migração automática pro Firebase Auth real (services/firebase/auth.ts,
+ * mesma lógica de finalizarLogin() na V2) cria um NOVO doc
+ * usuarios/{uid} e marca o doc ANTIGO como `migrado: true` — de
+ * propósito, nunca apaga o doc antigo (é o mesmo comportamento da V2,
+ * ver docs/js/modules/usuarios/index.js). Os dois docs continuam com o
+ * mesmo `login`/`email`. A V2 já sabia disso e filtra: `getUsers()`
+ * (usuarios/index.js) faz `list.filter(x=>!x.migrado)` antes de usar a
+ * lista pra qualquer coisa — inclusive a checagem de duplicidade. A V3
+ * portou a leitura da coleção mas esqueceu esse filtro: `useUsuarios()`
+ * devolvia os dois docs, e a checagem de login único em
+ * useSalvarUsuario (`u.id !== id`) via o doc antigo como um "outro
+ * usuário com o mesmo login" e bloqueava a edição do usuário real.
+ * Replicando o mesmo filtro da V2 aqui — na origem, pra nenhuma tela
+ * precisar lembrar disso sozinha.
+ */
 export function useUsuarios(): FirestoreCollectionState<Usuario> {
-  return useFirestoreCollection<Usuario>('usuarios');
+  const { data, carregando, erro } = useFirestoreCollection<Usuario>('usuarios');
+  const ativos = useMemo(() => data.filter((u) => !u.migrado), [data]);
+  return { data: ativos, carregando, erro };
 }
 
 export class SalvarUsuarioError extends Error {}

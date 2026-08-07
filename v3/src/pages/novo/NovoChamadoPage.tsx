@@ -14,7 +14,7 @@ import { useChamados, useCriarChamado, useProximoNumero } from '@/hooks/useChama
 import { useSessionStore } from '@/store/session';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
 import { cn } from '@/utils/cn';
-import { fmtDateHora, formatDataBR } from '@/utils/chamado-helpers';
+import { codigoEquipDoChamado, fmtDateHora, formatDataBR } from '@/utils/chamado-helpers';
 import type { EquipamentoEstatico } from '@/types/equipamento';
 import type { Chamado, Prioridade } from '@/types/chamado';
 
@@ -82,7 +82,7 @@ export function NovoChamadoPage() {
 
   const historicoEquip = useMemo(() => {
     if (!equip) return [];
-    return todos.filter((c) => c.equipCodigo === equip.c).slice(0, 10);
+    return todos.filter((c) => codigoEquipDoChamado(c) === equip.c).slice(0, 10);
   }, [todos, equip]);
 
   async function handleSubmit() {

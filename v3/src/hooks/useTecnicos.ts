@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection, type FirestoreCollectionState } from './useFirestoreCollection';
 import { setMerge } from '@/services/firebase/firestore';
 import { useSessionStore } from '@/store/session';
+import { normalizarNome } from '@/utils/chamado-helpers';
 import type { Tecnico, Usuario } from '@/types';
 
 /**
@@ -33,10 +34,6 @@ import type { Tecnico, Usuario } from '@/types';
  */
 function comKeyGarantida(data: (Tecnico & { id: string })[]): (Tecnico & { id: string })[] {
   return data.map((t) => (t.key ? t : { ...t, key: t.id }));
-}
-
-function normalizarNome(nome: string): string {
-  return nome.trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
 }
 
 export interface TecnicoDuplicata {
@@ -87,6 +84,24 @@ export function useTecnicos(): FirestoreCollectionState<Tecnico> {
   const { data, carregando, erro } = useFirestoreCollection<Tecnico>('tecnicos');
   const { unicos } = useMemo(() => agruparPorIdentidade(comKeyGarantida(data)), [data]);
   return { data: unicos, carregando, erro };
+}
+
+/**
+ * Lista crua (sem o agrupamento de `useTecnicos()`) — só com `key`
+ * garantida. Existe exclusivamente para a tela de Cadastro de Técnicos
+ * (TecnicosPage): em qualquer outro lugar da V3, mostrar 1 representante
+ * por identidade é o comportamento certo (seletor de reatribuição, chips
+ * de encerramento, contadores), mas na tela onde um admin efetivamente
+ * corrige o cadastro, esconder um documento por trás de outro faz
+ * exatamente o documento que a pessoa precisa editar ficar inacessível —
+ * regressão real encontrada nesta fase de homologação. A tela de cadastro
+ * continua mostrando o aviso de duplicatas (useTecnicosDuplicados) pra
+ * deixar claro por que um nome pode repetir ali.
+ */
+export function useTecnicosCadastro(): FirestoreCollectionState<Tecnico> {
+  const { data, carregando, erro } = useFirestoreCollection<Tecnico>('tecnicos');
+  const corrigido = useMemo(() => comKeyGarantida(data), [data]);
+  return { data: corrigido, carregando, erro };
 }
 
 /** Grupos de documentos que parecem ser o mesmo técnico cadastrado mais

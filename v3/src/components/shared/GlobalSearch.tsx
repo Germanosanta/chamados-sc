@@ -22,7 +22,7 @@ export function GlobalSearch() {
     if (term.length < 2) return [];
     return data
       .filter((c) => {
-        const frota = frotaLabel(c.num, c.equipCodigo).toLowerCase();
+        const frota = frotaLabel(c).toLowerCase();
         return (
           c.num.toLowerCase().includes(term) ||
           c.titulo?.toLowerCase().includes(term) ||

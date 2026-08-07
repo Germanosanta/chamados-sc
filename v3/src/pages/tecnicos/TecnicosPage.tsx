@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useTecnicos, useTecnicosDuplicados, useSalvarTecnico, useVincularTecnicos } from '@/hooks/useTecnicos';
+import { useTecnicosCadastro, useTecnicosDuplicados, useSalvarTecnico, useVincularTecnicos } from '@/hooks/useTecnicos';
 import { useUsuarios } from '@/hooks/useUsuarios';
 import { useChamados } from '@/hooks/useChamados';
 import { useSessionStore } from '@/store/session';
@@ -31,7 +31,11 @@ const SEM_VINCULO = 'sem-vinculo';
  * administrativa gravar o uid certo e aos relatórios de produtividade
  * contar os chamados de cada técnico por UID em vez de nome/e-mail. */
 export function TecnicosPage() {
-  const { data: tecnicos, carregando } = useTecnicos();
+  // Cadastro: lista crua (1 linha por documento real do Firestore), não a
+  // versão deduplicada usada no resto da V3 — ver useTecnicosCadastro.
+  // Sem isso, um técnico cujo documento fica "atrás" de outro no
+  // agrupamento por identidade não tinha como ser editado por ninguém.
+  const { data: tecnicos, carregando } = useTecnicosCadastro();
   const duplicatas = useTecnicosDuplicados();
   const { data: usuarios } = useUsuarios();
   const { data: chamados } = useChamados();

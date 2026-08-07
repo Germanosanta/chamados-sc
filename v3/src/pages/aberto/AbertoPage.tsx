@@ -102,7 +102,7 @@ export function AbertoPage() {
     const termo = busca.trim().toLowerCase();
     let out = abertos.filter((c) => {
       if (termo) {
-        const frota = frotaLabel(c.num, c.equipCodigo).toLowerCase();
+        const frota = frotaLabel(c).toLowerCase();
         const match =
           c.num.toLowerCase().includes(termo) ||
           c.titulo?.toLowerCase().includes(termo) ||
@@ -116,7 +116,7 @@ export function AbertoPage() {
       if (prior && (c.prior || 'Média') !== prior) return false;
       if (slaCritico && diasAberto(c.data) <= 7) return false;
       if (semResp && c.resp) return false;
-      if (fFrota && !frotaLabel(c.num, c.equipCodigo).toLowerCase().includes(fFrota.toLowerCase())) return false;
+      if (fFrota && !frotaLabel(c).toLowerCase().includes(fFrota.toLowerCase())) return false;
       if (fSolicitante && !(c.solicitante || '').toLowerCase().includes(fSolicitante.toLowerCase())) return false;
       if (fDe && c.data < fDe) return false;
       if (fAte && c.data > fAte) return false;
@@ -210,7 +210,7 @@ export function AbertoPage() {
       key: 'num',
       header: 'Número',
       render: (c) => {
-        const frota = frotaLabel(c.num, c.equipCodigo);
+        const frota = frotaLabel(c);
         return (
           <div>
             <span className="font-mono-num font-semibold text-primary">{c.num}</span>

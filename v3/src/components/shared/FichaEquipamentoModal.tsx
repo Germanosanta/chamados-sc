@@ -9,7 +9,7 @@ import { useChamados } from '@/hooks/useChamados';
 import { useCadastroEquipamentos, useEquipUniverso } from '@/hooks/useEquipamentos';
 import { useDetalheStore } from '@/store/detalhe';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
-import { formatDataBR, isFechado } from '@/utils/chamado-helpers';
+import { codigoEquipDoChamado, formatDataBR, isFechado } from '@/utils/chamado-helpers';
 
 /** Ficha do Equipamento — modal somente-leitura que compõe cadastro +
  * histórico de chamados + KPIs, portado de abrirFichaEquip()
@@ -35,7 +35,14 @@ export function FichaEquipamentoModal({
 
   const equipBase = useMemo(() => universo.find((e) => e.c === frota), [universo, frota]);
   const cad = useMemo(() => cadastro.find((c) => c.frota === frota), [cadastro, frota]);
-  const historico = useMemo(() => todos.filter((c) => c.equipCodigo === frota).sort((a, b) => (b.data || '').localeCompare(a.data || '')), [todos, frota]);
+  // codigoEquipDoChamado (não só c.equipCodigo direto): chamados antigos
+  // do dataset histórico não têm equipCodigo gravado no doc, só resolvem
+  // por match_map — sem isso, a ficha do equipamento "perdia" o
+  // histórico desses chamados mesmo quando dava pra saber qual frota era.
+  const historico = useMemo(
+    () => todos.filter((c) => codigoEquipDoChamado(c) === frota).sort((a, b) => (b.data || '').localeCompare(a.data || '')),
+    [todos, frota],
+  );
   const abertosCount = historico.filter((c) => !isFechado(c)).length;
 
   if (!frota || !equipBase) return null;

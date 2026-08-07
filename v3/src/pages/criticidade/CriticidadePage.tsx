@@ -84,7 +84,7 @@ export function CriticidadePage() {
       render: (c) => (
         <div>
           <div className="max-w-[240px] truncate font-medium text-foreground">{c.titulo}</div>
-          <div className="font-mono-num text-xs text-subtle">{frotaLabel(c.num, c.equipCodigo) || '—'}</div>
+          <div className="font-mono-num text-xs text-subtle">{frotaLabel(c) || '—'}</div>
         </div>
       ),
     },
