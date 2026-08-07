@@ -14,6 +14,7 @@ import { EquipCrudDialog } from '@/components/shared/EquipCrudDialog';
 import { FichaEquipamentoModal } from '@/components/shared/FichaEquipamentoModal';
 import { useCadastroEquipamentos, useEquipUniverso } from '@/hooks/useEquipamentos';
 import { useChamados } from '@/hooks/useChamados';
+import { codigoEquipDoChamado } from '@/utils/chamado-helpers';
 import type { Equipamento } from '@/types/equipamento';
 
 const PER_PAGE = 25;
@@ -60,32 +61,45 @@ export function EquipamentosPage() {
   }
 
   const cadMap = useMemo(() => new Map(cadastro.map((c) => [c.frota, c])), [cadastro]);
+  // codigoEquipDoChamado (não só c.equipCodigo direto) — mesma razão do
+  // fix na Ficha do Equipamento: chamados antigos só resolvem por
+  // match_map, sem equipCodigo gravado no doc.
   const chCount = useMemo(() => {
     const m = new Map<string, number>();
     for (const c of todos) {
-      if (c.equipCodigo) m.set(c.equipCodigo, (m.get(c.equipCodigo) || 0) + 1);
+      const codigo = codigoEquipDoChamado(c);
+      if (codigo) m.set(codigo, (m.get(codigo) || 0) + 1);
     }
     return m;
   }, [todos]);
 
-  const linhas: Linha[] = useMemo(
-    () =>
-      universo.map((e) => {
-        const cad = cadMap.get(e.c);
-        return {
-          frota: e.c,
-          descricao: e.d,
-          modelo: cad?.modelo || e.m || '',
-          fabricante: cad?.fabricante || '',
-          tipo: cad?.tipo || e.g || '',
-          fazenda: cad?.fazenda || '',
-          status: cad?.status || e.s || 'Ativo',
-          temCad: !!cad,
-          chamados: chCount.get(e.c) || 0,
-        };
-      }),
-    [universo, cadMap, chCount],
-  );
+  // Antes: `universo.map(...)` — a tabela só mostrava equipamento
+  // presente no índice estático (equip_idx.json). Qualquer equipamento
+  // cadastrado só no Firestore (criado depois do snapshot, ou por algum
+  // fluxo que nunca passou pelo índice estático) ficava invisível aqui —
+  // nem aparecia pra poder ser encontrado, muito menos clicado. Achado
+  // na homologação ("equipamento vindo apenas do Firestore"). Agora
+  // itera a união dos dois: todo código que existe no índice estático
+  // OU no cadastro ao vivo entra na lista.
+  const equipUniversoMap = useMemo(() => new Map(universo.map((e) => [e.c, e])), [universo]);
+  const linhas: Linha[] = useMemo(() => {
+    const codigos = new Set<string>([...equipUniversoMap.keys(), ...cadastro.map((c) => c.frota)]);
+    return [...codigos].map((codigo) => {
+      const e = equipUniversoMap.get(codigo);
+      const cad = cadMap.get(codigo);
+      return {
+        frota: codigo,
+        descricao: cad?.modelo || e?.d || codigo,
+        modelo: cad?.modelo || e?.m || '',
+        fabricante: cad?.fabricante || '',
+        tipo: cad?.tipo || e?.g || '',
+        fazenda: cad?.fazenda || '',
+        status: cad?.status || e?.s || 'Ativo',
+        temCad: !!cad,
+        chamados: chCount.get(codigo) || 0,
+      };
+    });
+  }, [equipUniversoMap, cadastro, cadMap, chCount]);
 
   const tipos = useMemo(() => [...new Set(linhas.map((l) => l.tipo).filter(Boolean))].sort(), [linhas]);
   const fazendas = useMemo(() => [...new Set(linhas.map((l) => l.fazenda).filter(Boolean))].sort(), [linhas]);

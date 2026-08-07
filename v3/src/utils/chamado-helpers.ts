@@ -171,6 +171,34 @@ export function chamadoPertenceATecnico(c: Chamado, t: Pick<Tecnico, 'nome' | 'a
   return nomes.some((n) => nomesEquivalentes(n, nome)) || nomesEquivalentes(c.assumidoPor || '', nome);
 }
 
+/**
+ * Conta quantos chamados de um conjunto pertencem a cada técnico —
+ * sempre via `chamadoPertenceATecnico` (UID quando vinculado, nome
+ * tolerante a abreviação como fallback). Fonte única pra qualquer
+ * "ranking"/"top responsáveis" da V3.
+ *
+ * Achado na auditoria final: Dashboard ("Top 5 Responsáveis") e Painel
+ * ("Ranking de Técnicos") não usavam isso — cada um agrupava por TEXTO
+ * cru (`c.resp.split(',')` ou `c.encerramento.encerradoPor`), igual a um
+ * `Map` chaveado pela string exata gravada no chamado. Resultado: o
+ * mesmo chamado podia contar pro técnico certo em Responsáveis/Técnicos
+ * (que já usavam chamadoPertenceATecnico) e pra uma chave de texto
+ * diferente (ex. só o primeiro nome, sem o restante do cadastro) em
+ * Dashboard/Painel — o mesmo dado, dois números diferentes dependendo da
+ * tela. Agora os 4 relatórios usam esta mesma função.
+ */
+export function contarPorTecnico(
+  chamados: Chamado[],
+  tecnicos: Pick<Tecnico, 'nome' | 'apelido' | 'usuarioUid'>[],
+): [string, number][] {
+  const linhas: [string, number][] = [];
+  for (const t of tecnicos) {
+    const n = chamados.reduce((acc, c) => acc + (chamadoPertenceATecnico(c, t) ? 1 : 0), 0);
+    if (n > 0) linhas.push([t.apelido || t.nome, n]);
+  }
+  return linhas;
+}
+
 export function diasAberto(dataStr?: string): number {
   if (!dataStr) return 0;
   const d = new Date(dataStr + 'T00:00:00');

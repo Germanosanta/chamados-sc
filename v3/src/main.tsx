@@ -22,7 +22,32 @@ window.addEventListener('vite:preloadError', () => {
 
 // Mesma disciplina da V2: nunca skipWaiting() sozinho — só quando o
 // usuário confirma no aviso. Nada é recarregado sem ação explícita.
+//
+// Causa raiz de "reportei um bug que a Claude disse que já corrigiu, mas
+// continua igual" (achado na homologação): o navegador só verifica se
+// existe um Service Worker novo automaticamente numa NAVEGAÇÃO de
+// verdade (recarregar a página / abrir a aba de novo) — navegar dentro
+// do app via React Router nunca dispara essa checagem. Alguém que deixa
+// a aba/PWA aberta e só navega pelo menu pode ficar dias rodando um
+// build antigo, sem nenhum sinal de que existe versão nova (o toast só
+// aparece DEPOIS que o navegador detecta a atualização — e sem checagem
+// periódica, isso podia nunca acontecer numa sessão longa). Corrigido
+// forçando `registration.update()` a cada 20 minutos enquanto o app
+// estiver aberto — só verifica se existe versão nova, não troca nada
+// sozinho; o toast "Atualizar" continua exigindo clique, igual antes.
 const updateSW = registerSW({
+  onRegisteredSW(_url, registration) {
+    if (!registration) return;
+    window.setInterval(() => {
+      registration.update().catch(() => {});
+    }, 20 * 60 * 1000);
+    // Voltar de outra aba/app é o outro momento comum de ficar "preso"
+    // numa versão antiga sem perceber — mesma checagem, só reforçada
+    // aqui em vez de depender só do intervalo de 20min.
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') registration.update().catch(() => {});
+    });
+  },
   onNeedRefresh() {
     toast('Nova versão disponível', {
       duration: Infinity,

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useChamados } from './useChamados';
-import { equipamentoDoChamado, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico, tempoMedioDias } from '@/utils/chamado-helpers';
+import { useTecnicosAtivos } from './useTecnicos';
+import { contarPorTecnico, equipamentoDoChamado, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico, tempoMedioDias } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 /**
@@ -83,6 +84,7 @@ export interface DashboardStats {
  * etc" em toda a V3. */
 export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; carregando: boolean } {
   const { data: todos, carregando } = useChamados();
+  const { data: tecnicos } = useTecnicosAtivos();
   const all = records || todos;
 
   const stats = useMemo<DashboardStats>(() => {
@@ -98,13 +100,13 @@ export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; c
     const cancelados = all.filter(isCancelado).length;
     const mediaMes = Math.round(total / (MONTHS.length || 1));
 
-    const respMap: Record<string, number> = {};
-    for (const r of all) {
-      for (const nome of (r.resp || '').split(',')) {
-        const n = nome.trim();
-        if (n) respMap[n] = (respMap[n] || 0) + 1;
-      }
-    }
+    // contarPorTecnico (chamado-helpers.ts) — mesma contagem usada por
+    // Responsáveis/Técnicos/Painel (ver auditoria final); antes agrupava
+    // por texto cru de `r.resp`, que podia contar o mesmo técnico como
+    // "pessoas" diferentes dependendo de como o nome foi digitado no
+    // chamado, e sempre divergia do número mostrado em Responsáveis pra
+    // esse mesmo técnico.
+    const respMap: Record<string, number> = Object.fromEntries(contarPorTecnico(all, tecnicos));
 
     const cultMap: Record<string, number> = {};
     for (const r of all) {
@@ -168,7 +170,7 @@ export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; c
     }
 
     return { all, total, concluidos, emAberto, atendimento, aguardando, cancelados, mediaMes, respMap, cultMap, bktMap, equipMap, byYear, monthsG, monthsT, monthsC, monthsO, tempoMedio, vencidos, issues };
-  }, [all]);
+  }, [all, tecnicos]);
 
   return { stats, carregando };
 }

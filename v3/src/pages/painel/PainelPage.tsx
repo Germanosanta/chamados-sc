@@ -2,8 +2,9 @@ import { useMemo } from 'react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAbertos, useChamados } from '@/hooks/useChamados';
+import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
-import { diasAberto, diasEntre, fazendaLabel, isSlaCritico } from '@/utils/chamado-helpers';
+import { chamadoPertenceATecnico, diasAberto, diasEntre, fazendaLabel, isFechado, isSlaCritico } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 
 /**
@@ -16,6 +17,7 @@ import { cn } from '@/utils/cn';
 export function PainelPage() {
   const { data: abertos, carregando } = useAbertos();
   const { data: todos } = useChamados();
+  const { data: tecnicos } = useTecnicosAtivos();
   const abrirDetalhe = useDetalheStore((s) => s.abrir);
 
   const stats = useMemo(() => {
@@ -43,14 +45,19 @@ export function PainelPage() {
       .sort((a, b) => (a.data || '').localeCompare(b.data || ''))
       .slice(0, 6);
 
-    const rankMap = new Map<string, number>();
-    for (const c of todos) {
-      if (c.encerramento?.encerradoEm && new Date(c.encerramento.encerradoEm) >= inicioSemana) {
-        const n = c.encerramento.encerradoPor || 'Sistema';
-        rankMap.set(n, (rankMap.get(n) || 0) + 1);
-      }
-    }
-    const ranking = [...rankMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+    // Ranking e tempo médio por técnico: iteram tecnicos + usam
+    // chamadoPertenceATecnico (chamado-helpers.ts) — mesma contagem de
+    // Responsáveis/Dashboard/Técnicos (ver auditoria final). Antes
+    // agrupava por texto cru de `encerramento.encerradoPor`, então o
+    // mesmo técnico podia aparecer "separado" aqui e junto nas outras
+    // telas, ou o inverso, dependendo de como o nome foi gravado no
+    // encerramento daquele chamado específico.
+    const encerradosSemana = todos.filter((c) => c.encerramento?.encerradoEm && new Date(c.encerramento.encerradoEm) >= inicioSemana && isFechado(c));
+    const ranking = tecnicos
+      .map((t): [string, number] => [t.apelido || t.nome, encerradosSemana.filter((c) => chamadoPertenceATecnico(c, t)).length])
+      .filter(([, n]) => n > 0)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
 
     const sistMap = new Map<string, number>();
     for (const c of abertos) {
@@ -58,20 +65,19 @@ export function PainelPage() {
     }
     const sistemas = [...sistMap.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
 
-    const tempoPorTecnico = new Map<string, { soma: number; cnt: number }>();
-    for (const c of todos) {
-      if (!c.encerramento?.encerradoPor) continue;
-      const dias = diasEntre(c.data, c.encerramento.encerradoEm);
-      if (dias === null) continue;
-      const atual = tempoPorTecnico.get(c.encerramento.encerradoPor) || { soma: 0, cnt: 0 };
-      atual.soma += dias;
-      atual.cnt++;
-      tempoPorTecnico.set(c.encerramento.encerradoPor, atual);
-    }
-    const tempoTecnico = [...tempoPorTecnico.entries()].map(([n, v]) => [n, v.soma / v.cnt] as [string, number]).sort((a, b) => a[1] - b[1]).slice(0, 5);
+    const encerrados = todos.filter(isFechado);
+    const tempoTecnico = tecnicos
+      .map((t): [string, number | null] => {
+        const dosTecnico = encerrados.filter((c) => chamadoPertenceATecnico(c, t));
+        const dias = dosTecnico.map((c) => diasEntre(c.data, c.encerramento?.encerradoEm)).filter((d): d is number => d !== null);
+        return [t.apelido || t.nome, dias.length ? dias.reduce((a, b) => a + b, 0) / dias.length : null];
+      })
+      .filter((x): x is [string, number] => x[1] !== null)
+      .sort((a, b) => a[1] - b[1])
+      .slice(0, 5);
 
     return { criticos, vencidos, abertosHoje, encerradosHoje, slaPct, criticosList, ranking, sistemas, tempoTecnico };
-  }, [abertos, todos]);
+  }, [abertos, todos, tecnicos]);
 
   return (
     <div className="flex flex-col gap-4">
