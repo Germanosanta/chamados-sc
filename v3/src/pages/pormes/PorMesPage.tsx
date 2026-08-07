@@ -24,11 +24,19 @@ function heatColor(v: number, max: number): string {
   return '#1d4ed8';
 }
 
+const ANO_ATUAL = new Date().getFullYear();
+
 /** Relatório Por Mês — portado de renderMesCharts() (dashboard/index.js):
- * seletor de ano, barras empilhadas do ano, donut, heatmap cultura×mês. */
+ * seletor de ano, barras empilhadas do ano, donut, heatmap cultura×mês.
+ *
+ * Ano inicial: o real (ANO_ATUAL), não um valor fixo — a versão anterior
+ * abria sempre em 2025 (congelado no código), então em qualquer momento
+ * de 2026 em diante a tela abria mostrando o ano errado (parecendo um
+ * relatório zerado/desatualizado pra quem não percebia a seta "›").
+ * Achado na fase de estabilização. */
 export function PorMesPage() {
   const { data: todos, carregando } = useChamados();
-  const [ano, setAno] = useState(2025);
+  const [ano, setAno] = useState(ANO_ATUAL);
 
   const { mg, mt, mc, mo } = useMemo(() => {
     const mg = Array(12).fill(0);
@@ -73,7 +81,7 @@ export function PorMesPage() {
           <ChevronLeft className="h-4 w-4" />
         </Button>
         <span className="font-mono-num text-lg font-bold text-foreground">{ano}</span>
-        <Button variant="ghost" size="icon" aria-label="Próximo ano" disabled={ano >= 2026} onClick={() => setAno((a) => a + 1)}>
+        <Button variant="ghost" size="icon" aria-label="Próximo ano" disabled={ano >= ANO_ATUAL} onClick={() => setAno((a) => a + 1)}>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

@@ -3,15 +3,35 @@ import { useChamados } from './useChamados';
 import { getChamadoEquip } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
-/** Mesma janela fixa de meses da V2 (MONTHS, dashboard/index.js) —
- * jun/2022 até o mês corrente conhecido da base. */
-export const MONTHS = [
-  '2022-06', '2022-07', '2022-08', '2022-09', '2022-10', '2022-11', '2022-12',
-  '2023-01', '2023-02', '2023-03', '2023-04', '2023-05', '2023-06', '2023-07', '2023-08', '2023-09', '2023-10', '2023-11', '2023-12',
-  '2024-01', '2024-02', '2024-03', '2024-04', '2024-05', '2024-06', '2024-07', '2024-08', '2024-09', '2024-10', '2024-11', '2024-12',
-  '2025-01', '2025-02', '2025-03', '2025-04', '2025-05', '2025-06', '2025-07', '2025-08', '2025-09', '2025-10', '2025-11', '2025-12',
-  '2026-01', '2026-02', '2026-03', '2026-04', '2026-05', '2026-06', '2026-07',
-];
+/**
+ * Janela de meses do Dashboard — começa em jun/2022 (mesmo início da V2,
+ * dashboard/index.js) e vai até o mês corrente.
+ *
+ * A V2 grava essa lista como array fixo (hardcoded, congelado no dia em
+ * que o arquivo foi escrito) e por isso já nasce desatualizada: qualquer
+ * mês além do último valor da lista simplesmente não existe pros
+ * gráficos, e o "Evolução Mensal" mostra zero no mês corrente até
+ * alguém lembrar de editar o array na V2 e publicar. Achado durante a
+ * fase de estabilização (relatórios com indicador zerado) — mesmo bug,
+ * herdado 1:1 na V3. Como aqui não há arquivo estático pra manter
+ * sincronizado, calculamos a janela em tempo real a partir da data
+ * atual: o mês corrente sempre aparece, sem depender de ninguém lembrar
+ * de atualizar nada. Não muda a V2 (o array de lá continua do jeito que
+ * está) nem a janela inicial (ainda jun/2022).
+ */
+function buildMonths(): string[] {
+  const inicio = new Date(2022, 5, 1); // jun/2022
+  const fim = new Date();
+  const meses: string[] = [];
+  const cursor = new Date(inicio.getFullYear(), inicio.getMonth(), 1);
+  while (cursor <= fim) {
+    meses.push(`${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`);
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+  return meses;
+}
+
+export const MONTHS = buildMonths();
 
 const ISSUE_KEYWORDS: [string, RegExp][] = [
   ['Formatar Cartão', /formatar|cart[aã]o/i],
