@@ -1,25 +1,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { CheckCircle2, Minus, Plus, Search } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Campo, Meta } from '@/components/shared/FormField';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { EquipAutocomplete } from '@/components/shared/EquipAutocomplete';
-import { PhotoUploader } from '@/components/shared/PhotoUploader';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { useChamados, useCriarChamado, useProximoNumero } from '@/hooks/useChamados';
-import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
 import { useSessionStore } from '@/store/session';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
 import { cn } from '@/utils/cn';
 import { fmtDateHora, formatDataBR } from '@/utils/chamado-helpers';
 import type { EquipamentoEstatico } from '@/types/equipamento';
-import type { Chamado, FotoAnexo, PecaUsada, Prioridade } from '@/types/chamado';
-import type { Peca } from '@/types/peca';
+import type { Chamado, Prioridade } from '@/types/chamado';
 
 const CATEGORIAS = [
   'Manutenção Corretiva',
@@ -58,7 +55,6 @@ export function NovoChamadoPage() {
   const navigate = useNavigate();
   const usuario = useSessionStore((s) => s.usuario);
   const { data: todos } = useChamados();
-  const { data: pecasEstoque } = useFirestoreCollection<Peca>('pecas');
   const proximoNumero = useProximoNumero();
   const criar = useCriarChamado();
 
@@ -80,12 +76,6 @@ export function NovoChamadoPage() {
   const [statusInicial, setStatusInicial] = useState('Aberto');
 
   const [desc, setDesc] = useState('');
-  const [observacoes, setObservacoes] = useState('');
-
-  const [fotos, setFotos] = useState<FotoAnexo[]>([]);
-
-  const [buscaPeca, setBuscaPeca] = useState('');
-  const [pecasSelecionadas, setPecasSelecionadas] = useState<PecaUsada[]>([]);
 
   const [enviado, setEnviado] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -94,52 +84,6 @@ export function NovoChamadoPage() {
     if (!equip) return [];
     return todos.filter((c) => c.equipCodigo === equip.c).slice(0, 10);
   }, [todos, equip]);
-
-  const resultadosPeca = useMemo(() => {
-    const q = buscaPeca.trim().toLowerCase();
-    if (q.length < 2) return [];
-    return pecasEstoque.filter((p) => p.nome.toLowerCase().includes(q) || (p.codigo || '').toLowerCase().includes(q)).slice(0, 8);
-  }, [pecasEstoque, buscaPeca]);
-
-  function adicionarPeca(p: Peca) {
-    setBuscaPeca('');
-    if (Number(p.qtd) <= 0) {
-      toast.error(`${p.nome} está sem estoque.`);
-      return;
-    }
-    setPecasSelecionadas((prev) => {
-      const existe = prev.find((x) => x.id === p.id);
-      if (existe) {
-        if (existe.qtd >= Number(p.qtd)) {
-          toast.error(`Estoque de ${p.nome}: só ${p.qtd} disponível(is).`);
-          return prev;
-        }
-        return prev.map((x) => (x.id === p.id ? { ...x, qtd: x.qtd + 1 } : x));
-      }
-      return [...prev, { id: p.id, nome: p.nome, qtd: 1, unidade: p.unidade }];
-    });
-  }
-
-  // Trava a quantidade no estoque disponível (`pecasEstoque` — mesma
-  // coleção lida na abertura do chamado): sem isso, o usuário podia pedir
-  // mais do que existe e a baixa era silenciosamente zerada no servidor
-  // (Math.max(0, ...) em useCriarChamado), sem nenhum aviso na tela.
-  function alterarQtdPeca(id: string, delta: number) {
-    setPecasSelecionadas((prev) =>
-      prev
-        .map((p) => {
-          if (p.id !== id) return p;
-          const disponivel = Number(pecasEstoque.find((e) => e.id === id)?.qtd) || 0;
-          const novaQtd = Math.max(0, p.qtd + delta);
-          if (delta > 0 && novaQtd > disponivel) {
-            toast.error(`Estoque de ${p.nome}: só ${disponivel} disponível(is).`);
-            return p;
-          }
-          return { ...p, qtd: novaQtd };
-        })
-        .filter((p) => p.qtd > 0),
-    );
-  }
 
   async function handleSubmit() {
     // Junta todos os campos faltando numa mensagem só — antes cada
@@ -176,9 +120,13 @@ export function NovoChamadoPage() {
       prior: prioridade,
       categoria,
       solicitante: solicitante || usuario?.nome || 'Sistema',
-      observacoes: observacoes.trim(),
-      fotos,
-      pecasUsadas: pecasSelecionadas,
+      // Observações/fotos/peças utilizadas passam a ser preenchidas pelo
+      // técnico responsável durante o atendimento/encerramento (Centro
+      // Operacional), não na abertura — quem abre o chamado normalmente
+      // não sabe ainda quais peças serão usadas.
+      observacoes: '',
+      fotos: [],
+      pecasUsadas: [],
       equipCodigo: equip.c,
       equipModelo: equip.m,
       equipGrupo: equip.g,
@@ -189,7 +137,7 @@ export function NovoChamadoPage() {
     };
 
     try {
-      await criar.mutateAsync({ chamado, pecasUsadas: pecasSelecionadas });
+      await criar.mutateAsync({ chamado, pecasUsadas: [] });
       setEnviado(proximoNumero);
     } catch {
       toast.error('Não foi possível abrir o chamado. Tente novamente.');
@@ -205,9 +153,6 @@ export function NovoChamadoPage() {
     setBucket('');
     setStatusInicial('Aberto');
     setDesc('');
-    setObservacoes('');
-    setFotos([]);
-    setPecasSelecionadas([]);
     setCategoria('');
     setPrioridade('Média');
     setData(new Date().toISOString().slice(0, 10));
@@ -318,6 +263,36 @@ export function NovoChamadoPage() {
         )}
       </Bloco>
 
+      <Bloco titulo="🚦 Status">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Campo label="Status inicial" htmlFor="novo-status">
+            <Select value={statusInicial} onValueChange={setStatusInicial}>
+              <SelectTrigger id="novo-status"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Aberto">Aberto</SelectItem>
+                <SelectItem value="Em Atendimento">Em Atendimento</SelectItem>
+                <SelectItem value="Aguardando Peça">Aguardando Peça</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="mt-1 text-xs text-subtle">
+              O chamado nasce sem responsável — um técnico ativo cadastrado assume no Kanban de Chamados em Aberto.
+            </p>
+          </Campo>
+        </div>
+      </Bloco>
+
+      <Bloco titulo="📝 Detalhes">
+        <Campo label="Descrição do Problema *" htmlFor="novo-desc">
+          <textarea
+            id="novo-desc"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+            rows={4}
+            className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+          />
+        </Campo>
+      </Bloco>
+
       <Bloco titulo="📍 Alocação">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Campo label="Cultura" htmlFor="novo-cultura">
@@ -352,99 +327,6 @@ export function NovoChamadoPage() {
             </div>
           </Campo>
         </div>
-      </Bloco>
-
-      <Bloco titulo="🚦 Status">
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Campo label="Status inicial" htmlFor="novo-status">
-            <Select value={statusInicial} onValueChange={setStatusInicial}>
-              <SelectTrigger id="novo-status"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Aberto">Aberto</SelectItem>
-                <SelectItem value="Em Atendimento">Em Atendimento</SelectItem>
-                <SelectItem value="Aguardando Peça">Aguardando Peça</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="mt-1 text-xs text-subtle">
-              O chamado nasce sem responsável — um técnico ativo cadastrado assume no Kanban de Chamados em Aberto.
-            </p>
-          </Campo>
-        </div>
-      </Bloco>
-
-      <Bloco titulo="📝 Detalhes">
-        <div className="flex flex-col gap-4">
-          <Campo label="Descrição do Problema *" htmlFor="novo-desc">
-            <textarea
-              id="novo-desc"
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-              rows={4}
-              className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-          </Campo>
-          <Campo label="Observações" htmlFor="novo-obs">
-            <textarea
-              id="novo-obs"
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
-              rows={2}
-              className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-          </Campo>
-        </div>
-      </Bloco>
-
-      <Bloco titulo="📷 Fotos">
-        <PhotoUploader value={fotos} onChange={setFotos} />
-      </Bloco>
-
-      <Bloco titulo="🔧 Peças Utilizadas">
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-subtle" />
-          <input
-            value={buscaPeca}
-            onChange={(e) => setBuscaPeca(e.target.value)}
-            placeholder="Buscar peça no estoque…"
-            className="h-9 w-full rounded-sm border border-border bg-muted pl-8 pr-3 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-          />
-          {resultadosPeca.length > 0 && (
-            <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-sm border border-border bg-popover shadow-lg">
-              {resultadosPeca.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => adicionarPeca(p)}
-                  className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-muted"
-                >
-                  <span className="font-medium text-foreground">{p.nome}</span>
-                  <span className={cn('text-xs', p.qtd <= (p.minimo || 2) ? 'text-destructive' : 'text-subtle')}>
-                    {p.qtd} {p.unidade} em estoque
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-        {pecasSelecionadas.length === 0 ? (
-          <p className="mt-3 text-sm text-subtle">Nenhuma peça selecionada.</p>
-        ) : (
-          <div className="mt-3 flex flex-col gap-1.5">
-            {pecasSelecionadas.map((p) => (
-              <div key={p.id} className="flex items-center justify-between gap-2 rounded-sm border border-border bg-muted px-3 py-2 text-sm">
-                <span className="font-medium text-foreground">{p.nome}</span>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => alterarQtdPeca(p.id, -1)} className="flex h-6 w-6 items-center justify-center rounded-xs border border-border bg-surface">
-                    <Minus className="h-3 w-3" />
-                  </button>
-                  <span className="w-6 text-center font-mono-num">{p.qtd}</span>
-                  <button onClick={() => alterarQtdPeca(p.id, 1)} className="flex h-6 w-6 items-center justify-center rounded-xs border border-border bg-surface">
-                    <Plus className="h-3 w-3" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
       </Bloco>
 
       <div className="flex justify-end gap-2">

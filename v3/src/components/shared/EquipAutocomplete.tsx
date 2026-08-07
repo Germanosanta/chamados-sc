@@ -20,11 +20,16 @@ export function EquipAutocomplete({ onSelect, placeholder, id }: EquipAutocomple
   const universo = useEquipUniverso();
   const [q, setQ] = useState('');
   const [focusIdx, setFocusIdx] = useState(-1);
+  // Depois de escolher um item, a busca fecha — sem isso o texto do item
+  // selecionado continuava batendo com a própria busca e a lista reabria
+  // sozinha (parecia que o clique não tinha "fechado" nada).
+  const [aberto, setAberto] = useState(false);
   const baseId = id || 'equip-autocomplete';
   const listboxId = `${baseId}-listbox`;
   const optionId = (i: number) => `${baseId}-option-${i}`;
 
   const results = useMemo(() => {
+    if (!aberto) return [];
     const ql = q.trim().toLowerCase();
     if (!ql) return [];
     const exact = universo.filter((e) => e.c.toLowerCase().startsWith(ql));
@@ -33,11 +38,12 @@ export function EquipAutocomplete({ onSelect, placeholder, id }: EquipAutocomple
       (e) => !codigos.has(e.c) && (e.d.toLowerCase().includes(ql) || e.e.toLowerCase().includes(ql) || (e.m || '').toLowerCase().includes(ql)),
     );
     return [...exact, ...partial].slice(0, 30);
-  }, [universo, q]);
+  }, [universo, q, aberto]);
 
   function selecionar(equip: EquipamentoEstatico) {
     setQ(equip.e || `${equip.c} ${equip.d}`);
     setFocusIdx(-1);
+    setAberto(false);
     onSelect(equip);
   }
 
@@ -66,7 +72,9 @@ export function EquipAutocomplete({ onSelect, placeholder, id }: EquipAutocomple
         onChange={(e) => {
           setQ(e.target.value);
           setFocusIdx(-1);
+          setAberto(true);
         }}
+        onFocus={() => setAberto(true)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder || 'Digite o código ou nome do equipamento…'}
         autoComplete="off"
@@ -84,6 +92,7 @@ export function EquipAutocomplete({ onSelect, placeholder, id }: EquipAutocomple
           onClick={() => {
             setQ('');
             setFocusIdx(-1);
+            setAberto(true);
           }}
           className="absolute right-2.5 top-1/2 -translate-y-1/2 text-subtle hover:text-foreground"
         >
