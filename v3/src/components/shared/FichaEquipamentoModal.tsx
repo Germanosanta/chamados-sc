@@ -45,11 +45,31 @@ export function FichaEquipamentoModal({
   );
   const abertosCount = historico.filter((c) => !isFechado(c)).length;
 
-  if (!frota || !equipBase) return null;
+  // Antes: `if (!frota || !equipBase) return null` — equipBase vem de
+  // useEquipUniverso() (índice estático, equip_idx.json), um snapshot
+  // que pode não cobrir 100% dos códigos que já existem no cadastro real
+  // (`cad`, Firestore ao vivo). Qualquer equipamento cadastrado depois do
+  // snapshot, ou um código antigo fora dele, fazia esse modal renderizar
+  // nada — mesmo tendo cadastro de verdade e histórico de chamados pra
+  // mostrar. Achado na homologação ("não consigo ver nada"). Agora só
+  // exige o código (`frota`); todo campo que dependia de `equipBase`
+  // cai pro que existir em `cad`, e o pior caso vira "poucos dados", não
+  // "tela em branco".
+  if (!frota) return null;
 
   function handleAbrirChamado() {
-    if (!equipBase) return;
-    setPrefill(equipBase);
+    const descricao = cad?.modelo || frota;
+    setPrefill(
+      equipBase || {
+        c: frota,
+        d: descricao,
+        e: [frota, cad?.modelo, cad?.fabricante, cad?.patrimonio].filter(Boolean).join(' '),
+        m: cad?.modelo || '',
+        t: cad?.tipo || '',
+        g: cad?.tipo || '',
+        s: cad?.status || '',
+      },
+    );
     onOpenChange(false);
     navigate('/novo');
   }
@@ -60,7 +80,7 @@ export function FichaEquipamentoModal({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle>
-              🚜 {equipBase.c} · {equipBase.d}
+              🚜 {frota} {(equipBase?.d || cad?.modelo) && `· ${equipBase?.d || cad?.modelo}`}
             </DialogTitle>
             <div className="mr-6 flex gap-2">
               <Button size="sm" variant="ghost" onClick={onEditar}><Pencil className="h-3.5 w-3.5" /> Editar</Button>
@@ -70,18 +90,18 @@ export function FichaEquipamentoModal({
         </DialogHeader>
 
         <div className="grid grid-cols-2 gap-3 rounded-sm border border-border bg-muted p-3 text-sm sm:grid-cols-4">
-          <Meta label="Código/Frota" value={equipBase.c} />
-          <Meta label="Modelo" value={cad?.modelo || equipBase.m || '—'} />
+          <Meta label="Código/Frota" value={frota} />
+          <Meta label="Modelo" value={cad?.modelo || equipBase?.m || '—'} />
           <Meta label="Fabricante" value={cad?.fabricante || '—'} />
           <Meta label="Patrimônio" value={cad?.patrimonio || '—'} />
           <Meta label="Série" value={cad?.serie || '—'} />
           <Meta label="Ano" value={cad?.ano || '—'} />
           <Meta label="Horímetro" value={cad?.horimetro || '—'} />
-          <Meta label="Status" value={cad?.status || equipBase.s || '—'} />
+          <Meta label="Status" value={cad?.status || equipBase?.s || '—'} />
           <Meta label="Fazenda" value={cad?.fazenda || '—'} />
           <Meta label="Cultura" value={cad?.cultura || '—'} />
           <Meta label="Responsável" value={cad?.responsavel || '—'} />
-          <Meta label="Tipo" value={cad?.tipo || equipBase.g || '—'} />
+          <Meta label="Tipo" value={cad?.tipo || equipBase?.g || '—'} />
         </div>
 
         <div className="grid grid-cols-3 gap-3 text-center">
