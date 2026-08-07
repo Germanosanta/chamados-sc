@@ -1,26 +1,26 @@
 # Deploy — Central de Chamados V3
 
-## Estado atual: site criado, deploy automático ativo
+## Estado atual: V3 é a versão oficial em produção
 
 `firebase.json`/`.firebaserc` (raiz do projeto) e o workflow
-`.github/workflows/v3-deploy.yml` publicam a V3 num **segundo site de
-Hosting** (`chamados-sc-v3`), dentro do mesmo projeto Firebase da V2
-(`chamdos-sc`), sem tocar no site/target da V2 (`chamados-sc` → `docs`).
-O site `chamados-sc-v3` já foi criado no Console do Firebase — o "Passo
-1" abaixo é histórico/referência, não precisa ser repetido. Todo push em
-`main` que toque `v3/**`, `firebase.json` ou `.firebaserc` builda e
-publica automaticamente.
+`.github/workflows/v3-deploy.yml` publicam a V3 no site de Hosting
+`chamados-sc-v3`, dentro do projeto Firebase `chamdos-sc`. **A V2 foi
+desativada** — o workflow `firebase-deploy.yml` e a entrada de Hosting
+que publicavam `docs/` em `chamados-sc.web.app` foram removidos de
+`firebase.json`; a pasta `docs/` continua no repositório só para
+consulta/histórico, sem ser mais publicada. Todo push em `main` que
+toque `v3/**`, `firebase.json` ou `.firebaserc` builda e publica a V3
+automaticamente.
 
-## Como o Hosting multi-site está configurado
+## Como o Hosting está configurado
 
-`firebase.json` (raiz do projeto) — `hosting` agora é uma **lista** com
-2 entradas, uma por site, cada uma com seu próprio `public`/`headers`:
+`firebase.json` (raiz do projeto) — `hosting` é uma lista com 1 entrada
+ativa (a V3):
 
 ```json
 {
   "hosting": [
-    { "site": "chamados-sc", "public": "docs", "...": "V2 — inalterado" },
-    { "target": "v3", "public": "v3/dist", "...": "V3 — novo" }
+    { "target": "v3", "public": "v3/dist", "...": "V3 — único site publicado" }
   ]
 }
 ```
@@ -37,12 +37,6 @@ no workflow) para o site real:
   }
 }
 ```
-
-A entrada da V2 em `firebase.json` continua com o mesmo `public`/
-`ignore`/`cleanUrls`/`trailingSlash`/`headers` de sempre — só passou a
-ser o primeiro item de uma lista em vez de um objeto único (exigência do
-Firebase para hospedar mais de um site no mesmo projeto). O `.firebaserc`
-da V2 (`"default": "chamdos-sc"`) não foi tocado.
 
 ### Por que os headers de cache da V3 são diferentes dos da V2
 
@@ -96,8 +90,9 @@ via `FirebaseExtended/action-hosting-deploy@v0` no alvo `v3` (site
 
 Continua existindo, separado, o `v3-ci.yml` (type-check/lint/build em 2
 versões de Node, sem publicar nada) — ele valida PRs e pushes, o
-`v3-deploy.yml` só builda e publica. Nenhum dos dois altera ou substitui
-`.github/workflows/firebase-deploy.yml` (deploy da V2).
+`v3-deploy.yml` só builda e publica. O workflow que publicava a V2
+(`firebase-deploy.yml`) foi removido — a V2 não é mais publicada (ver
+"V2 desativada" abaixo).
 
 ## Comandos do Firebase CLI (referência — precisa de Node.js/Firebase CLI local)
 
@@ -118,15 +113,9 @@ firebase target:apply hosting v3 chamados-sc-v3
 # Build local antes de um deploy manual
 cd v3 && npm install && cp .env.example .env && npm run build && cd ..
 
-# Deploy manual só da V3 (não toca no site da V2)
+# Deploy manual da V3 (único site publicado hoje)
 firebase deploy --only hosting:v3
-
-# Deploy manual só da V2 (não toca no site da V3) — equivalente ao que
-# firebase-deploy.yml já faz automaticamente
-firebase deploy --only hosting:chamados-sc
-
-# Deploy dos dois sites de uma vez (raramente necessário — os workflows
-# já fazem isso separadamente e automaticamente)
+# equivalente, já que "hosting" só tem esse alvo configurado:
 firebase deploy --only hosting
 ```
 
@@ -145,36 +134,22 @@ firebase hosting:releases:list --project chamdos-sc --site chamados-sc-v3
 
 Alternativa sem CLI: Console do Firebase → Hosting → site
 `chamados-sc-v3` → histórico de versões → escolher uma versão anterior →
-"Reverter". Não afeta o site da V2 (`chamados-sc`) de forma alguma —
-são históricos de release completamente independentes.
+"Reverter".
 
-## Como trocar V2 por V3 no futuro (quando a V3 for promovida)
+## V2 desativada (histórico)
 
-Isso é uma decisão de negócio, não um passo técnico — quando ela for
-tomada:
+A V2 (`docs/`, `chamados-sc.web.app`) foi a versão em produção até a V3
+assumir esse papel. A desativação foi feita removendo só a **publicação**
+— `.github/workflows/firebase-deploy.yml` e a entrada de Hosting
+correspondente em `firebase.json` — sem apagar o código da pasta `docs/`
+(mantido pra consulta durante a transição) nem mexer em Firestore,
+Authentication ou nas regras. V2 e V3 sempre leram/escreveram no mesmo
+projeto/coleções, então nenhum dado foi movido ou precisou de migração
+nessa troca — foi só uma questão de qual build de frontend continua
+sendo publicado.
 
-1. A forma mais simples e reversível: publicar o build da V3 no MESMO
-   site `chamados-sc` que a V2 usa hoje, substituindo `docs` por
-   `v3/dist` como `public` daquela entrada em `firebase.json`. Nesse
-   ponto a V2 deixa de ser publicada (mas o código continua no repo,
-   revertível).
-2. Alternativa com corte mais controlado: usar
-   [canais de preview do Firebase Hosting](https://firebase.google.com/docs/hosting/test-preview-deploy)
-   ou trocar o domínio customizado (se houver um configurado) do site
-   `chamados-sc` para apontar pro conteúdo da V3 gradualmente.
-3. Em qualquer um dos dois casos, **não é preciso mexer em Firestore,
-   Authentication ou nas regras** — V2 e V3 sempre leram/escreveram no
-   mesmo projeto/coleções; a troca é só de qual build de frontend é
-   servido.
-
-## Como manter as duas versões publicadas ao mesmo tempo (hoje)
-
-É exatamente o estado atual desta configuração: `chamados-sc.web.app`
-(V2, produção) e `chamados-sc-v3.web.app` (V3, homologação) são sites de
-Hosting independentes, com deploys independentes (`firebase-deploy.yml`
-e `v3-deploy.yml`), lendo/escrevendo no mesmo Firestore/Auth. Não há
-prazo pra isso mudar — os dois continuam publicados em paralelo até uma
-decisão explícita de promover a V3.
+Se um dia a pasta `docs/` for de fato removida do repositório, isso é um
+passo separado (limpeza de código), sem nenhum efeito nos dados.
 
 ## Rodando localmente (sem publicar)
 
@@ -187,9 +162,3 @@ npm run build     # build de produção (tsc -b && vite build), gera v3/dist
 npm run preview   # serve o build local
 ```
 
-## Deploy da V2 (contexto, não é escopo da V3)
-
-`.github/workflows/firebase-deploy.yml` publica `docs/` em
-`chamados-sc.web.app` a cada push em `main`, via
-`FirebaseExtended/action-hosting-deploy@v0` + `FIREBASE_SERVICE_ACCOUNT`.
-Esse workflow não foi alterado por nenhuma das mudanças da V3.

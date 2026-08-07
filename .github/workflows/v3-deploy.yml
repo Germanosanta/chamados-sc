@@ -1,11 +1,11 @@
-name: V3 Deploy (Homologação)
+name: V3 Deploy (Produção)
 
-# Publica a V3 no site de Hosting "chamados-sc-v3" (alvo "v3" em
-# .firebaserc/firebase.json) — mesmo projeto Firebase da V2 (chamdos-sc),
-# site separado, sem afetar o site "chamados-sc" (produção, V2). Reusa o
-# mesmo secret FIREBASE_SERVICE_ACCOUNT já configurado para o deploy da
-# V2 (firebase-deploy.yml) — o papel "Firebase Hosting Admin" é por
-# projeto, não por site, então a mesma credencial já tem permissão aqui.
+# Publica a V3 (versão oficial em produção) no site de Hosting
+# "chamados-sc-v3" (alvo "v3" em .firebaserc/firebase.json), dentro do
+# projeto Firebase "chamdos-sc". A V2 foi desativada — o workflow que a
+# publicava (firebase-deploy.yml) e a entrada de Hosting correspondente
+# em firebase.json foram removidos; este é o único workflow de deploy
+# de Hosting que resta no repositório.
 #
 # O site "chamados-sc-v3" já existe (criado no Console do Firebase — ver
 # v3/docs/DEPLOY.md, "Passo 1", mantido lá como referência histórica).

@@ -2,21 +2,24 @@
 
 Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e frotas.
 
-**Produção: Firebase Hosting** (`https://chamados-sc.web.app`). GitHub é usado apenas para versionamento; o deploy acontece automaticamente a cada `git push` na `main` via GitHub Actions — **sem precisar instalar nada localmente** (ver seção "Deploy automático" abaixo, incluindo o único passo manual necessário).
+**Versão oficial: V3 (React/TypeScript)** — **Produção: Firebase Hosting** (`https://chamados-sc-v3.web.app`). GitHub é usado apenas para versionamento; o deploy acontece automaticamente a cada `git push` na `main` via GitHub Actions — **sem precisar instalar nada localmente** (ver seção "Deploy automático" abaixo).
+
+> **A V2 (pasta `docs/`, vanilla JS) foi desativada** — não é mais publicada (o workflow `firebase-deploy.yml` e a entrada de Hosting correspondente em `firebase.json` foram removidos). O código continua no repositório para consulta/histórico, mas nenhum novo push publica mais nada em `chamados-sc.web.app`. Toda a documentação de arquitetura/deploy/uso da V3 está em `v3/docs/`.
 
 ## Estrutura do Projeto
 
 ```
 /
 ├── .github/workflows/
-│   └── firebase-deploy.yml # Deploy automático no Firebase Hosting a cada push na main
-├── firebase.json           # Config do Firebase Hosting/Firestore — hosting é uma lista de 2 sites:
-│                           #   [0] site "chamados-sc" / public "docs" (V2, produção — inalterado)
-│                           #   [1] target "v3" / public "v3/dist" (V3, homologação — ver v3/docs/DEPLOY.md)
+│   ├── v3-ci.yml            # Type-check/lint/build da V3 em toda alteração de v3/**
+│   └── v3-deploy.yml        # Build + deploy automático da V3 a cada push na main
+├── firebase.json           # Config do Firebase Hosting/Firestore — hosting tem 1 site ativo:
+│                           #   target "v3" / public "v3/dist" (V3, produção — ver v3/docs/DEPLOY.md)
 ├── .firebaserc              # Projeto Firebase padrão (chamdos-sc — ver aviso na seção Firebase)
 ├── firestore.rules          # Regras do Firestore (revisar antes de deploy — ver aviso no arquivo)
 │
-├── docs/                    # Tudo que é servido pelo Firebase Hosting
+├── docs/                    # V2 (legado, DESATIVADA) — código mantido no repo só para consulta,
+│                           # não é mais publicada pelo Firebase Hosting (ver aviso acima)
 │   ├── index.html           # Shell principal (carrega todos os módulos)
 │   ├── manifest.json        # Metadados do app (PWA básico)
 │   ├── assets/img/
@@ -58,29 +61,7 @@ Portal único de Tecnologia para gestão de chamados, equipamentos, técnicos e 
 
 ## Deploy automático (GitHub Actions — sem instalar nada localmente)
 
-Já está tudo configurado no repositório (`.github/workflows/firebase-deploy.yml`, `firebase.json`, `.firebaserc`). Faltam **dois passos manuais, feitos uma única vez, direto no navegador** — nenhum dos dois exige instalar programa nenhum no computador:
-
-### Passo 1 — Criar o site de Hosting "chamados-sc" (uma vez só)
-O deploy é direcionado para um site chamado `chamados-sc` (ver `firebase.json` → `hosting.site`), que é diferente do site padrão do projeto. Ele precisa existir antes do primeiro deploy:
-1. Acesse [console.firebase.google.com](https://console.firebase.google.com) → projeto **chamdos-sc**.
-2. Menu lateral → **Hosting**.
-3. Botão **"Adicionar outro site"** (Add another site).
-4. Digite o Site ID: **`chamados-sc`** → Adicionar.
-
-Depois disso o site existe (mesmo vazio) em `https://chamados-sc.web.app`, pronto para receber o deploy.
-
-### Passo 2 — Gerar a chave de serviço e colar no GitHub (o passo que você já esperava)
-1. Acesse [console.cloud.google.com/iam-admin/serviceaccounts](https://console.cloud.google.com/iam-admin/serviceaccounts?project=chamdos-sc) (mesmo projeto, `chamdos-sc`).
-2. **Criar conta de serviço** → nome sugerido `github-actions-deploy` → Criar e continuar.
-3. Em "Conceder acesso a esta conta de serviço", adicione o papel **`Firebase Hosting Admin`** → Continuar → Concluído.
-4. Clique na conta de serviço recém-criada → aba **Chaves** (Keys) → **Adicionar chave** → **Criar nova chave** → tipo **JSON** → Criar. Um arquivo `.json` será baixado no seu computador.
-5. Abra esse arquivo `.json` num editor de texto, copie **todo o conteúdo**.
-6. No GitHub: repositório → **Settings** → **Secrets and variables** → **Actions** → **New repository secret**.
-   - Nome: **`FIREBASE_SERVICE_ACCOUNT`** (exatamente assim, é o nome que o workflow espera)
-   - Valor: cole o JSON inteiro copiado no passo 5.
-7. Salvar.
-
-**A partir daqui, todo `git push origin main` publica sozinho em `https://chamados-sc.web.app`.** Pode apagar o arquivo `.json` baixado do computador depois de colar no GitHub — ele não precisa ficar salvo em lugar nenhum.
+Já está tudo configurado no repositório (`.github/workflows/v3-ci.yml`, `v3-deploy.yml`, `firebase.json`, `.firebaserc`). Todo `git push origin main` que toque `v3/**` builda e publica sozinho em `https://chamados-sc-v3.web.app` — não requer nenhum passo manual novo (o secret `FIREBASE_SERVICE_ACCOUNT` já está configurado no repositório, com o papel "Firebase Hosting Admin" no projeto `chamdos-sc`, e cobre qualquer site de Hosting dentro dele). Detalhe completo — arquitetura, como rodar localmente, como o CI/deploy funcionam, como fazer rollback: **`v3/docs/DEPLOY.md`**.
 
 ### Deploy manual, se algum dia precisar (não obrigatório)
 Só é possível com o [Firebase CLI](https://firebase.google.com/docs/cli) instalado (requer Node.js) — não se aplica ao seu computador corporativo bloqueado, mas documentado aqui por completude:
@@ -92,37 +73,41 @@ firebase deploy --only hosting
 
 **Antes de qualquer deploy de regras do Firestore** (`firebase deploy --only firestore:rules` — separado do deploy de Hosting, não roda automaticamente pelo GitHub Actions), revise `firestore.rules` no Console. O login é feito via Firebase Authentication (e-mail/senha) — o papel de cada usuário (perfil/status/perms) mora em `usuarios/{uid}` e as regras usam `get()` nesse doc pra decidir permissão, sem custom claims nem Cloud Functions (100% compatível com o plano Spark). Um push que altera `firestore.rules` **não é aplicado sozinho** — é fácil esquecer esse passo manual depois de uma sessão de correções.
 
-### Uso local (desenvolvimento, opcional)
-Sirva a pasta `docs/` com qualquer servidor HTTP local (não abra `docs/index.html` direto do disco — os módulos `firebase.js`/`firestore.js` são ES modules e exigem `http(s)://`, não `file://`).
-
-### Single-file legado (offline)
-`legacy/chamados_sc.html` continua funcionando como build standalone (não recebe as correções feitas no app modular a partir da reorganização).
-
-## V3 (homologação — React/TypeScript, pasta `v3/`)
+## V3 (produção — React/TypeScript, pasta `v3/`)
 
 Reescrita em React 19 + TypeScript + Vite, isolada em `v3/`, lendo/
-escrevendo no **mesmo** Firestore/Auth da V2 (mesmas coleções, mesmas
-regras, mesmas permissões — nada duplicado). Publica num site de
-Hosting **separado** (`chamados-sc-v3.web.app`), dentro do mesmo projeto
-Firebase (`chamdos-sc`), sem afetar a V2 (`chamados-sc.web.app`, que
-continua sendo produção). Detalhe completo — arquitetura, como rodar
-localmente, como o CI/deploy funcionam, como fazer rollback, como
-promover a V3 a produção no futuro: **`v3/docs/DEPLOY.md`** e
-**`v3/docs/BUILD.md`**.
+escrevendo no **mesmo** Firestore/Auth que a V2 sempre usou (mesmas
+coleções, mesmas regras, mesmas permissões — nada duplicado). É a
+**versão oficial em produção**, publicada em `chamados-sc-v3.web.app`,
+dentro do mesmo projeto Firebase (`chamdos-sc`). Detalhe completo —
+arquitetura, como rodar localmente, como o CI/deploy funcionam, como
+fazer rollback: **`v3/docs/DEPLOY.md`** e **`v3/docs/BUILD.md`**.
 
 Resumo:
 - CI (`.github/workflows/v3-ci.yml`): type-check/lint/build em toda
   alteração de `v3/**`, não publica nada.
 - Deploy (`.github/workflows/v3-deploy.yml`): builda e publica
   automaticamente em `chamados-sc-v3.web.app` a cada push em `main` que
-  toque `v3/**` — reusa o mesmo secret `FIREBASE_SERVICE_ACCOUNT` da V2.
-- O site `chamados-sc-v3` já foi criado no Console do Firebase (mesmo
-  procedimento do "Passo 1" acima, nome diferente) — deploy automático
-  ativo. Ver `v3/docs/DEPLOY.md`.
+  toque `v3/**`.
+
+## V2 (legado — desativada, pasta `docs/`)
+
+A V2 (HTML5 + CSS3 + JS vanilla, sem framework) foi a versão em produção
+até a V3 assumir esse papel. **Não é mais publicada**: o workflow que a
+fazia deploy (`firebase-deploy.yml`) e a entrada de Hosting
+correspondente em `firebase.json` foram removidos — nenhum push publica
+mais nada em `chamados-sc.web.app`. O código permanece na pasta `docs/`
+só para consulta/histórico durante a transição; nada nela foi apagado.
+
+### Uso local da V2 (só para consulta, não publica nada)
+Sirva a pasta `docs/` com qualquer servidor HTTP local (não abra `docs/index.html` direto do disco — os módulos `firebase.js`/`firestore.js` são ES modules e exigem `http(s)://`, não `file://`).
+
+### Single-file legado (offline)
+`legacy/chamados_sc.html` continua funcionando como build standalone (não recebe as correções feitas no app modular a partir da reorganização, nem nenhuma correção da V3).
 
 ## Firebase
 
-**⚠️ Atenção ao nome do projeto**: o projeto Firebase real (usado no SDK, `authDomain`, `storageBucket`, todas as coleções e dados já existentes) é **`chamdos-sc`** (sem o "a" de "chamados" — provavelmente um typo de quando o projeto foi criado no console, mas é o nome real e não deve ser alterado sem migrar todos os dados). O site de Hosting `chamados-sc` (URL `chamados-sc.web.app`, criado no Passo 1 acima) vive **dentro** desse mesmo projeto `chamdos-sc` — são coisas diferentes: `chamdos-sc` é o ID do projeto/banco de dados, `chamados-sc` é só o nome do site de Hosting.
+**⚠️ Atenção ao nome do projeto**: o projeto Firebase real (usado no SDK, `authDomain`, `storageBucket`, todas as coleções e dados já existentes) é **`chamdos-sc`** (sem o "a" de "chamados" — provavelmente um typo de quando o projeto foi criado no console, mas é o nome real e não deve ser alterado sem migrar todos os dados). O site de Hosting da V3 (`chamados-sc-v3`, URL `chamados-sc-v3.web.app`) vive **dentro** desse mesmo projeto `chamdos-sc` — são coisas diferentes: `chamdos-sc` é o ID do projeto/banco de dados, `chamados-sc-v3` é só o nome do site de Hosting. Esse mesmo projeto/banco é compartilhado com a V2 (desativada, mas os dados históricos continuam nele) — desativar a V2 não mexeu em nada aqui.
 
 Coleções no Firestore (nomes reais, via `docs/js/firebase/firestore.js`):
 | Collection | Dados |
@@ -138,7 +123,9 @@ Coleções no Firestore (nomes reais, via `docs/js/firebase/firestore.js`):
 | `auditoria` | Log de ações (append-only) |
 | `configuracoes` | Configurações gerais + Banco de Soluções (prefixo `kb__`) |
 
-## Stack
+## Stack, Contas de acesso e Módulos (V2, legado)
+
+> As três seções abaixo (`Stack`, `Contas de acesso`, `Módulos`) descrevem especificamente a implementação da **V2** (`docs/`), mantidas como documentação histórica do que existe naquela pasta — não são mais a descrição do sistema em produção. O equivalente atual da V3 está em `v3/docs/` (ver `ARQUITETURA.md`, `GUIA_ADMINISTRADOR.md`, `ROTAS.md`).
 
 - **Frontend**: HTML5 + CSS3 + JS vanilla (sem framework)
 - **Dados históricos**: 3.214 chamados embutidos em JS
