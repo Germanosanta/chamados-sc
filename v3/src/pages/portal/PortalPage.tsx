@@ -51,20 +51,23 @@ export function PortalPage() {
         </div>
       </div>
 
-      <div className="grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
+      {/* grid-cols-2 (não -3): só existem 2 módulos hoje (Chips foi
+          removido) — com 3 colunas os 2 cards ficavam desalinhados à
+          esquerda dentro do próprio contêiner em vez de centralizados. */}
+      <div className="mx-auto grid w-full max-w-2xl grid-cols-1 gap-6 sm:grid-cols-2">
         {MODULOS.map((m) => (
           <button
             key={m.id}
             onClick={() => navigate(m.path)}
             className={cn(
-              'group flex flex-col items-center gap-3 rounded-lg border border-border bg-surface p-6 text-center shadow-sm transition',
-              'hover:-translate-y-0.5 hover:border-primary hover:shadow',
+              'group flex flex-col items-center gap-4 rounded-xl border border-border bg-surface p-8 text-center shadow-sm transition',
+              'hover:-translate-y-0.5 hover:border-primary hover:shadow-lg',
             )}
           >
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-light text-primary-text">
-              <m.icon className="h-6 w-6" />
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-light text-primary-text">
+              <m.icon className="h-8 w-8" />
             </div>
-            <div className="text-base font-bold text-foreground">{m.title}</div>
+            <div className="text-lg font-bold text-foreground">{m.title}</div>
             <p className="text-sm text-muted-foreground">{m.desc}</p>
             {!m.ativo && (
               <span className="rounded-full bg-surface3 px-2.5 py-0.5 text-xs font-semibold text-subtle">Em breve</span>
