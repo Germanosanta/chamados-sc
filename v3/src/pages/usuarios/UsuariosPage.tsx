@@ -12,7 +12,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useUsuariosCadastro, useUsuariosDuplicados, useSalvarUsuario, useAlterarStatusUsuario, SalvarUsuarioError } from '@/hooks/useUsuarios';
+import {
+  useUsuariosCadastro,
+  useUsuariosDuplicados,
+  useSalvarUsuario,
+  useAlterarStatusUsuario,
+  useMesclarDuplicataUsuario,
+  SalvarUsuarioError,
+} from '@/hooks/useUsuarios';
 import { enviarResetSenha } from '@/services/firebase/auth';
 import { useSessionStore } from '@/store/session';
 import { ALL_PERMS, PERFIL_LABEL, PERFIL_PERMS, type Perfil, type Permissao } from '@/types/permissoes';
@@ -32,6 +39,8 @@ export function UsuariosPage() {
   const souAdmin = usuarioLogado?.perfil === 'admin';
   const salvar = useSalvarUsuario();
   const alterarStatus = useAlterarStatusUsuario();
+  const mesclar = useMesclarDuplicataUsuario();
+  const [mesclando, setMesclando] = useState<string | null>(null);
 
   const [busca, setBusca] = useState('');
   const [open, setOpen] = useState(false);
@@ -121,6 +130,18 @@ export function UsuariosPage() {
     }
   }
 
+  async function handleManterEste(identidade: string, manterId: string, todosIds: string[]) {
+    setMesclando(identidade);
+    try {
+      await mesclar.mutateAsync({ manterId, outrosIds: todosIds.filter((id) => id !== manterId) });
+      toast('Duplicata resolvida — os demais documentos foram marcados como migrados (nada foi apagado).');
+    } catch {
+      toast.error('Não foi possível resolver a duplicata.');
+    } finally {
+      setMesclando(null);
+    }
+  }
+
   async function handleToggleStatus(u: Usuario) {
     if (u.id === usuarioLogado?.id) {
       toast.error('Você não pode desativar a própria conta.');
@@ -172,15 +193,38 @@ export function UsuariosPage() {
           <p className="text-xs text-muted-foreground">
             Cada e-mail abaixo tem mais de um documento na coleção <code>usuarios</code> do Firestore que não é um
             "doc sombra" de migração (<code>migrado: true</code> já é filtrado à parte). A V3 mostra só um deles nas
-            outras telas; os dois continuam intactos e visíveis aqui pra você decidir se são a mesma conta duplicada
-            (mesclar/desativar manualmente) ou contas diferentes com e-mail coincidente. Nada é apagado automaticamente.
+            outras telas; os dois continuam visíveis aqui pra você escolher qual documento manter como o oficial —
+            os outros são marcados como migrados (mesmo campo que já esconde contas antigas) e somem de todo o
+            resto do sistema, mas continuam existindo no Firestore. Nada é apagado.
           </p>
-          <ul className="flex flex-col gap-1">
-            {duplicatas.map((d) => (
-              <li key={d.identidade} className="font-mono-num text-xs text-foreground">
-                {d.usuarios[0].email || d.usuarios[0].login} — {d.usuarios.length} documentos: {d.usuarios.map((u) => u.id).join(', ')}
-              </li>
-            ))}
+          <ul className="flex flex-col gap-2">
+            {duplicatas.map((d) => {
+              const ids = d.usuarios.map((u) => u.id);
+              return (
+                <li key={d.identidade} className="flex flex-col gap-1 rounded-sm border border-warning/40 bg-surface p-2">
+                  <span className="font-mono-num text-xs font-semibold text-foreground">
+                    {d.usuarios[0].email || d.usuarios[0].login}
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {d.usuarios.map((u) => (
+                      <div key={u.id} className="flex items-center gap-1.5 rounded-sm border border-border bg-muted px-2 py-1 text-xs">
+                        <span className="font-mono-num text-subtle">{u.id}</span>
+                        {u.nome && <span className="text-foreground">({u.nome})</span>}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 px-2 text-xs"
+                          disabled={mesclando === d.identidade}
+                          onClick={() => handleManterEste(d.identidade, u.id, ids)}
+                        >
+                          Manter este
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

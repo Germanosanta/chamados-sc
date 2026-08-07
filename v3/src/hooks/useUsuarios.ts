@@ -101,6 +101,31 @@ export function useUsuariosDuplicados(): UsuarioDuplicata[] {
   }, [data]);
 }
 
+/**
+ * Resolve uma duplicata "deixando só um" sem apagar nada: os documentos
+ * não escolhidos são marcados `migrado: true` — o MESMO campo/filtro que
+ * já esconde os docs sombra de migração da V2 (ver comentário no topo do
+ * arquivo e em agruparPorIdentidade/useUsuarios). Ou seja, "mesclar" aqui
+ * não é uma feature nova: é reaproveitar o único mecanismo de
+ * ocultação-sem-exclusão que a V3 já confia em todo lugar, então o
+ * documento escolhido passa a ser o único candidato do grupo em
+ * qualquer tela (inclusive o próprio Cadastro), e os outros continuam
+ * 100% intactos no Firestore — só marcados como não-ativos, reversível
+ * por qualquer admin editando o campo direto no Console se precisar.
+ */
+export function useMesclarDuplicataUsuario() {
+  const usuarioLogado = useSessionStore((s) => s.usuario);
+  return useMutation({
+    mutationFn: async ({ manterId, outrosIds }: { manterId: string; outrosIds: string[] }) => {
+      if (usuarioLogado?.perfil !== 'admin') throw new SalvarUsuarioError('Apenas administradores podem mesclar duplicatas de usuário.');
+      for (const id of outrosIds) {
+        if (id === manterId) continue;
+        await setMerge('usuarios', id, { migrado: true });
+      }
+    },
+  });
+}
+
 export class SalvarUsuarioError extends Error {}
 
 interface SalvarUsuarioInput {
