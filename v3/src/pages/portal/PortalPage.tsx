@@ -42,7 +42,7 @@ export function PortalPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-10 bg-background px-4 py-10">
       <div className="flex flex-col items-center gap-3 text-center">
-        <img src={logo} alt="Santa Colomba" className="h-16 w-16 rounded-lg object-cover shadow-sm" />
+        <img src={logo} alt="Santa Colomba" className="h-24 w-24 rounded-lg object-cover shadow-sm" />
         <div>
           <h1 className="text-2xl font-bold text-foreground">Central de Tecnologia</h1>
           <p className="text-sm text-muted-foreground">
