@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Droplets, Fuel, Tractor } from 'lucide-react';
+import { Droplets, Tractor } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useSessionStore } from '@/store/session';
 import { logout } from '@/services/firebase/auth';
@@ -22,19 +22,14 @@ const MODULOS = [
     path: '/irrigacao',
     ativo: false,
   },
-  {
-    id: 'chips',
-    icon: Fuel,
-    title: 'Chips de Abastecimento',
-    desc: 'Cadastro e controle de chips de abastecimento.',
-    path: '/chips',
-    ativo: false,
-  },
 ];
 
-/** Portal de módulos — mesmos 3 cards da V2 (mostrarMenu()); só "Chamados
- * de Campo" está ativo, os outros 2 continuam "Em breve" (mesmos
- * placeholders), mas já com rota real por trás (ver PlaceholderPage). */
+/** Portal de módulos — 2 cards (Chamados de Campo ativo, Irrigação "Em
+ * breve" com rota real por trás, ver PlaceholderPage). O módulo "Chips de
+ * Abastecimento" existia aqui só como card placeholder ("Em breve", sem
+ * nenhuma página/lógica por trás) e foi removido na fase de estabilização
+ * — a área de Tecnologia não é mais responsável por ele (decisão de
+ * escopo do produto, não técnica). */
 export function PortalPage() {
   const navigate = useNavigate();
   const usuario = useSessionStore((s) => s.usuario);

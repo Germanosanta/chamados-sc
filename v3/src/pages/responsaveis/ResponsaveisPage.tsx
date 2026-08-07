@@ -4,7 +4,7 @@ import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { Badge } from '@/components/ui/badge';
 import { useChamados } from '@/hooks/useChamados';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
-import { chamadoPertenceATecnico, isFechado } from '@/utils/chamado-helpers';
+import { chamadoPertenceATecnico, isAbertoStatus, isEmAtendimento, isFechado } from '@/utils/chamado-helpers';
 
 interface LinhaResp {
   name: string;
@@ -43,14 +43,14 @@ export function ResponsaveisPage() {
       const atribuidos = todos.filter((r) => chamadoPertenceATecnico(r, t));
       const abertosPor = todos.filter((r) => r.abertoPor?.includes(name)).length;
       const encerradosPor = todos.filter((r) => r.encerramento?.encerradoPor?.includes(name)).length;
-      const emAberto = atribuidos.filter((r) => r.status === 'Não iniciado').length;
-      const emAndamento = atribuidos.filter((r) => r.status === 'Em Andamento' || r.status === 'Em Atendimento').length;
+      const emAberto = atribuidos.filter(isAbertoStatus).length;
+      const emAndamento = atribuidos.filter(isEmAtendimento).length;
       const encerrados = atribuidos.filter(isFechado).length;
 
       let somaAtend = 0;
       let cntAtend = 0;
       for (const r of atribuidos) {
-        if ((r.status === 'Em Andamento' || r.status === 'Em Atendimento') && r.data) {
+        if (isEmAtendimento(r) && r.data) {
           const d = daysBetween(r.data, hoje);
           if (d !== null) {
             somaAtend += d;

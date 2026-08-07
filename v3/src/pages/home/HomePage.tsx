@@ -7,7 +7,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useChamados, useAbertos } from '@/hooks/useChamados';
-import { diasAberto, formatDataBR } from '@/utils/chamado-helpers';
+import { formatDataBR, isEmAtendimento, isSlaCritico } from '@/utils/chamado-helpers';
 import { useSessionStore } from '@/store/session';
 import { useDetalheStore } from '@/store/detalhe';
 
@@ -30,8 +30,8 @@ export function HomePage() {
 
   const stats = useMemo(() => {
     const criticos = abertos.filter((c) => c.prior === 'Urgente');
-    const slaVencendo = abertos.filter((c) => diasAberto(c.data) > 7);
-    const emAtendimento = abertos.filter((c) => c.status === 'Em Atendimento' || c.status === 'Em Andamento');
+    const slaVencendo = abertos.filter(isSlaCritico);
+    const emAtendimento = abertos.filter(isEmAtendimento);
     return { criticos, slaVencendo, emAtendimento };
   }, [abertos]);
 

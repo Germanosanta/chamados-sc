@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Link2, Plus } from 'lucide-react';
+import { AlertTriangle, Link2, Plus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useTecnicos, useSalvarTecnico, useVincularTecnicos } from '@/hooks/useTecnicos';
+import { useTecnicos, useTecnicosDuplicados, useSalvarTecnico, useVincularTecnicos } from '@/hooks/useTecnicos';
 import { useUsuarios } from '@/hooks/useUsuarios';
 import { useChamados } from '@/hooks/useChamados';
 import { useSessionStore } from '@/store/session';
@@ -32,6 +32,7 @@ const SEM_VINCULO = 'sem-vinculo';
  * contar os chamados de cada técnico por UID em vez de nome/e-mail. */
 export function TecnicosPage() {
   const { data: tecnicos, carregando } = useTecnicos();
+  const duplicatas = useTecnicosDuplicados();
   const { data: usuarios } = useUsuarios();
   const { data: chamados } = useChamados();
   const salvar = useSalvarTecnico();
@@ -206,6 +207,27 @@ export function TecnicosPage() {
         <KpiCard label="Ativos" value={carregando ? '—' : tecnicos.filter((t) => t.status === 'Ativo').length} color="amber" />
         <KpiCard label="Pendentes (total)" value={carregando ? '—' : [...stats.values()].reduce((a, s) => a + s.pendentes, 0)} color="purple" />
       </div>
+
+      {souAdmin && duplicatas.length > 0 && (
+        <div className="flex flex-col gap-2 rounded-sm border border-warning bg-warning-bg p-3 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-warning">
+            <AlertTriangle className="h-4 w-4" />
+            {duplicatas.length} possível(is) duplicata(s) no cadastro — revisão manual necessária
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Cada nome abaixo tem mais de um documento na coleção <code>tecnicos</code> do Firestore. A V3 mostra só o mais
+            recente na tela; os outros continuam intactos e visíveis aqui pra você decidir se são a mesma pessoa (e mesclar/
+            excluir manualmente) ou pessoas diferentes com nome parecido. Nada é apagado automaticamente.
+          </p>
+          <ul className="flex flex-col gap-1">
+            {duplicatas.map((d) => (
+              <li key={d.identidade} className="font-mono-num text-xs text-foreground">
+                {d.tecnicos[0].nome} — {d.tecnicos.length} documentos: {d.tecnicos.map((t) => t.id).join(', ')}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <FilterBar>
         <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nome, apelido…" className="w-56" />

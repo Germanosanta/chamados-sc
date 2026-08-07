@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useChamados } from './useChamados';
-import { getChamadoEquip } from '@/utils/chamado-helpers';
+import { getChamadoEquip, isAbertoStatus, isAguardandoPeca, isCancelado, isConcluido, isEmAtendimento, isSlaCritico } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 /**
@@ -71,17 +71,24 @@ export interface DashboardStats {
  * de status, mesmos mapas de agregação (responsável/cultura/bucket/
  * equipamento), mesma janela mensal fixa, mesmo keyword-matching de
  * "principais problemas" (não é IA — é regex sobre número+título, igual
- * na V2). */
+ * na V2).
+ *
+ * Os 5 predicados de status (isConcluido/isCancelado/isAguardandoPeca/
+ * isEmAtendimento/isAbertoStatus) não são mais reimplementados aqui —
+ * antes desta fase de estabilização, este hook tinha sua própria cópia
+ * local dessas mesmas regras, ligeiramente diferente da usada pelo
+ * Kanban (laneKey) e do critério simplificado que Home/Painel usavam
+ * cada um do seu jeito. Agora todos importam de utils/chamado-helpers.ts
+ * — uma só fonte de verdade pra "o que conta como Em Aberto/Encerrado/
+ * etc" em toda a V3. */
 export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; carregando: boolean } {
   const { data: todos, carregando } = useChamados();
   const all = records || todos;
 
   const stats = useMemo<DashboardStats>(() => {
-    const isCancelado = (r: Chamado) => r.status === 'Cancelado';
-    const isConcluido = (r: Chamado) => (r.status === 'Encerrado' || r.status === 'Concluída' || !!r.encerramento) && !isCancelado(r);
-    const isAguardando = (r: Chamado) => r.status === 'Aguardando Peça';
-    const isAtendimento = (r: Chamado) => (r.status === 'Em Andamento' || r.status === 'Em Atendimento') && !isCancelado(r) && !isConcluido(r) && !isAguardando(r);
-    const isAberto = (r: Chamado) => (r.status === 'Não iniciado' || r.status === 'Aberto') && !isConcluido(r) && !isCancelado(r);
+    const isAtendimento = isEmAtendimento;
+    const isAguardando = isAguardandoPeca;
+    const isAberto = isAbertoStatus;
 
     const total = all.length;
     const concluidos = all.filter(isConcluido).length;
@@ -110,8 +117,12 @@ export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; c
       if (r.bucket) bktMap[r.bucket] = (bktMap[r.bucket] || 0) + 1;
     }
 
+    // Anos do "Comparativo Anual" — mesmo problema do MONTHS acima
+    // (lista fixa, 2026 seria o último ano pra sempre): usa o intervalo
+    // real do próprio dataset, de 2022 até o ano corrente, nunca menos.
     const byYear: DashboardStats['byYear'] = {};
-    for (const yr of [2022, 2023, 2024, 2025, 2026]) {
+    const ultimoAno = Math.max(new Date().getFullYear(), 2022);
+    for (let yr = 2022; yr <= ultimoAno; yr++) {
       const ry = all.filter((r) => r.data && r.data.startsWith(String(yr)));
       byYear[yr] = { total: ry.length, conc: ry.filter(isConcluido).length, aberto: ry.filter(isAberto).length };
     }
@@ -146,8 +157,12 @@ export function useComputeStats(records?: Chamado[]): { stats: DashboardStats; c
     }
     const tempoMedio = cntDias ? (somaDias / cntDias).toFixed(1) : '—';
 
-    const hoje = new Date();
-    const vencidos = all.filter((r) => !isConcluido(r) && r.data && Math.floor((hoje.getTime() - new Date(r.data + 'T00:00').getTime()) / 86400000) > 7).length;
+    // isSlaCritico (chamado-helpers.ts) — mesmo critério de "vencido"
+    // usado por Home/Painel/KanbanCard, em vez do cálculo de dias em
+    // duplicata que existia aqui antes (formula ligeiramente diferente:
+    // usava a hora exata de "agora" em vez do início do dia, o que podia
+    // divergir por horas-limite do que diasAberto() já calculava).
+    const vencidos = all.filter(isSlaCritico).length;
 
     const issues: [string, number][] = ISSUE_KEYWORDS.map(([label, rx]) => [label, all.filter((r) => rx.test(r.num + (r.titulo || ''))).length]);
 

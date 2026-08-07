@@ -35,10 +35,67 @@ function comKeyGarantida(data: (Tecnico & { id: string })[]): (Tecnico & { id: s
   return data.map((t) => (t.key ? t : { ...t, key: t.id }));
 }
 
+function normalizarNome(nome: string): string {
+  return nome.trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+}
+
+export interface TecnicoDuplicata {
+  /** UID vinculado (mais confiável) ou nome normalizado — o critério que
+   * agrupou estes documentos como "provavelmente a mesma pessoa". */
+  identidade: string;
+  /** Todos os documentos do grupo, do mais recentemente atualizado pro
+   * mais antigo — o primeiro é o que a V3 mostra como representante em
+   * toda a UI; os demais ficam ocultos das telas normais mas continuam
+   * intactos no Firestore. */
+  tecnicos: (Tecnico & { id: string })[];
+}
+
+/**
+ * Documentos genuinamente duplicados no Firestore (pessoa real cadastrada
+ * mais de uma vez, com IDs de documento diferentes) são um problema de
+ * dado, não de código — nenhuma normalização em memória apaga um
+ * documento de verdade. Ainda assim, "cada técnico aparece apenas uma vez
+ * em toda a V3" é garantido aqui: agrupamos por identidade (UID vinculado
+ * quando existe — o sinal mais forte — senão nome normalizado) e cada
+ * consumidor de `useTecnicos()`/`useTecnicosAtivos()` só recebe 1
+ * representante por grupo. Os grupos com mais de 1 documento são expostos
+ * à parte por `useTecnicosDuplicados()`, pra um admin decidir o que fazer
+ * — nada é apagado automaticamente (exigência explícita desta fase).
+ */
+function agruparPorIdentidade(data: (Tecnico & { id: string })[]): {
+  unicos: (Tecnico & { id: string })[];
+  duplicatas: TecnicoDuplicata[];
+} {
+  const grupos = new Map<string, (Tecnico & { id: string })[]>();
+  for (const t of data) {
+    const identidade = t.usuarioUid ? `uid:${t.usuarioUid}` : `nome:${normalizarNome(t.nome)}`;
+    const lista = grupos.get(identidade);
+    if (lista) lista.push(t);
+    else grupos.set(identidade, [t]);
+  }
+  const unicos: (Tecnico & { id: string })[] = [];
+  const duplicatas: TecnicoDuplicata[] = [];
+  for (const [identidade, lista] of grupos) {
+    const ordenados = [...lista].sort((a, b) => (b.atualizadoEm || '').localeCompare(a.atualizadoEm || ''));
+    unicos.push(ordenados[0]);
+    if (ordenados.length > 1) duplicatas.push({ identidade, tecnicos: ordenados });
+  }
+  return { unicos, duplicatas };
+}
+
 export function useTecnicos(): FirestoreCollectionState<Tecnico> {
   const { data, carregando, erro } = useFirestoreCollection<Tecnico>('tecnicos');
-  const corrigido = useMemo(() => comKeyGarantida(data), [data]);
-  return { data: corrigido, carregando, erro };
+  const { unicos } = useMemo(() => agruparPorIdentidade(comKeyGarantida(data)), [data]);
+  return { data: unicos, carregando, erro };
+}
+
+/** Grupos de documentos que parecem ser o mesmo técnico cadastrado mais
+ * de uma vez no Firestore — só leitura/diagnóstico, nunca apaga nada. Use
+ * pra mostrar um aviso administrativo (ver TecnicosPage) apontando o que
+ * precisa de uma decisão humana antes de mesclar/excluir manualmente. */
+export function useTecnicosDuplicados(): TecnicoDuplicata[] {
+  const { data } = useFirestoreCollection<Tecnico>('tecnicos');
+  return useMemo(() => agruparPorIdentidade(comKeyGarantida(data)).duplicatas, [data]);
 }
 
 /** Equivalente a _tecnicosAtivos() da V2 — fonte única dos seletores de
@@ -106,6 +163,14 @@ export function useVincularTecnicos() {
       for (const t of tecnicos) {
         if (t.usuarioUid) {
           resultado.jaVinculados.push(t);
+          continue;
+        }
+        // Defesa extra: nunca gravar num doc sem id (ver comKeyGarantida
+        // acima — não deveria mais acontecer, mas um `setMerge` com id
+        // vazio é exatamente o tipo de escrita que cria um documento
+        // "fantasma" no Firestore em vez de falhar alto).
+        if (!t.key) {
+          resultado.naoVinculados.push(t);
           continue;
         }
         const email = (t.email || '').trim().toLowerCase();

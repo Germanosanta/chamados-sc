@@ -48,6 +48,44 @@ export function isFechado(c: Chamado): boolean {
 }
 
 /**
+ * Fonte única dos "buckets" de status (Cancelado/Concluído/Aguardando
+ * Peça/Em Atendimento/Em Aberto) — usada por Dashboard, Home, Painel e
+ * pelo Kanban (laneKey, abaixo). Antes desta fase de estabilização,
+ * `useComputeStats` (Dashboard) reimplementava esses mesmos 5 critérios
+ * do zero, e Home/Painel tinham sua própria versão simplificada de
+ * "está em atendimento" — três lugares decidindo a mesma pergunta de
+ * jeitos ligeiramente diferentes é exatamente o tipo de coisa que produz
+ * divergência entre telas (ex.: um total que bate numa tela e não bate
+ * em outra). Cada indicador da V3 agora consulta uma só destas funções.
+ */
+type ChamadoBucket = Pick<Chamado, 'status' | 'encerramento'>;
+
+export function isCancelado(c: ChamadoBucket): boolean {
+  return c.status === 'Cancelado';
+}
+
+export function isConcluido(c: ChamadoBucket): boolean {
+  return (c.status === 'Encerrado' || c.status === 'Concluída' || !!c.encerramento) && !isCancelado(c);
+}
+
+export function isAguardandoPeca(c: ChamadoBucket): boolean {
+  return c.status === 'Aguardando Peça' && !isConcluido(c) && !isCancelado(c);
+}
+
+export function isEmAtendimento(c: ChamadoBucket): boolean {
+  return (c.status === 'Em Andamento' || c.status === 'Em Atendimento') && !isCancelado(c) && !isConcluido(c) && !isAguardandoPeca(c);
+}
+
+/** "Em aberto" pro Dashboard/Home = ainda não entrou em nenhum dos
+ * outros 3 buckets — cobre tanto 'Aberto'/'Não iniciado' quanto qualquer
+ * status legado/inesperado, em vez de depender de listar os textos
+ * exatos (mesmo raciocínio de normalizarChamado: dado antigo não pode
+ * quebrar/sumir de uma contagem por não bater um texto exato). */
+export function isAbertoStatus(c: ChamadoBucket): boolean {
+  return !isConcluido(c) && !isCancelado(c) && !isEmAtendimento(c) && !isAguardandoPeca(c);
+}
+
+/**
  * Único conceito de responsável do chamado: `resp`/`assumidoPor` são
  * sempre gravados juntos (por useAssumirChamado/useReatribuirResponsavel,
  * os únicos dois pontos de escrita) e servem só para EXIBIÇÃO — nunca
@@ -216,10 +254,10 @@ export const KANBAN_LANES = [
 
 export type LaneKey = (typeof KANBAN_LANES)[number]['key'];
 
-export function laneKey(status: string): LaneKey {
-  if (status === 'Concluída' || status === 'Encerrado') return 'concluido';
-  if (status === 'Aguardando Peça') return 'peca';
-  if (status === 'Em Andamento' || status === 'Em Atendimento') return 'atendimento';
+export function laneKey(c: ChamadoBucket): LaneKey {
+  if (isConcluido(c) || isCancelado(c)) return 'concluido';
+  if (isAguardandoPeca(c)) return 'peca';
+  if (isEmAtendimento(c)) return 'atendimento';
   return 'aberto';
 }
 

@@ -28,7 +28,7 @@ export function KanbanBoard({ chamados, onStatusChange, onCardClick, onAssumir }
 
   const porLane = useMemo(() => {
     const grupos: Record<LaneKey, Chamado[]> = { aberto: [], atendimento: [], peca: [], concluido: [] };
-    for (const c of chamados) grupos[laneKey(c.status)].push(c);
+    for (const c of chamados) grupos[laneKey(c)].push(c);
     return grupos;
   }, [chamados]);
 
@@ -38,7 +38,7 @@ export function KanbanBoard({ chamados, onStatusChange, onCardClick, onAssumir }
     const chamado = active.data.current?.chamado as Chamado | undefined;
     if (!chamado) return;
 
-    const origem = laneKey(chamado.status);
+    const origem = laneKey(chamado);
     const destino = over.id as LaneKey;
     if (origem === destino) return;
 

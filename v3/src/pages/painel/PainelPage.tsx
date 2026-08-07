@@ -3,7 +3,7 @@ import { KpiCard } from '@/components/shared/KpiCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAbertos, useChamados } from '@/hooks/useChamados';
 import { useDetalheStore } from '@/store/detalhe';
-import { diasAberto, fazendaLabel } from '@/utils/chamado-helpers';
+import { diasAberto, fazendaLabel, isSlaCritico } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 
 /**
@@ -24,7 +24,7 @@ export function PainelPage() {
     inicioSemana.setDate(inicioSemana.getDate() - 7);
 
     const criticos = abertos.filter((c) => c.prior === 'Urgente').length;
-    const vencidos = abertos.filter((c) => c.data && diasAberto(c.data) > 7).length;
+    const vencidos = abertos.filter(isSlaCritico).length;
     const abertosHoje = todos.filter((c) => c.data === hoje).length;
     const encerradosHoje = todos.filter((c) => c.encerramento?.encerradoEm?.slice(0, 10) === hoje).length;
 

@@ -1,10 +1,11 @@
 import { cn } from '@/utils/cn';
 import { KANBAN_LANES, laneKey } from '@/utils/chamado-helpers';
+import type { ChamadoStatus } from '@/types/chamado';
 
 /** Portado de statusStepperHTML() (chamados/index.js) — 4 etapas reais
  * (Aberto/Em Atendimento/Aguardando Peça/Encerrado) + estado especial
  * "Cancelado". */
-export function StatusStepper({ status, selos }: { status: string; selos?: React.ReactNode }) {
+export function StatusStepper({ status, selos }: { status: ChamadoStatus; selos?: React.ReactNode }) {
   if (status === 'Cancelado') {
     return (
       <div className="flex items-center gap-2">
@@ -14,7 +15,7 @@ export function StatusStepper({ status, selos }: { status: string; selos?: React
     );
   }
 
-  const atual = KANBAN_LANES.findIndex((l) => l.key === laneKey(status));
+  const atual = KANBAN_LANES.findIndex((l) => l.key === laneKey({ status, encerramento: undefined }));
 
   return (
     <div className="flex flex-col gap-1.5">

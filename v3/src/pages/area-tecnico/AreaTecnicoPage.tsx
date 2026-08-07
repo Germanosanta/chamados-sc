@@ -7,7 +7,7 @@ import { useAbertos, useAssumirChamado, useEncerradosLista } from '@/hooks/useCh
 import { useSouTecnicoAtivo } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
-import { souResponsavelDoChamado } from '@/utils/chamado-helpers';
+import { isAguardandoPeca, isEmAtendimento, souResponsavelDoChamado } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 
 type Filtro = 'meus' | 'urgentes' | 'atendimento' | 'peca' | 'concluidos';
@@ -38,8 +38,8 @@ export function AreaTecnicoPage() {
     return {
       meus,
       urgentes: abertos.filter((c) => c.prior === 'Urgente'),
-      atendimento: abertos.filter((c) => c.status === 'Em Atendimento' || c.status === 'Em Andamento'),
-      peca: abertos.filter((c) => c.status === 'Aguardando Peça'),
+      atendimento: abertos.filter(isEmAtendimento),
+      peca: abertos.filter(isAguardandoPeca),
       concluidos: encerrados.filter((c) => souResponsavelDoChamado(c, usuario)),
     };
   }, [abertos, encerrados, usuario]);
