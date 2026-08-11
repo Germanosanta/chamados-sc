@@ -139,12 +139,37 @@ export function nomesEquivalentes(a: string, b: string): boolean {
  * reassumidos dentro da arquitetura nova, não um mecanismo paralelo.
  * `resp` pode ter mais de um nome separado por vírgula — compara cada um.
  */
-export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'id' | 'nome'> | null | undefined): boolean {
+export function souResponsavelDoChamado(
+  c: Chamado,
+  usuario: Pick<Usuario, 'id' | 'nome'> | null | undefined,
+  /**
+   * Achado na investigação de "Área do Técnico sem dados": `c.resp`
+   * (campo de texto legado, gravado pela V2/por reatribuições antigas)
+   * quase sempre guarda o APELIDO do técnico cadastrado em `tecnicos`
+   * (ex.: "Zé"), não o nome completo da conta de login em `usuarios`
+   * (ex.: "José Carlos Almeida") — os dois cadastros são independentes e
+   * um apelido curto não é necessariamente um prefixo do nome completo
+   * (nomesEquivalentes só cobre abreviação por prefixo, tipo "Walison" ⊂
+   * "Walison Alves Silva"). `chamadoPertenceATecnico` (usada nos
+   * relatórios) já comparava com `t.apelido || t.nome`; esta função só
+   * comparava com `usuario.nome`, então um técnico cujo apelido diverge
+   * do nome de conta via "Meus Chamados" zerado mesmo tendo chamados
+   * legados de verdade em seu nome. `apelido` é opcional e vem do
+   * cadastro em `tecnicos` vinculado a este usuário (ver AreaTecnicoPage),
+   * quando existir — mantém a mesma prioridade de sempre: UID exato
+   * primeiro, nome/apelido só como fallback de compatibilidade.
+   */
+  apelido?: string | null,
+): boolean {
   if (!usuario) return false;
   if (c.assumidoPorUid) return c.assumidoPorUid === usuario.id;
   const respNomes = (c.resp || '').split(',').map((n) => n.trim()).filter(Boolean);
   const assumido = (c.assumidoPor || '').trim();
-  return respNomes.some((n) => nomesEquivalentes(n, usuario.nome)) || (!!assumido && nomesEquivalentes(assumido, usuario.nome));
+  const alvos = [usuario.nome, apelido].filter((n): n is string => !!n && n.trim() !== '');
+  return (
+    respNomes.some((n) => alvos.some((alvo) => nomesEquivalentes(n, alvo))) ||
+    (!!assumido && alvos.some((alvo) => nomesEquivalentes(assumido, alvo)))
+  );
 }
 
 /** Técnico responsável (se houver) OU administrador — regra usada em
@@ -152,8 +177,12 @@ export function souResponsavelDoChamado(c: Chamado, usuario: Pick<Usuario, 'id' 
  * na reatribuição administrativa. `perfil` também vem de usuarios/{uid}
  * (resolvido no login pelo próprio uid autenticado), então esta função
  * inteira depende só de identidade por UID, nunca de texto. */
-export function podeAgirNoChamado(c: Chamado, usuario: Pick<Usuario, 'id' | 'nome' | 'perfil'> | null | undefined): boolean {
-  return usuario?.perfil === 'admin' || souResponsavelDoChamado(c, usuario);
+export function podeAgirNoChamado(
+  c: Chamado,
+  usuario: Pick<Usuario, 'id' | 'nome' | 'perfil'> | null | undefined,
+  apelido?: string | null,
+): boolean {
+  return usuario?.perfil === 'admin' || souResponsavelDoChamado(c, usuario, apelido);
 }
 
 /**

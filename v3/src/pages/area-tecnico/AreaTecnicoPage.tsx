@@ -4,7 +4,7 @@ import { cn } from '@/utils/cn';
 import { KanbanCard } from '@/components/shared/KanbanCard';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { useAbertos, useAssumirChamado, useEncerradosLista } from '@/hooks/useChamados';
-import { useSouTecnicoAtivo } from '@/hooks/useTecnicos';
+import { useSouTecnicoAtivo, useTecnicos } from '@/hooks/useTecnicos';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { isAguardandoPeca, isEmAtendimento, souResponsavelDoChamado } from '@/utils/chamado-helpers';
@@ -33,16 +33,28 @@ export function AreaTecnicoPage() {
   const souTecnicoAtivo = useSouTecnicoAtivo();
   const [filtro, setFiltro] = useState<Filtro>('meus');
 
+  // Cadastro RH (tecnicos) vinculado a esta conta, se houver — só pra
+  // resolver o apelido usado nos chamados legados (ver comentário em
+  // souResponsavelDoChamado, chamado-helpers.ts): sem isso, "Meus
+  // Chamados" comparava só com o nome completo da conta de login e
+  // ficava zerado pra qualquer técnico cujo apelido no cadastro RH não
+  // fosse um prefixo desse nome.
+  const { data: tecnicos } = useTecnicos();
+  const meuApelido = useMemo(
+    () => tecnicos.find((t) => t.usuarioUid === usuario?.id)?.apelido || null,
+    [tecnicos, usuario],
+  );
+
   const conjuntos = useMemo(() => {
-    const meus = abertos.filter((c) => souResponsavelDoChamado(c, usuario));
+    const meus = abertos.filter((c) => souResponsavelDoChamado(c, usuario, meuApelido));
     return {
       meus,
       urgentes: abertos.filter((c) => c.prior === 'Urgente'),
       atendimento: abertos.filter(isEmAtendimento),
       peca: abertos.filter(isAguardandoPeca),
-      concluidos: encerrados.filter((c) => souResponsavelDoChamado(c, usuario)),
+      concluidos: encerrados.filter((c) => souResponsavelDoChamado(c, usuario, meuApelido)),
     };
-  }, [abertos, encerrados, usuario]);
+  }, [abertos, encerrados, usuario, meuApelido]);
 
   const itens = conjuntos[filtro];
 
