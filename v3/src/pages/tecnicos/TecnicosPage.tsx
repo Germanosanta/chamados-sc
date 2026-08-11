@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { AlertTriangle, Link2, Plus } from 'lucide-react';
+import { AlertTriangle, Link2, Plus, UserPlus } from 'lucide-react';
 import { KpiCard } from '@/components/shared/KpiCard';
 import { FilterBar } from '@/components/shared/FilterBar';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
@@ -10,7 +10,14 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Campo } from '@/components/shared/FormField';
-import { useTecnicosCadastro, useTecnicosDuplicados, useSalvarTecnico, useVincularTecnicos, SalvarTecnicoError } from '@/hooks/useTecnicos';
+import {
+  useTecnicosCadastro,
+  useTecnicosDuplicados,
+  useSalvarTecnico,
+  useVincularTecnicos,
+  useCriarTecnicosDeUsuarios,
+  SalvarTecnicoError,
+} from '@/hooks/useTecnicos';
 import { useUsuarios } from '@/hooks/useUsuarios';
 import { useChamados } from '@/hooks/useChamados';
 import { useSessionStore } from '@/store/session';
@@ -41,6 +48,7 @@ export function TecnicosPage() {
   const { data: chamados } = useChamados();
   const salvar = useSalvarTecnico();
   const vincular = useVincularTecnicos();
+  const criarDeUsuarios = useCriarTecnicosDeUsuarios();
   const usuarioLogado = useSessionStore((s) => s.usuario);
   const souAdmin = usuarioLogado?.perfil === 'admin';
 
@@ -137,6 +145,23 @@ export function TecnicosPage() {
       setOpen(false);
     } catch (e) {
       toast.error(e instanceof SalvarTecnicoError ? e.message : 'Não foi possível salvar.');
+    }
+  }
+
+  async function handleCriarDeUsuarios() {
+    try {
+      const r = await criarDeUsuarios.mutateAsync({ tecnicos, usuarios });
+      if (r.criados.length === 0) {
+        toast(
+          r.jaExistentes.length
+            ? 'Todas as contas com perfil Técnico já têm um cadastro em Técnicos.'
+            : 'Nenhuma conta com perfil Técnico encontrada em Usuários.',
+        );
+        return;
+      }
+      toast(`✓ ${r.criados.length} técnico(s) criado(s) a partir de Usuários: ${r.criados.map((c) => c.usuario.nome).join(', ')}`);
+    } catch (e) {
+      toast.error(e instanceof SalvarTecnicoError ? e.message : 'Não foi possível criar os técnicos a partir de usuários.');
     }
   }
 
@@ -251,6 +276,9 @@ export function TecnicosPage() {
         <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar nome, apelido…" className="w-56" />
         {souAdmin && (
           <div className="ml-auto flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={handleCriarDeUsuarios} disabled={criarDeUsuarios.isPending}>
+              <UserPlus className="h-3.5 w-3.5" /> {criarDeUsuarios.isPending ? 'Criando…' : 'Criar a partir de Usuários'}
+            </Button>
             <Button variant="ghost" size="sm" onClick={handleVincular} disabled={vincular.isPending}>
               <Link2 className="h-3.5 w-3.5" /> {vincular.isPending ? 'Vinculando…' : 'Vincular Usuários'}
             </Button>

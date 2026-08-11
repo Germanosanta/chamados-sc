@@ -224,6 +224,95 @@ export function useVincularTecnicos() {
   });
 }
 
+export interface CriacaoTecnicosDeUsuarios {
+  criados: { usuario: Usuario; key: string }[];
+  jaExistentes: Usuario[];
+}
+
+/**
+ * Achado na investigação de "Técnicos sem dados" (fase de estabilização):
+ * `tecnicos` nunca foi alimentada a partir de `usuarios` — nem na V2, nem
+ * na V3. Na V2 (docs/js/core/storage.js), `tecnicos/{key}` no Firestore é
+ * só um espelho de sincronização de um cadastro que existia em
+ * localStorage (`chm_cad_tec_v1`); é preenchida somente quando alguém
+ * salva um técnico manualmente pela tela de Config/Cadastro naquele
+ * navegador. Confirmado direto no Console do Firebase (projeto
+ * `chamdos-sc`, mesmo usado pela V3): a coleção existe, mas está com 0
+ * documentos — não é bug de leitura, é ausência real de dado.
+ *
+ * Esta função fecha essa lacuna de origem: cria 1 documento em
+ * `tecnicos` para cada conta em `usuarios` com `perfil === 'tecnico'`
+ * que ainda não tenha nenhum técnico vinculado a ela — com
+ * `usuarioUid` já preenchido de cara (vínculo direto, sem depender do
+ * casamento por nome/e-mail de `useVincularTecnicos`, que continua
+ * existindo pra quando um técnico já tem doc em `tecnicos` mas falta só
+ * o vínculo).
+ *
+ * Idempotente: usa a MESMA lista `tecnicos` (já carregada pelo
+ * chamador) pra checar `usuarioUid` antes de criar — rodar de novo não
+ * duplica ninguém que já foi criado por uma execução anterior. Nunca
+ * apaga nem sobrescreve nenhum documento existente, só cria os que
+ * faltam. A chave do documento reaproveita a mesma regra de
+ * useSalvarTecnico (apelido ou primeiro nome) apenas como um id legível
+ * — quem identifica de verdade é `usuarioUid`.
+ */
+export function useCriarTecnicosDeUsuarios() {
+  const usuarioLogado = useSessionStore((s) => s.usuario);
+  return useMutation({
+    mutationFn: async ({
+      tecnicos,
+      usuarios,
+    }: {
+      tecnicos: Tecnico[];
+      usuarios: Usuario[];
+    }): Promise<CriacaoTecnicosDeUsuarios> => {
+      if (usuarioLogado?.perfil !== 'admin') throw new SalvarTecnicoError('Apenas administradores podem criar técnicos a partir de usuários.');
+
+      const jaVinculados = new Set(tecnicos.map((t) => t.usuarioUid).filter((uid): uid is string => !!uid));
+      const candidatos = usuarios.filter((u) => u.perfil === 'tecnico');
+      const resultado: CriacaoTecnicosDeUsuarios = { criados: [], jaExistentes: [] };
+      const chavesUsadas = new Set(tecnicos.map((t) => t.key));
+
+      for (const u of candidatos) {
+        if (jaVinculados.has(u.id)) {
+          resultado.jaExistentes.push(u);
+          continue;
+        }
+        // Mesma regra de chave de useSalvarTecnico (apelido/primeiro nome);
+        // com sufixo numérico se colidir com uma chave já em uso — nunca
+        // sobrescreve um documento existente por acidente.
+        let chave = u.nome.trim().split(' ')[0];
+        let n = 2;
+        while (chavesUsadas.has(chave)) {
+          chave = `${u.nome.trim().split(' ')[0]}-${n}`;
+          n++;
+        }
+        chavesUsadas.add(chave);
+
+        const doc: Tecnico = {
+          key: chave,
+          nome: u.nome,
+          apelido: '',
+          telefone: '',
+          email: u.email || '',
+          area: '',
+          cargo: u.cargo || '',
+          status: u.status === 'Ativo' ? 'Ativo' : 'Inativo',
+          admissao: '',
+          obs: 'Criado automaticamente a partir do cadastro de usuários (perfil técnico).',
+          usuarioUid: u.id,
+          atualizadoEm: new Date().toISOString(),
+          atualizadoPor: usuarioLogado?.nome || 'Sistema',
+        };
+        await setMerge('tecnicos', chave, doc);
+        resultado.criados.push({ usuario: u, key: chave });
+      }
+
+      return resultado;
+    },
+  });
+}
+
 /** Portado de salvarTec() (config/index.js) — chave do doc é o apelido
  * (ou primeiro nome), pra bater com o valor gravado no campo `resp` dos
  * chamados; ao editar, a chave existente é preservada. */
