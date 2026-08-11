@@ -35,7 +35,7 @@ export function TecnicosPage() {
   // versão deduplicada usada no resto da V3 — ver useTecnicosCadastro.
   // Sem isso, um técnico cujo documento fica "atrás" de outro no
   // agrupamento por identidade não tinha como ser editado por ninguém.
-  const { data: tecnicos, carregando } = useTecnicosCadastro();
+  const { data: tecnicos, carregando, erro: erroLeitura } = useTecnicosCadastro();
   const duplicatas = useTecnicosDuplicados();
   const { data: usuarios } = useUsuarios();
   const { data: chamados } = useChamados();
@@ -211,6 +211,20 @@ export function TecnicosPage() {
         <KpiCard label="Ativos" value={carregando ? '—' : tecnicos.filter((t) => t.status === 'Ativo').length} color="amber" />
         <KpiCard label="Pendentes (total)" value={carregando ? '—' : [...stats.values()].reduce((a, s) => a + s.pendentes, 0)} color="purple" />
       </div>
+
+      {erroLeitura && (
+        <div className="flex flex-col gap-1 rounded-sm border border-destructive bg-destructive/10 p-3 text-sm">
+          <div className="flex items-center gap-2 font-semibold text-destructive">
+            <AlertTriangle className="h-4 w-4" />
+            Não foi possível carregar o cadastro de técnicos
+          </div>
+          <p className="text-xs text-muted-foreground">
+            A leitura da coleção <code>tecnicos</code> no Firestore falhou ({erroLeitura.message || 'erro desconhecido'}
+            ). Isto NÃO é "nenhum técnico cadastrado" — é uma falha real de leitura (permissão ou conexão). Recarregue
+            a página; se persistir, veja o console do navegador (F12) e avise o suporte com a mensagem acima.
+          </p>
+        </div>
+      )}
 
       {souAdmin && duplicatas.length > 0 && (
         <div className="flex flex-col gap-2 rounded-sm border border-warning bg-warning-bg p-3 text-sm">

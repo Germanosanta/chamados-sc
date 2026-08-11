@@ -64,10 +64,23 @@ export function useFirestoreCollection<T = DocumentData>(colName: ColName): Fire
 
     if (!entry.unsub) {
       entry.state = { ...entry.state, carregando: true };
-      entry.unsub = escutarColecao<T>(colName, (items) => {
-        entry.state = { data: items, carregando: false, erro: null };
-        entry.listeners.forEach((l) => l(entry.state));
-      });
+      entry.unsub = escutarColecao<T>(
+        colName,
+        (items) => {
+          entry.state = { data: items, carregando: false, erro: null };
+          entry.listeners.forEach((l) => l(entry.state));
+        },
+        (erro) => {
+          // Erro real (ex.: regra do Firestore negando a leitura) —
+          // mantém `data` como está (nunca troca por [] só por causa de
+          // um erro, pra não fingir "coleção vazia" quando na verdade é
+          // "não consegui ler"), mas liga `erro` e desliga `carregando`,
+          // pra quem consome o hook conseguir mostrar isso de verdade em
+          // vez de exibir "nenhum registro encontrado" silenciosamente.
+          entry.state = { ...entry.state, carregando: false, erro };
+          entry.listeners.forEach((l) => l(entry.state));
+        },
+      );
     }
 
     return () => {

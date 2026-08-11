@@ -88,13 +88,38 @@ export async function appendToArrayField(
  * pra isso continuar viável). O callback recebe o array completo a cada
  * mudança; quem chama decide como mesclar no cache (ver
  * hooks/useFirestoreCollection.ts). */
+/**
+ * Achado na investigação de "Técnicos sem dados": `onSnapshot` nunca
+ * recebia um callback de erro aqui — se a leitura de uma coleção
+ * caísse em erro (regra do Firestore negando, `db` ainda não pronto,
+ * queda de rede), o SDK loga um `FirebaseError` no console e simplesmente
+ * PARA de chamar o callback de sucesso, sem nunca disparar de novo. Do
+ * lado de quem usa o hook (useFirestoreCollection → qualquer
+ * useXxxCadastro/useXxx), isso é indistinguível de "a coleção está
+ * vazia": `carregando` já tinha virado `false` na tentativa anterior (ou
+ * fica `true` pra sempre, se for a primeira leitura), `data` continua
+ * `[]`, e a tela mostra "Nenhum registro encontrado" — uma mensagem que
+ * é verdade pra coleção vazia e MENTIRA pra erro de leitura, sem
+ * nenhuma forma de diferenciar as duas coisas. `onError` agora propaga
+ * esse erro pro estado (`erro`, já existia no tipo mas nunca era
+ * preenchido) — quem consome o hook decide se quer mostrar isso.
+ */
 export function escutarColecao<T = DocumentData>(
   colName: ColName,
   callback: (items: (T & { id: string })[]) => void,
+  onError?: (erro: Error) => void,
 ): Unsubscribe {
-  return onSnapshot(collection(db, colName), (snap) => {
-    callback(snap.docs.map((d) => ({ id: d.id, ...(d.data() as T) })));
-  });
+  return onSnapshot(
+    collection(db, colName),
+    (snap) => {
+      callback(snap.docs.map((d) => ({ id: d.id, ...(d.data() as T) })));
+    },
+    (erro) => {
+      // eslint-disable-next-line no-console -- diagnóstico intencional: sem isso, um erro de leitura de coleção inteira desaparecia em silêncio (ver comentário acima).
+      console.error(`[Firestore] onSnapshot('${colName}') falhou:`, erro);
+      onError?.(erro);
+    },
+  );
 }
 
 export async function gravarEmLote(colName: ColName, items: { id: string; data: DocumentData }[]): Promise<void> {
