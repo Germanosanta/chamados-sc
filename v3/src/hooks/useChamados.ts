@@ -7,6 +7,7 @@ import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
 import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
 import type { Chamado, ChamadoHistoricoTupla, ChecklistEncerramento, Encerramento, EventoTimeline, PecaUsada } from '@/types/chamado';
+import type { EquipamentoEstatico } from '@/types/equipamento';
 import type { Peca, Movimentacao } from '@/types/peca';
 import chamadosHistorico from '@/data/chamados_historico.json';
 
@@ -130,6 +131,29 @@ export function useReatribuirResponsavel() {
       });
     },
     [mutateAsync, usuario],
+  );
+}
+
+/**
+ * Vincular frota a um chamado que nasceu sem equipamento (ou com um
+ * código que não corresponde a nenhum equipamento cadastrado) — mesmo
+ * campo já usado na abertura (`equipCodigo`/`equipModelo`/`equipGrupo`/
+ * `equipStatus`, ver NovoChamadoPage), só gravado depois via patch em vez
+ * de na criação. Não mexe em nenhum outro campo do chamado, e não faz
+ * sentido pra um chamado que já tem frota — quem chama isso (UI) é quem
+ * decide exibir a ação só nesse caso (ver `equipamentoDoChamado` em
+ * chamado-helpers.ts) e checa a permissão de editar (`p_editar`,
+ * usePermission) antes de oferecer o botão.
+ */
+export function useVincularFrota() {
+  const { mutateAsync } = useChamadoPatch();
+  return useCallback(
+    (chamadoBase: Chamado, equip: EquipamentoEstatico) =>
+      mutateAsync({
+        chamadoBase,
+        patch: { equipCodigo: equip.c, equipModelo: equip.m, equipGrupo: equip.g, equipStatus: equip.s },
+      }),
+    [mutateAsync],
   );
 }
 

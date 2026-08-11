@@ -10,6 +10,7 @@ import { StatusStepper } from './StatusStepper';
 import { Timeline } from './Timeline';
 import { PhotoGallery } from './PhotoGallery';
 import { ChecklistDialog } from './ChecklistDialog';
+import { VincularFrotaButton } from './VincularFrotaButton';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { usePermission } from '@/hooks/usePermission';
@@ -296,7 +297,10 @@ export function CentroOperacionalModal() {
                       <Meta label="Status" value={equip.status || '—'} />
                     </div>
                   ) : (
-                    <p className="text-sm text-subtle">Sem equipamento vinculado.</p>
+                    <div className="flex flex-col items-start gap-2 rounded-sm border border-border bg-surface p-3">
+                      <p className="text-sm text-subtle">Sem equipamento vinculado.</p>
+                      {podeEditar && <VincularFrotaButton chamado={chamado} />}
+                    </div>
                   )}
                 </div>
                 <div>
