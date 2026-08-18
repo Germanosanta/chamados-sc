@@ -4,9 +4,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/utils/cn';
+import { useSessionStore } from '@/store/session';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useEncerrarChamado } from '@/hooks/useChamados';
-import { getTecnicoResponsavel } from '@/utils/chamado-helpers';
+import { fmtDateHora, getTecnicoResponsavel } from '@/utils/chamado-helpers';
+import { RelatorioAtendimentoModal } from './RelatorioAtendimentoModal';
 import type { Chamado, ChecklistEncerramento } from '@/types/chamado';
 
 const ITENS: { key: keyof ChecklistEncerramento; label: string }[] = [
@@ -23,6 +25,7 @@ const ITENS: { key: keyof ChecklistEncerramento; label: string }[] = [
 export function ChecklistDialog({ chamado, open, onOpenChange }: { chamado: Chamado; open: boolean; onOpenChange: (v: boolean) => void }) {
   const { data: tecnicos } = useTecnicosAtivos();
   const encerrar = useEncerrarChamado();
+  const usuario = useSessionStore((s) => s.usuario);
 
   const [tecSelecionados, setTecSelecionados] = useState<string[]>([]);
   const [solucao, setSolucao] = useState('');
@@ -37,6 +40,14 @@ export function ChecklistDialog({ chamado, open, onOpenChange }: { chamado: Cham
   });
   const [erro, setErro] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  const [relatorioOpen, setRelatorioOpen] = useState(false);
+  // Snapshot local do chamado já com o `encerramento` recém-confirmado —
+  // o `chamado` recebido via prop só ganha esse campo depois que o
+  // onSnapshot do Firestore volta (useChamados), o que não é imediato;
+  // pra abrir a prévia do relatório sem esperar o roundtrip, guarda aqui
+  // a mesma info que já foi gravada (nenhum dado novo, só o que o
+  // próprio submit já mandou pro Firestore).
+  const [chamadoParaRelatorio, setChamadoParaRelatorio] = useState<Chamado>(chamado);
 
   useEffect(() => {
     if (!open) return;
@@ -66,17 +77,37 @@ export function ChecklistDialog({ chamado, open, onOpenChange }: { chamado: Cham
       return;
     }
     setEnviando(true);
+    const chk = {
+      solucao: solucao.trim(),
+      tecnicos: tecSelecionados.join(', '),
+      materiais: materiais.trim(),
+      equipamentos: equipamentos.trim(),
+      observacoes: observacoes.trim(),
+      checklist: checks,
+    };
     try {
-      await encerrar(chamado, {
-        solucao: solucao.trim(),
-        tecnicos: tecSelecionados.join(', '),
-        materiais: materiais.trim(),
-        equipamentos: equipamentos.trim(),
-        observacoes: observacoes.trim(),
-        checklist: checks,
-      });
+      await encerrar(chamado, chk);
       toast(`Chamado ${chamado.num} encerrado com sucesso.`);
       onOpenChange(false);
+      // Mesma forma de Encerramento que useEncerrarChamado grava (ver
+      // hooks/useChamados.ts) — só pra alimentar a prévia do relatório
+      // sem esperar o onSnapshot voltar; nenhum dado inventado, nenhuma
+      // gravação extra.
+      const agora = new Date();
+      const { date: dataEncerramento, time: horaEncerramento } = fmtDateHora(agora);
+      setChamadoParaRelatorio({
+        ...chamado,
+        status: 'Encerrado',
+        encerramento: {
+          encerradoEm: agora.toISOString(),
+          dataEncerramento,
+          horaEncerramento,
+          encerradoPor: usuario?.nome || 'Sistema',
+          status: 'Encerrado',
+          ...chk,
+        },
+      });
+      setRelatorioOpen(true);
     } catch {
       setErro('Não foi possível encerrar o chamado. Tente novamente.');
     } finally {
@@ -85,110 +116,113 @@ export function ChecklistDialog({ chamado, open, onOpenChange }: { chamado: Cham
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Encerrar chamado</DialogTitle>
-          <DialogDescription>
-            {chamado.num} · {chamado.titulo?.slice(0, 50)}
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Encerrar chamado</DialogTitle>
+            <DialogDescription>
+              {chamado.num} · {chamado.titulo?.slice(0, 50)}
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="flex max-h-[60vh] flex-col gap-3.5 overflow-y-auto pr-1">
-          <div className="flex flex-col gap-1.5">
-            <Label>Técnico(s) que atenderam *</Label>
-            <div className="flex flex-wrap gap-1.5">
-              {tecnicos.map((t) => (
-                <button
-                  key={t.key}
-                  type="button"
-                  onClick={() => toggleTec(t.apelido || t.nome)}
-                  className={cn(
-                    'rounded-full border px-2.5 py-1 text-sm font-semibold transition-colors',
-                    tecSelecionados.includes(t.apelido || t.nome)
-                      ? 'border-primary bg-primary text-primary-foreground'
-                      : 'border-border bg-surface text-muted-foreground hover:border-border2',
-                  )}
-                >
-                  {t.nome}
-                </button>
+          <div className="flex max-h-[60vh] flex-col gap-3.5 overflow-y-auto pr-1">
+            <div className="flex flex-col gap-1.5">
+              <Label>Técnico(s) que atenderam *</Label>
+              <div className="flex flex-wrap gap-1.5">
+                {tecnicos.map((t) => (
+                  <button
+                    key={t.key}
+                    type="button"
+                    onClick={() => toggleTec(t.apelido || t.nome)}
+                    className={cn(
+                      'rounded-full border px-2.5 py-1 text-sm font-semibold transition-colors',
+                      tecSelecionados.includes(t.apelido || t.nome)
+                        ? 'border-primary bg-primary text-primary-foreground'
+                        : 'border-border bg-surface text-muted-foreground hover:border-border2',
+                    )}
+                  >
+                    {t.nome}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label>Solução executada *</Label>
+              <textarea
+                value={solucao}
+                onChange={(e) => setSolucao(e.target.value)}
+                rows={3}
+                className="rounded-sm border border-border bg-muted p-2.5 text-base text-foreground placeholder:text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                placeholder="Descreva o que foi feito para resolver o problema…"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="flex flex-col gap-1.5">
+                <Label>Materiais utilizados</Label>
+                <input
+                  value={materiais}
+                  onChange={(e) => setMateriais(e.target.value)}
+                  className="h-8 rounded-sm border border-border bg-muted px-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label>Equipamentos</Label>
+                <input
+                  value={equipamentos}
+                  onChange={(e) => setEquipamentos(e.target.value)}
+                  className="h-8 rounded-sm border border-border bg-muted px-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label>Observações</Label>
+              <textarea
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
+                rows={2}
+                className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2 rounded-sm border border-border bg-muted p-3">
+              <div className="flex items-center justify-between text-sm font-semibold text-muted-foreground">
+                <span>Checklist de encerramento</span>
+                <span>{done} de 4 itens</span>
+              </div>
+              <div className="h-1.5 overflow-hidden rounded-full bg-surface3">
+                <div className="h-full bg-success transition-all" style={{ width: `${(done / 4) * 100}%` }} />
+              </div>
+              {ITENS.map((it) => (
+                <label key={it.key} className="flex items-center gap-2 text-base text-foreground">
+                  <input
+                    type="checkbox"
+                    checked={checks[it.key]}
+                    onChange={(e) => setChecks((prev) => ({ ...prev, [it.key]: e.target.checked }))}
+                    className="h-4 w-4 rounded-xs border-border2"
+                  />
+                  {it.label}
+                </label>
               ))}
             </div>
+
+            {erro && <p className="text-sm text-destructive">⛔ {erro}</p>}
           </div>
 
-          <div className="flex flex-col gap-1.5">
-            <Label>Solução executada *</Label>
-            <textarea
-              value={solucao}
-              onChange={(e) => setSolucao(e.target.value)}
-              rows={3}
-              className="rounded-sm border border-border bg-muted p-2.5 text-base text-foreground placeholder:text-subtle focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              placeholder="Descreva o que foi feito para resolver o problema…"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div className="flex flex-col gap-1.5">
-              <Label>Materiais utilizados</Label>
-              <input
-                value={materiais}
-                onChange={(e) => setMateriais(e.target.value)}
-                className="h-8 rounded-sm border border-border bg-muted px-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <Label>Equipamentos</Label>
-              <input
-                value={equipamentos}
-                onChange={(e) => setEquipamentos(e.target.value)}
-                className="h-8 rounded-sm border border-border bg-muted px-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-1.5">
-            <Label>Observações</Label>
-            <textarea
-              value={observacoes}
-              onChange={(e) => setObservacoes(e.target.value)}
-              rows={2}
-              className="rounded-sm border border-border bg-muted p-2.5 text-base focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2 rounded-sm border border-border bg-muted p-3">
-            <div className="flex items-center justify-between text-sm font-semibold text-muted-foreground">
-              <span>Checklist de encerramento</span>
-              <span>{done} de 4 itens</span>
-            </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-surface3">
-              <div className="h-full bg-success transition-all" style={{ width: `${(done / 4) * 100}%` }} />
-            </div>
-            {ITENS.map((it) => (
-              <label key={it.key} className="flex items-center gap-2 text-base text-foreground">
-                <input
-                  type="checkbox"
-                  checked={checks[it.key]}
-                  onChange={(e) => setChecks((prev) => ({ ...prev, [it.key]: e.target.checked }))}
-                  className="h-4 w-4 rounded-xs border-border2"
-                />
-                {it.label}
-              </label>
-            ))}
-          </div>
-
-          {erro && <p className="text-sm text-destructive">⛔ {erro}</p>}
-        </div>
-
-        <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancelar
-          </Button>
-          <Button onClick={handleSubmit} disabled={enviando}>
-            Confirmar encerramento
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => onOpenChange(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleSubmit} disabled={enviando}>
+              Confirmar encerramento
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <RelatorioAtendimentoModal chamado={chamadoParaRelatorio} open={relatorioOpen} onOpenChange={setRelatorioOpen} />
+    </>
   );
 }

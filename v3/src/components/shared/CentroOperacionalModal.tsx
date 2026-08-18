@@ -11,6 +11,7 @@ import { Timeline } from './Timeline';
 import { PhotoGallery } from './PhotoGallery';
 import { ChecklistDialog } from './ChecklistDialog';
 import { VincularFrotaButton } from './VincularFrotaButton';
+import { RelatorioAtendimentoModal } from './RelatorioAtendimentoModal';
 import { useDetalheStore } from '@/store/detalhe';
 import { useSessionStore } from '@/store/session';
 import { usePermission } from '@/hooks/usePermission';
@@ -42,6 +43,7 @@ export function CentroOperacionalModal() {
   const reabrir = useReabrirChamado();
 
   const [checklistOpen, setChecklistOpen] = useState(false);
+  const [relatorioOpen, setRelatorioOpen] = useState(false);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [actionInput, setActionInput] = useState('');
 
@@ -166,6 +168,11 @@ export function CentroOperacionalModal() {
                     )}
                   </div>
                   {chamado.desc && <p className="rounded-sm bg-muted p-2.5 text-sm text-muted-foreground">{chamado.desc}</p>}
+                  {fechado && (
+                    <Button size="sm" variant="ghost" className="w-fit" onClick={() => setRelatorioOpen(true)}>
+                      📄 Ver relatório de atendimento
+                    </Button>
+                  )}
                 </div>
 
                 {/* Bloco 2 — Ações rápidas */}
@@ -313,6 +320,7 @@ export function CentroOperacionalModal() {
         </DialogContent>
       </Dialog>
       {chamado && <ChecklistDialog chamado={chamado} open={checklistOpen} onOpenChange={setChecklistOpen} />}
+      {chamado && <RelatorioAtendimentoModal chamado={chamado} open={relatorioOpen} onOpenChange={setRelatorioOpen} />}
     </>
   );
 }
