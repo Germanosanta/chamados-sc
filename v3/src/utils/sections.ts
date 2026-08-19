@@ -14,6 +14,7 @@ export const SECTIONS = [
   'responsaveis',
   'criticidade',
   'painel',
+  'relatorio-gerencial',
   'auditoria',
   'frotas',
   'kb',
@@ -39,6 +40,7 @@ export const TITLES: Record<SectionId, string> = {
   responsaveis: 'Responsáveis',
   criticidade: 'Criticidade',
   painel: 'Painel Operacional',
+  'relatorio-gerencial': 'Relatório Gerencial',
   auditoria: 'Auditoria e Logs',
   frotas: 'Histórico por Frota',
   kb: 'Banco de Soluções',
@@ -67,6 +69,7 @@ export const SUBS: Partial<Record<SectionId, string>> = {
   equipamentos: 'Cadastro de equipamentos e frotas',
   tecnicos: 'Performance e ranking por técnico',
   config: 'Configurações do sistema',
+  'relatorio-gerencial': 'Filtros, KPIs, ranking e exportação em PDF',
 };
 
 /** Grupo de navegação da sidebar — só pra organização visual, não afeta
@@ -113,6 +116,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { id: 'pormes', label: 'Por Mês' },
       { id: 'responsaveis', label: 'Responsáveis', perm: 'p_responsaveis' },
+      { id: 'relatorio-gerencial', label: 'Relatório Gerencial', perm: 'p_relatorios' },
       { id: 'auditoria', label: 'Auditoria / Logs' },
     ],
   },

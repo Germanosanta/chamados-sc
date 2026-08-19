@@ -27,6 +27,9 @@ const AuditoriaPage = lazy(() => import('@/pages/auditoria/AuditoriaPage').then(
 const ResponsaveisPage = lazy(() => import('@/pages/responsaveis/ResponsaveisPage').then((m) => ({ default: m.ResponsaveisPage })));
 const DashboardPage = lazy(() => import('@/pages/dashboard/DashboardPage').then((m) => ({ default: m.DashboardPage })));
 const PainelPage = lazy(() => import('@/pages/painel/PainelPage').then((m) => ({ default: m.PainelPage })));
+const RelatorioGerencialPage = lazy(() =>
+  import('@/pages/relatorio-gerencial/RelatorioGerencialPage').then((m) => ({ default: m.RelatorioGerencialPage })),
+);
 const PorMesPage = lazy(() => import('@/pages/pormes/PorMesPage').then((m) => ({ default: m.PorMesPage })));
 const PlaceholderPage = lazy(() => import('@/pages/placeholder/PlaceholderPage').then((m) => ({ default: m.PlaceholderPage })));
 
@@ -56,6 +59,7 @@ const REAL_PAGES: Partial<Record<SectionId, ComponentType>> = {
   dashboard: DashboardPage,
   painel: PainelPage,
   pormes: PorMesPage,
+  'relatorio-gerencial': RelatorioGerencialPage,
 };
 
 const PERM_BY_SECTION: Partial<Record<SectionId, Permissao>> = {};
