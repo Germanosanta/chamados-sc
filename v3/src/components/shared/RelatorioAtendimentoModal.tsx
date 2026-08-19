@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -27,9 +27,17 @@ interface RelatorioAtendimentoModalProps {
  */
 export function RelatorioAtendimentoModal({ chamado, open, onOpenChange }: RelatorioAtendimentoModalProps) {
   const [texto, setTexto] = useState('');
+  // Regenera o texto só na transição fechado→aberto, nunca enquanto já
+  // está aberto: `chamado` vem de `useChamados()` e ganha uma referência
+  // nova a cada snapshot do Firestore (qualquer escrita em `chamados`/
+  // `historico`, de qualquer chamado) — sem essa guarda, o efeito
+  // disparava de novo a cada snapshot e apagava silenciosamente o texto
+  // que o técnico já tivesse editado na textarea.
+  const estavaAberto = useRef(false);
 
   useEffect(() => {
-    if (open) setTexto(gerarRelatorioAtendimento(chamado));
+    if (open && !estavaAberto.current) setTexto(gerarRelatorioAtendimento(chamado));
+    estavaAberto.current = open;
   }, [open, chamado]);
 
   async function handleCopiar() {
