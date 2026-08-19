@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import logoCoa from '@/assets/img/coa.jpeg';
+import logoInstitucional from '@/assets/img/logo-institucional.jpeg';
 import { codigoEquipDoChamado, fazendaLabel, formatDataBR } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 import type { FiltroAplicado } from '@/components/shared/RelatorioGerencialHeader';
@@ -18,8 +18,9 @@ import type { FiltroAplicado } from '@/components/shared/RelatorioGerencialHeade
  * adicionar uma segunda biblioteca de gráficos.
  *
  * Cabeçalho institucional: replica o mesmo conteúdo/ordem de
- * `RelatorioGerencialHeader.tsx` (duas logos lado a lado, nome do
- * relatório, período, filtros aplicados) — jsPDF/autoTable não sabem
+ * `RelatorioGerencialHeader.tsx` (logo institucional — Santa Colomba +
+ * COA combinadas —, nome do relatório, período, filtros aplicados) —
+ * jsPDF/autoTable não sabem
  * renderizar um componente React, então o layout é redesenhado aqui com
  * as primitivas do jsPDF (texto/retângulos/imagem). Qualquer mudança
  * visual no header da tela deve ser replicada aqui também.
@@ -30,14 +31,15 @@ const PAGE_W = 595.28; // A4 pt, retrato
 const PAGE_H = 841.89;
 
 /**
- * `logoCoa` (import de asset do Vite) é uma URL — dev server path ou, se
- * menor que o limite de inlining do Vite, já uma `data:` URI —, nunca
- * dado de imagem pronto. `jsPDF.addImage` não sabe buscar uma URL
- * sozinho (precisa de base64/ArrayBuffer/elemento já carregado), então
- * pré-carregamos a URL num `HTMLImageElement` uma única vez (funciona
- * para os dois casos) e reaproveitamos o mesmo elemento carregado em
- * todo cabeçalho desenhado (1 por página) — sem isso, a imagem simplesmente
- * não apareceria no PDF (addImage silenciosamente ignora string inválida).
+ * `logoInstitucional` (import de asset do Vite) é uma URL — dev server
+ * path ou, se menor que o limite de inlining do Vite, já uma `data:`
+ * URI —, nunca dado de imagem pronto. `jsPDF.addImage` não sabe buscar
+ * uma URL sozinho (precisa de base64/ArrayBuffer/elemento já carregado),
+ * então pré-carregamos a URL num `HTMLImageElement` uma única vez
+ * (funciona para os dois casos) e reaproveitamos o mesmo elemento
+ * carregado em todo cabeçalho desenhado (1 por página) — sem isso, a
+ * imagem simplesmente não apareceria no PDF (addImage silenciosamente
+ * ignora string inválida).
  */
 function carregarImagem(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -48,33 +50,28 @@ function carregarImagem(src: string): Promise<HTMLImageElement> {
   });
 }
 
+// Proporção real do arquivo (1458×291px, fornecido pelo usuário em
+// 2026-08-19 — já traz as duas marcas, Santa Colomba e COA, combinadas
+// numa única peça horizontal). Altura fixa no PDF, largura derivada
+// dessa proporção — nunca esticar/espremer a imagem fora dela.
+const LOGO_RATIO = 1458 / 291;
+const LOGO_H = 30;
+const LOGO_W = LOGO_H * LOGO_RATIO;
+
 function drawHeader(doc: jsPDF, logoImg: HTMLImageElement | null, titulo: string, periodo: string, filtros: FiltroAplicado[]): number {
   let y = MARGIN;
 
-  // Logo COA (real) — só desenha se o pré-carregamento deu certo; nunca
-  // trava a geração do PDF por causa disso (resto do cabeçalho segue
-  // íntegro mesmo sem essa imagem).
+  // Logo institucional (Santa Colomba + COA já combinadas na mesma
+  // imagem, ver comentário acima) — só desenha se o pré-carregamento deu
+  // certo; nunca trava a geração do PDF por causa disso (resto do
+  // cabeçalho segue íntegro mesmo sem essa imagem).
   if (logoImg) {
     try {
-      doc.addImage(logoImg, 'JPEG', MARGIN, y, 34, 34);
+      doc.addImage(logoImg, 'JPEG', MARGIN, y, LOGO_W, LOGO_H);
     } catch {
       // formato inesperado do asset — segue sem travar a exportação.
     }
   }
-
-  // Placeholder do logo Santa Colomba — ausente no projeto (ver
-  // RelatorioGerencialHeader.tsx). Nunca inventar uma imagem no lugar:
-  // desenha uma caixa tracejada neutra com o mesmo aviso da tela.
-  const phX = MARGIN + 34 + 8;
-  doc.setDrawColor(180, 180, 180);
-  doc.setLineDashPattern([2, 2], 0);
-  doc.rect(phX, y, 34, 34, 'S');
-  doc.setLineDashPattern([], 0);
-  doc.setFontSize(5);
-  doc.setTextColor(140, 140, 140);
-  doc.text('Logo Santa', phX + 17, y + 14, { align: 'center' });
-  doc.text('Colomba', phX + 17, y + 20, { align: 'center' });
-  doc.text('pendente', phX + 17, y + 26, { align: 'center' });
 
   // Título + período, alinhados à direita.
   doc.setFontSize(13);
@@ -86,7 +83,7 @@ function drawHeader(doc: jsPDF, logoImg: HTMLImageElement | null, titulo: string
   doc.setTextColor(90, 90, 90);
   doc.text(`Período: ${periodo}`, PAGE_W - MARGIN, y + 26, { align: 'right' });
 
-  y += 34 + 8;
+  y += LOGO_H + 8;
 
   // Linha de filtros aplicados (só os que o usuário realmente escolheu).
   if (filtros.length > 0) {
@@ -145,7 +142,7 @@ export interface GerarRelatorioPdfInput {
  * do logo (ver `carregarImagem` acima) — o resto da geração é síncrono. */
 export async function gerarRelatorioGerencialPdf(input: GerarRelatorioPdfInput): Promise<void> {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-  const logoImg = await carregarImagem(logoCoa).catch(() => null);
+  const logoImg = await carregarImagem(logoInstitucional).catch(() => null);
 
   let y = drawHeader(doc, logoImg, input.titulo, input.periodo, input.filtros);
   doc.setFontSize(7.5);

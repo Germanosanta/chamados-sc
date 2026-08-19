@@ -1,4 +1,4 @@
-import logoCoa from '@/assets/img/coa.jpeg';
+import logoInstitucional from '@/assets/img/logo-institucional.jpeg';
 
 /**
  * Cabeçalho institucional reutilizável — base de QUALQUER relatório
@@ -14,15 +14,27 @@ import logoCoa from '@/assets/img/coa.jpeg';
  * geração do PDF replica esta mesma estrutura visual "à mão"; qualquer
  * mudança de layout aqui deve ser espelhada lá).
  *
- * LOGO SANTA COLOMBA: não existe nenhum arquivo de logo oficial da Santa
- * Colomba neste projeto (busca completa já feita — só existe o logo da
- * COA, `src/assets/img/coa.jpeg`, usado no restante do app). Em vez de
- * inventar/baixar uma imagem genérica no lugar (proibido), este
- * componente mostra um placeholder tracejado neutro. Assim que o arquivo
- * oficial for fornecido, salve-o em `src/assets/img/santa-colomba.png`
- * (ou `.svg`) e troque o placeholder abaixo por
- * `<img src={logoSantaColomba} alt="Santa Colomba" .../>` — mesmo padrão
- * de import usado para `logoCoa` nesta mesma linha.
+ * LOGO: `logo-institucional.jpeg` (fornecida pelo usuário em 2026-08-19,
+ * `src/assets/img/`) traz as duas marcas — Santa Colomba e Centro de
+ * Operações Agrícolas (COA) — combinadas numa única peça horizontal
+ * (1458×291px, proporção ~5:1, recorte justo/sem sobra), separadas por
+ * uma linha vertical. Cabeçalho usa UMA imagem só (em vez de compor duas
+ * logos separadas em código): a arte já vem pronta e no padrão oficial,
+ * sem risco de distorcer proporção nem separar o que deve aparecer
+ * sempre junto (regra do usuário: "as duas logos devem aparecer
+ * juntas").
+ *
+ * Nota de correção: a investigação inicial deste módulo (busca por nome
+ * de arquivo/pasta) concluiu erroneamente que não existia logo da Santa
+ * Colomba no projeto. `src/assets/img/coa.jpeg` (usado em Sidebar/Login/
+ * Portal) na verdade JÁ contém as duas marcas combinadas — só não foi
+ * percebido porque a busca nunca abriu o conteúdo da imagem, só o nome
+ * do arquivo. Mesmo assim, optei por manter este arquivo separado (em
+ * vez de importar `coa.jpeg` aqui) porque ele é um recorte mais justo/
+ * compacto (1458×291 vs. 1600×666 de `coa.jpeg`, que tem bastante
+ * espaço em branco ao redor pensado pro uso em miniatura quadrada do
+ * Sidebar) — melhor pra uma faixa de cabeçalho fina como esta, sem
+ * recalcular proporção/aumentar a altura do header à toa.
  */
 
 export interface FiltroAplicado {
@@ -55,19 +67,7 @@ export function RelatorioGerencialHeader({ titulo, periodo, filtrosAplicados, ge
   return (
     <header className={`flex flex-col gap-3 border-b-2 border-border pb-3 ${className || ''}`}>
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <img src={logoCoa} alt="COA" className="h-12 w-12 shrink-0 rounded-sm object-cover" />
-          {/* Placeholder do logo Santa Colomba — ver comentário no topo do
-             arquivo. Nunca substituir por uma imagem genérica. */}
-          <div
-            className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-sm border border-dashed border-border2 bg-muted text-center"
-            role="img"
-            aria-label="Logo Santa Colomba pendente"
-            title="Logo Santa Colomba pendente"
-          >
-            <span className="px-0.5 text-[7px] font-semibold leading-tight text-subtle">Logo Santa Colomba pendente</span>
-          </div>
-        </div>
+        <img src={logoInstitucional} alt="Santa Colomba · Centro de Operações Agrícolas" className="h-11 shrink-0 object-contain" />
         <div className="flex-1 text-right">
           <h1 className="text-lg font-extrabold uppercase tracking-wide text-foreground">{titulo}</h1>
           <div className="text-sm font-medium text-muted-foreground">Período: {periodo}</div>
