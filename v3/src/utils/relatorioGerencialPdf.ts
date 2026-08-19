@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import logoCoa from '@/assets/img/coa.jpeg';
-import { formatDataBR } from '@/utils/chamado-helpers';
+import { codigoEquipDoChamado, fazendaLabel, formatDataBR } from '@/utils/chamado-helpers';
 import type { Chamado } from '@/types/chamado';
 import type { FiltroAplicado } from '@/components/shared/RelatorioGerencialHeader';
 
@@ -67,9 +67,9 @@ function drawHeader(doc: jsPDF, logoImg: HTMLImageElement | null, titulo: string
   // desenha uma caixa tracejada neutra com o mesmo aviso da tela.
   const phX = MARGIN + 34 + 8;
   doc.setDrawColor(180, 180, 180);
-  doc.setLineDash([2, 2], 0);
+  doc.setLineDashPattern([2, 2], 0);
   doc.rect(phX, y, 34, 34, 'S');
-  doc.setLineDash([], 0);
+  doc.setLineDashPattern([], 0);
   doc.setFontSize(5);
   doc.setTextColor(140, 140, 140);
   doc.text('Logo Santa', phX + 17, y + 14, { align: 'center' });
@@ -241,8 +241,8 @@ export async function gerarRelatorioGerencialPdf(input: GerarRelatorioPdfInput):
       c.titulo || '—',
       c.status || '—',
       c.resp || c.assumidoPor || '—',
-      c.bucket || '—',
-      c.equipCodigo || '—',
+      fazendaLabel(c.bucket),
+      codigoEquipDoChamado(c) || '—',
       formatDataBR(c.data),
       c.encerramento?.dataEncerramento || '—',
     ]),
