@@ -289,6 +289,24 @@ export function CentroOperacionalModal() {
                         <Meta label="Técnico" value={chamado.resp || chamado.assumidoPor || '—'} />
                         {chamado.assumidoEm && <Meta label="Desde" value={new Date(chamado.assumidoEm).toLocaleString('pt-BR')} />}
                       </>
+                    ) : chamado.encerramento?.encerradoPor ? (
+                      // Achado: chamado já atendido/encerrado (tem
+                      // encerramento.encerradoPor), mas `resp`/`assumidoPor`
+                      // nunca foram preenchidos — normal em chamados
+                      // fechados pela V2 ou por um fluxo antigo que não
+                      // passava pelo "Assumir" da V3 (ver useAssumirChamado/
+                      // useEncerrarChamado). `temResponsavel` (chamado-
+                      // helpers.ts) checa só resp/assumidoPor, então o
+                      // painel mostrava "Ainda não assumido" pra um chamado
+                      // que claramente já teve alguém atendendo — o dado
+                      // certo já existe, só num campo diferente
+                      // (encerramento), não sendo lido aqui.
+                      <>
+                        <Meta label="Técnico" value={chamado.encerramento.encerradoPor} />
+                        {chamado.encerramento.encerradoEm && (
+                          <Meta label="Encerrado em" value={new Date(chamado.encerramento.encerradoEm).toLocaleString('pt-BR')} />
+                        )}
+                      </>
                     ) : (
                       <p className="text-sm text-subtle">Ainda não assumido.</p>
                     )}
