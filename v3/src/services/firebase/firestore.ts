@@ -6,6 +6,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  runTransaction,
   serverTimestamp,
   setDoc,
   deleteDoc,
@@ -148,4 +149,45 @@ export async function gravarEmLoteMisto(items: { col: ColName; id: string; data:
     }
     await batch.commit();
   }
+}
+
+/**
+ * Achado na investigação de "auditoria de um chamado mostrando eventos
+ * de outros equipamentos/chamados completamente diferentes": o número de
+ * um chamado novo (`CHM-0001`, `CHM-0002`, ...) era calculado só no
+ * cliente, como `data.length + 1` (useProximoNumero, hooks/useChamados.ts)
+ * — sem transação, sem contador no servidor. Dois chamados abertos por
+ * pessoas diferentes num intervalo curto (antes do listener em tempo
+ * real de `chamados` refletir o primeiro) calculam o MESMO `data.length`
+ * e geram o MESMO número. Como o número vira o próprio ID do documento
+ * em `chamados/{num}` (useCriarChamado), o segundo `setMerge` não cria
+ * um chamado novo — ele MESCLA por cima do primeiro, cujos dados
+ * (equipamento, descrição, fazenda) desaparecem substituídos pelos do
+ * segundo. A entrada de auditoria de CADA abertura, porém, é gravada à
+ * parte (`auditoria/log_<ts>`, nunca sobrescrita) com o mesmo `chamado`
+ * colidido — por isso a mesma tela de auditoria acumula, ao longo do
+ * tempo, aberturas de vários equipamentos completamente diferentes sob
+ * o mesmo número: o número foi reaproveitado várias vezes de verdade.
+ *
+ * Correção: aloca o número dentro de uma `runTransaction` contra um
+ * contador único (`configuracoes/contadorChamados.ultimoNumero`) — o
+ * SDK do Firestore reexecuta a transação automaticamente em caso de
+ * disputa concorrente, então duas aberturas simultâneas NUNCA mais saem
+ * com o mesmo número, sem precisar de Cloud Functions (plano Spark).
+ * `candidatoInicial` só é usado na primeiríssima vez que o contador é
+ * criado (documento ainda não existe) — bootstrap a partir da contagem
+ * atual de chamados, pra manter a numeração pequena/sequencial em vez de
+ * pular pra um timestamp; depois disso o contador nunca mais depende de
+ * `data.length`.
+ */
+export async function alocarProximoNumeroChamado(candidatoInicial: number): Promise<string> {
+  const ref = doc(db, 'configuracoes', 'contadorChamados');
+  const proximo = await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref);
+    const atual = snap.exists() && typeof snap.data().ultimoNumero === 'number' ? (snap.data().ultimoNumero as number) : Math.max(candidatoInicial - 1, 0);
+    const novo = atual + 1;
+    tx.set(ref, { ultimoNumero: novo, _updatedAt: serverTimestamp() }, { merge: true });
+    return novo;
+  });
+  return `CHM-${String(proximo).padStart(4, '0')}`;
 }

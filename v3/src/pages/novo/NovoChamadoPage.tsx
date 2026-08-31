@@ -105,8 +105,11 @@ export function NovoChamadoPage() {
     setEnviando(true);
     const now = new Date();
     const { date: dataAbertura, time: horaAbertura } = fmtDateHora(now);
-    const chamado: Chamado = {
-      num: proximoNumero,
+    // `num` NÃO entra aqui — é alocado dentro de useCriarChamado, de forma
+    // atômica, no momento real do envio (ver comentário em useChamados.ts
+    // sobre a colisão de números que isso corrige). `proximoNumero` acima
+    // é só uma prévia pra exibir antes de enviar.
+    const chamado: Omit<Chamado, 'num'> = {
       titulo: equip.e || `${equip.c} ${equip.d}`,
       cultura: cultura as Chamado['cultura'],
       // Chamado sempre nasce sem responsável — só passa a ter um quando
@@ -137,8 +140,8 @@ export function NovoChamadoPage() {
     };
 
     try {
-      await criar.mutateAsync({ chamado, pecasUsadas: [] });
-      setEnviado(proximoNumero);
+      const criado = await criar.mutateAsync({ chamado, pecasUsadas: [], numEstimado: todos.length });
+      setEnviado(criado.num);
     } catch {
       toast.error('Não foi possível abrir o chamado. Tente novamente.');
     } finally {

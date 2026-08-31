@@ -2,7 +2,7 @@ import { useCallback, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
 import { useSouTecnicoAtivo } from './useTecnicos';
-import { appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
+import { alocarProximoNumeroChamado, appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
 import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
@@ -77,11 +77,21 @@ export function useEncerradosLista() {
   return { data: encerrados, carregando };
 }
 
-/** Próximo número sequencial (mesma regra da V2: allRecords().length+1,
- * formatado "CHM-0001"). Recalculado sempre que `data` muda — como é só
- * lido no momento de abrir o formulário/enviar, uma colisão exigiria 2
- * chamados sendo abertos no exato mesmo instante por usuários
- * diferentes, mesmo risco (baixo) que a V2 já assume. */
+/**
+ * Achado real na investigação de "auditoria mostrando eventos de outros
+ * equipamentos": esta conta (`data.length + 1`, herdada 1:1 da V2) NÃO é
+ * uma alocação de verdade — é só uma ESTIMATIVA pra mostrar antes do
+ * envio ("Número: CHM-0042"). Dois chamados abertos por pessoas
+ * diferentes num intervalo curto acabavam colidindo no mesmo número de
+ * verdade (`chamados/{num}` usa o número como ID do documento — a
+ * segunda gravação mesclava por cima da primeira, apagando seus dados),
+ * porque o número REAL usado na gravação também vinha só daqui. A
+ * alocação de verdade agora é atômica (ver alocarProximoNumeroChamado,
+ * services/firebase/firestore.ts, chamada de dentro de useCriarChamado)
+ * — o valor que ESTA função devolve nunca mais é usado pra gravar nada,
+ * só pra exibir uma prévia (pode divergir por 1 do número final, se
+ * outro chamado for aberto entre a prévia e o envio — inofensivo, é só
+ * texto). */
 export function useProximoNumero(): string {
   const { data } = useChamados();
   return `CHM-${String(data.length + 1).padStart(4, '0')}`;
@@ -199,11 +209,27 @@ export function useAssumirChamado() {
  * gravada com um `setMerge` isolado e só no final vinha o chamado — uma
  * falha no meio do loop (rede, permissão) deixava estoque decrementado
  * sem nenhum chamado correspondente. Em lote, ou tudo é gravado, ou nada.
+ *
+ * `chamado.num` NÃO vem mais de quem chama (ver useProximoNumero acima):
+ * é alocado aqui dentro, no momento real do envio, via
+ * `alocarProximoNumeroChamado` (transação atômica) — a única forma de
+ * garantir que duas aberturas concorrentes nunca recebam o mesmo número
+ * e se sobrescrevam em `chamados/{num}`.
  */
 export function useCriarChamado() {
   const usuario = useSessionStore((s) => s.usuario);
   return useMutation({
-    mutationFn: async ({ chamado, pecasUsadas }: { chamado: Chamado; pecasUsadas: PecaUsada[] }) => {
+    mutationFn: async ({
+      chamado: chamadoSemNum,
+      pecasUsadas,
+      numEstimado,
+    }: {
+      chamado: Omit<Chamado, 'num'>;
+      pecasUsadas: PecaUsada[];
+      numEstimado: number;
+    }) => {
+      const num = await alocarProximoNumeroChamado(numEstimado);
+      const chamado: Chamado = { ...chamadoSemNum, num };
       const itens: Parameters<typeof gravarEmLoteMisto>[0] = [{ col: 'chamados', id: chamado.num, data: chamado }];
 
       if (pecasUsadas.length) {
@@ -241,6 +267,7 @@ export function useCriarChamado() {
 
       await gravarEmLoteMisto(itens);
       await audit('abriu', `Chamado ${chamado.num} aberto: ${chamado.titulo}`, usuario, chamado.num);
+      return chamado;
     },
   });
 }
