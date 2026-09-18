@@ -78,12 +78,19 @@ jobs:
 
       # Usa "npm ci" automaticamente assim que v3/package-lock.json for
       # commitado (instalação reprodutível); até lá, cai para "npm install".
+      # O fallback "npm ci || npm install" (sem ambiente com Node local
+      # disponível pra rodar `npm install` e regenerar o lockfile depois de
+      # adicionar uma dependência nova ao package.json) evita que o CI
+      # quebre só porque o lockfile ficou momentaneamente atrás do
+      # package.json — assim que alguém com Node local rodar `npm install`
+      # e commitar o lockfile atualizado, volta a cair 100% no caminho
+      # rápido/determinístico do `npm ci`.
       - name: Instalar dependências
         id: install
         run: |
           if [ -f package-lock.json ]; then
             echo "package-lock.json encontrado — usando npm ci"
-            npm ci
+            npm ci || { echo "::warning::npm ci falhou (lockfile desatualizado em relação ao package.json) — caindo para npm install."; npm install; }
           else
             echo "::warning::v3/package-lock.json não encontrado — usando npm install. Gere e commite o lockfile para builds reprodutíveis (troca automática para 'npm ci' já está configurada acima)."
             npm install

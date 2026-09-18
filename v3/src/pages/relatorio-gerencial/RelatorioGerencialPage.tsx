@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import type { Chart as ChartJSInstance, ChartData } from 'chart.js';
-import { FileDown, Sheet } from 'lucide-react';
+import { FileDown, FileSpreadsheet, Sheet } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -34,6 +35,7 @@ import {
 } from '@/utils/chamado-helpers';
 import { chartBaseOptions } from '@/utils/chartSetup';
 import { gerarRelatorioGerencialPdf } from '@/utils/relatorioGerencialPdf';
+import { gerarRelatorioGerencialExcel } from '@/utils/relatorioGerencialExcel';
 import { downloadCSV } from '@/utils/csv';
 import type { Chamado, ChamadoStatus } from '@/types/chamado';
 
@@ -94,6 +96,10 @@ export function RelatorioGerencialPage() {
   const [frotaSel, setFrotaSel] = useState<string>(TODOS);
   const [page, setPage] = useState(1);
   const [gerandoPdf, setGerandoPdf] = useState(false);
+  // Flag própria (não reusa `gerandoPdf`) para não desabilitar os dois
+  // botões de exportação juntos por engano quando só um deles está
+  // gerando.
+  const [gerandoExcel, setGerandoExcel] = useState(false);
 
   const chartRef = useRef<ChartJSInstance<'bar'>>(null);
 
@@ -256,6 +262,39 @@ export function RelatorioGerencialPage() {
     }
   }
 
+  // Excel (.xlsx) com abas Resumo/Chamados/Técnicos/Fazendas/Frota —
+  // mesmos dados já filtrados/calculados pela tela (utils/
+  // relatorioGerencialExcel.ts), ao lado do PDF (leitura) e do CSV
+  // (extração rápida de 1 aba só). `dataInicioISO`/`dataFimISO` só
+  // nomeiam o arquivo — usa o período de abertura quando preenchido,
+  // senão o de encerramento, senão cai no nome "completo_<hoje>".
+  async function handleGerarExcel() {
+    setGerandoExcel(true);
+    try {
+      const agora = new Date();
+      await gerarRelatorioGerencialExcel({
+        titulo: 'RELATÓRIO GERENCIAL DE CHAMADOS',
+        periodo: periodoLabel,
+        filtros: filtrosAplicados,
+        geradoEm: `${formatDataBR(agora.toISOString().slice(0, 10))} ${agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+        kpis: [
+          ...kpis.map((k) => ({ label: k.label, value: String(k.value) })),
+          { label: 'Tempo médio de atendimento', value: tempoMedio !== null ? `${tempoMedio.toFixed(1)} dias` : '—' },
+        ],
+        chamados: filtrados,
+        ranking: ranking.map(([nome, total]) => ({ nome, total })),
+        tecnicos,
+        dataInicioISO: aberturaDe || encerramentoDe || undefined,
+        dataFimISO: aberturaAte || encerramentoAte || undefined,
+      });
+    } catch (err) {
+      console.error('Falha ao gerar Excel do relatório gerencial', err);
+      toast.error('Não foi possível gerar o Excel do relatório. Tente novamente.');
+    } finally {
+      setGerandoExcel(false);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -332,6 +371,10 @@ export function RelatorioGerencialPage() {
         <Button variant="ghost" onClick={exportarCsv} disabled={carregando || filtrados.length === 0} className="sm:self-end">
           <Sheet className="h-4 w-4" />
           Exportar CSV
+        </Button>
+        <Button variant="ghost" onClick={handleGerarExcel} disabled={gerandoExcel || carregando} className="sm:self-end">
+          <FileSpreadsheet className="h-4 w-4" />
+          {gerandoExcel ? 'Gerando…' : 'Exportar Excel'}
         </Button>
         <Button onClick={handleGerarPdf} disabled={gerandoPdf || carregando} className="sm:self-end">
           <FileDown className="h-4 w-4" />
