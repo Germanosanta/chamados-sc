@@ -77,12 +77,17 @@ export function RelatorioGerencialPage() {
   // o filtro de período só olhava `c.data` (abertura) — não tinha como
   // extrair "todos os chamados encerrados entre X e Y" (o caso comum de
   // fechamento de mês/produtividade), só "abertos entre X e Y" mesmo que
-  // tenham encerrado bem depois ou continuem em aberto. `modoData` deixa
-  // escolher qual data o período filtra, sem duplicar UI/lógica de KPI —
-  // o resto da tela (KPIs, ranking, tabela, PDF) já reage a `filtrados`.
-  const [modoData, setModoData] = useState<'abertura' | 'encerramento'>('abertura');
-  const [dataInicio, setDataInicio] = useState('');
-  const [dataFim, setDataFim] = useState('');
+  // tenham encerrado bem depois ou continuem em aberto. Depois do pedido
+  // de poder usar os dois AO MESMO TEMPO, virou 2 pares de data
+  // independentes (abertura e encerramento) combinados por E — cada par
+  // só filtra se pelo menos um dos dois campos dele estiver preenchido, e
+  // os dois juntos permitem, por exemplo, "aberto em julho E encerrado em
+  // agosto". O resto da tela (KPIs, ranking, tabela, PDF, CSV) não muda —
+  // continua tudo reagindo só a `filtrados`.
+  const [aberturaDe, setAberturaDe] = useState('');
+  const [aberturaAte, setAberturaAte] = useState('');
+  const [encerramentoDe, setEncerramentoDe] = useState('');
+  const [encerramentoAte, setEncerramentoAte] = useState('');
   const [status, setStatus] = useState<string>(TODOS);
   const [tecnicoSel, setTecnicoSel] = useState<string>(TODOS);
   const [bucketSel, setBucketSel] = useState<string>(TODOS);
@@ -111,18 +116,19 @@ export function RelatorioGerencialPage() {
 
   const filtrados = useMemo(() => {
     return todos.filter((c) => {
-      if (modoData === 'encerramento') {
-        // "Extrair com data de encerramento": só considera quem já tem
-        // encerramento (sem data de encerramento, não tem como bater o
-        // filtro) — nunca esconde do modo "Abertura", que continua olhando
-        // `c.data` normalmente pra qualquer chamado, fechado ou não.
+      // Abertura e encerramento são filtros independentes, combinados por
+      // E — um chamado só precisa satisfazer o par que estiver preenchido;
+      // se os dois pares estiverem preenchidos, precisa satisfazer os dois
+      // (ex.: aberto em julho E encerrado em agosto).
+      if (aberturaDe && (!c.data || c.data < aberturaDe)) return false;
+      if (aberturaAte && (!c.data || c.data > aberturaAte)) return false;
+      if (encerramentoDe || encerramentoAte) {
+        // Sem data de encerramento, não há como bater um filtro de
+        // encerramento — exclui, em vez de deixar passar por engano.
         const enc = encerramentoISO(c);
         if (!enc) return false;
-        if (dataInicio && enc < dataInicio) return false;
-        if (dataFim && enc > dataFim) return false;
-      } else {
-        if (dataInicio && (!c.data || c.data < dataInicio)) return false;
-        if (dataFim && (!c.data || c.data > dataFim)) return false;
+        if (encerramentoDe && enc < encerramentoDe) return false;
+        if (encerramentoAte && enc > encerramentoAte) return false;
       }
       if (status !== TODOS && c.status !== status) return false;
       if (tecnicoSel !== TODOS && (!tecnicoObj || !chamadoPertenceATecnico(c, tecnicoObj))) return false;
@@ -130,7 +136,7 @@ export function RelatorioGerencialPage() {
       if (frotaSel !== TODOS && codigoEquipDoChamado(c) !== frotaSel) return false;
       return true;
     });
-  }, [todos, modoData, dataInicio, dataFim, status, tecnicoSel, tecnicoObj, bucketSel, frotaSel]);
+  }, [todos, aberturaDe, aberturaAte, encerramentoDe, encerramentoAte, status, tecnicoSel, tecnicoObj, bucketSel, frotaSel]);
 
   const paginados = useMemo(() => filtrados.slice((page - 1) * PER_PAGE, page * PER_PAGE), [filtrados, page]);
 
@@ -169,23 +175,28 @@ export function RelatorioGerencialPage() {
     [filtrados],
   );
 
+  function faixaLabel(de: string, ate: string): string | null {
+    if (de && ate) return `${formatDataBR(de)} a ${formatDataBR(ate)}`;
+    if (de) return `A partir de ${formatDataBR(de)}`;
+    if (ate) return `Até ${formatDataBR(ate)}`;
+    return null;
+  }
+
   const periodoLabel = useMemo(() => {
-    const prefixo = modoData === 'encerramento' ? 'Encerramento: ' : '';
-    if (dataInicio && dataFim) return `${prefixo}${formatDataBR(dataInicio)} a ${formatDataBR(dataFim)}`;
-    if (dataInicio) return `${prefixo}A partir de ${formatDataBR(dataInicio)}`;
-    if (dataFim) return `${prefixo}Até ${formatDataBR(dataFim)}`;
-    return modoData === 'encerramento' ? 'Todos os encerrados' : 'Todo o histórico';
-  }, [modoData, dataInicio, dataFim]);
+    const abertura = faixaLabel(aberturaDe, aberturaAte);
+    const encerramento = faixaLabel(encerramentoDe, encerramentoAte);
+    const partes = [abertura && `Abertura: ${abertura}`, encerramento && `Encerramento: ${encerramento}`].filter(Boolean);
+    return partes.length ? partes.join(' · ') : 'Todo o histórico';
+  }, [aberturaDe, aberturaAte, encerramentoDe, encerramentoAte]);
 
   const filtrosAplicados: FiltroAplicado[] = useMemo(() => {
     const f: FiltroAplicado[] = [];
-    if (modoData === 'encerramento') f.push({ label: 'Filtro de período', valor: 'Por data de encerramento' });
     if (status !== TODOS) f.push({ label: 'Status', valor: status });
     if (tecnicoSel !== TODOS) f.push({ label: 'Técnico', valor: tecnicoSel });
     if (bucketSel !== TODOS) f.push({ label: 'Fazenda', valor: fazendaLabel(bucketSel) });
     if (frotaSel !== TODOS) f.push({ label: 'Frota', valor: frotaSel });
     return f;
-  }, [modoData, status, tecnicoSel, bucketSel, frotaSel]);
+  }, [status, tecnicoSel, bucketSel, frotaSel]);
 
   const columns: DataTableColumn<Chamado>[] = [
     { key: 'num', header: 'Número', render: (c) => <span className="font-mono-num font-semibold text-foreground">{c.num || '—'}</span> },
@@ -254,23 +265,21 @@ export function RelatorioGerencialPage() {
       </Card>
 
       <FilterBar className="flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
-        <div className="flex min-w-[150px] flex-1 flex-col gap-1">
-          <Label>Filtrar período por</Label>
-          <Select value={modoData} onValueChange={(v) => { setModoData(v as 'abertura' | 'encerramento'); setPage(1); }}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="abertura">Data de abertura</SelectItem>
-              <SelectItem value="encerramento">Data de encerramento</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex min-w-[130px] flex-1 flex-col gap-1">
+          <Label>Abertura de</Label>
+          <Input type="date" value={aberturaDe} onChange={(e) => { setAberturaDe(e.target.value); setPage(1); }} />
         </div>
         <div className="flex min-w-[130px] flex-1 flex-col gap-1">
-          <Label>Data inicial</Label>
-          <Input type="date" value={dataInicio} onChange={(e) => { setDataInicio(e.target.value); setPage(1); }} />
+          <Label>Abertura até</Label>
+          <Input type="date" value={aberturaAte} onChange={(e) => { setAberturaAte(e.target.value); setPage(1); }} />
         </div>
         <div className="flex min-w-[130px] flex-1 flex-col gap-1">
-          <Label>Data final</Label>
-          <Input type="date" value={dataFim} onChange={(e) => { setDataFim(e.target.value); setPage(1); }} />
+          <Label>Encerramento de</Label>
+          <Input type="date" value={encerramentoDe} onChange={(e) => { setEncerramentoDe(e.target.value); setPage(1); }} />
+        </div>
+        <div className="flex min-w-[130px] flex-1 flex-col gap-1">
+          <Label>Encerramento até</Label>
+          <Input type="date" value={encerramentoAte} onChange={(e) => { setEncerramentoAte(e.target.value); setPage(1); }} />
         </div>
         <div className="flex min-w-[150px] flex-1 flex-col gap-1">
           <Label>Status</Label>
