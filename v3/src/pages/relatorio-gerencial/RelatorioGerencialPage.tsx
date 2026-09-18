@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import type { Chart as ChartJSInstance, ChartData } from 'chart.js';
-import { FileDown } from 'lucide-react';
+import { FileDown, Sheet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -34,6 +34,7 @@ import {
 } from '@/utils/chamado-helpers';
 import { chartBaseOptions } from '@/utils/chartSetup';
 import { gerarRelatorioGerencialPdf } from '@/utils/relatorioGerencialPdf';
+import { downloadCSV } from '@/utils/csv';
 import type { Chamado, ChamadoStatus } from '@/types/chamado';
 
 const PER_PAGE = 25;
@@ -200,6 +201,27 @@ export function RelatorioGerencialPage() {
     { key: 'encerramento', header: 'Encerramento', render: (c) => c.encerramento?.dataEncerramento || '—' },
   ];
 
+  // "Extrair" os chamados do filtro atual pra uma planilha de verdade
+  // (CSV abre direto no Excel) — o PDF já existente é um relatório pra
+  // leitura/impressão, não pra reaproveitar os dados em outra ferramenta.
+  // Mesmo utilitário/formato já usado em Encerrados/Chamados/Auditoria
+  // (utils/csv.ts) — sem lib nova, sem reimplementar o CSV.
+  function exportarCsv() {
+    downloadCSV('relatorio_gerencial_chamados.csv', [
+      ['Número', 'Título', 'Status', 'Técnico', 'Fazenda', 'Frota', 'Abertura', 'Encerramento'],
+      ...filtrados.map((c) => [
+        c.num,
+        c.titulo,
+        c.status,
+        c.resp || c.assumidoPor || '',
+        fazendaLabel(c.bucket),
+        codigoEquipDoChamado(c) || '',
+        formatDataBR(c.data),
+        c.encerramento?.dataEncerramento || '',
+      ]),
+    ]);
+  }
+
   async function handleGerarPdf() {
     setGerandoPdf(true);
     try {
@@ -298,6 +320,10 @@ export function RelatorioGerencialPage() {
             </SelectContent>
           </Select>
         </div>
+        <Button variant="ghost" onClick={exportarCsv} disabled={carregando || filtrados.length === 0} className="sm:self-end">
+          <Sheet className="h-4 w-4" />
+          Exportar CSV
+        </Button>
         <Button onClick={handleGerarPdf} disabled={gerandoPdf || carregando} className="sm:self-end">
           <FileDown className="h-4 w-4" />
           {gerandoPdf ? 'Gerando…' : 'Gerar PDF'}
