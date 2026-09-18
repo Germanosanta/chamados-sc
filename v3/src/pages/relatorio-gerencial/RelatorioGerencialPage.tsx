@@ -20,6 +20,7 @@ import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import {
   chamadoPertenceATecnico,
   contarPorTecnico,
+  encerramentoISO,
   fazendaLabel,
   formatDataBR,
   isAbertoStatus,
@@ -71,6 +72,14 @@ export function RelatorioGerencialPage() {
   const { data: todos, carregando } = useChamados();
   const { data: tecnicos } = useTecnicosAtivos();
 
+  // Achado no pedido "quero extrair os chamados com data de encerramento":
+  // o filtro de período só olhava `c.data` (abertura) — não tinha como
+  // extrair "todos os chamados encerrados entre X e Y" (o caso comum de
+  // fechamento de mês/produtividade), só "abertos entre X e Y" mesmo que
+  // tenham encerrado bem depois ou continuem em aberto. `modoData` deixa
+  // escolher qual data o período filtra, sem duplicar UI/lógica de KPI —
+  // o resto da tela (KPIs, ranking, tabela, PDF) já reage a `filtrados`.
+  const [modoData, setModoData] = useState<'abertura' | 'encerramento'>('abertura');
   const [dataInicio, setDataInicio] = useState('');
   const [dataFim, setDataFim] = useState('');
   const [status, setStatus] = useState<string>(TODOS);
@@ -101,15 +110,26 @@ export function RelatorioGerencialPage() {
 
   const filtrados = useMemo(() => {
     return todos.filter((c) => {
-      if (dataInicio && (!c.data || c.data < dataInicio)) return false;
-      if (dataFim && (!c.data || c.data > dataFim)) return false;
+      if (modoData === 'encerramento') {
+        // "Extrair com data de encerramento": só considera quem já tem
+        // encerramento (sem data de encerramento, não tem como bater o
+        // filtro) — nunca esconde do modo "Abertura", que continua olhando
+        // `c.data` normalmente pra qualquer chamado, fechado ou não.
+        const enc = encerramentoISO(c);
+        if (!enc) return false;
+        if (dataInicio && enc < dataInicio) return false;
+        if (dataFim && enc > dataFim) return false;
+      } else {
+        if (dataInicio && (!c.data || c.data < dataInicio)) return false;
+        if (dataFim && (!c.data || c.data > dataFim)) return false;
+      }
       if (status !== TODOS && c.status !== status) return false;
       if (tecnicoSel !== TODOS && (!tecnicoObj || !chamadoPertenceATecnico(c, tecnicoObj))) return false;
       if (bucketSel !== TODOS && c.bucket !== bucketSel) return false;
       if (frotaSel !== TODOS && codigoEquipDoChamado(c) !== frotaSel) return false;
       return true;
     });
-  }, [todos, dataInicio, dataFim, status, tecnicoSel, tecnicoObj, bucketSel, frotaSel]);
+  }, [todos, modoData, dataInicio, dataFim, status, tecnicoSel, tecnicoObj, bucketSel, frotaSel]);
 
   const paginados = useMemo(() => filtrados.slice((page - 1) * PER_PAGE, page * PER_PAGE), [filtrados, page]);
 
@@ -149,20 +169,22 @@ export function RelatorioGerencialPage() {
   );
 
   const periodoLabel = useMemo(() => {
-    if (dataInicio && dataFim) return `${formatDataBR(dataInicio)} a ${formatDataBR(dataFim)}`;
-    if (dataInicio) return `A partir de ${formatDataBR(dataInicio)}`;
-    if (dataFim) return `Até ${formatDataBR(dataFim)}`;
-    return 'Todo o histórico';
-  }, [dataInicio, dataFim]);
+    const prefixo = modoData === 'encerramento' ? 'Encerramento: ' : '';
+    if (dataInicio && dataFim) return `${prefixo}${formatDataBR(dataInicio)} a ${formatDataBR(dataFim)}`;
+    if (dataInicio) return `${prefixo}A partir de ${formatDataBR(dataInicio)}`;
+    if (dataFim) return `${prefixo}Até ${formatDataBR(dataFim)}`;
+    return modoData === 'encerramento' ? 'Todos os encerrados' : 'Todo o histórico';
+  }, [modoData, dataInicio, dataFim]);
 
   const filtrosAplicados: FiltroAplicado[] = useMemo(() => {
     const f: FiltroAplicado[] = [];
+    if (modoData === 'encerramento') f.push({ label: 'Filtro de período', valor: 'Por data de encerramento' });
     if (status !== TODOS) f.push({ label: 'Status', valor: status });
     if (tecnicoSel !== TODOS) f.push({ label: 'Técnico', valor: tecnicoSel });
     if (bucketSel !== TODOS) f.push({ label: 'Fazenda', valor: fazendaLabel(bucketSel) });
     if (frotaSel !== TODOS) f.push({ label: 'Frota', valor: frotaSel });
     return f;
-  }, [status, tecnicoSel, bucketSel, frotaSel]);
+  }, [modoData, status, tecnicoSel, bucketSel, frotaSel]);
 
   const columns: DataTableColumn<Chamado>[] = [
     { key: 'num', header: 'Número', render: (c) => <span className="font-mono-num font-semibold text-foreground">{c.num || '—'}</span> },
@@ -210,6 +232,16 @@ export function RelatorioGerencialPage() {
       </Card>
 
       <FilterBar className="flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+        <div className="flex min-w-[150px] flex-1 flex-col gap-1">
+          <Label>Filtrar período por</Label>
+          <Select value={modoData} onValueChange={(v) => { setModoData(v as 'abertura' | 'encerramento'); setPage(1); }}>
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="abertura">Data de abertura</SelectItem>
+              <SelectItem value="encerramento">Data de encerramento</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="flex min-w-[130px] flex-1 flex-col gap-1">
           <Label>Data inicial</Label>
           <Input type="date" value={dataInicio} onChange={(e) => { setDataInicio(e.target.value); setPage(1); }} />

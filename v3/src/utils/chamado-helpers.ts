@@ -401,6 +401,25 @@ export function formatDataBR(iso?: string): string {
   return iso.split('-').reverse().join('/');
 }
 
+/**
+ * `encerramento.dataEncerramento` é gravado no formato BR ("DD/MM/AAAA",
+ * ver fmtDateHora) — o inverso de `formatDataBR`. Filtros por período
+ * (ex. Relatório Gerencial) usam `<input type="date">`, que só entende
+ * ISO ("AAAA-MM-DD"); sem converter pra esse formato, comparar
+ * `dataEncerramento` direto contra o valor do input nunca bate (nem por
+ * ordenação de string, nem por igualdade). `null` quando o chamado não
+ * tem encerramento ou o campo está num formato inesperado — nunca lança.
+ */
+export function encerramentoISO(c: Pick<Chamado, 'encerramento'>): string | null {
+  const d = c.encerramento?.dataEncerramento;
+  if (!d) return null;
+  const partes = d.split('/');
+  if (partes.length !== 3) return null;
+  const [dia, mes, ano] = partes;
+  if (!dia || !mes || !ano) return null;
+  return `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
+}
+
 /** Portado 1:1 de STATUS_STEPS/_statusStepIndex/_kbLaneKey/_KB_TRANSICOES
  * (chamados/index.js) — mesmas 4 raias do Kanban (Cancelado removida de
  * propósito na V2 dentro da tela "Em Aberto": getAbertos() já exclui
