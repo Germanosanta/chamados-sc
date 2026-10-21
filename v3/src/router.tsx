@@ -8,6 +8,7 @@ import { SECTIONS, NAV_TOP, NAV_GROUPS, NAV_BOTTOM, type SectionId } from '@/uti
 import type { Permissao } from '@/types/permissoes';
 
 const LoginPage = lazy(() => import('@/pages/login/LoginPage').then((m) => ({ default: m.LoginPage })));
+const AcompanharPage = lazy(() => import('@/pages/acompanhar/AcompanharPage').then((m) => ({ default: m.AcompanharPage })));
 const PortalPage = lazy(() => import('@/pages/portal/PortalPage').then((m) => ({ default: m.PortalPage })));
 const HomePage = lazy(() => import('@/pages/home/HomePage').then((m) => ({ default: m.HomePage })));
 const AbertoPage = lazy(() => import('@/pages/aberto/AbertoPage').then((m) => ({ default: m.AbertoPage })));
@@ -72,6 +73,20 @@ export const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     children: [{ path: '/login', element: <LoginPage /> }],
+  },
+  // Consulta pública de acompanhamento (sem login) — fora de AuthLayout
+  // (que redireciona quem já está logado pra /portal; aqui um técnico/
+  // admin também deve conseguir ver o mesmo link que foi compartilhado,
+  // sem ser desviado) e fora de ProtectedRoute (não exige sessão — é
+  // exatamente o ponto do recurso). Autorização vem do token na própria
+  // URL, não de login (ver hooks/useAcompanhamentoPublico.ts).
+  {
+    path: '/acompanhar/:token',
+    element: (
+      <Suspense fallback={<RouteLoading />}>
+        <AcompanharPage />
+      </Suspense>
+    ),
   },
   {
     element: <ProtectedRoute />,

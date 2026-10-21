@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { EquipAutocomplete } from '@/components/shared/EquipAutocomplete';
 import { DataTable, type DataTableColumn } from '@/components/shared/DataTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
+import { ComprovanteAberturaModal } from '@/components/shared/ComprovanteAberturaModal';
 import { useChamados, useCriarChamado, useProximoNumero } from '@/hooks/useChamados';
 import { useSessionStore } from '@/store/session';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
@@ -79,6 +80,12 @@ export function NovoChamadoPage() {
 
   const [enviado, setEnviado] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
+  // Guarda o chamado completo (não só o num) pra alimentar o comprovante
+  // de abertura/WhatsApp na tela de sucesso, sem precisar reconsultar o
+  // Firestore — é exatamente o objeto que acabou de ser gravado, já com
+  // `tokenPublico` (ver useCriarChamado).
+  const [chamadoCriado, setChamadoCriado] = useState<Chamado | null>(null);
+  const [comprovanteAberto, setComprovanteAberto] = useState(false);
 
   const historicoEquip = useMemo(() => {
     if (!equip) return [];
@@ -142,6 +149,7 @@ export function NovoChamadoPage() {
     try {
       const criado = await criar.mutateAsync({ chamado, pecasUsadas: [], numEstimado: todos.length });
       setEnviado(criado.num);
+      setChamadoCriado(criado);
     } catch {
       toast.error('Não foi possível abrir o chamado. Tente novamente.');
     } finally {
@@ -163,23 +171,31 @@ export function NovoChamadoPage() {
 
   if (enviado) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Card className="max-w-md text-center">
-          <CardContent className="flex flex-col items-center gap-3 pt-6">
-            <CheckCircle2 className="h-12 w-12 text-success" />
-            <div className="text-lg font-bold text-foreground">Chamado {enviado} criado com sucesso!</div>
-            <p className="text-sm text-muted-foreground">
-              {equip?.d} · {cultura || 'Sem cultura'} · {bucket}
-            </p>
-            <div className="flex gap-2">
-              <Button variant="ghost" onClick={novoFormulario}>
-                Novo Chamado
-              </Button>
-              <Button onClick={() => navigate('/aberto')}>Ver Chamados em Aberto</Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <div className="flex min-h-[60vh] items-center justify-center">
+          <Card className="max-w-md text-center">
+            <CardContent className="flex flex-col items-center gap-3 pt-6">
+              <CheckCircle2 className="h-12 w-12 text-success" />
+              <div className="text-lg font-bold text-foreground">Chamado {enviado} criado com sucesso!</div>
+              <p className="text-sm text-muted-foreground">
+                {equip?.d} · {cultura || 'Sem cultura'} · {bucket}
+              </p>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button variant="ghost" onClick={novoFormulario}>
+                  Novo Chamado
+                </Button>
+                <Button variant="ghost" onClick={() => navigate('/aberto')}>
+                  Ver Chamados em Aberto
+                </Button>
+                {chamadoCriado?.tokenPublico && (
+                  <Button onClick={() => setComprovanteAberto(true)}>📲 Ver comprovante / Compartilhar</Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <ComprovanteAberturaModal chamado={chamadoCriado} open={comprovanteAberto} onOpenChange={setComprovanteAberto} />
+      </>
     );
   }
 

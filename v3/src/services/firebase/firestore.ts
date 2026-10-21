@@ -35,6 +35,12 @@ export const COL = {
   configuracoes: 'configuracoes',
   tecnicos: 'tecnicos',
   logins: 'logins',
+  /** Mini-espelho público de acompanhamento por protocolo — ver
+   * utils/acompanhamentoPublico.ts. Doc id = token aleatório (nunca o
+   * número do chamado), só com os campos não sensíveis; regra do
+   * Firestore permite `get` público mas nunca `list` (ver
+   * firestore.rules) — só quem já tem o link exato consegue ler. */
+  acompanhamentoPublico: 'acompanhamento_publico',
 } as const;
 
 export type ColName = (typeof COL)[keyof typeof COL];
@@ -118,6 +124,30 @@ export function escutarColecao<T = DocumentData>(
     (erro) => {
       // eslint-disable-next-line no-console -- diagnóstico intencional: sem isso, um erro de leitura de coleção inteira desaparecia em silêncio (ver comentário acima).
       console.error(`[Firestore] onSnapshot('${colName}') falhou:`, erro);
+      onError?.(erro);
+    },
+  );
+}
+
+/** Escuta 1 doc específico em tempo real — usado pela consulta pública
+ * de acompanhamento (ver hooks/useAcompanhamentoPublico.ts): o status
+ * precisa refletir sozinho qualquer mudança feita pelo técnico (Assumir/
+ * Iniciar/Encerrar), sem o visitante precisar recarregar a página. Mesmo
+ * tratamento de erro de `escutarColecao` — nunca falha em silêncio. */
+export function escutarDocumento<T = DocumentData>(
+  colName: ColName,
+  docId: string,
+  callback: (item: (T & { id: string }) | null) => void,
+  onError?: (erro: Error) => void,
+): Unsubscribe {
+  return onSnapshot(
+    doc(db, colName, docId),
+    (snap) => {
+      callback(snap.exists() ? { id: snap.id, ...(snap.data() as T) } : null);
+    },
+    (erro) => {
+      // eslint-disable-next-line no-console -- mesmo raciocínio de escutarColecao: sem isso, um erro de leitura vira silenciosamente "documento não existe".
+      console.error(`[Firestore] onSnapshot('${colName}/${docId}') falhou:`, erro);
       onError?.(erro);
     },
   );

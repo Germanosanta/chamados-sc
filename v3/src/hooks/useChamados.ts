@@ -6,6 +6,7 @@ import { alocarProximoNumeroChamado, appendToArrayField, gravarEmLoteMisto, list
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
 import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
+import { gerarTokenPublico, sincronizarAcompanhamentoPublico } from '@/utils/acompanhamentoPublico';
 import type { Chamado, ChamadoHistoricoTupla, ChecklistEncerramento, Encerramento, EventoTimeline, PecaUsada } from '@/types/chamado';
 import type { EquipamentoEstatico } from '@/types/equipamento';
 import type { Peca, Movimentacao } from '@/types/peca';
@@ -100,15 +101,37 @@ export function useProximoNumero(): string {
 /** Grava só o campo alterado — mesma estratégia "cria override se o
  * chamado só existir no histórico estático" da V2 (alterarResp/
  * assumirChamado). `chamadoBase` é o registro atual (já mesclado) usado
- * como seed quando ainda não existe doc em `chamados/{num}`. */
+ * como seed quando ainda não existe doc em `chamados/{num}`.
+ *
+ * Ponto único de sincronização do espelho público de acompanhamento
+ * (sincronizarAcompanhamentoPublico, utils/acompanhamentoPublico.ts):
+ * TODA transição de status que passa por aqui (assumir, reatribuir,
+ * registrar evento com mudança de status, encerrar, reabrir) atualiza o
+ * link público sozinha, sem precisar duplicar a chamada em cada hook. Só
+ * atualiza de verdade quando o chamado tem `tokenPublico` (ver
+ * useCriarChamado) — função é um no-op pra chamados sem token.
+ * `extraParaPublico` existe só pra encerramento: `encerramento` nunca
+ * entra no `patch` gravado em `chamados/{num}` (vive em `historico/{num}`,
+ * por isso é excluído do `seed` abaixo), mas o espelho público PRECISA
+ * dele pra mostrar a data de encerramento — passado à parte, só pro
+ * cálculo do espelho, nunca gravado no documento `chamados`. */
 function useChamadoPatch() {
   // Sem invalidação manual de cache: `useFirestoreCollection` já escuta
   // `chamados` em tempo real (onSnapshot) — a UI atualiza sozinha assim
   // que o write é confirmado (mesmo padrão documentado em usePecas.ts).
   return useMutation({
-    mutationFn: async ({ chamadoBase, patch }: { chamadoBase: Chamado; patch: Partial<Chamado> }) => {
+    mutationFn: async ({
+      chamadoBase,
+      patch,
+      extraParaPublico,
+    }: {
+      chamadoBase: Chamado;
+      patch: Partial<Chamado>;
+      extraParaPublico?: Partial<Chamado>;
+    }) => {
       const { encerramento: _encerramento, eventos: _eventos, ...seed } = chamadoBase;
       await setMerge('chamados', chamadoBase.num, { ...seed, ...patch });
+      await sincronizarAcompanhamentoPublico({ ...chamadoBase, ...patch, ...extraParaPublico });
     },
   });
 }
@@ -229,7 +252,13 @@ export function useCriarChamado() {
       numEstimado: number;
     }) => {
       const num = await alocarProximoNumeroChamado(numEstimado);
-      const chamado: Chamado = { ...chamadoSemNum, num };
+      // tokenPublico: gerado aqui, 1x, na própria abertura — nunca depois
+      // (ver types/chamado.ts e utils/acompanhamentoPublico.ts). Vai
+      // junto no mesmo documento `chamados/{num}` só como referência pra
+      // quem tem acesso interno (ex. reenviar o link); a leitura pública
+      // em si nunca passa por `chamados`, só pelo espelho sincronizado
+      // logo abaixo.
+      const chamado: Chamado = { ...chamadoSemNum, num, tokenPublico: gerarTokenPublico() };
       const itens: Parameters<typeof gravarEmLoteMisto>[0] = [{ col: 'chamados', id: chamado.num, data: chamado }];
 
       if (pecasUsadas.length) {
@@ -266,6 +295,7 @@ export function useCriarChamado() {
       }
 
       await gravarEmLoteMisto(itens);
+      await sincronizarAcompanhamentoPublico(chamado);
       await audit('abriu', `Chamado ${chamado.num} aberto: ${chamado.titulo}`, usuario, chamado.num);
       return chamado;
     },
@@ -328,7 +358,7 @@ export function useEncerrarChamado() {
         ...chk,
       };
       await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento });
-      await mutateAsync({ chamadoBase, patch: { status: 'Encerrado' } });
+      await mutateAsync({ chamadoBase, patch: { status: 'Encerrado' }, extraParaPublico: { encerramento } });
       await audit('encerrou', `Chamado ${chamadoBase.num} encerrado`, usuario, chamadoBase.num);
     },
     [usuario, mutateAsync],
@@ -343,7 +373,10 @@ export function useReabrirChamado() {
   return useCallback(
     async (chamadoBase: Chamado) => {
       await setMerge('historico', chamadoBase.num, { num: chamadoBase.num, encerramento: null });
-      await mutateAsync({ chamadoBase, patch: { status: 'Em Andamento' } });
+      // `extraParaPublico: { encerramento: undefined }` — sem isso, o
+      // espelho público reaberto ainda carregaria a `encerradoEm` antiga
+      // de `chamadoBase` (objeto em memória, de antes da reabertura).
+      await mutateAsync({ chamadoBase, patch: { status: 'Em Andamento' }, extraParaPublico: { encerramento: undefined } });
       await registrarEvento(chamadoBase, 'reabriu', '');
     },
     [registrarEvento, mutateAsync],

@@ -121,4 +121,19 @@ export interface Chamado {
 
   encerramento?: Encerramento;
   eventos?: EventoTimeline[];
+
+  /**
+   * Token aleatório (gerado em useCriarChamado, `crypto.randomUUID()`)
+   * que autoriza a consulta pública de acompanhamento — ver
+   * utils/acompanhamentoPublico.ts e pages/acompanhar/AcompanharPage.tsx.
+   * `null`/ausente em qualquer chamado aberto antes desta funcionalidade
+   * (histórico estático, ou criado antes deste campo existir): esses
+   * chamados simplesmente não têm link de acompanhamento público — nunca
+   * inventado depois do fato. O número do chamado sozinho NUNCA autoriza
+   * leitura pública (ver firestore.rules, coleção `chamados` continua
+   * exigindo `estouAtivo()`) — só o token, guardado à parte num
+   * mini-documento espelho (`acompanhamento_publico/{token}`), concede
+   * leitura pública, e só dos campos não sensíveis.
+   */
+  tokenPublico?: string | null;
 }

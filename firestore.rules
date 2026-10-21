@@ -155,6 +155,25 @@ service cloud.firestore {
       allow read, write: if estouAtivo();
     }
 
+    // Mini-espelho público de acompanhamento de chamado por protocolo
+    // (ver v3/src/utils/acompanhamentoPublico.ts) — só campos não
+    // sensíveis (número, assunto, status mapeado pra 3 categorias
+    // públicas, datas), nunca o documento completo de `chamados`. O id
+    // do documento é um token aleatório (crypto.randomUUID(), nunca o
+    // número do chamado) — "get" é público (mesmo padrão já usado em
+    // logins/{loginId} acima, necessário pra funcionar sem login), mas
+    // "list" fica OFF: sem uma query de coleção permitida, não existe
+    // jeito de listar/enumerar todos os chamados públicos — só quem já
+    // tem o token exato (o link) consegue ler aquele 1 documento. Escrita
+    // continua exigindo estouAtivo(), igual a todas as outras coleções —
+    // só o próprio app (useCriarChamado/useChamadoPatch) grava aqui,
+    // nunca o visitante público.
+    match /acompanhamento_publico/{token} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if estouAtivo();
+    }
+
     // Documento de teste de latência (pingFirestore em js/firebase/firebase.js)
     // roda antes do login, por isso fica aberto — não expõe nada sensível.
     match /_ping/{docId} {
