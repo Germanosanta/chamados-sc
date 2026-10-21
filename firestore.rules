@@ -59,6 +59,40 @@ service cloud.firestore {
       return estouAtivo() && (perm in meusPerms());
     }
 
+    // ── Validação de escrita do espelho público de acompanhamento
+    // (endurecimento pós-auditoria: `estouAtivo()` sozinho já barra
+    // visitante anônimo, mas qualquer conta interna ativa — inclusive um
+    // técnico comum, via SDK direto fora da UI — podia gravar QUALQUER
+    // campo/valor num documento PUBLICAMENTE legível; nenhuma outra
+    // coleção deste arquivo tem essa combinação "escrita ampla + leitura
+    // pública", então o padrão "só estouAtivo()" das demais coleções não
+    // é suficiente aqui). Espelha 1:1 a forma real como
+    // montarDadosPublicos() (v3/src/utils/acompanhamentoPublico.ts)
+    // monta o payload: TODOS os 7 campos são enviados juntos em TODA
+    // chamada (abertura e qualquer atualização posterior), nunca um
+    // patch parcial — por isso dá pra exigir os 7 presentes (`hasAll`)
+    // sem arriscar bloquear uma atualização legítima.
+    function dadosPublicosValidos() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['num', 'assunto', 'setor', 'status', 'abertoEm', 'atualizadoEm', 'encerradoEm', '_updatedAt'])
+        && d.keys().hasAll(['num', 'assunto', 'setor', 'status', 'abertoEm', 'atualizadoEm', 'encerradoEm'])
+        && d.num is string && d.num.size() > 0
+        && d.assunto is string
+        // `setor` pode ser string vazia de propósito (fazendaLabel() cai
+        // pra `cultura`, que também pode estar vazia num chamado antigo)
+        // — só o TIPO é exigido, não o tamanho.
+        && d.setor is string
+        // Únicos 3 valores que a aplicação realmente usa (statusPublico(),
+        // utils/acompanhamentoPublico.ts) — qualquer outro valor é
+        // rejeitado, nunca um 4º status inventado por fora da UI.
+        && d.status in ['Aberto', 'Em atendimento', 'Fechado']
+        && d.abertoEm is string
+        && d.atualizadoEm is string
+        // `encerradoEm` é `null` até o chamado ser encerrado (ver
+        // montarDadosPublicos) — só vira string depois.
+        && (d.encerradoEm == null || d.encerradoEm is string);
+    }
+
     match /usuarios/{uid} {
       // Lê o próprio doc; lê qualquer doc cujo e-mail seja o mesmo do token
       // autenticado (autocorreção de doc antigo com id diferente do uid do
@@ -164,14 +198,26 @@ service cloud.firestore {
     // logins/{loginId} acima, necessário pra funcionar sem login), mas
     // "list" fica OFF: sem uma query de coleção permitida, não existe
     // jeito de listar/enumerar todos os chamados públicos — só quem já
-    // tem o token exato (o link) consegue ler aquele 1 documento. Escrita
-    // continua exigindo estouAtivo(), igual a todas as outras coleções —
-    // só o próprio app (useCriarChamado/useChamadoPatch) grava aqui,
-    // nunca o visitante público.
+    // tem o token exato (o link) consegue ler aquele 1 documento.
+    //
+    // Escrita (create/update) exige estouAtivo() E o payload validado por
+    // dadosPublicosValidos() (ver acima) — endurecimento pós-auditoria:
+    // sem a validação, qualquer conta ativa podia gravar campos/valores
+    // fora do schema num documento publicamente legível, diferente de
+    // todas as outras coleções (nenhuma delas é lida sem autenticação).
+    // `delete` fica separado porque numa exclusão não existe
+    // `request.resource.data` pra validar (o doc está sendo removido, não
+    // escrito) — tentar aplicar `dadosPublicosValidos()` também a um
+    // delete quebraria a regra inteira com erro de avaliação. A própria
+    // aplicação nunca exclui documentos desta coleção (nenhum
+    // `excluirDocumento('acompanhamento_publico', ...)` existe no
+    // código); mantido só por paridade com o padrão das outras coleções,
+    // restrito a quem já podia excluir o chamado em si.
     match /acompanhamento_publico/{token} {
       allow get: if true;
       allow list: if false;
-      allow write: if estouAtivo();
+      allow create, update: if estouAtivo() && dadosPublicosValidos();
+      allow delete: if souAdmin();
     }
 
     // Documento de teste de latência (pingFirestore em js/firebase/firebase.js)
