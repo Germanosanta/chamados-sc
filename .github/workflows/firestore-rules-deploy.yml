@@ -1,0 +1,92 @@
+name: Firestore Rules Deploy (manual)
+
+# Publica SOMENTE firestore.rules no projeto Firebase "chamdos-sc" — via
+# `firebase deploy --only firestore:rules`, executado dentro do runner
+# do GitHub Actions (que já tem Node.js), não na máquina de quem dispara
+# isso. Criado pra quem não pode instalar Node/Firebase CLI localmente
+# (política de TI) mas já tem acesso de disparar workflows neste
+# repositório.
+#
+# NUNCA roda sozinho: só existe o gatilho "workflow_dispatch" (botão
+# manual "Run workflow" na aba Actions) — sem "on: push", de propósito,
+# pra não publicar regras automaticamente a cada commit (mudança de
+# regras de segurança é sensível o bastante pra exigir um clique
+# consciente toda vez, igual ao aviso que já existe no topo de
+# firestore.rules). Não reaproveita nem altera v3-deploy.yml — é um
+# workflow isolado, só pra isso.
+#
+# Reaproveita o MESMO secret "FIREBASE_SERVICE_ACCOUNT" já configurado
+# pro deploy do Hosting (v3-deploy.yml) — nenhum segredo novo precisa
+# ser criado. Atenção: esse secret foi originalmente concedido pra
+# publicar Hosting; só vamos saber se ele também tem permissão pra
+# publicar regras do Firestore (papel IAM "Firebase Rules Admin" ou
+# equivalente) quando este workflow rodar de verdade — se faltar
+# permissão, o passo de deploy falha com um erro claro do próprio
+# Firebase/Google Cloud, sem precisar adivinhar.
+on:
+  workflow_dispatch:
+    inputs:
+      confirmacao:
+        description: 'Digite DEPLOY para confirmar a publicação das regras do Firestore em produção (projeto chamdos-sc)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-firestore-rules:
+    name: Deploy Firestore Rules
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Conferir confirmação
+        run: |
+          if [ "${{ github.event.inputs.confirmacao }}" != "DEPLOY" ]; then
+            echo "::error::Campo 'confirmacao' precisa ser exatamente DEPLOY. Nada foi publicado."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Mostrar o que será publicado (rastreabilidade, sem segredo nenhum)
+        run: |
+          {
+            echo "## Firestore Rules — prévia do deploy"
+            echo ""
+            echo "- Projeto: \`chamdos-sc\`"
+            echo "- Commit: \`${{ github.sha }}\`"
+            echo "- Disparado por: \`${{ github.actor }}\`"
+            echo ""
+            echo "### Conteúdo de firestore.rules neste commit"
+            echo '```'
+            cat firestore.rules
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      # Credencial só vive dentro deste job efêmero do runner — nunca é
+      # logada, nunca é commitada, nunca sai daqui. GOOGLE_APPLICATION_CREDENTIALS
+      # é a forma padrão da Firebase CLI/gcloud reconhecerem uma service
+      # account sem precisar de `firebase login`.
+      - name: Preparar credencial do Firebase (efêmera)
+        run: echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "${{ runner.temp }}/firebase-sa.json"
+
+      - name: Publicar firestore.rules
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
+        run: npx --yes firebase-tools@latest deploy --only firestore:rules --project chamdos-sc --non-interactive
+
+      - name: Resumo
+        if: always()
+        run: |
+          {
+            echo ""
+            echo "### Resultado"
+            echo "Veja o passo \"Publicar firestore.rules\" acima — sucesso ou erro reais do Firebase, sem simulação."
+          } >> "$GITHUB_STEP_SUMMARY"
