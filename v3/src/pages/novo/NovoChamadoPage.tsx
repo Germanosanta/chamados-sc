@@ -150,8 +150,11 @@ export function NovoChamadoPage() {
       const criado = await criar.mutateAsync({ chamado, pecasUsadas: [], maiorNumero: maiorNumeroChamado(todos) });
       setEnviado(criado.num);
       setChamadoCriado(criado);
-    } catch {
-      toast.error('Não foi possível abrir o chamado. Tente novamente.');
+    } catch (erro) {
+      // eslint-disable-next-line no-console -- sem isso a causa real da falha se perde.
+      console.error('[NovoChamado] falha ao abrir chamado', erro);
+      const detalhe = erro instanceof Error ? erro.message.slice(0, 160) : String(erro);
+      toast.error(`Não foi possível abrir o chamado. Detalhe: ${detalhe}`);
     } finally {
       setEnviando(false);
     }

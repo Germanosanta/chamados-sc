@@ -239,6 +239,14 @@ export function useAssumirChamado() {
  * garantir que duas aberturas concorrentes nunca recebam o mesmo número
  * e se sobrescrevam em `chamados/{num}`.
  */
+async function comEtapa<T>(etapa: string, executar: () => Promise<T>): Promise<T> {
+  try {
+    return await executar();
+  } catch (erro) {
+    throw new Error(`${etapa}: ${erro instanceof Error ? erro.message : String(erro)}`, { cause: erro });
+  }
+}
+
 export function useCriarChamado() {
   const usuario = useSessionStore((s) => s.usuario);
   return useMutation({
@@ -251,7 +259,7 @@ export function useCriarChamado() {
       pecasUsadas: PecaUsada[];
       maiorNumero: number;
     }) => {
-      const num = await alocarProximoNumeroChamado(maiorNumero);
+      const num = await comEtapa('numeração', () => alocarProximoNumeroChamado(maiorNumero));
       // tokenPublico: gerado aqui, 1x, na própria abertura — nunca depois
       // (ver types/chamado.ts e utils/acompanhamentoPublico.ts). Vai
       // junto no mesmo documento `chamados/{num}` só como referência pra
@@ -294,9 +302,16 @@ export function useCriarChamado() {
         }
       }
 
-      await gravarEmLoteMisto(itens);
+      await comEtapa('gravação', () => gravarEmLoteMisto(itens));
       await sincronizarAcompanhamentoPublico(chamado);
-      await audit('abriu', `Chamado ${chamado.num} aberto: ${chamado.titulo}`, usuario, chamado.num);
+      // O chamado já foi gravado: uma falha só na auditoria não pode ser
+      // informada como "não abriu", senão o usuário abre um duplicado.
+      try {
+        await audit('abriu', `Chamado ${chamado.num} aberto: ${chamado.titulo}`, usuario, chamado.num);
+      } catch (erro) {
+        // eslint-disable-next-line no-console -- diagnóstico intencional, o chamado já foi salvo.
+        console.error('[useCriarChamado] falha ao registrar auditoria', chamado.num, erro);
+      }
       return chamado;
     },
   });
