@@ -8,9 +8,20 @@ import equipamentosEstatico from '@/data/equipamentos.json';
 const EQUIPAMENTOS_ESTATICO = equipamentosEstatico as unknown as EquipamentoEstatico[];
 
 /** Cadastro em tempo real (overrides sobre a base estática) —
- * equivalente a getCadEq() na V2. */
+ * equivalente a getCadEq() na V2. O ID de `equipamentos/{frota}` é o
+ * próprio código da frota, então ele cobre documentos gravados sem o
+ * campo `frota` ou com ele em outro tipo: sem isso, a busca da tela de
+ * Equipamentos quebrava ao chamar toLowerCase() nesse valor. */
 export function useCadastroEquipamentos(): FirestoreCollectionState<Equipamento> {
-  return useFirestoreCollection<Equipamento>('equipamentos');
+  const estado = useFirestoreCollection<Equipamento>('equipamentos');
+
+  return useMemo(
+    () => ({
+      ...estado,
+      data: estado.data.map((c) => (c.frota && typeof c.frota === 'string' ? c : { ...c, frota: String(c.frota || c.id) })),
+    }),
+    [estado],
+  );
 }
 
 /**
