@@ -31,7 +31,11 @@ export function EquipAutocomplete({ onSelect, placeholder, id }: EquipAutocomple
 
   const results = useMemo(() => {
     if (!aberto) return [];
-    const termos = normalizarNome(q).split(/\s+/).filter(Boolean);
+    // "de"/"da"/"do" não entram: "colhedora de grãos" precisa achar
+    // "COLHEDORA GRAOS", e "de" só casaria com nomes como "John Deere".
+    const termos = normalizarNome(q)
+      .split(/\s+/)
+      .filter((t) => t && !['de', 'da', 'do', 'das', 'dos'].includes(t));
     if (!termos.length) return [];
     const texto = (e: EquipamentoEstatico) => normalizarNome(`${e.c} ${e.d} ${e.e} ${e.m || ''} ${e.g || ''}`);
     // Início do código primeiro, depois final do código ("colhedora 01"):
