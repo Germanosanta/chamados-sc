@@ -98,6 +98,10 @@ jobs:
           target: v3
           entryPoint: .
           channelId: live
+          # Fixada de propósito: a 15.35.0 exige serviceusage.services.get,
+          # que esta service account não tem (403 no deploy). Depois de dar
+          # o papel "Service Usage Consumer" à conta, esta linha pode sair.
+          firebaseToolsVersion: "15.34.0"
 
       - name: Resumo da execução
         if: always()
