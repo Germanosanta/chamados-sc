@@ -1,0 +1,72 @@
+name: Recriar Acompanhamento Publico (manual)
+
+# Roda scripts/recriar-acompanhamento-publico.js no runner do GitHub Actions,
+# para quem não pode instalar Node localmente. NUNCA roda sozinho: só existe
+# o botão "Run workflow". O padrão é simular; gravar exige escolher "aplicar"
+# e digitar APLICAR.
+#
+# Reaproveita o secret FIREBASE_SERVICE_ACCOUNT. Se a conta não tiver acesso
+# ao Firestore (papel "Cloud Datastore User" ou equivalente), o script para
+# com erro na leitura, antes de gravar qualquer coisa.
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'simular = só mostra o que faria | aplicar = grava no Firestore de produção'
+        required: true
+        type: choice
+        default: simular
+        options:
+          - simular
+          - aplicar
+      confirmacao:
+        description: 'Só para o modo aplicar: digite APLICAR'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  recriar:
+    name: Recriar espelhos publicos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MODO: ${{ github.event.inputs.modo }}
+      CONFIRMACAO: ${{ github.event.inputs.confirmacao }}
+    steps:
+      - name: Conferir confirmação
+        run: |
+          if [ "$MODO" = "aplicar" ] && [ "$CONFIRMACAO" != "APLICAR" ]; then
+            echo "::error::No modo aplicar, o campo de confirmação precisa ser exatamente APLICAR. Nada foi gravado."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependências
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+
+      - name: Preparar credencial do Firebase (efêmera)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+
+      - name: Rodar script
+        working-directory: scripts
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+          if [ "$MODO" = "aplicar" ]; then export APLICAR=1; fi
+          node recriar-acompanhamento-publico.js
+
+      - name: Apagar credencial
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"
