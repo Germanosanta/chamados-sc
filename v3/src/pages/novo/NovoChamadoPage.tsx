@@ -15,7 +15,7 @@ import { useChamados, useCriarChamado, useProximoNumero } from '@/hooks/useChama
 import { useSessionStore } from '@/store/session';
 import { useNovoChamadoPrefill } from '@/store/novoChamadoPrefill';
 import { cn } from '@/utils/cn';
-import { codigoEquipDoChamado, fmtDateHora, formatDataBR } from '@/utils/chamado-helpers';
+import { codigoEquipDoChamado, fmtDateHora, formatDataBR, maiorNumeroChamado } from '@/utils/chamado-helpers';
 import type { EquipamentoEstatico } from '@/types/equipamento';
 import type { Chamado, Prioridade } from '@/types/chamado';
 
@@ -147,7 +147,7 @@ export function NovoChamadoPage() {
     };
 
     try {
-      const criado = await criar.mutateAsync({ chamado, pecasUsadas: [], numEstimado: todos.length });
+      const criado = await criar.mutateAsync({ chamado, pecasUsadas: [], maiorNumero: maiorNumeroChamado(todos) });
       setEnviado(criado.num);
       setChamadoCriado(criado);
     } catch {

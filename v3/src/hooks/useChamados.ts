@@ -5,7 +5,7 @@ import { useSouTecnicoAtivo } from './useTecnicos';
 import { alocarProximoNumeroChamado, appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
-import { EVT_LABELS, fmtDateHora, isFechado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
+import { EVT_LABELS, fmtDateHora, isFechado, maiorNumeroChamado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
 import { gerarTokenPublico, sincronizarAcompanhamentoPublico } from '@/utils/acompanhamentoPublico';
 import type { Chamado, ChamadoHistoricoTupla, ChecklistEncerramento, Encerramento, EventoTimeline, PecaUsada } from '@/types/chamado';
 import type { EquipamentoEstatico } from '@/types/equipamento';
@@ -95,7 +95,7 @@ export function useEncerradosLista() {
  * texto). */
 export function useProximoNumero(): string {
   const { data } = useChamados();
-  return `CHM-${String(data.length + 1).padStart(4, '0')}`;
+  return `CHM-${String(maiorNumeroChamado(data) + 1).padStart(4, '0')}`;
 }
 
 /** Grava só o campo alterado — mesma estratégia "cria override se o
@@ -245,13 +245,13 @@ export function useCriarChamado() {
     mutationFn: async ({
       chamado: chamadoSemNum,
       pecasUsadas,
-      numEstimado,
+      maiorNumero,
     }: {
       chamado: Omit<Chamado, 'num'>;
       pecasUsadas: PecaUsada[];
-      numEstimado: number;
+      maiorNumero: number;
     }) => {
-      const num = await alocarProximoNumeroChamado(numEstimado);
+      const num = await alocarProximoNumeroChamado(maiorNumero);
       // tokenPublico: gerado aqui, 1x, na própria abertura — nunca depois
       // (ver types/chamado.ts e utils/acompanhamentoPublico.ts). Vai
       // junto no mesmo documento `chamados/{num}` só como referência pra

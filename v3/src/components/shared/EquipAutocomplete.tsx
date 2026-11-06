@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { useEquipUniverso } from '@/hooks/useEquipamentos';
+import { normalizarNome } from '@/utils/chamado-helpers';
 import type { EquipamentoEstatico } from '@/types/equipamento';
 
 interface EquipAutocompleteProps {
@@ -30,14 +31,23 @@ export function EquipAutocomplete({ onSelect, placeholder, id }: EquipAutocomple
 
   const results = useMemo(() => {
     if (!aberto) return [];
-    const ql = q.trim().toLowerCase();
-    if (!ql) return [];
-    const exact = universo.filter((e) => e.c.toLowerCase().startsWith(ql));
-    const codigos = new Set(exact.map((e) => e.c));
-    const partial = universo.filter(
-      (e) => !codigos.has(e.c) && (e.d.toLowerCase().includes(ql) || e.e.toLowerCase().includes(ql) || (e.m || '').toLowerCase().includes(ql)),
-    );
-    return [...exact, ...partial].slice(0, 30);
+    const termos = normalizarNome(q).split(/\s+/).filter(Boolean);
+    if (!termos.length) return [];
+    const texto = (e: EquipamentoEstatico) => normalizarNome(`${e.c} ${e.d} ${e.e} ${e.m || ''} ${e.g || ''}`);
+    // Início do código primeiro, depois final do código ("colhedora 01"):
+    // a lista é cortada em 30, então a frota procurada precisa vir antes.
+    const prioridade = (e: EquipamentoEstatico) => {
+      const codigo = e.c.toLowerCase();
+      if (termos.some((t) => codigo.startsWith(t))) return 0;
+      return termos.some((t) => codigo.endsWith(t)) ? 1 : 2;
+    };
+    return universo
+      .filter((e) => {
+        const conteudo = texto(e);
+        return termos.every((t) => conteudo.includes(t));
+      })
+      .sort((a, b) => prioridade(a) - prioridade(b))
+      .slice(0, 30);
   }, [universo, q, aberto]);
 
   function selecionar(equip: EquipamentoEstatico) {

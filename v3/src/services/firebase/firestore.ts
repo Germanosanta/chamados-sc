@@ -204,20 +204,22 @@ export async function gravarEmLoteMisto(items: { col: ColName; id: string; data:
  * SDK do Firestore reexecuta a transação automaticamente em caso de
  * disputa concorrente, então duas aberturas simultâneas NUNCA mais saem
  * com o mesmo número, sem precisar de Cloud Functions (plano Spark).
- * `candidatoInicial` só é usado na primeiríssima vez que o contador é
- * criado (documento ainda não existe) — bootstrap a partir da contagem
- * atual de chamados, pra manter a numeração pequena/sequencial em vez de
- * pular pra um timestamp; depois disso o contador nunca mais depende de
- * `data.length`.
+ * `maiorExistente` é o maior número já usado: o contador nasceu da
+ * contagem de chamados, que pode ficar abaixo da numeração real, e a
+ * sequência nunca pode voltar para trás. A checagem de `chamados/{num}`
+ * garante que um número já usado nunca seja reaproveitado, porque a
+ * gravação do chamado faz merge e escreveria por cima do existente.
  */
-export async function alocarProximoNumeroChamado(candidatoInicial: number): Promise<string> {
+export async function alocarProximoNumeroChamado(maiorExistente: number): Promise<string> {
   const ref = doc(db, 'configuracoes', 'contadorChamados');
+  const formatar = (n: number) => `CHM-${String(n).padStart(4, '0')}`;
   const proximo = await runTransaction(db, async (tx) => {
     const snap = await tx.get(ref);
-    const atual = snap.exists() && typeof snap.data().ultimoNumero === 'number' ? (snap.data().ultimoNumero as number) : Math.max(candidatoInicial - 1, 0);
-    const novo = atual + 1;
+    const contador = snap.exists() && typeof snap.data().ultimoNumero === 'number' ? (snap.data().ultimoNumero as number) : 0;
+    let novo = Math.max(contador, maiorExistente) + 1;
+    while ((await tx.get(doc(db, 'chamados', formatar(novo)))).exists()) novo += 1;
     tx.set(ref, { ultimoNumero: novo, _updatedAt: serverTimestamp() }, { merge: true });
     return novo;
   });
-  return `CHM-${String(proximo).padStart(4, '0')}`;
+  return formatar(proximo);
 }

@@ -85,6 +85,15 @@ export function isAbertoStatus(c: ChamadoBucket): boolean {
   return !isConcluido(c) && !isCancelado(c) && !isEmAtendimento(c) && !isAguardandoPeca(c);
 }
 
+/** Maior número em uso (CHM-3234 → 3234). Ignora números com mais de 6
+ * dígitos: um valor anômalo não pode fazer a sequência saltar. */
+export function maiorNumeroChamado(chamados: Pick<Chamado, 'num'>[]): number {
+  return chamados.reduce((maior, c) => {
+    const m = /^CHM-(\d{1,6})$/.exec(c.num || '');
+    return m ? Math.max(maior, Number(m[1])) : maior;
+  }, 0);
+}
+
 /**
  * Único conceito de responsável do chamado: `resp`/`assumidoPor` são
  * sempre gravados juntos (por useAssumirChamado/useReatribuirResponsavel,
