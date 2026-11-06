@@ -129,6 +129,25 @@ export function escutarColecao<T = DocumentData>(
   );
 }
 
+/** Escuta só os logs de auditoria de 1 chamado: a coleção cresce sem
+ * limite, e lê-la inteira em toda sessão consome a cota diária de
+ * leituras do Firestore. */
+export function escutarAuditoriaDoChamado<T = DocumentData>(
+  num: string,
+  callback: (items: (T & { id: string })[]) => void,
+): Unsubscribe {
+  return onSnapshot(
+    query(collection(db, 'auditoria'), where('chamado', '==', num)),
+    (snap) => {
+      callback(snap.docs.map((d) => ({ id: d.id, ...(d.data() as T) })));
+    },
+    (erro) => {
+      // eslint-disable-next-line no-console -- mesmo raciocínio de escutarColecao: uma falha de leitura não pode parecer "sem registros".
+      console.error(`[Firestore] onSnapshot('auditoria/${num}') falhou:`, erro);
+    },
+  );
+}
+
 /** Escuta 1 doc específico em tempo real — usado pela consulta pública
  * de acompanhamento (ver hooks/useAcompanhamentoPublico.ts): o status
  * precisa refletir sozinho qualquer mudança feita pelo técnico (Assumir/

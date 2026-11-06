@@ -19,8 +19,7 @@ import { useSouTecnicoAtivo } from '@/hooks/useTecnicos';
 import { useChamados, useAssumirChamado, useRegistrarEvento, useReabrirChamado } from '@/hooks/useChamados';
 import { diasAberto, diasBorderClass, equipamentoDoChamado, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, isFechado, podeAgirNoChamado, temResponsavel } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
-import { useFirestoreCollection } from '@/hooks/useFirestoreCollection';
-import type { Auditoria } from '@/types/auditoria';
+import { useAuditoriaDoChamado } from '@/hooks/useAuditoriaDoChamado';
 
 /**
  * Centro Operacional do Chamado — modal global único (montado 1x no
@@ -49,11 +48,7 @@ export function CentroOperacionalModal() {
 
   const chamado = useMemo(() => chamados.find((c) => c.num === num) || null, [chamados, num]);
 
-  const { data: auditoriaAll } = useFirestoreCollection<Auditoria>('auditoria');
-  const auditoriaChamado = useMemo(
-    () => (num ? auditoriaAll.filter((a) => a.chamado === num).sort((a, b) => (b.ts || '').localeCompare(a.ts || '')) : []),
-    [auditoriaAll, num],
-  );
+  const auditoriaChamado = useAuditoriaDoChamado(num);
 
   if (!num) return null;
 
