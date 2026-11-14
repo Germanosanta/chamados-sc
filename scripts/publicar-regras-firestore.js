@@ -66,11 +66,18 @@ async function main() {
   const atual = await requisitar('GET', `${base}/releases/cloud.firestore`, undefined, t);
   console.log(`Release atual: ${atual.rulesetName} (${atual.updateTime})`);
 
-  const teste = await requisitar('POST', `${base}:test`, { source }, t);
-  const erros = (teste.issues || []).filter((i) => i.severity === 'ERROR');
-  (teste.issues || []).forEach((i) => console.log(`${i.severity}: linha ${i.sourcePosition && i.sourcePosition.line}: ${i.description}`));
-  if (erros.length) throw new Error(`${erros.length} erro(s) de compilação; nada foi publicado`);
-  console.log('Compilação: ok');
+  // Validação prévia exige firebaserules.rulesets.test; sem ela, a criação do
+  // ruleset abaixo também compila e recusa (HTTP 400) regras com erro.
+  try {
+    const teste = await requisitar('POST', `${base}:test`, { source }, t);
+    const erros = (teste.issues || []).filter((i) => i.severity === 'ERROR');
+    (teste.issues || []).forEach((i) => console.log(`${i.severity}: linha ${i.sourcePosition && i.sourcePosition.line}: ${i.description}`));
+    if (erros.length) throw new Error(`${erros.length} erro(s) de compilação; nada foi publicado`);
+    console.log('Compilação: ok');
+  } catch (e) {
+    if (!/HTTP 403/.test(e.message)) throw e;
+    console.log('Validação prévia sem permissão; a criação do ruleset fará a compilação.');
+  }
 
   const ruleset = await requisitar('POST', `${base}/rulesets`, { source }, t);
   console.log(`Ruleset criado: ${ruleset.name}`);
