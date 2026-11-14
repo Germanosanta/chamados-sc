@@ -223,14 +223,14 @@ function Detalhe({ chamado: c, todos }: { chamado: ChamadoIrrigacao; todos: Cham
               </>
             ) : (
               souTecnicoAtivo &&
-              !souResponsavel &&
+              !c.tecnico &&
               usuario && (
                 <Button
                   disabled={ocupado === 'assumir'}
                   onClick={() =>
                     executar(
                       'assumir',
-                      () => acoes.atribuirTecnico(c, { key: meuTecnico?.key || usuario.id, nome: meuTecnico?.nome || usuario.nome, uid: usuario.id }),
+                      () => acoes.assumir(c, { key: meuTecnico?.key || usuario.id, nome: meuTecnico?.nome || usuario.nome }),
                       `Você assumiu o chamado ${c.num}.`,
                     )
                   }

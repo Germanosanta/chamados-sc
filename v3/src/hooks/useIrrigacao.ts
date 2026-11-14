@@ -4,6 +4,7 @@ import { useSessionStore } from '@/store/session';
 import {
   adicionarDocumento,
   atualizarComListas,
+  atualizarSeLivre,
   criarChamadoIrrigacaoComNumero,
   escutarPorCampo,
   setMerge,
@@ -17,6 +18,7 @@ import {
   ativosMonitorados,
   formatarNumeroIrrigacao,
   minutosEntre,
+  motivoNaoPodeAssumirIrrigacao,
   type FormEncerramentoIrrigacao,
 } from '@/utils/irrigacao';
 import ativosJson from '@/data/irrigacao_ativos.json';
@@ -162,6 +164,20 @@ export function useAcoesIrrigacao() {
 
   return useMemo(
     () => ({
+      /** Técnico assume para si, em transação: recusa se outro já assumiu. */
+      assumir: async (c: ChamadoIrrigacao, tecnico: { key: string; nome: string }) => {
+        if (!usuario) throw new Error('sessão expirada, entre novamente');
+        const campos: Partial<ChamadoIrrigacao> = { tecnico: tecnico.nome, tecnicoKey: tecnico.key, tecnicoUid: usuario.id };
+        const eventos = [evento('atribuicao', `${tecnico.nome} assumiu o chamado`, usuario)];
+        if (c.status === 'aguardando') {
+          campos.status = 'em_atendimento';
+          eventos.push(evento('status', STATUS_IRRIGACAO.em_atendimento.label, usuario));
+        }
+        await atualizarSeLivre('irrigacao_chamados', c.num, { campos, listas: { eventos } }, (atual) =>
+          motivoNaoPodeAssumirIrrigacao(atual as Partial<ChamadoIrrigacao>, usuario.id),
+        );
+        await registrarAuditoria('assumiu', `Chamado de irrigação ${c.num} assumido`, usuario, c.num);
+      },
       atribuirTecnico: (c: ChamadoIrrigacao, tecnico: { key: string; nome: string; uid: string | null }) => {
         const campos: Partial<ChamadoIrrigacao> = { tecnico: tecnico.nome, tecnicoKey: tecnico.key, tecnicoUid: tecnico.uid };
         const eventos = [evento('atribuicao', c.tecnico ? `${c.tecnico} → ${tecnico.nome}` : tecnico.nome, usuario)];

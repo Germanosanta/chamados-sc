@@ -311,3 +311,32 @@ export function escutarPorCampo<T = DocumentData>(
     },
   );
 }
+
+/**
+ * Assume/atualiza um documento só se `bloqueio` permitir, lendo o estado
+ * atual dentro de uma transação: dois técnicos clicando "Assumir" ao mesmo
+ * tempo nunca ficam os dois como responsáveis; o segundo recebe o motivo.
+ * `seed` cria o documento quando ele ainda não existe no Firestore (chamado
+ * de campo que só existe no histórico estático); sem `seed`, documento
+ * inexistente é erro.
+ */
+export async function atualizarSeLivre(
+  colName: ColName,
+  docId: string,
+  opcoes: { seed?: DocumentData; campos: DocumentData; listas?: Record<string, unknown[]> },
+  bloqueio: (atual: DocumentData) => string | null,
+): Promise<void> {
+  const ref = doc(db, colName, docId);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists() && !opcoes.seed) throw new Error('chamado não encontrado');
+    const atual = snap.exists() ? snap.data() : (opcoes.seed as DocumentData);
+    const motivo = bloqueio(atual);
+    if (motivo) throw new Error(motivo);
+    const extra: DocumentData = {};
+    for (const [campo, itens] of Object.entries(opcoes.listas || {})) if (itens.length) extra[campo] = arrayUnion(...itens);
+    const dados = { ...opcoes.campos, ...extra, _updatedAt: serverTimestamp() };
+    if (snap.exists()) tx.update(ref, dados);
+    else tx.set(ref, { ...opcoes.seed, ...dados });
+  });
+}

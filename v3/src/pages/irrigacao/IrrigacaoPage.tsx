@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, BarChart3, Droplets, LayoutDashboard, LogOut, PlusCircle, Settings, Tractor } from 'lucide-react';
+import { ArrowLeft, BarChart3, Droplets, LayoutDashboard, LogOut, PlusCircle, Settings, Tractor, Wrench } from 'lucide-react';
 import { logout } from '@/services/firebase/auth';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
@@ -10,9 +10,10 @@ import { PainelIrrigacao } from './PainelIrrigacao';
 import { NovoChamadoIrrigacao } from './NovoChamadoIrrigacao';
 import { IndicadoresIrrigacao } from './IndicadoresIrrigacao';
 import { ConfigIrrigacao } from './ConfigIrrigacao';
+import { AreaTecnicaIrrigacao } from './AreaTecnicaIrrigacao';
 import { ChamadoIrrigacaoDialog } from './ChamadoIrrigacaoDialog';
 
-type Aba = 'painel' | 'novo' | 'indicadores' | 'config';
+type Aba = 'painel' | 'tecnica' | 'novo' | 'indicadores' | 'config';
 
 /**
  * Módulo Chamados de Irrigação — falhas de comunicação da telemetria.
@@ -34,13 +35,16 @@ export function IrrigacaoPage() {
 
   const abas: { id: Aba; label: string; icon: typeof Droplets; visivel: boolean }[] = [
     { id: 'painel', label: 'Painel', icon: LayoutDashboard, visivel: true },
+    { id: 'tecnica', label: 'Área Técnica', icon: Wrench, visivel: true },
     { id: 'novo', label: 'Novo chamado', icon: PlusCircle, visivel: temPermissao('p_novo') },
     { id: 'indicadores', label: 'Indicadores', icon: BarChart3, visivel: true },
     { id: 'config', label: 'Ativos e configurações', icon: Settings, visivel: true },
   ];
   const pedida = params.get('aba') as Aba | null;
-  const aba: Aba = abas.some((a) => a.id === pedida && a.visivel) ? (pedida as Aba) : 'painel';
-  const irPara = (id: Aba) => setParams(id === 'painel' ? {} : { aba: id }, { replace: true });
+  // Técnico cai direto na própria fila; os demais, no painel.
+  const padrao: Aba = usuario?.perfil === 'tecnico' ? 'tecnica' : 'painel';
+  const aba: Aba = abas.some((a) => a.id === pedida && a.visivel) ? (pedida as Aba) : padrao;
+  const irPara = (id: Aba) => setParams(id === padrao ? {} : { aba: id }, { replace: true });
 
   return (
     <div className="min-h-screen bg-background">
@@ -88,6 +92,7 @@ export function IrrigacaoPage() {
 
       <main className="mx-auto max-w-7xl p-4 lg:p-6">
         {aba === 'painel' && <PainelIrrigacao onAbrir={setAberto} />}
+        {aba === 'tecnica' && <AreaTecnicaIrrigacao onAbrir={setAberto} />}
         {aba === 'novo' && (
           <NovoChamadoIrrigacao
             onCriado={(num) => {

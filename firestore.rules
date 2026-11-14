@@ -163,7 +163,14 @@ service cloud.firestore {
       // técnico de 29/07/2026, achado C1: só fechar a lacuna já existente).
       allow read: if estouAtivo();
       allow create: if estouAtivo();
-      allow update: if souAdmin() || temPerm('p_editar') || temPerm('p_encerrar') || temPerm('p_reabrir');
+      // Assunção concorrente: quem já assumiu (assumidoPor/assumidoPorUid)
+      // só é trocado por administrador (reatribuição). Um técnico não
+      // sobrescreve o responsável de outro, nem com escrita direta no SDK.
+      allow update: if (souAdmin() || temPerm('p_editar') || temPerm('p_encerrar') || temPerm('p_reabrir'))
+        && (souAdmin()
+            || resource.data.get('assumidoPor', '') == ''
+            || (request.resource.data.get('assumidoPor', '') == resource.data.get('assumidoPor', '')
+                && request.resource.data.get('assumidoPorUid', null) == resource.data.get('assumidoPorUid', null)));
       allow delete: if souAdmin() || temPerm('p_excluir');
     }
     match /historico/{docId} {
@@ -261,7 +268,12 @@ service cloud.firestore {
         && (request.resource.data.status != 'encerrado' || resource.data.status == 'encerrado'
             || ((souAdmin() || temPerm('p_encerrar')) && irrEncerramentoValido(request.resource.data.encerramento)))
         // Chamado encerrado só muda por reabertura (admin ou p_reabrir).
-        && (resource.data.status != 'encerrado' || souAdmin() || temPerm('p_reabrir'));
+        && (resource.data.status != 'encerrado' || souAdmin() || temPerm('p_reabrir'))
+        // Técnico já definido só é trocado por administrador (assunção concorrente).
+        && (souAdmin()
+            || resource.data.get('tecnico', '') == ''
+            || (request.resource.data.get('tecnico', '') == resource.data.get('tecnico', '')
+                && request.resource.data.get('tecnicoUid', null) == resource.data.get('tecnicoUid', null)));
       allow delete: if false;
     }
 

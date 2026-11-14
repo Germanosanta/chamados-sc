@@ -146,6 +146,7 @@ export interface FiltrosIrrigacao {
   ativoId?: string;
   tecnico?: string;
   status?: string;
+  prioridade?: string;
   /** 'AAAA-MM-DD', comparado com a data de identificação da falha. */
   de?: string;
   ate?: string;
@@ -161,6 +162,7 @@ export function filtrarChamadosIrrigacao(lista: ChamadoIrrigacao[], f: FiltrosIr
     if (f.plataforma && (c.plataforma || SEM_PLATAFORMA) !== f.plataforma) return false;
     if (f.ativoId && c.ativoId !== f.ativoId) return false;
     if (f.tecnico && (c.tecnico || '') !== f.tecnico) return false;
+    if (f.prioridade && c.prioridade !== f.prioridade) return false;
     if (f.status === 'abertos' ? c.status === 'encerrado' : f.status && c.status !== f.status) return false;
     const dia = isoParaInputLocal(c.identificadoEm).slice(0, 10);
     if (f.de && dia < f.de) return false;
@@ -279,10 +281,25 @@ export function souResponsavelIrrigacao(
   usuario: { id: string; nome: string; perfil: string } | null | undefined,
 ): boolean {
   if (!usuario) return false;
-  if (usuario.perfil === 'admin') return true;
+  return usuario.perfil === 'admin' || ehResponsavelIrrigacao(c, usuario);
+}
+
+/** O usuário é o técnico do chamado (sem a exceção de administrador). */
+export function ehResponsavelIrrigacao(
+  c: Pick<ChamadoIrrigacao, 'tecnico' | 'tecnicoUid'>,
+  usuario: { id: string; nome: string } | null | undefined,
+): boolean {
+  if (!usuario) return false;
   if (c.tecnicoUid) return c.tecnicoUid === usuario.id;
   const norm = (s: string) => s.trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
   return !!c.tecnico && norm(c.tecnico) === norm(usuario.nome);
+}
+
+/** Motivo para recusar "Assumir" com o estado lido no servidor; null = pode. */
+export function motivoNaoPodeAssumirIrrigacao(atual: Partial<ChamadoIrrigacao>, uid: string): string | null {
+  if (atual.status === 'encerrado') return 'este chamado já foi encerrado';
+  if (atual.tecnico && atual.tecnicoUid !== uid) return `este chamado já foi assumido por ${atual.tecnico}`;
+  return null;
 }
 
 /** Texto puro para WhatsApp, a partir do chamado já encerrado. */

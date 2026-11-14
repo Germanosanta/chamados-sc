@@ -2,7 +2,8 @@ import { useCallback, useMemo } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { useFirestoreCollection } from './useFirestoreCollection';
 import { useSouTecnicoAtivo } from './useTecnicos';
-import { alocarProximoNumeroChamado, appendToArrayField, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
+import { alocarProximoNumeroChamado, appendToArrayField, atualizarSeLivre, gravarEmLoteMisto, list, setMerge } from '@/services/firebase/firestore';
+import { motivoNaoPodeAssumirCampo } from '@/utils/areaTecnica';
 import { audit } from '@/services/firebase/audit';
 import { useSessionStore } from '@/store/session';
 import { EVT_LABELS, fmtDateHora, isFechado, maiorNumeroChamado, normalizarChamado, podeAgirNoChamado, tuplaParaChamado } from '@/utils/chamado-helpers';
@@ -206,21 +207,29 @@ export function useAlterarStatusChamado() {
  * souResponsavelDoChamado em chamado-helpers.ts), e o uid da própria
  * conta fica registrado em `assumidoPorUid`.
  */
+/**
+ * Assumir em transação: o estado do chamado é relido no servidor e, se
+ * outro técnico assumiu (ou o chamado foi atribuído/encerrado) depois que
+ * a tela carregou, a ação é recusada com o motivo. Antes era um merge
+ * direto e o último clique sobrescrevia quem tinha assumido primeiro.
+ */
 export function useAssumirChamado() {
-  const { mutateAsync } = useChamadoPatch();
   const usuario = useSessionStore((s) => s.usuario);
   const souTecnicoAtivo = useSouTecnicoAtivo();
   return useCallback(
     async (chamadoBase: Chamado) => {
       if (!usuario) return Promise.reject(new Error('Sem sessão ativa.'));
       if (!souTecnicoAtivo) return Promise.reject(new Error('Somente técnicos ativos podem assumir chamados.'));
-      await mutateAsync({
-        chamadoBase,
-        patch: { resp: usuario.nome, assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), assumidoPorUid: usuario.id },
-      });
+      const patch = { resp: usuario.nome, assumidoPor: usuario.nome, assumidoEm: new Date().toISOString(), assumidoPorUid: usuario.id };
+      // Mesmo seed de useChamadoPatch: chamado só do histórico estático vira documento.
+      const { encerramento: _encerramento, eventos: _eventos, ...seed } = chamadoBase;
+      await atualizarSeLivre('chamados', chamadoBase.num, { seed, campos: patch }, (atual) =>
+        motivoNaoPodeAssumirCampo(atual as Partial<Chamado>, usuario.id),
+      );
+      await sincronizarAcompanhamentoPublico({ ...chamadoBase, ...patch });
       await audit('assumiu', `Chamado ${chamadoBase.num} assumido`, usuario, chamadoBase.num);
     },
-    [mutateAsync, usuario, souTecnicoAtivo],
+    [usuario, souTecnicoAtivo],
   );
 }
 
