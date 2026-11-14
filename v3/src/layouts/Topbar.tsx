@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Droplets, LogOut, Menu, Plus, User } from 'lucide-react';
+import { Droplets, LayoutGrid, LogOut, Menu, Plus, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -64,6 +64,11 @@ export function Topbar() {
       </div>
 
       <GlobalSearch />
+
+      <Button variant="ghost" size="sm" onClick={() => navigate('/portal')} title="Voltar para a Central de Tecnologia" aria-label="Voltar para a Central de Tecnologia">
+        <LayoutGrid className="h-3.5 w-3.5" />
+        <span className="hidden md:inline">Módulos</span>
+      </Button>
 
       {podeIrrigacao && (
         <Button variant="ghost" size="sm" onClick={() => navigate('/irrigacao')} title="Ir para Chamados de Irrigação" aria-label="Ir para Chamados de Irrigação">
