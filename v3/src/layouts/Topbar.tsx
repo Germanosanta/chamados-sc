@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { LogOut, Menu, Plus, User } from 'lucide-react';
+import { Droplets, LogOut, Menu, Plus, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -34,6 +34,7 @@ export function Topbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const usuario = useSessionStore((s) => s.usuario);
+  const podeIrrigacao = useSessionStore((s) => s.temPermissao('p_chamados'));
   const mobileMenuOpen = useUiStore((s) => s.mobileMenuOpen);
   const setMobileMenuOpen = useUiStore((s) => s.setMobileMenuOpen);
 
@@ -63,6 +64,13 @@ export function Topbar() {
       </div>
 
       <GlobalSearch />
+
+      {podeIrrigacao && (
+        <Button variant="ghost" size="sm" onClick={() => navigate('/irrigacao')} title="Ir para Chamados de Irrigação" aria-label="Ir para Chamados de Irrigação">
+          <Droplets className="h-3.5 w-3.5" />
+          <span className="hidden md:inline">Irrigação</span>
+        </Button>
+      )}
 
       <Button size="sm" onClick={() => navigate('/novo')} title="Novo Chamado" aria-label="Novo Chamado">
         <Plus className="h-3.5 w-3.5" />

@@ -1,6 +1,9 @@
 import {
+  addDoc,
   arrayUnion,
   collection,
+  increment,
+  updateDoc,
   doc,
   getDoc,
   getDocs,
@@ -41,6 +44,10 @@ export const COL = {
    * Firestore permite `get` público mas nunca `list` (ver
    * firestore.rules) — só quem já tem o link exato consegue ler. */
   acompanhamentoPublico: 'acompanhamento_publico',
+  /** Módulo Chamados de Irrigação — separado dos chamados de campo. */
+  irrigacaoChamados: 'irrigacao_chamados',
+  irrigacaoFotos: 'irrigacao_fotos',
+  irrigacaoConfig: 'irrigacao_config',
 } as const;
 
 export type ColName = (typeof COL)[keyof typeof COL];
@@ -241,4 +248,66 @@ export async function alocarProximoNumeroChamado(maiorExistente: number): Promis
     return novo;
   });
   return formatar(proximo);
+}
+
+// ── Chamados de Irrigação ───────────────────────────────────────────────
+
+/**
+ * Cria o chamado de irrigação e aloca o número na MESMA transação: lê o
+ * contador próprio (irrigacao_config/contador), pula qualquer número que
+ * já exista e grava o chamado sem merge. Nunca sobrescreve um chamado e
+ * nunca deixa um número reservado sem chamado.
+ */
+export async function criarChamadoIrrigacaoComNumero(
+  dados: (num: string) => DocumentData,
+  formatar: (n: number) => string,
+): Promise<string> {
+  const contadorRef = doc(db, COL.irrigacaoConfig, 'contador');
+  return runTransaction(db, async (tx) => {
+    const snap = await tx.get(contadorRef);
+    const atual = snap.exists() && typeof snap.data().ultimoNumero === 'number' ? (snap.data().ultimoNumero as number) : 0;
+    let novo = atual + 1;
+    while ((await tx.get(doc(db, COL.irrigacaoChamados, formatar(novo)))).exists()) novo += 1;
+    const num = formatar(novo);
+    tx.set(contadorRef, { ultimoNumero: novo, _updatedAt: serverTimestamp() }, { merge: true });
+    tx.set(doc(db, COL.irrigacaoChamados, num), { ...dados(num), _updatedAt: serverTimestamp() });
+    return num;
+  });
+}
+
+/** Atualiza campos e acrescenta itens a campos-lista (histórico, materiais)
+ * sem regravar a lista inteira. `updateDoc` falha se o chamado não existir. */
+export async function atualizarComListas(
+  colName: ColName,
+  docId: string,
+  campos: DocumentData,
+  listas: Record<string, unknown[]> = {},
+  incrementos: Record<string, number> = {},
+): Promise<void> {
+  const extra: DocumentData = {};
+  for (const [campo, itens] of Object.entries(listas)) if (itens.length) extra[campo] = arrayUnion(...itens);
+  for (const [campo, n] of Object.entries(incrementos)) extra[campo] = increment(n);
+  await updateDoc(doc(db, colName, docId), { ...campos, ...extra, _updatedAt: serverTimestamp() });
+}
+
+export async function adicionarDocumento(colName: ColName, data: DocumentData): Promise<string> {
+  const ref = await addDoc(collection(db, colName), { ...data, _updatedAt: serverTimestamp() });
+  return ref.id;
+}
+
+/** Escuta só os documentos de uma coleção cujo `campo` é igual a `valor`. */
+export function escutarPorCampo<T = DocumentData>(
+  colName: ColName,
+  campo: string,
+  valor: string,
+  callback: (items: (T & { id: string })[]) => void,
+): Unsubscribe {
+  return onSnapshot(
+    query(collection(db, colName), where(campo, '==', valor)),
+    (snap) => callback(snap.docs.map((d) => ({ id: d.id, ...(d.data() as T) }))),
+    (erro) => {
+      // eslint-disable-next-line no-console -- uma falha de leitura não pode parecer "sem registros".
+      console.error(`[Firestore] onSnapshot('${colName}' ${campo}=${valor}) falhou:`, erro);
+    },
+  );
 }

@@ -220,6 +220,67 @@ service cloud.firestore {
       allow delete: if souAdmin();
     }
 
+    // ── Chamados de Irrigação (falhas de comunicação da telemetria) ──────
+    // Coleções próprias, nunca misturadas com `chamados`. Permissões iguais
+    // às dos chamados de campo: abrir exige conta ativa; gerir exige
+    // p_editar/p_encerrar/p_reabrir (ou admin); encerrar exige p_encerrar
+    // e os campos do encerramento técnico; reabrir exige p_reabrir.
+    // Nada é apagado: chamados e fotos não têm delete.
+    function irrStatusValido(s) {
+      return s in ['aguardando', 'em_atendimento', 'aguardando_pecas', 'restabelecida', 'encerrado'];
+    }
+    function irrTexto(v) {
+      return v is string && v.size() > 0;
+    }
+    function irrEncerramentoValido(e) {
+      return e is map
+        && irrTexto(e.tecnico) && irrTexto(e.diagnostico) && irrTexto(e.servico)
+        && irrTexto(e.solucao) && irrTexto(e.restabelecidoEm) && irrTexto(e.encerradoEm)
+        && irrTexto(e.observacoes) && e.indisponibilidadeMin is number;
+    }
+
+    match /irrigacao_chamados/{num} {
+      allow read: if estouAtivo();
+      allow create: if estouAtivo()
+        && request.resource.data.num == num
+        && request.resource.data.status == 'aguardando'
+        && request.resource.data.abertoPorUid == request.auth.uid
+        && irrTexto(request.resource.data.ativoId)
+        && irrTexto(request.resource.data.tipoFalha)
+        && irrTexto(request.resource.data.identificadoEm)
+        && irrTexto(request.resource.data.descricao)
+        && !('encerramento' in request.resource.data);
+      allow update: if (souAdmin() || temPerm('p_editar') || temPerm('p_encerrar') || temPerm('p_reabrir'))
+        // Identidade e origem do chamado nunca mudam depois da abertura.
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['num', 'ativoId', 'abertoEm', 'abertoPor', 'abertoPorUid', 'identificadoEm'])
+        && irrStatusValido(request.resource.data.status)
+        // Encerrar: p_encerrar (ou admin) e encerramento técnico completo.
+        && (request.resource.data.status != 'encerrado' || resource.data.status == 'encerrado'
+            || ((souAdmin() || temPerm('p_encerrar')) && irrEncerramentoValido(request.resource.data.encerramento)))
+        // Chamado encerrado só muda por reabertura (admin ou p_reabrir).
+        && (resource.data.status != 'encerrado' || souAdmin() || temPerm('p_reabrir'));
+      allow delete: if false;
+    }
+
+    match /irrigacao_fotos/{fotoId} {
+      allow read: if estouAtivo();
+      allow create: if estouAtivo()
+        && request.resource.data.autorUid == request.auth.uid
+        && irrTexto(request.resource.data.chamado)
+        && exists(/databases/$(database)/documents/irrigacao_chamados/$(request.resource.data.chamado))
+        && request.resource.data.data is string
+        && request.resource.data.data.size() <= 700000;
+      allow update, delete: if false;
+    }
+
+    match /irrigacao_config/{docId} {
+      allow read: if estouAtivo();
+      // Contador de numeração: qualquer conta ativa (é incrementado na
+      // abertura, dentro da mesma transação que cria o chamado).
+      allow write: if (docId == 'contador' && estouAtivo() && request.resource.data.ultimoNumero is int)
+        || (docId == 'geral' && (souAdmin() || temPerm('p_config')));
+    }
+
     // Documento de teste de latência (pingFirestore em js/firebase/firebase.js)
     // roda antes do login, por isso fica aberto — não expõe nada sensível.
     match /_ping/{docId} {

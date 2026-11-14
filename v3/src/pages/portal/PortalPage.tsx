@@ -18,14 +18,14 @@ const MODULOS = [
     id: 'irrigacao',
     icon: Droplets,
     title: 'Chamados de Irrigação',
-    desc: 'Gestão de chamados do sistema de irrigação.',
+    desc: 'Falhas de comunicação da telemetria de pivôs, captações e casas de bombas.',
     path: '/irrigacao',
-    ativo: false,
+    ativo: true,
   },
 ];
 
-/** Portal de módulos — 2 cards (Chamados de Campo ativo, Irrigação "Em
- * breve" com rota real por trás, ver PlaceholderPage). O módulo "Chips de
+/** Portal de módulos — 2 cards (Chamados de Campo e Chamados de Irrigação,
+ * ver pages/irrigacao/IrrigacaoPage). O módulo "Chips de
  * Abastecimento" existia aqui só como card placeholder ("Em breve", sem
  * nenhuma página/lógica por trás) e foi removido na fase de estabilização
  * — a área de Tecnologia não é mais responsável por ele (decisão de

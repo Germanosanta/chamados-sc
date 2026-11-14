@@ -9,7 +9,9 @@ name: V3 CI
 # continua publicando só docs/.
 on:
   push:
-    branches: [main]
+    # feature/**: valida (type-check, lint, build) antes de ir para a main.
+    # Só a main publica (v3-deploy.yml).
+    branches: [main, "feature/**"]
     paths:
       - "v3/**"
       - ".github/workflows/v3-ci.yml"

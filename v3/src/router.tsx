@@ -33,6 +33,7 @@ const RelatorioGerencialPage = lazy(() =>
 );
 const PorMesPage = lazy(() => import('@/pages/pormes/PorMesPage').then((m) => ({ default: m.PorMesPage })));
 const PlaceholderPage = lazy(() => import('@/pages/placeholder/PlaceholderPage').then((m) => ({ default: m.PlaceholderPage })));
+const IrrigacaoPage = lazy(() => import('@/pages/irrigacao/IrrigacaoPage').then((m) => ({ default: m.IrrigacaoPage })));
 
 /** Páginas 100% funcionais desta fase — o resto das rotas cai no mesmo
  * PlaceholderPage genérico (rota real, protegida, dentro do shell, sem
@@ -98,6 +99,21 @@ export const router = createBrowserRouter([
             <PortalPage />
           </Suspense>
         ),
+      },
+      // Módulo de irrigação: layout próprio, fora do AppShell dos chamados
+      // de campo. Mesma permissão de acesso da lista de chamados (p_chamados).
+      {
+        element: <ProtectedRoute perm="p_chamados" />,
+        children: [
+          {
+            path: '/irrigacao',
+            element: (
+              <Suspense fallback={<RouteLoading />}>
+                <IrrigacaoPage />
+              </Suspense>
+            ),
+          },
+        ],
       },
       {
         element: <AppShell />,

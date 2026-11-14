@@ -1,0 +1,3841 @@
+{
+ "origem": "informações pivôs e reservatorios Elavatórias Captacões e Poços.xlsx",
+ "geradoEm": "2026-11-14",
+ "ativos": [
+  {
+   "id": "cb-karitel-r0",
+   "tipo": "casa_bombas",
+   "nome": "R0",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "01 - 02 - 03 - 04",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R0",
+    "Pivôs Abastecidos": "01 - 02 - 03 - 04",
+    "Total Hectares Irrigados (há)": 486.5,
+    "Capacidade (m³)": 19153,
+    "Vazão (m³/h)": 2242.46,
+    "Autonomia (h)": 8.541067,
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 560.615
+   }
+  },
+  {
+   "id": "cb-karitel-r1",
+   "tipo": "casa_bombas",
+   "nome": "R1",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "05 - 06 - 15 - 16",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R1",
+    "Pivôs Abastecidos": "05 - 06 - 15 - 16",
+    "Total Hectares Irrigados (há)": 600.04,
+    "Capacidade (m³)": 19153,
+    "Vazão (m³/h)": 2762.56,
+    "Autonomia (h)": 6.933062,
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 690.64
+   }
+  },
+  {
+   "id": "cb-karitel-r2",
+   "tipo": "casa_bombas",
+   "nome": "R2",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "07 - 08 - 17 - 18",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R2",
+    "Pivôs Abastecidos": "07 - 08 - 17 - 18",
+    "Total Hectares Irrigados (há)": 570.16,
+    "Capacidade (m³)": 35575.25,
+    "Vazão (m³/h)": 2715.04,
+    "Autonomia (h)": 13.10303,
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 678.76
+   }
+  },
+  {
+   "id": "cb-karitel-r3",
+   "tipo": "casa_bombas",
+   "nome": "R3",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "09 - 10 - 19 - 20",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R3",
+    "Pivôs Abastecidos": "09 - 10 - 19 - 20",
+    "Total Hectares Irrigados (há)": 570.16,
+    "Capacidade (m³)": 54073,
+    "Vazão (m³/h)": 2715.49,
+    "Autonomia (h)": 19.912797,
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 678.8725
+   }
+  },
+  {
+   "id": "cb-karitel-r4",
+   "tipo": "casa_bombas",
+   "nome": "R4",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "21 - 22",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R4",
+    "Pivôs Abastecidos": "21 - 22",
+    "Total Hectares Irrigados (há)": 300.02,
+    "Capacidade (m³)": 19060.98,
+    "Vazão (m³/h)": 1428.66,
+    "Autonomia (h)": 13.341859,
+    "Total de Pivôs Abastecidos": 2,
+    "Média de Vazão (m³/h) por Pivô": 714.33
+   }
+  },
+  {
+   "id": "cb-karitel-r5",
+   "tipo": "casa_bombas",
+   "nome": "R5",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "11 - 12   13",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R5",
+    "Pivôs Abastecidos": "11 - 12   13",
+    "Total Hectares Irrigados (há)": 342.43,
+    "Capacidade (m³)": 20006,
+    "Vazão (m³/h)": 1601.77,
+    "Autonomia (h)": 12.489933,
+    "Total de Pivôs Abastecidos": 3,
+    "Média de Vazão (m³/h) por Pivô": 533.923333
+   }
+  },
+  {
+   "id": "cb-karitel-r6",
+   "tipo": "casa_bombas",
+   "nome": "R6",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "14 - 23 - 24",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R6",
+    "Pivôs Abastecidos": "14 - 23 - 24",
+    "Total Hectares Irrigados (há)": 450.03,
+    "Capacidade (m³)": 17398,
+    "Vazão (m³/h)": 1931.29,
+    "Autonomia (h)": 9.008487,
+    "Total de Pivôs Abastecidos": 3,
+    "Média de Vazão (m³/h) por Pivô": 643.763333
+   }
+  },
+  {
+   "id": "cb-karitel-r7",
+   "tipo": "casa_bombas",
+   "nome": "R7",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "25 - 26 - 27 - 28 - 29",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "R7",
+    "Pivôs Abastecidos": "25 - 26 - 27 - 28 - 29",
+    "Total Hectares Irrigados (há)": 560.39,
+    "Capacidade (m³)": 74924,
+    "Vazão (m³/h)": 2604.24,
+    "Autonomia (h)": 28.770006,
+    "Total de Pivôs Abastecidos": 5,
+    "Média de Vazão (m³/h) por Pivô": 520.848
+   }
+  },
+  {
+   "id": "cb-karitel-c3z3",
+   "tipo": "casa_bombas",
+   "nome": "C3Z3",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "30 - 31 - 32 - 33 - 34",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "C3Z3",
+    "Pivôs Abastecidos": "30 - 31 - 32 - 33 - 34",
+    "Total Hectares Irrigados (há)": 725.73,
+    "Vazão (m³/h)": 3271,
+    "Autonomia (h)": 22.905533,
+    "Total de Pivôs Abastecidos": 5,
+    "Média de Vazão (m³/h) por Pivô": 654.2
+   }
+  },
+  {
+   "id": "cb-karitel-r8",
+   "tipo": "casa_bombas",
+   "nome": "R8",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "35 - 36 - 37 - 38",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "R8",
+    "Pivôs Abastecidos": "35 - 36 - 37 - 38",
+    "Total Hectares Irrigados (há)": 514.08,
+    "Capacidade (m³)": 43203,
+    "Vazão (m³/h)": 2593.37,
+    "Autonomia (h)": 16.659019,
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 648.3425
+   }
+  },
+  {
+   "id": "cb-karitel-r9",
+   "tipo": "casa_bombas",
+   "nome": "R9",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "41 - 42 - 43",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "R9",
+    "Pivôs Abastecidos": "41 - 42 - 43",
+    "Total Hectares Irrigados (há)": 377.75,
+    "Capacidade (m³)": 27135,
+    "Vazão (m³/h)": 1798.77,
+    "Autonomia (h)": 15.085308,
+    "Total de Pivôs Abastecidos": 3,
+    "Média de Vazão (m³/h) por Pivô": 599.59
+   }
+  },
+  {
+   "id": "cb-karitel-r10",
+   "tipo": "casa_bombas",
+   "nome": "R10",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "39 - 40",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "R10",
+    "Pivôs Abastecidos": "39 - 40",
+    "Total Hectares Irrigados (há)": 251.19,
+    "Capacidade (m³)": 18060,
+    "Vazão (m³/h)": 1196.15,
+    "Autonomia (h)": 15.098441,
+    "Total de Pivôs Abastecidos": 2,
+    "Média de Vazão (m³/h) por Pivô": 598.075
+   }
+  },
+  {
+   "id": "cb-karitel-r11",
+   "tipo": "casa_bombas",
+   "nome": "R11",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "45 - 46 - 47 - 48 - 49",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "R11",
+    "Pivôs Abastecidos": "45 - 46 - 47 - 48 - 49",
+    "Total Hectares Irrigados (há)": 762.11,
+    "Capacidade (m³)": 62246,
+    "Vazão (m³/h)": 3591.21,
+    "Autonomia (h)": 17.332877,
+    "Total de Pivôs Abastecidos": 5,
+    "Média de Vazão (m³/h) por Pivô": 718.242
+   }
+  },
+  {
+   "id": "cb-karitel-r12",
+   "tipo": "casa_bombas",
+   "nome": "R12",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "52 - 73 - 74",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "R12",
+    "Pivôs Abastecidos": "52 - 73 - 74",
+    "Total Hectares Irrigados (há)": 1131.66,
+    "Capacidade (m³)": 79396,
+    "Vazão (m³/h)": 1990.76,
+    "Autonomia (h)": 39.882256,
+    "Total de Pivôs Abastecidos": 3,
+    "Média de Vazão (m³/h) por Pivô": 663.586667
+   }
+  },
+  {
+   "id": "cb-sem-fazenda-transposicao",
+   "tipo": "casa_bombas",
+   "nome": "Transposição",
+   "fazenda": "",
+   "modulo": "",
+   "pivosAbastecidos": "",
+   "dados": {
+    "Pivôs Abastecidos": "Transposição",
+    "Total Hectares Irrigados (há)": "...",
+    "Vazão (m³/h)": 2100,
+    "Autonomia (h)": 37.807619,
+    "Total de Pivôs Abastecidos": 3,
+    "Média de Vazão (m³/h) por Pivô": 700
+   }
+  },
+  {
+   "id": "cb-karitel-r13",
+   "tipo": "casa_bombas",
+   "nome": "R13",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "pivosAbastecidos": "44 - 53 - 54 - 55",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 03",
+    "Reservatórios": "R13",
+    "Pivôs Abastecidos": "44 - 53 - 54 - 55",
+    "Total Hectares Irrigados (há)": 437.8,
+    "Capacidade (m³)": 82650,
+    "Vazão (m³/h)": 2261.11,
+    "Autonomia (h)": 36.552844,
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 565.2775
+   }
+  },
+  {
+   "id": "cb-karitel-r14",
+   "tipo": "casa_bombas",
+   "nome": "R14",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "pivosAbastecidos": "50 - 51 - 56",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 03",
+    "Reservatórios": "R14",
+    "Pivôs Abastecidos": "50 - 51 - 56",
+    "Total Hectares Irrigados (há)": 440.12,
+    "Vazão (m³/h)": 2019.91,
+    "Autonomia (h)": 40.917665,
+    "Total de Pivôs Abastecidos": 3,
+    "Média de Vazão (m³/h) por Pivô": 673.303333
+   }
+  },
+  {
+   "id": "cb-karitel-r15",
+   "tipo": "casa_bombas",
+   "nome": "R15",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "pivosAbastecidos": "57 - 58 - 59 - 60 - 66",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 03",
+    "Reservatórios": "R15",
+    "Pivôs Abastecidos": "57 - 58 - 59 - 60 - 66",
+    "Total Hectares Irrigados (há)": 695.98,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 3299.89,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 5,
+    "Média de Vazão (m³/h) por Pivô": 659.978
+   }
+  },
+  {
+   "id": "cb-karitel-r16",
+   "tipo": "casa_bombas",
+   "nome": "R16",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "pivosAbastecidos": "61 - 62 - 67 - 68",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 03",
+    "Reservatórios": "R16",
+    "Pivôs Abastecidos": "61 - 62 - 67 - 68",
+    "Total Hectares Irrigados (há)": 447.1,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 2129.04,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 532.26
+   }
+  },
+  {
+   "id": "cb-karitel-r17",
+   "tipo": "casa_bombas",
+   "nome": "R17",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "pivosAbastecidos": "69 - 70 - 71 - 72",
+   "dados": {
+    "Fazenda": "karitel",
+    "Módulo": "Módulo 03",
+    "Reservatórios": "R17",
+    "Pivôs Abastecidos": "69 - 70 - 71 - 72",
+    "Total Hectares Irrigados (há)": 396.26,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 1886.81,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 471.7025
+   }
+  },
+  {
+   "id": "cb-rdm-rm1",
+   "tipo": "casa_bombas",
+   "nome": "RM1",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "109",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "RM1",
+    "Pivôs Abastecidos": 109,
+    "Total Hectares Irrigados (há)": 102.1,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 382.14,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 1,
+    "Média de Vazão (m³/h) por Pivô": 382.14
+   }
+  },
+  {
+   "id": "cb-rdm-rm2",
+   "tipo": "casa_bombas",
+   "nome": "RM2",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "106 - 108",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "RM2",
+    "Pivôs Abastecidos": "106 - 108",
+    "Total Hectares Irrigados (há)": 221.14,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 1053.04,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 2,
+    "Média de Vazão (m³/h) por Pivô": 526.52
+   }
+  },
+  {
+   "id": "cb-rdm-rm3",
+   "tipo": "casa_bombas",
+   "nome": "RM3",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "105 - 107",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "RM3",
+    "Pivôs Abastecidos": "105 - 107",
+    "Total Hectares Irrigados (há)": 246.57,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 1174.15,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 2,
+    "Média de Vazão (m³/h) por Pivô": 587.075
+   }
+  },
+  {
+   "id": "cb-rdm-rm4",
+   "tipo": "casa_bombas",
+   "nome": "RM4",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "pivosAbastecidos": "101 - 102 - 103 - 104 - 110",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Reservatórios": "RM4",
+    "Pivôs Abastecidos": "101 - 102 - 103 - 104 - 110",
+    "Total Hectares Irrigados (há)": 675.37,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 3201.74,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 5,
+    "Média de Vazão (m³/h) por Pivô": 640.348
+   }
+  },
+  {
+   "id": "cb-rdm-rm5",
+   "tipo": "casa_bombas",
+   "nome": "RM5",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "112 - 113 - 114 - 115 - 131 - 132",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "RM5",
+    "Pivôs Abastecidos": "112 - 113 - 114 - 115 - 131 - 132",
+    "Total Hectares Irrigados (há)": 432.18,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 2057.15,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 4,
+    "Média de Vazão (m³/h) por Pivô": 514.2875
+   }
+  },
+  {
+   "id": "cb-rdm-rm6",
+   "tipo": "casa_bombas",
+   "nome": "RM6",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "116 - 117 - 118 - 119  128 - 129  - 130",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "RM6",
+    "Pivôs Abastecidos": "116 - 117 - 118 - 119  128 - 129  - 130",
+    "Total Hectares Irrigados (há)": 708.9,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 4077.29,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 7,
+    "Média de Vazão (m³/h) por Pivô": 582.47
+   }
+  },
+  {
+   "id": "cb-rdm-rm7",
+   "tipo": "casa_bombas",
+   "nome": "RM7",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "pivosAbastecidos": "120 - 121 - 122 - 123  124 - 125 - 126 - 127 - 133",
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Reservatórios": "RM7",
+    "Pivôs Abastecidos": "120 - 121 - 122 - 123  124 - 125 - 126 - 127 - 133",
+    "Total Hectares Irrigados (há)": 1080.98,
+    "Capacidade (m³)": "...",
+    "Vazão (m³/h)": 5126.49,
+    "Autonomia (h)": "...",
+    "Total de Pivôs Abastecidos": 8,
+    "Média de Vazão (m³/h) por Pivô": 640.81125
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-01",
+   "tipo": "pivo",
+   "nome": "Pivô 01",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R0",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7921296,
+    "lon": -45.6114355
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R0",
+    "Marca": "Valley",
+    "Pivô": "Pivô 01",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-02",
+   "tipo": "pivo",
+   "nome": "Pivô 02",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R0",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8004575,
+    "lon": -45.602376
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R0",
+    "Marca": "Valley",
+    "Pivô": "Pivô 02",
+    "Área (há)": 123.72,
+    "Vazão (m³/h)": 523.8,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-03",
+   "tipo": "pivo",
+   "nome": "Pivô 03",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R0",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7891987,
+    "lon": -45.5974322
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R0",
+    "Marca": "Valley",
+    "Pivô": "Pivô 03",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-04",
+   "tipo": "pivo",
+   "nome": "Pivô 04",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R0",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7985159,
+    "lon": -45.5920611
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R0",
+    "Marca": "Valley",
+    "Pivô": "Pivô 04",
+    "Área (há)": 62.76,
+    "Vazão (m³/h)": 290,
+    "Potência (cv)": 40
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-05",
+   "tipo": "pivo",
+   "nome": "Pivô 05",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R1",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7856548,
+    "lon": -45.5811524
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R1",
+    "Marca": "Valley",
+    "Pivô": "Pivô 05",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 692.9,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-06",
+   "tipo": "pivo",
+   "nome": "Pivô 06",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R1",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7829899,
+    "lon": -45.5683951
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R1",
+    "Marca": "Valley",
+    "Pivô": "Pivô 06",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 641,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-07",
+   "tipo": "pivo",
+   "nome": "Pivô 07",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R2",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7963936,
+    "lon": -45.57552
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R2",
+    "Marca": "Valley",
+    "Pivô": "Pivô 07",
+    "Área (há)": 120.13,
+    "Vazão (m³/h)": 572.05,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-08",
+   "tipo": "pivo",
+   "nome": "Pivô 08",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R2",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7946577,
+    "lon": -45.5632335
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R2",
+    "Marca": "Valley",
+    "Pivô": "Pivô 08",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-09",
+   "tipo": "pivo",
+   "nome": "Pivô 09",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R3",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8078175,
+    "lon": -45.5757276
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R3",
+    "Marca": "Valley",
+    "Pivô": "Pivô 09",
+    "Área (há)": 120.13,
+    "Vazão (m³/h)": 572.5,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-10",
+   "tipo": "pivo",
+   "nome": "Pivô 10",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R3",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8073598,
+    "lon": -45.5633325
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R3",
+    "Marca": "Valley",
+    "Pivô": "Pivô 10",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-11",
+   "tipo": "pivo",
+   "nome": "Pivô 11",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8195732,
+    "lon": -45.5724369
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 11",
+    "Área (há)": 121.12,
+    "Vazão (m³/h)": 547.92,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-12",
+   "tipo": "pivo",
+   "nome": "Pivô 12",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8196502,
+    "lon": -45.5600288
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 12",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-13",
+   "tipo": "pivo",
+   "nome": "Pivô 13",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8295894,
+    "lon": -45.5711246
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 13",
+    "Área (há)": 71.3,
+    "Vazão (m³/h)": 339.52,
+    "Potência (cv)": 75
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-14",
+   "tipo": "pivo",
+   "nome": "Pivô 14",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8323457,
+    "lon": -45.5604302
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 14",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 614.33,
+    "Potência (cv)": 75
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-15",
+   "tipo": "pivo",
+   "nome": "Pivô 15",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R1",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7793648,
+    "lon": -45.5526328
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R1",
+    "Marca": "Valley",
+    "Pivô": "Pivô 15",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-16",
+   "tipo": "pivo",
+   "nome": "Pivô 16",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R1",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7766637,
+    "lon": -45.539959
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R1",
+    "Marca": "Valley",
+    "Pivô": "Pivô 16",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-17",
+   "tipo": "pivo",
+   "nome": "Pivô 17",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R2",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7918483,
+    "lon": -45.5502032
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R2",
+    "Marca": "Valley",
+    "Pivô": "Pivô 17",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-18",
+   "tipo": "pivo",
+   "nome": "Pivô 18",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R2",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.789002,
+    "lon": -45.5376448
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R2",
+    "Marca": "Valley",
+    "Pivô": "Pivô 18",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-19",
+   "tipo": "pivo",
+   "nome": "Pivô 19",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R3",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8045165,
+    "lon": -45.5492505
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R3",
+    "Marca": "Valley",
+    "Pivô": "Pivô 19",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-20",
+   "tipo": "pivo",
+   "nome": "Pivô 20",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R3",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8018263,
+    "lon": -45.5364875
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R3",
+    "Marca": "Valley",
+    "Pivô": "Pivô 20",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-21",
+   "tipo": "pivo",
+   "nome": "Pivô 21",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8155674,
+    "lon": -45.5427946
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 21",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-22",
+   "tipo": "pivo",
+   "nome": "Pivô 22",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8138287,
+    "lon": -45.5298706
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 22",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-23",
+   "tipo": "pivo",
+   "nome": "Pivô 23",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8272429,
+    "lon": -45.5481407
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 23",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 602.63,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-24",
+   "tipo": "pivo",
+   "nome": "Pivô 24",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8258338,
+    "lon": -45.5351023
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 24",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-25",
+   "tipo": "pivo",
+   "nome": "Pivô 25",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.840578,
+    "lon": -45.5420621
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 25",
+    "Área (há)": 99.7,
+    "Vazão (m³/h)": 474.76,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-26",
+   "tipo": "pivo",
+   "nome": "Pivô 26",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.843101,
+    "lon": -45.5536073
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 26",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 650.04,
+    "Potência (cv)": 250
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-27",
+   "tipo": "pivo",
+   "nome": "Pivô 27",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8511442,
+    "lon": -45.5452086
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 27",
+    "Área (há)": 99.14,
+    "Vazão (m³/h)": 472.1,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-28",
+   "tipo": "pivo",
+   "nome": "Pivô 28",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8483833,
+    "lon": -45.5285747
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 28",
+    "Área (há)": 132.99,
+    "Vazão (m³/h)": 633.29,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-29",
+   "tipo": "pivo",
+   "nome": "Pivô 29",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.855983,
+    "lon": -45.5365711
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 29",
+    "Área (há)": 78.55,
+    "Vazão (m³/h)": 374.05,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-30",
+   "tipo": "pivo",
+   "nome": "Pivô 30",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8435093,
+    "lon": -45.5155375
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 30",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 664.33,
+    "Potência (cv)": 121.74
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-31",
+   "tipo": "pivo",
+   "nome": "Pivô 31",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8560302,
+    "lon": -45.517614
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 31",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 645.04,
+    "Potência (cv)": 125
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-32",
+   "tipo": "pivo",
+   "nome": "Pivô 32",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.866817,
+    "lon": -45.5320333
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 32",
+    "Área (há)": 138.03,
+    "Vazão (m³/h)": 657.29,
+    "Potência (cv)": 125
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-33",
+   "tipo": "pivo",
+   "nome": "Pivô 33",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8633665,
+    "lon": -45.5074252
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 33",
+    "Área (há)": 137.67,
+    "Vazão (m³/h)": 590.01,
+    "Potência (cv)": 147
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-34",
+   "tipo": "pivo",
+   "nome": "Pivô 34",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8768185,
+    "lon": -45.523262
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 34",
+    "Área (há)": 150.01,
+    "Vazão (m³/h)": 714.33,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-75",
+   "tipo": "pivo",
+   "nome": "Pivô 75",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 75",
+    "Área (há)": 82
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-76",
+   "tipo": "pivo",
+   "nome": "Pivô 76",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "casaBombas": "C3Z3/R7",
+   "marca": "Valley",
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "C3Z3/R7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 76",
+    "Área (há)": 75
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-35",
+   "tipo": "pivo",
+   "nome": "Pivô 35",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R8",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7698857,
+    "lon": -45.5728756
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R8",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 35",
+    "Área (há)": 150.54,
+    "Vazão (m³/h)": 641.68,
+    "Potência (cv)": 235
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-36",
+   "tipo": "pivo",
+   "nome": "Pivô 36",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R8",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7664576,
+    "lon": -45.5595388
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R8",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 36",
+    "Área (há)": 150.54,
+    "Vazão (m³/h)": 716.86,
+    "Potência (cv)": 220
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-37",
+   "tipo": "pivo",
+   "nome": "Pivô 37",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R8",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7583135,
+    "lon": -45.5719524
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R8",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 37",
+    "Área (há)": 72,
+    "Vazão (m³/h)": 517.97,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-38",
+   "tipo": "pivo",
+   "nome": "Pivô 38",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R8",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7535504,
+    "lon": -45.5603033
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R8",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 38",
+    "Área (há)": 141,
+    "Vazão (m³/h)": 716.86,
+    "Potência (cv)": 221
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-39",
+   "tipo": "pivo",
+   "nome": "Pivô 39",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R10",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7647299,
+    "lon": -45.5420691
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R10",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 39",
+    "Área (há)": 100.65,
+    "Vazão (m³/h)": 479.29,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-40",
+   "tipo": "pivo",
+   "nome": "Pivô 40",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R10",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7541354,
+    "lon": -45.547136
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R10",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 40",
+    "Área (há)": 150.54,
+    "Vazão (m³/h)": 716.86,
+    "Potência (cv)": 215
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-41",
+   "tipo": "pivo",
+   "nome": "Pivô 41",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R9",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.743061,
+    "lon": -45.5528451
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R9",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 41",
+    "Área (há)": 138.55,
+    "Vazão (m³/h)": 659.74,
+    "Potência (cv)": 199
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-42",
+   "tipo": "pivo",
+   "nome": "Pivô 42",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R9",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7355401,
+    "lon": -45.5666655
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R9",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 42",
+    "Área (há)": 100.65,
+    "Vazão (m³/h)": 479.29,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-43",
+   "tipo": "pivo",
+   "nome": "Pivô 43",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R9",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7310937,
+    "lon": -45.5551018
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R9",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 43",
+    "Área (há)": 138.55,
+    "Vazão (m³/h)": 659.74,
+    "Potência (cv)": 199
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-45",
+   "tipo": "pivo",
+   "nome": "Pivô 45",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R11",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7562253,
+    "lon": -45.5299048
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R11",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 45",
+    "Área (há)": 123.47,
+    "Vazão (m³/h)": 587.93,
+    "Potência (cv)": 219
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-46",
+   "tipo": "pivo",
+   "nome": "Pivô 46",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R11",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7440849,
+    "lon": -45.5335584
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R11",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 46",
+    "Área (há)": 159.45,
+    "Vazão (m³/h)": 759.3,
+    "Potência (cv)": 242
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-47",
+   "tipo": "pivo",
+   "nome": "Pivô 47",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R11",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7318498,
+    "lon": -45.5380626
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R11",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 47",
+    "Área (há)": 159.45,
+    "Vazão (m³/h)": 721.34,
+    "Potência (cv)": 300
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-48",
+   "tipo": "pivo",
+   "nome": "Pivô 48",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R11",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7184368,
+    "lon": -45.5427903
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R11",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 48",
+    "Área (há)": 159.45,
+    "Vazão (m³/h)": 759.3,
+    "Potência (cv)": 211
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-49",
+   "tipo": "pivo",
+   "nome": "Pivô 49",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R11",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7218975,
+    "lon": -45.53062
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R11",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 49",
+    "Área (há)": 124.31,
+    "Vazão (m³/h)": 591.97,
+    "Potência (cv)": 197
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-52",
+   "tipo": "pivo",
+   "nome": "Pivô 52",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R12",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7433454,
+    "lon": -45.5197469
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R12",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 52",
+    "Área (há)": 159.45,
+    "Vazão (m³/h)": 759.3,
+    "Potência (cv)": 252
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-73",
+   "tipo": "pivo",
+   "nome": "Pivô 73",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R12",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7733812,
+    "lon": -45.5120291
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R12",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 73",
+    "Área (há)": 159.45,
+    "Vazão (m³/h)": 683.37,
+    "Potência (cv)": 300
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-74",
+   "tipo": "pivo",
+   "nome": "Pivô 74",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "casaBombas": "R12",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.760445,
+    "lon": -45.514392
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "R12",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 74",
+    "Área (há)": 159.45,
+    "Vazão (m³/h)": 759.3,
+    "Potência (cv)": 300
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-44",
+   "tipo": "pivo",
+   "nome": "Pivô 44",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R13",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7523,
+    "lon": -45.5063
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R13",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 44",
+    "Área (há)": 74.68,
+    "Vazão (m³/h)": 550.14,
+    "Potência (cv)": 75
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-50",
+   "tipo": "pivo",
+   "nome": "Pivô 50",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R14",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7696,
+    "lon": -45.4919
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R14",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 50",
+    "Área (há)": 120.31,
+    "Vazão (m³/h)": 572.9,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-51",
+   "tipo": "pivo",
+   "nome": "Pivô 51",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R14",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7711,
+    "lon": -45.4804
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R14",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 51",
+    "Área (há)": 119.34,
+    "Vazão (m³/h)": 550.14,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-53",
+   "tipo": "pivo",
+   "nome": "Pivô 53",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R13",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7487,
+    "lon": -45.4977
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R13",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 53",
+    "Área (há)": 74.68,
+    "Vazão (m³/h)": 550.14,
+    "Potência (cv)": 75
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-54",
+   "tipo": "pivo",
+   "nome": "Pivô 54",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R13",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7586,
+    "lon": -45.4944
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R13",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 54",
+    "Área (há)": 121.22,
+    "Vazão (m³/h)": 577.24,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-55",
+   "tipo": "pivo",
+   "nome": "Pivô 55",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R13",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7469,
+    "lon": -45.4869
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R13",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 55",
+    "Área (há)": 151.33,
+    "Vazão (m³/h)": 720.62,
+    "Potência (cv)": 300
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-56",
+   "tipo": "pivo",
+   "nome": "Pivô 56",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R14",
+   "marca": "Lindsay",
+   "coordenadas": {
+    "lat": -14.7589,
+    "lon": -45.4817
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R14",
+    "Marca": "Lindsay",
+    "Pivô": "Pivô 56",
+    "Área (há)": 151.2,
+    "Vazão (m³/h)": 720,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-57",
+   "tipo": "pivo",
+   "nome": "Pivô 57",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R15",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7426052,
+    "lon": -45.4746871
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R15",
+    "Marca": "Valley",
+    "Pivô": "Pivô 57",
+    "Área (há)": 150.24,
+    "Vazão (m³/h)": 715.43,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-58",
+   "tipo": "pivo",
+   "nome": "Pivô 58",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R15",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7547837,
+    "lon": -45.469599
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R15",
+    "Marca": "Valley",
+    "Pivô": "Pivô 58",
+    "Área (há)": 150.24,
+    "Vazão (m³/h)": 715.43,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-59",
+   "tipo": "pivo",
+   "nome": "Pivô 59",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R15",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7382462,
+    "lon": -45.4625578
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R15",
+    "Marca": "Valley",
+    "Pivô": "Pivô 59",
+    "Área (há)": 144.4,
+    "Vazão (m³/h)": 687.62,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-60",
+   "tipo": "pivo",
+   "nome": "Pivô 60",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R15",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7501302,
+    "lon": -45.4574015
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R15",
+    "Marca": "Valley",
+    "Pivô": "Pivô 60",
+    "Área (há)": 150.24,
+    "Vazão (m³/h)": 701.12,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-61",
+   "tipo": "pivo",
+   "nome": "Pivô 61",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R16",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7339704,
+    "lon": -45.4500229
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R16",
+    "Marca": "Valley",
+    "Pivô": "Pivô 61",
+    "Área (há)": 145.71,
+    "Vazão (m³/h)": 693.86,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-62",
+   "tipo": "pivo",
+   "nome": "Pivô 62",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R16",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7455635,
+    "lon": -45.4456233
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R16",
+    "Marca": "Valley",
+    "Pivô": "Pivô 62",
+    "Área (há)": 140.89,
+    "Vazão (m³/h)": 670.9,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-63",
+   "tipo": "pivo",
+   "nome": "Pivô 63",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R18",
+   "marca": "Bauer",
+   "coordenadas": {
+    "lat": -14.7776564,
+    "lon": -45.4720967
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R18",
+    "Marca": "Bauer",
+    "Pivô": "Pivô 63",
+    "Área (há)": 80.15,
+    "Vazão (m³/h)": 383.71,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-64",
+   "tipo": "pivo",
+   "nome": "Pivô 64",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R18",
+   "marca": "Bauer",
+   "coordenadas": {
+    "lat": -14.7776893,
+    "lon": -45.4624719
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R18",
+    "Marca": "Bauer",
+    "Pivô": "Pivô 64",
+    "Área (há)": 80.15,
+    "Vazão (m³/h)": 383.71,
+    "Potência (cv)": 75
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-65",
+   "tipo": "pivo",
+   "nome": "Pivô 65",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R18",
+   "marca": "Bauer",
+   "coordenadas": {
+    "lat": -14.7674542,
+    "lon": -45.4677617
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R18",
+    "Marca": "Bauer",
+    "Pivô": "Pivô 65",
+    "Área (há)": 150.24,
+    "Vazão (m³/h)": 692.3,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-66",
+   "tipo": "pivo",
+   "nome": "Pivô 66",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R15",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.758987,
+    "lon": -45.4497469
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R15",
+    "Marca": "Valley",
+    "Pivô": "Pivô 66",
+    "Área (há)": 100.86,
+    "Vazão (m³/h)": 480.29,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-67",
+   "tipo": "pivo",
+   "nome": "Pivô 67",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R16",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.755102,
+    "lon": -45.4405245
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R16",
+    "Marca": "Valley",
+    "Pivô": "Pivô 67",
+    "Área (há)": 80.25,
+    "Vazão (m³/h)": 382.14,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-68",
+   "tipo": "pivo",
+   "nome": "Pivô 68",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R16",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7639804,
+    "lon": -45.4374511
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R16",
+    "Marca": "Valley",
+    "Pivô": "Pivô 68",
+    "Área (há)": 80.25,
+    "Vazão (m³/h)": 382.14,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-69",
+   "tipo": "pivo",
+   "nome": "Pivô 69",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R17",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7270413,
+    "lon": -45.4649619
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R17",
+    "Marca": "Valley",
+    "Pivô": "Pivô 69",
+    "Área (há)": 80.25,
+    "Vazão (m³/h)": 382.14,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-70",
+   "tipo": "pivo",
+   "nome": "Pivô 70",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R17",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7216264,
+    "lon": -45.4545221
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R17",
+    "Marca": "Valley",
+    "Pivô": "Pivô 70",
+    "Área (há)": 150.24,
+    "Vazão (m³/h)": 715.43,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-71",
+   "tipo": "pivo",
+   "nome": "Pivô 71",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R17",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7191232,
+    "lon": -45.464138
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R17",
+    "Marca": "Valley",
+    "Pivô": "Pivô 71",
+    "Área (há)": 40.23,
+    "Vazão (m³/h)": 191.57,
+    "Potência (cv)": 40
+   }
+  },
+  {
+   "id": "piv-karitel-pivo-72",
+   "tipo": "pivo",
+   "nome": "Pivô 72",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "casaBombas": "R17",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.7100502,
+    "lon": -45.4584609
+   },
+   "dados": {
+    "Fazenda": "Karitel",
+    "Módulo": "Módulo 03",
+    "Casa de Bomba": "R17",
+    "Marca": "Valley",
+    "Pivô": "Pivô 72",
+    "Área (há)": 125.51,
+    "Vazão (m³/h)": 597.67,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-101",
+   "tipo": "pivo",
+   "nome": "Pivô 101",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.65041,
+    "lon": -45.241249
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 101",
+    "Área (há)": 116.2,
+    "Vazão (m³/h)": 552.48,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-102",
+   "tipo": "pivo",
+   "nome": "Pivô 102",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.636059,
+    "lon": -45.245848
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 102",
+    "Área (há)": 102.19,
+    "Vazão (m³/h)": 486.62,
+    "Potência (cv)": 125
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-103",
+   "tipo": "pivo",
+   "nome": "Pivô 103",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6517176,
+    "lon": -45.2526855
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 103",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-104",
+   "tipo": "pivo",
+   "nome": "Pivô 104",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6410053,
+    "lon": -45.2563333
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 104",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-105",
+   "tipo": "pivo",
+   "nome": "Pivô 105",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM3",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.656,
+    "lon": -45.2644
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM3",
+    "Marca": "Valley",
+    "Pivô": "Pivô 105",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-106",
+   "tipo": "pivo",
+   "nome": "Pivô 106",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM2",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.64524,
+    "lon": -45.26644
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM2",
+    "Marca": "Valley",
+    "Pivô": "Pivô 106",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-107",
+   "tipo": "pivo",
+   "nome": "Pivô 107",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM3",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6601,
+    "lon": -45.2742
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM3",
+    "Marca": "Valley",
+    "Pivô": "Pivô 107",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 125
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-108",
+   "tipo": "pivo",
+   "nome": "Pivô 108",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM2",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.649136,
+    "lon": -45.276528
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM2",
+    "Marca": "Valley",
+    "Pivô": "Pivô 108",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 100
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-109",
+   "tipo": "pivo",
+   "nome": "Pivô 109",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM1",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.630407,
+    "lon": -45.259343
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM1",
+    "Marca": "Valley",
+    "Pivô": "Pivô 109",
+    "Área (há)": 102.01,
+    "Vazão (m³/h)": 485.76,
+    "Potência (cv)": 125
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-110",
+   "tipo": "pivo",
+   "nome": "Pivô 110",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "casaBombas": "RM4",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.634951,
+    "lon": -45.268913
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 01",
+    "Casa de Bomba": "RM4",
+    "Marca": "Valley",
+    "Pivô": "Pivô 110",
+    "Área (há)": 102.19,
+    "Vazão (m³/h)": 485.62,
+    "Potência (cv)": 125
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-112",
+   "tipo": "pivo",
+   "nome": "Pivô 112",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6509161,
+    "lon": -45.2102442
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 112",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-113",
+   "tipo": "pivo",
+   "nome": "Pivô 113",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6208,
+    "lon": -45.222
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 113",
+    "Área (há)": 150.14,
+    "Vazão (m³/h)": 714.95,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-114",
+   "tipo": "pivo",
+   "nome": "Pivô 114",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6425,
+    "lon": -45.2046
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 114",
+    "Área (há)": 120.13,
+    "Vazão (m³/h)": 572.05,
+    "Potência (cv)": 150
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-115",
+   "tipo": "pivo",
+   "nome": "Pivô 115",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6297,
+    "lon": -45.2101
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 115",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-116",
+   "tipo": "pivo",
+   "nome": "Pivô 116",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6408,
+    "lon": -45.1921
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 116",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 701.59,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-117",
+   "tipo": "pivo",
+   "nome": "Pivô 117",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.629,
+    "lon": -45.197
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 117",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-118",
+   "tipo": "pivo",
+   "nome": "Pivô 118",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6395,
+    "lon": -45.1793
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 118",
+    "Área (há)": 150.14,
+    "Vazão (m³/h)": 694.93,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-119",
+   "tipo": "pivo",
+   "nome": "Pivô 119",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6274,
+    "lon": -45.1842
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 119",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-120",
+   "tipo": "pivo",
+   "nome": "Pivô 120",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6383,
+    "lon": -45.1664
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 120",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-121",
+   "tipo": "pivo",
+   "nome": "Pivô 121",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6263,
+    "lon": -45.1712
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 121",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-122",
+   "tipo": "pivo",
+   "nome": "Pivô 122",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6379574,
+    "lon": -45.1533283
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 122",
+    "Área (há)": 150.14,
+    "Vazão (m³/h)": 714.95,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-123",
+   "tipo": "pivo",
+   "nome": "Pivô 123",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6247,
+    "lon": -45.1577
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 123",
+    "Área (há)": 150.34,
+    "Vazão (m³/h)": 715.9,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-124",
+   "tipo": "pivo",
+   "nome": "Pivô 124",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6127,
+    "lon": -45.1627
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 124",
+    "Área (há)": 150.14,
+    "Vazão (m³/h)": 700.65,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-125",
+   "tipo": "pivo",
+   "nome": "Pivô 125",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6021,
+    "lon": -45.1745
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 125",
+    "Área (há)": 100.79,
+    "Vazão (m³/h)": 479.95,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-126",
+   "tipo": "pivo",
+   "nome": "Pivô 126",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6142,
+    "lon": -45.174
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 126",
+    "Área (há)": 140.57,
+    "Vazão (m³/h)": 669.39,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-127",
+   "tipo": "pivo",
+   "nome": "Pivô 127",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.8041,
+    "lon": -45.1846
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 127",
+    "Área (há)": 102.43,
+    "Vazão (m³/h)": 487.76,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-128",
+   "tipo": "pivo",
+   "nome": "Pivô 128",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6151,
+    "lon": -45.1876
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 128",
+    "Área (há)": 140.57,
+    "Vazão (m³/h)": 669.39,
+    "Potência (cv)": 175
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-129",
+   "tipo": "pivo",
+   "nome": "Pivô 129",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6051,
+    "lon": -45.1951
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 129",
+    "Área (há)": 102.43,
+    "Vazão (m³/h)": 487.76,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-130",
+   "tipo": "pivo",
+   "nome": "Pivô 130",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM6",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6162,
+    "lon": -45.2003
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM6",
+    "Marca": "Valley",
+    "Pivô": "Pivô 130",
+    "Área (há)": 150.14,
+    "Vazão (m³/h)": 714.95,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-131",
+   "tipo": "pivo",
+   "nome": "Pivô 131",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6182668,
+    "lon": -45.2119053
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 131",
+    "Área (há)": 100.1,
+    "Vazão (m³/h)": 762.67,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-132",
+   "tipo": "pivo",
+   "nome": "Pivô 132",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM5",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.6192632,
+    "lon": -45.2225091
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM5",
+    "Marca": "Valley",
+    "Pivô": "Pivô 132",
+    "Área (há)": 100.1,
+    "Vazão (m³/h)": 762.67,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "piv-rdm-pivo-133",
+   "tipo": "pivo",
+   "nome": "Pivô 133",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "casaBombas": "RM7",
+   "marca": "Valley",
+   "coordenadas": {
+    "lat": -14.5048,
+    "lon": -45.1675
+   },
+   "dados": {
+    "Fazenda": "RDM",
+    "Módulo": "Módulo 02",
+    "Casa de Bomba": "RM7",
+    "Marca": "Valley",
+    "Pivô": "Pivô 133",
+    "Área (há)": 101.12,
+    "Vazão (m³/h)": 481.52,
+    "Potência (cv)": 200
+   }
+  },
+  {
+   "id": "est-karitel-primavera-01",
+   "tipo": "captacao",
+   "nome": "Primavera 01",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 803,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 803,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 803,
+     "Potência (cv)/(hp)": 246.748064
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-primavera-02",
+   "tipo": "captacao",
+   "nome": "Primavera 02",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 786,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 786,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 786,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 786,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B5",
+     "Vazão (m³/h)": 786,
+     "Potência (cv)/(hp)": 246.748064
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-bom-nome",
+   "tipo": "captacao",
+   "nome": "Bom Nome",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B5",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B6",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B7",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B8",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B9",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B10",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B11",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B12",
+     "Vazão (m³/h)": 560,
+     "Potência (cv)/(hp)": 246.748064
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-garfo",
+   "tipo": "captacao",
+   "nome": "Garfo",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B5",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B6",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B7",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B8",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B9",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B10",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-karitel",
+   "tipo": "captacao",
+   "nome": "Karitel",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B5",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B6",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B7",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B8",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B9",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B10",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 246.748064
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-primavera-03",
+   "tipo": "captacao",
+   "nome": "Primavera 03",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    },
+    {
+     "Bomba": "B5",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    },
+    {
+     "Bomba": "B6",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    },
+    {
+     "Bomba": "B7",
+     "Vazão (m³/h)": 900,
+     "Potência (cv)/(hp)": 197.130247
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-unificada-4-5",
+   "tipo": "captacao",
+   "nome": "Unificada 4/5",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B6",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B8",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B10",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B12",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B14",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B16",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B18",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B20",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B22",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B24",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B26",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    },
+    {
+     "Bomba": "B28",
+     "Vazão (m³/h)": 930,
+     "Potência (cv)/(hp)": 493.496129
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-elevatoria-g-e-k",
+   "tipo": "elevatoria",
+   "nome": "Elevatória G e K",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B4",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B5",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B6",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B7",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B8",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B9",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B10",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B11",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B12",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B13",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B14",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B15",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B16",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B17",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B18",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B19",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B20",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B21",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B22",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B23",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    },
+    {
+     "Bomba": "B24",
+     "Vazão (m³/h)": 542,
+     "Potência (cv)/(hp)": 246.748064
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-r12-transposicao",
+   "tipo": "captacao",
+   "nome": "R12 - Transposição",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 700,
+     "Potência (cv)/(hp)": 100
+    },
+    {
+     "Bomba": "B2",
+     "Vazão (m³/h)": 700,
+     "Potência (cv)/(hp)": 100
+    },
+    {
+     "Bomba": "B3",
+     "Vazão (m³/h)": 700,
+     "Potência (cv)/(hp)": 100
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-balca-m2-m1",
+   "tipo": "captacao",
+   "nome": "Balça - M2/M1",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1/B2",
+     "Vazão (m³/h)": 6500,
+     "Potência (cv)/(hp)": 300
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-balca-r16",
+   "tipo": "captacao",
+   "nome": "Balça - R16",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1/B2",
+     "Vazão (m³/h)": 3500,
+     "Potência (cv)/(hp)": 150
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-01",
+   "tipo": "poco",
+   "nome": "PRM 01",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 600,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-02",
+   "tipo": "poco",
+   "nome": "PRM 02",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 500,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-03",
+   "tipo": "poco",
+   "nome": "PRM 03",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 500,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-04",
+   "tipo": "poco",
+   "nome": "PRM 04",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 500,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-05",
+   "tipo": "poco",
+   "nome": "PRM 05",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 135,
+     "Potência (cv)/(hp)": 115
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-06",
+   "tipo": "poco",
+   "nome": "PRM 06",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 395,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-07",
+   "tipo": "poco",
+   "nome": "PRM 07",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 233,
+     "Potência (cv)/(hp)": 130
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-08",
+   "tipo": "poco",
+   "nome": "PRM 08",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 390,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-09",
+   "tipo": "poco",
+   "nome": "PRM 09",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 300,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-10",
+   "tipo": "poco",
+   "nome": "PRM 10",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 190,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-11",
+   "tipo": "poco",
+   "nome": "PRM 11",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 650,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-12",
+   "tipo": "poco",
+   "nome": "PRM 12",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 350,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-rdm-prm-13",
+   "tipo": "poco",
+   "nome": "PRM 13",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 410,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-10",
+   "tipo": "poco",
+   "nome": "PK 10",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 280,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-11",
+   "tipo": "poco",
+   "nome": "PK 11",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": "???",
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-12",
+   "tipo": "poco",
+   "nome": "PK 12",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 374,
+     "Potência (cv)/(hp)": 330
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-13",
+   "tipo": "poco",
+   "nome": "PK 13",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 394.5,
+     "Potência (cv)/(hp)": 330
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-14",
+   "tipo": "poco",
+   "nome": "PK 14",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 366,
+     "Potência (cv)/(hp)": 280
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-15",
+   "tipo": "poco",
+   "nome": "PK 15",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 205,
+     "Potência (cv)/(hp)": 180
+    }
+   ]
+  },
+  {
+   "id": "est-karitel-pk-16",
+   "tipo": "poco",
+   "nome": "PK 16",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "bombas": [
+    {
+     "Bomba": "B1",
+     "Vazão (m³/h)": 242,
+     "Potência (cv)/(hp)": 180
+    }
+   ]
+  }
+ ]
+}
