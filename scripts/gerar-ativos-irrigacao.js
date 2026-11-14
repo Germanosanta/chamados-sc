@@ -141,6 +141,27 @@ function tipoEstacao(nome) {
   return 'captacao';
 }
 
+/**
+ * Plataforma de telemetria onde o operador verifica a falha (só
+ * organização dos chamados; nenhuma integração). Regras validadas com a
+ * operação em 14/11/2026:
+ * - BestStation: pivôs da Rio do Meio.
+ * - 3V3: estações de bombeamento de captação/elevatória, todos os poços
+ *   e os demais equipamentos do Módulo 3 da Karitel.
+ * - Lindsay: pivôs da Karitel fora do Módulo 3 e, no Módulo 3, os pivôs
+ *   da marca Lindsay (prevalece a marca).
+ * - Sem plataforma (não confirmada): casas de bombas/reservatórios fora do
+ *   Módulo 3. Definidas depois na tela de configurações.
+ */
+function plataformaDe(a) {
+  const moduloTres = a.fazenda === 'Karitel' && a.modulo === 'Módulo 03';
+  if (a.tipo === 'pivo' && a.fazenda === 'Rio do Meio') return 'BestStation';
+  if (a.tipo === 'pivo' && a.fazenda === 'Karitel' && (!moduloTres || a.marca === 'Lindsay')) return 'Lindsay';
+  if (a.tipo === 'captacao' || a.tipo === 'elevatoria' || a.tipo === 'poco') return '3V3';
+  if (moduloTres) return '3V3';
+  return undefined;
+}
+
 function gerar(arquivo) {
   const abas = lerPlanilha(arquivo);
   const pegar = (prefixo) => {
@@ -220,6 +241,9 @@ function gerar(arquivo) {
     if (ids.has(a.id)) throw new Error(`ativo duplicado: ${a.id}`);
     ids.add(a.id);
     if (!a.coordenadas) delete a.coordenadas;
+    const plataforma = plataformaDe(a);
+    if (plataforma) a.plataforma = plataforma;
+    else avisos.push(`Sem plataforma de telemetria (definir em Configurações): ${a.nome} · ${a.fazenda || 'sem fazenda'} · ${a.modulo || 'sem módulo'}`);
   }
   const nomesCasas = new Set(ativos.filter((a) => a.tipo === 'casa_bombas').map((a) => `${a.fazenda}|${a.nome}`));
   for (const p of ativos.filter((a) => a.tipo === 'pivo' && a.casaBombas)) {
@@ -243,4 +267,4 @@ if (require.main === module) {
   avisos.forEach((a) => console.log(`Aviso: ${a}`));
 }
 
-module.exports = { gerar, tipoEstacao };
+module.exports = { gerar, tipoEstacao, plataformaDe };

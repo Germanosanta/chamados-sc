@@ -1,6 +1,7 @@
 import type {
   AtivoIrrigacao,
   ChamadoIrrigacao,
+  PlataformaTelemetria,
   PrioridadeIrrigacao,
   StatusIrrigacao,
   TipoAtivoIrrigacao,
@@ -19,6 +20,22 @@ export const TIPOS_FALHA_PADRAO = [
 ];
 
 export const PRIORIDADES_IRRIGACAO: PrioridadeIrrigacao[] = ['Baixa', 'Média', 'Alta', 'Urgente'];
+
+export const PLATAFORMAS_TELEMETRIA: PlataformaTelemetria[] = ['Lindsay', '3V3', 'BestStation'];
+
+/** Valor do filtro para chamados de ativos ainda sem plataforma. */
+export const SEM_PLATAFORMA = 'sem_plataforma';
+
+/** Aplica as definições da tela de configurações sobre o cadastro. Nunca
+ * inventa: ativo sem plataforma no cadastro e sem definição fica sem. */
+export function aplicarPlataformas(ativos: AtivoIrrigacao[], definidas: Record<string, PlataformaTelemetria | ''> = {}): AtivoIrrigacao[] {
+  return ativos.map((a) => {
+    if (!(a.id in definidas)) return a;
+    const p = definidas[a.id];
+    const { plataforma: _antiga, ...resto } = a;
+    return p && PLATAFORMAS_TELEMETRIA.includes(p) ? { ...resto, plataforma: p } : resto;
+  });
+}
 
 export const TIPO_ATIVO_LABEL: Record<TipoAtivoIrrigacao, string> = {
   pivo: 'Pivô',
@@ -124,6 +141,8 @@ export interface FiltrosIrrigacao {
   fazenda?: string;
   modulo?: string;
   tipoAtivo?: string;
+  /** Plataforma de telemetria, ou SEM_PLATAFORMA. */
+  plataforma?: string;
   ativoId?: string;
   tecnico?: string;
   status?: string;
@@ -139,6 +158,7 @@ export function filtrarChamadosIrrigacao(lista: ChamadoIrrigacao[], f: FiltrosIr
     if (f.fazenda && c.fazenda !== f.fazenda) return false;
     if (f.modulo && c.modulo !== f.modulo) return false;
     if (f.tipoAtivo && c.ativoTipo !== f.tipoAtivo) return false;
+    if (f.plataforma && (c.plataforma || SEM_PLATAFORMA) !== f.plataforma) return false;
     if (f.ativoId && c.ativoId !== f.ativoId) return false;
     if (f.tecnico && (c.tecnico || '') !== f.tecnico) return false;
     if (f.status === 'abertos' ? c.status === 'encerrado' : f.status && c.status !== f.status) return false;
@@ -181,6 +201,7 @@ export function restabelecimentoDe(c: ChamadoIrrigacao): string | null {
 export interface IndicadoresIrrigacao {
   porAtivo: [string, number][];
   porFazenda: [string, number][];
+  porPlataforma: [string, number][];
   porTecnico: [string, number][];
   porMes: [string, number][];
   reincidentes: ChamadoIrrigacao[];
@@ -210,6 +231,7 @@ export function calcularIndicadoresIrrigacao(lista: ChamadoIrrigacao[], todos: C
   return {
     porAtivo: contar(lista, (c) => `${c.ativoNome} · ${c.fazenda || '—'}`),
     porFazenda: contar(lista, (c) => c.fazenda || '—'),
+    porPlataforma: contar(lista, (c) => c.plataforma || 'Sem plataforma'),
     porTecnico: contar(lista, (c) => c.tecnico || 'Sem técnico'),
     porMes: contar(lista, (c) => isoParaInputLocal(c.identificadoEm).slice(0, 7) || '—').sort((a, b) => a[0].localeCompare(b[0])),
     reincidentes: lista.filter((c) => isReincidente(c, todos)),
@@ -276,6 +298,7 @@ export function gerarRelatorioIrrigacao(c: ChamadoIrrigacao): string {
     `*Equipamento:* ${c.ativoNome} (${TIPO_ATIVO_LABEL[c.ativoTipo] || c.ativoTipo})`,
   ];
   if (c.casaBombas) linhas.push(`*Casa de bombas:* ${c.casaBombas}`);
+  linhas.push(`*Plataforma de telemetria:* ${c.plataforma || 'Não classificada'}`);
   linhas.push(
     `*Tipo de falha:* ${c.tipoFalha}`,
     `*Ocorrência:* ${formatarDataHora(c.identificadoEm)}`,

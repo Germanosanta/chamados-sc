@@ -148,6 +148,7 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
             <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
               <Meta label="Fazenda" value={ativo.fazenda || '—'} />
               <Meta label="Módulo" value={ativo.modulo || '—'} />
+              <Meta label="Plataforma de telemetria" value={ativo.plataforma || 'Não classificada'} />
               {ativo.marca && <Meta label="Marca" value={ativo.marca} />}
               {ativo.pivosAbastecidos && <Meta label="Pivôs abastecidos" value={ativo.pivosAbastecidos} />}
               {ativo.bombas && <Meta label="Bombas" value={String(ativo.bombas.length)} />}
@@ -170,7 +171,7 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
                   <span className="font-medium text-foreground">{a.nome}</span>
                   <span className="text-xs text-muted-foreground">
                     {TIPO_ATIVO_LABEL[a.tipo]} · {a.fazenda || '—'} · {a.modulo || '—'}
-                    {a.casaBombas ? ` · ${a.casaBombas}` : ''}
+                    {a.casaBombas ? ` · ${a.casaBombas}` : ''} · {a.plataforma || 'sem plataforma'}
                   </span>
                 </button>
               ))}

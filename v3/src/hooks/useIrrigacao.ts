@@ -13,6 +13,7 @@ import { comprimirImagem } from '@/utils/imagem';
 import {
   STATUS_IRRIGACAO,
   TIPOS_FALHA_PADRAO,
+  aplicarPlataformas,
   ativosMonitorados,
   formatarNumeroIrrigacao,
   minutosEntre,
@@ -46,7 +47,10 @@ export function useConfigIrrigacao() {
     const geral = data.find((d) => d.id === 'geral');
     const tiposFalha = geral?.tiposFalha?.length ? geral.tiposFalha : TIPOS_FALHA_PADRAO;
     const naoMonitorados = geral?.naoMonitorados || [];
-    return { tiposFalha, naoMonitorados, monitorados: ativosMonitorados(ATIVOS_IRRIGACAO, naoMonitorados), carregando };
+    const plataformas = geral?.plataformas || {};
+    // Cadastro efetivo: plataforma do cadastro com as definições da tela de configurações por cima.
+    const ativos = aplicarPlataformas(ATIVOS_IRRIGACAO, plataformas);
+    return { tiposFalha, naoMonitorados, plataformas, ativos, monitorados: ativosMonitorados(ativos, naoMonitorados), carregando };
   }, [data, carregando]);
 }
 
@@ -91,6 +95,7 @@ export function useCriarChamadoIrrigacao() {
           fazenda: n.ativo.fazenda,
           modulo: n.ativo.modulo,
           casaBombas: n.casaBombas,
+          plataforma: n.ativo.plataforma ?? null,
           tipoFalha: n.tipoFalha,
           identificadoEm: n.identificadoEm,
           descricao: n.descricao.trim(),

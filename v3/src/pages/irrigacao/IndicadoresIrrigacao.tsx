@@ -47,6 +47,9 @@ export function IndicadoresIrrigacao({ onAbrir }: { onAbrir: (num: string) => vo
         <Painel titulo="Chamados por fazenda">
           <RankingBars items={ind.porFazenda} emptyLabel="Sem chamados no período" />
         </Painel>
+        <Painel titulo="Chamados por plataforma de telemetria">
+          <RankingBars items={ind.porPlataforma} emptyLabel="Sem chamados no período" />
+        </Painel>
         <Painel titulo="Chamados por técnico">
           <RankingBars items={ind.porTecnico} emptyLabel="Sem chamados no período" />
         </Painel>

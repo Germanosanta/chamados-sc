@@ -249,6 +249,9 @@ service cloud.firestore {
         && irrTexto(request.resource.data.tipoFalha)
         && irrTexto(request.resource.data.identificadoEm)
         && irrTexto(request.resource.data.descricao)
+        // Plataforma de telemetria: uma das 3, ou nula quando não classificada.
+        && (!('plataforma' in request.resource.data) || request.resource.data.plataforma == null
+            || request.resource.data.plataforma in ['Lindsay', '3V3', 'BestStation'])
         && !('encerramento' in request.resource.data);
       allow update: if (souAdmin() || temPerm('p_editar') || temPerm('p_encerrar') || temPerm('p_reabrir'))
         // Identidade e origem do chamado nunca mudam depois da abertura.

@@ -315,7 +315,8 @@
     "Autonomia (h)": 36.552844,
     "Total de Pivôs Abastecidos": 4,
     "Média de Vazão (m³/h) por Pivô": 565.2775
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "cb-karitel-r14",
@@ -334,7 +335,8 @@
     "Autonomia (h)": 40.917665,
     "Total de Pivôs Abastecidos": 3,
     "Média de Vazão (m³/h) por Pivô": 673.303333
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "cb-karitel-r15",
@@ -354,7 +356,8 @@
     "Autonomia (h)": "...",
     "Total de Pivôs Abastecidos": 5,
     "Média de Vazão (m³/h) por Pivô": 659.978
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "cb-karitel-r16",
@@ -374,7 +377,8 @@
     "Autonomia (h)": "...",
     "Total de Pivôs Abastecidos": 4,
     "Média de Vazão (m³/h) por Pivô": 532.26
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "cb-karitel-r17",
@@ -394,7 +398,8 @@
     "Autonomia (h)": "...",
     "Total de Pivôs Abastecidos": 4,
     "Média de Vazão (m³/h) por Pivô": 471.7025
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "cb-rdm-rm1",
@@ -557,7 +562,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-02",
@@ -580,7 +586,8 @@
     "Área (há)": 123.72,
     "Vazão (m³/h)": 523.8,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-03",
@@ -603,7 +610,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-04",
@@ -626,7 +634,8 @@
     "Área (há)": 62.76,
     "Vazão (m³/h)": 290,
     "Potência (cv)": 40
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-05",
@@ -649,7 +658,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 692.9,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-06",
@@ -672,7 +682,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 641,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-07",
@@ -695,7 +706,8 @@
     "Área (há)": 120.13,
     "Vazão (m³/h)": 572.05,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-08",
@@ -718,7 +730,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-09",
@@ -741,7 +754,8 @@
     "Área (há)": 120.13,
     "Vazão (m³/h)": 572.5,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-10",
@@ -764,7 +778,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-11",
@@ -787,7 +802,8 @@
     "Área (há)": 121.12,
     "Vazão (m³/h)": 547.92,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-12",
@@ -810,7 +826,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-13",
@@ -833,7 +850,8 @@
     "Área (há)": 71.3,
     "Vazão (m³/h)": 339.52,
     "Potência (cv)": 75
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-14",
@@ -856,7 +874,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 614.33,
     "Potência (cv)": 75
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-15",
@@ -879,7 +898,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-16",
@@ -902,7 +922,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-17",
@@ -925,7 +946,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-18",
@@ -948,7 +970,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-19",
@@ -971,7 +994,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-20",
@@ -994,7 +1018,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-21",
@@ -1017,7 +1042,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-22",
@@ -1040,7 +1066,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-23",
@@ -1063,7 +1090,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 602.63,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-24",
@@ -1086,7 +1114,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-25",
@@ -1109,7 +1138,8 @@
     "Área (há)": 99.7,
     "Vazão (m³/h)": 474.76,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-26",
@@ -1132,7 +1162,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 650.04,
     "Potência (cv)": 250
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-27",
@@ -1155,7 +1186,8 @@
     "Área (há)": 99.14,
     "Vazão (m³/h)": 472.1,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-28",
@@ -1178,7 +1210,8 @@
     "Área (há)": 132.99,
     "Vazão (m³/h)": 633.29,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-29",
@@ -1201,7 +1234,8 @@
     "Área (há)": 78.55,
     "Vazão (m³/h)": 374.05,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-30",
@@ -1224,7 +1258,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 664.33,
     "Potência (cv)": 121.74
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-31",
@@ -1247,7 +1282,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 645.04,
     "Potência (cv)": 125
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-32",
@@ -1270,7 +1306,8 @@
     "Área (há)": 138.03,
     "Vazão (m³/h)": 657.29,
     "Potência (cv)": 125
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-33",
@@ -1293,7 +1330,8 @@
     "Área (há)": 137.67,
     "Vazão (m³/h)": 590.01,
     "Potência (cv)": 147
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-34",
@@ -1316,7 +1354,8 @@
     "Área (há)": 150.01,
     "Vazão (m³/h)": 714.33,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-75",
@@ -1333,7 +1372,8 @@
     "Marca": "Valley",
     "Pivô": "Pivô 75",
     "Área (há)": 82
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-76",
@@ -1350,7 +1390,8 @@
     "Marca": "Valley",
     "Pivô": "Pivô 76",
     "Área (há)": 75
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-35",
@@ -1373,7 +1414,8 @@
     "Área (há)": 150.54,
     "Vazão (m³/h)": 641.68,
     "Potência (cv)": 235
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-36",
@@ -1396,7 +1438,8 @@
     "Área (há)": 150.54,
     "Vazão (m³/h)": 716.86,
     "Potência (cv)": 220
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-37",
@@ -1419,7 +1462,8 @@
     "Área (há)": 72,
     "Vazão (m³/h)": 517.97,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-38",
@@ -1442,7 +1486,8 @@
     "Área (há)": 141,
     "Vazão (m³/h)": 716.86,
     "Potência (cv)": 221
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-39",
@@ -1465,7 +1510,8 @@
     "Área (há)": 100.65,
     "Vazão (m³/h)": 479.29,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-40",
@@ -1488,7 +1534,8 @@
     "Área (há)": 150.54,
     "Vazão (m³/h)": 716.86,
     "Potência (cv)": 215
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-41",
@@ -1511,7 +1558,8 @@
     "Área (há)": 138.55,
     "Vazão (m³/h)": 659.74,
     "Potência (cv)": 199
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-42",
@@ -1534,7 +1582,8 @@
     "Área (há)": 100.65,
     "Vazão (m³/h)": 479.29,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-43",
@@ -1557,7 +1606,8 @@
     "Área (há)": 138.55,
     "Vazão (m³/h)": 659.74,
     "Potência (cv)": 199
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-45",
@@ -1580,7 +1630,8 @@
     "Área (há)": 123.47,
     "Vazão (m³/h)": 587.93,
     "Potência (cv)": 219
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-46",
@@ -1603,7 +1654,8 @@
     "Área (há)": 159.45,
     "Vazão (m³/h)": 759.3,
     "Potência (cv)": 242
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-47",
@@ -1626,7 +1678,8 @@
     "Área (há)": 159.45,
     "Vazão (m³/h)": 721.34,
     "Potência (cv)": 300
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-48",
@@ -1649,7 +1702,8 @@
     "Área (há)": 159.45,
     "Vazão (m³/h)": 759.3,
     "Potência (cv)": 211
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-49",
@@ -1672,7 +1726,8 @@
     "Área (há)": 124.31,
     "Vazão (m³/h)": 591.97,
     "Potência (cv)": 197
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-52",
@@ -1695,7 +1750,8 @@
     "Área (há)": 159.45,
     "Vazão (m³/h)": 759.3,
     "Potência (cv)": 252
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-73",
@@ -1718,7 +1774,8 @@
     "Área (há)": 159.45,
     "Vazão (m³/h)": 683.37,
     "Potência (cv)": 300
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-74",
@@ -1741,7 +1798,8 @@
     "Área (há)": 159.45,
     "Vazão (m³/h)": 759.3,
     "Potência (cv)": 300
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-44",
@@ -1764,7 +1822,8 @@
     "Área (há)": 74.68,
     "Vazão (m³/h)": 550.14,
     "Potência (cv)": 75
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-50",
@@ -1787,7 +1846,8 @@
     "Área (há)": 120.31,
     "Vazão (m³/h)": 572.9,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-51",
@@ -1810,7 +1870,8 @@
     "Área (há)": 119.34,
     "Vazão (m³/h)": 550.14,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-53",
@@ -1833,7 +1894,8 @@
     "Área (há)": 74.68,
     "Vazão (m³/h)": 550.14,
     "Potência (cv)": 75
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-54",
@@ -1856,7 +1918,8 @@
     "Área (há)": 121.22,
     "Vazão (m³/h)": 577.24,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-55",
@@ -1879,7 +1942,8 @@
     "Área (há)": 151.33,
     "Vazão (m³/h)": 720.62,
     "Potência (cv)": 300
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-56",
@@ -1902,7 +1966,8 @@
     "Área (há)": 151.2,
     "Vazão (m³/h)": 720,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "Lindsay"
   },
   {
    "id": "piv-karitel-pivo-57",
@@ -1925,7 +1990,8 @@
     "Área (há)": 150.24,
     "Vazão (m³/h)": 715.43,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-58",
@@ -1948,7 +2014,8 @@
     "Área (há)": 150.24,
     "Vazão (m³/h)": 715.43,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-59",
@@ -1971,7 +2038,8 @@
     "Área (há)": 144.4,
     "Vazão (m³/h)": 687.62,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-60",
@@ -1994,7 +2062,8 @@
     "Área (há)": 150.24,
     "Vazão (m³/h)": 701.12,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-61",
@@ -2017,7 +2086,8 @@
     "Área (há)": 145.71,
     "Vazão (m³/h)": 693.86,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-62",
@@ -2040,7 +2110,8 @@
     "Área (há)": 140.89,
     "Vazão (m³/h)": 670.9,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-63",
@@ -2063,7 +2134,8 @@
     "Área (há)": 80.15,
     "Vazão (m³/h)": 383.71,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-64",
@@ -2086,7 +2158,8 @@
     "Área (há)": 80.15,
     "Vazão (m³/h)": 383.71,
     "Potência (cv)": 75
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-65",
@@ -2109,7 +2182,8 @@
     "Área (há)": 150.24,
     "Vazão (m³/h)": 692.3,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-66",
@@ -2132,7 +2206,8 @@
     "Área (há)": 100.86,
     "Vazão (m³/h)": 480.29,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-67",
@@ -2155,7 +2230,8 @@
     "Área (há)": 80.25,
     "Vazão (m³/h)": 382.14,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-68",
@@ -2178,7 +2254,8 @@
     "Área (há)": 80.25,
     "Vazão (m³/h)": 382.14,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-69",
@@ -2201,7 +2278,8 @@
     "Área (há)": 80.25,
     "Vazão (m³/h)": 382.14,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-70",
@@ -2224,7 +2302,8 @@
     "Área (há)": 150.24,
     "Vazão (m³/h)": 715.43,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-71",
@@ -2247,7 +2326,8 @@
     "Área (há)": 40.23,
     "Vazão (m³/h)": 191.57,
     "Potência (cv)": 40
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-karitel-pivo-72",
@@ -2270,7 +2350,8 @@
     "Área (há)": 125.51,
     "Vazão (m³/h)": 597.67,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "3V3"
   },
   {
    "id": "piv-rdm-pivo-101",
@@ -2293,7 +2374,8 @@
     "Área (há)": 116.2,
     "Vazão (m³/h)": 552.48,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-102",
@@ -2316,7 +2398,8 @@
     "Área (há)": 102.19,
     "Vazão (m³/h)": 486.62,
     "Potência (cv)": 125
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-103",
@@ -2339,7 +2422,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-104",
@@ -2362,7 +2446,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-105",
@@ -2385,7 +2470,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-106",
@@ -2408,7 +2494,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-107",
@@ -2431,7 +2518,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 125
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-108",
@@ -2454,7 +2542,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 100
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-109",
@@ -2477,7 +2566,8 @@
     "Área (há)": 102.01,
     "Vazão (m³/h)": 485.76,
     "Potência (cv)": 125
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-110",
@@ -2500,7 +2590,8 @@
     "Área (há)": 102.19,
     "Vazão (m³/h)": 485.62,
     "Potência (cv)": 125
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-112",
@@ -2523,7 +2614,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-113",
@@ -2546,7 +2638,8 @@
     "Área (há)": 150.14,
     "Vazão (m³/h)": 714.95,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-114",
@@ -2569,7 +2662,8 @@
     "Área (há)": 120.13,
     "Vazão (m³/h)": 572.05,
     "Potência (cv)": 150
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-115",
@@ -2592,7 +2686,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-116",
@@ -2615,7 +2710,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 701.59,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-117",
@@ -2638,7 +2734,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-118",
@@ -2661,7 +2758,8 @@
     "Área (há)": 150.14,
     "Vazão (m³/h)": 694.93,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-119",
@@ -2684,7 +2782,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-120",
@@ -2707,7 +2806,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-121",
@@ -2730,7 +2830,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-122",
@@ -2753,7 +2854,8 @@
     "Área (há)": 150.14,
     "Vazão (m³/h)": 714.95,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-123",
@@ -2776,7 +2878,8 @@
     "Área (há)": 150.34,
     "Vazão (m³/h)": 715.9,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-124",
@@ -2799,7 +2902,8 @@
     "Área (há)": 150.14,
     "Vazão (m³/h)": 700.65,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-125",
@@ -2822,7 +2926,8 @@
     "Área (há)": 100.79,
     "Vazão (m³/h)": 479.95,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-126",
@@ -2845,7 +2950,8 @@
     "Área (há)": 140.57,
     "Vazão (m³/h)": 669.39,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-127",
@@ -2868,7 +2974,8 @@
     "Área (há)": 102.43,
     "Vazão (m³/h)": 487.76,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-128",
@@ -2891,7 +2998,8 @@
     "Área (há)": 140.57,
     "Vazão (m³/h)": 669.39,
     "Potência (cv)": 175
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-129",
@@ -2914,7 +3022,8 @@
     "Área (há)": 102.43,
     "Vazão (m³/h)": 487.76,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-130",
@@ -2937,7 +3046,8 @@
     "Área (há)": 150.14,
     "Vazão (m³/h)": 714.95,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-131",
@@ -2960,7 +3070,8 @@
     "Área (há)": 100.1,
     "Vazão (m³/h)": 762.67,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-132",
@@ -2983,7 +3094,8 @@
     "Área (há)": 100.1,
     "Vazão (m³/h)": 762.67,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "piv-rdm-pivo-133",
@@ -3006,7 +3118,8 @@
     "Área (há)": 101.12,
     "Vazão (m³/h)": 481.52,
     "Potência (cv)": 200
-   }
+   },
+   "plataforma": "BestStation"
   },
   {
    "id": "est-karitel-primavera-01",
@@ -3030,7 +3143,8 @@
      "Vazão (m³/h)": 803,
      "Potência (cv)/(hp)": 246.748064
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-primavera-02",
@@ -3064,7 +3178,8 @@
      "Vazão (m³/h)": 786,
      "Potência (cv)/(hp)": 246.748064
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-bom-nome",
@@ -3133,7 +3248,8 @@
      "Vazão (m³/h)": 560,
      "Potência (cv)/(hp)": 246.748064
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-garfo",
@@ -3192,7 +3308,8 @@
      "Vazão (m³/h)": 650,
      "Potência (cv)/(hp)": 246.748064
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-karitel",
@@ -3251,7 +3368,8 @@
      "Vazão (m³/h)": 650,
      "Potência (cv)/(hp)": 246.748064
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-primavera-03",
@@ -3295,7 +3413,8 @@
      "Vazão (m³/h)": 900,
      "Potência (cv)/(hp)": 197.130247
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-unificada-4-5",
@@ -3374,7 +3493,8 @@
      "Vazão (m³/h)": 930,
      "Potência (cv)/(hp)": 493.496129
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-elevatoria-g-e-k",
@@ -3503,7 +3623,8 @@
      "Vazão (m³/h)": 542,
      "Potência (cv)/(hp)": 246.748064
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-r12-transposicao",
@@ -3527,7 +3648,8 @@
      "Vazão (m³/h)": 700,
      "Potência (cv)/(hp)": 100
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-balca-m2-m1",
@@ -3541,7 +3663,8 @@
      "Vazão (m³/h)": 6500,
      "Potência (cv)/(hp)": 300
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-balca-r16",
@@ -3555,7 +3678,8 @@
      "Vazão (m³/h)": 3500,
      "Potência (cv)/(hp)": 150
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-01",
@@ -3569,7 +3693,8 @@
      "Vazão (m³/h)": 600,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-02",
@@ -3583,7 +3708,8 @@
      "Vazão (m³/h)": 500,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-03",
@@ -3597,7 +3723,8 @@
      "Vazão (m³/h)": 500,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-04",
@@ -3611,7 +3738,8 @@
      "Vazão (m³/h)": 500,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-05",
@@ -3625,7 +3753,8 @@
      "Vazão (m³/h)": 135,
      "Potência (cv)/(hp)": 115
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-06",
@@ -3639,7 +3768,8 @@
      "Vazão (m³/h)": 395,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-07",
@@ -3653,7 +3783,8 @@
      "Vazão (m³/h)": 233,
      "Potência (cv)/(hp)": 130
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-08",
@@ -3667,7 +3798,8 @@
      "Vazão (m³/h)": 390,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-09",
@@ -3681,7 +3813,8 @@
      "Vazão (m³/h)": 300,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-10",
@@ -3695,7 +3828,8 @@
      "Vazão (m³/h)": 190,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-11",
@@ -3709,7 +3843,8 @@
      "Vazão (m³/h)": 650,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-12",
@@ -3723,7 +3858,8 @@
      "Vazão (m³/h)": 350,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-rdm-prm-13",
@@ -3737,7 +3873,8 @@
      "Vazão (m³/h)": 410,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-10",
@@ -3751,7 +3888,8 @@
      "Vazão (m³/h)": 280,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-11",
@@ -3765,7 +3903,8 @@
      "Vazão (m³/h)": "???",
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-12",
@@ -3779,7 +3918,8 @@
      "Vazão (m³/h)": 374,
      "Potência (cv)/(hp)": 330
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-13",
@@ -3793,7 +3933,8 @@
      "Vazão (m³/h)": 394.5,
      "Potência (cv)/(hp)": 330
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-14",
@@ -3807,7 +3948,8 @@
      "Vazão (m³/h)": 366,
      "Potência (cv)/(hp)": 280
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-15",
@@ -3821,7 +3963,8 @@
      "Vazão (m³/h)": 205,
      "Potência (cv)/(hp)": 180
     }
-   ]
+   ],
+   "plataforma": "3V3"
   },
   {
    "id": "est-karitel-pk-16",
@@ -3835,7 +3978,8 @@
      "Vazão (m³/h)": 242,
      "Potência (cv)/(hp)": 180
     }
-   ]
+   ],
+   "plataforma": "3V3"
   }
  ]
 }

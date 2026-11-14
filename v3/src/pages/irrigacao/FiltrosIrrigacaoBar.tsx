@@ -3,8 +3,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FilterBar } from '@/components/shared/FilterBar';
-import { ATIVOS_IRRIGACAO } from '@/hooks/useIrrigacao';
-import { STATUS_IRRIGACAO, TIPO_ATIVO_LABEL, type FiltrosIrrigacao } from '@/utils/irrigacao';
+import { useConfigIrrigacao } from '@/hooks/useIrrigacao';
+import { PLATAFORMAS_TELEMETRIA, SEM_PLATAFORMA, STATUS_IRRIGACAO, TIPO_ATIVO_LABEL, type FiltrosIrrigacao } from '@/utils/irrigacao';
 import type { ChamadoIrrigacao, StatusIrrigacao, TipoAtivoIrrigacao } from '@/types/irrigacao';
 
 const TODOS = '__todos__';
@@ -52,30 +52,32 @@ export function FiltrosIrrigacaoBar({
   chamados: ChamadoIrrigacao[];
   mostrarStatus?: boolean;
 }) {
+  const { ativos: cadastro } = useConfigIrrigacao();
   const set = (campo: keyof FiltrosIrrigacao) => (v: string) => {
     const novo = { ...filtros, [campo]: v };
-    // Equipamento depende de fazenda/módulo/tipo: limpa se deixar de bater.
+    // Equipamento depende de fazenda/módulo/tipo/plataforma: limpa se deixar de bater.
     if (campo !== 'ativoId' && campo !== 'busca' && novo.ativoId) {
-      const a = ATIVOS_IRRIGACAO.find((x) => x.id === novo.ativoId);
-      if (a && ((novo.fazenda && a.fazenda !== novo.fazenda) || (novo.modulo && a.modulo !== novo.modulo) || (novo.tipoAtivo && a.tipo !== novo.tipoAtivo))) novo.ativoId = '';
+      const a = cadastro.find((x) => x.id === novo.ativoId);
+      if (a && ((novo.fazenda && a.fazenda !== novo.fazenda) || (novo.modulo && a.modulo !== novo.modulo) || (novo.tipoAtivo && a.tipo !== novo.tipoAtivo) || (novo.plataforma && (a.plataforma || SEM_PLATAFORMA) !== novo.plataforma))) novo.ativoId = '';
     }
     onChange(novo);
   };
 
-  const fazendas = useMemo(() => [...new Set(ATIVOS_IRRIGACAO.map((a) => a.fazenda).filter(Boolean))].sort(), []);
+  const fazendas = useMemo(() => [...new Set(cadastro.map((a) => a.fazenda).filter(Boolean))].sort(), [cadastro]);
   const modulos = useMemo(
-    () => [...new Set(ATIVOS_IRRIGACAO.filter((a) => !filtros.fazenda || a.fazenda === filtros.fazenda).map((a) => a.modulo).filter(Boolean))].sort(),
-    [filtros.fazenda],
+    () => [...new Set(cadastro.filter((a) => !filtros.fazenda || a.fazenda === filtros.fazenda).map((a) => a.modulo).filter(Boolean))].sort(),
+    [cadastro, filtros.fazenda],
   );
   const ativos = useMemo(
     () =>
-      ATIVOS_IRRIGACAO.filter(
+      cadastro.filter(
         (a) =>
           (!filtros.fazenda || a.fazenda === filtros.fazenda) &&
           (!filtros.modulo || a.modulo === filtros.modulo) &&
-          (!filtros.tipoAtivo || a.tipo === filtros.tipoAtivo),
+          (!filtros.tipoAtivo || a.tipo === filtros.tipoAtivo) &&
+          (!filtros.plataforma || (a.plataforma || SEM_PLATAFORMA) === filtros.plataforma),
       ),
-    [filtros.fazenda, filtros.modulo, filtros.tipoAtivo],
+    [cadastro, filtros.fazenda, filtros.modulo, filtros.tipoAtivo, filtros.plataforma],
   );
   const tecnicos = useMemo(() => [...new Set(chamados.map((c) => c.tecnico || '').filter(Boolean))].sort((a, b) => a.localeCompare(b, 'pt-BR')), [chamados]);
   const algum = Object.values(filtros).some(Boolean);
@@ -90,6 +92,13 @@ export function FiltrosIrrigacaoBar({
         onChange={set('tipoAtivo')}
         rotulo="Todo tipo"
         opcoes={(Object.keys(TIPO_ATIVO_LABEL) as TipoAtivoIrrigacao[]).map((t) => [t, TIPO_ATIVO_LABEL[t]])}
+      />
+      <Seletor
+        valor={filtros.plataforma}
+        onChange={set('plataforma')}
+        rotulo="Toda plataforma"
+        opcoes={[...PLATAFORMAS_TELEMETRIA.map((p): [string, string] => [p, p]), [SEM_PLATAFORMA, 'Sem plataforma']]}
+        largura="w-40"
       />
       <Seletor valor={filtros.ativoId} onChange={set('ativoId')} rotulo="Todo equipamento" opcoes={ativos.map((a) => [a.id, `${a.nome} · ${a.fazenda || '—'}`])} largura="w-48" />
       <Seletor valor={filtros.tecnico} onChange={set('tecnico')} rotulo="Todo técnico" opcoes={tecnicos.map((t) => [t, t])} />

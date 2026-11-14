@@ -6,6 +6,10 @@
 
 export type TipoAtivoIrrigacao = 'pivo' | 'casa_bombas' | 'captacao' | 'elevatoria' | 'poco';
 
+/** Plataforma onde o operador verifica a telemetria do ativo. Só
+ * organização dos chamados: não há integração com nenhuma delas. */
+export type PlataformaTelemetria = 'Lindsay' | '3V3' | 'BestStation';
+
 /** Ativo do cadastro estático (src/data/irrigacao_ativos.json, gerado por
  * scripts/gerar-ativos-irrigacao.js a partir da planilha original). */
 export interface AtivoIrrigacao {
@@ -17,6 +21,8 @@ export interface AtivoIrrigacao {
   casaBombas?: string;
   marca?: string;
   pivosAbastecidos?: string;
+  /** Ausente = plataforma ainda não confirmada. */
+  plataforma?: PlataformaTelemetria;
   coordenadas?: { lat: number; lon: number };
   /** Colunas originais da linha da planilha (exceto as sensíveis). */
   dados?: Record<string, string | number>;
@@ -79,6 +85,8 @@ export interface ChamadoIrrigacao {
   fazenda: string;
   modulo: string;
   casaBombas: string;
+  /** Plataforma do ativo no momento da abertura (null = não classificada). */
+  plataforma?: PlataformaTelemetria | null;
   tipoFalha: string;
   identificadoEm: string;
   descricao: string;
@@ -117,4 +125,7 @@ export interface ConfigIrrigacao {
   tiposFalha?: string[];
   /** Todos os ativos começam monitorados; um administrador desmarca os sem telemetria. */
   naoMonitorados?: string[];
+  /** Plataforma definida na tela de configurações, por id do ativo; ''
+   * remove a classificação. Prevalece sobre a do cadastro. */
+  plataformas?: Record<string, PlataformaTelemetria | ''>;
 }
