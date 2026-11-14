@@ -25,6 +25,7 @@ export function GlobalSearch() {
         const frota = frotaLabel(c).toLowerCase();
         return (
           c.num.toLowerCase().includes(term) ||
+          c.numAnterior?.toLowerCase().includes(term) ||
           c.titulo?.toLowerCase().includes(term) ||
           c.resp?.toLowerCase().includes(term) ||
           c.bucket?.toLowerCase().includes(term) ||

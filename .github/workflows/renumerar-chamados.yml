@@ -1,0 +1,72 @@
+name: Renumerar Chamados (manual)
+
+# Roda scripts/renumerar-chamados.js no runner do GitHub Actions. NUNCA roda
+# sozinho: só o botão "Run workflow". O padrão é simular; gravar exige
+# escolher "aplicar" e digitar RENUMERAR. Rodar fora do horário de uso: um
+# chamado editado durante a renumeração pode perder essa edição.
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'simular = só lista o que faria | aplicar = grava no Firestore de produção'
+        required: true
+        type: choice
+        default: simular
+        options:
+          - simular
+          - aplicar
+      confirmacao:
+        description: 'Só para o modo aplicar: digite RENUMERAR'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: renumerar-chamados
+  cancel-in-progress: false
+
+jobs:
+  renumerar:
+    name: Renumerar chamados fora da sequencia
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MODO: ${{ github.event.inputs.modo }}
+      CONFIRMACAO: ${{ github.event.inputs.confirmacao }}
+    steps:
+      - name: Conferir confirmação
+        run: |
+          if [ "$MODO" = "aplicar" ] && [ "$CONFIRMACAO" != "RENUMERAR" ]; then
+            echo "::error::No modo aplicar, o campo de confirmação precisa ser exatamente RENUMERAR. Nada foi gravado."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependências
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+
+      - name: Preparar credencial do Firebase (efêmera)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+
+      - name: Rodar script
+        working-directory: scripts
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+          if [ "$MODO" = "aplicar" ]; then export APLICAR=1; fi
+          node renumerar-chamados.js
+
+      - name: Apagar credencial
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"

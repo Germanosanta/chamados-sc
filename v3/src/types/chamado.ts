@@ -136,4 +136,9 @@ export interface Chamado {
    * leitura pública, e só dos campos não sensíveis.
    */
   tokenPublico?: string | null;
+
+  /** Número antes da correção de sequência (scripts/renumerar-chamados.js).
+   * Mantido para o chamado ainda ser encontrado pelo número que já foi
+   * enviado em comprovantes. */
+  numAnterior?: string;
 }
