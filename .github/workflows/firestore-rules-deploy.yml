@@ -80,7 +80,9 @@ jobs:
       - name: Publicar firestore.rules
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
-        run: npx --yes firebase-tools@latest deploy --only firestore:rules --project chamdos-sc --non-interactive
+        # Mesma versão fixada no deploy do Hosting (v3-deploy.yml): a 15.35.0
+        # exige serviceusage.services.get, que a conta de serviço não tem.
+        run: npx --yes firebase-tools@15.34.0 deploy --only firestore:rules --project chamdos-sc --non-interactive
 
       - name: Resumo
         if: always()
