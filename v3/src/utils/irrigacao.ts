@@ -119,6 +119,35 @@ export function inputLocalParaIso(valor: string): string {
   return Number.isNaN(d.getTime()) ? '' : d.toISOString();
 }
 
+const normalizarBusca = (s: string) => s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
+
+/** Busca da abertura de chamado (como a de equipamento dos chamados de
+ * campo). Ordem: pivô cujo número é o digitado ("27" → Pivô 27), outro
+ * equipamento com esse número, demais pivôs, demais equipamentos. */
+export function buscarAtivosIrrigacao(ativos: AtivoIrrigacao[], q: string, limite = 30): AtivoIrrigacao[] {
+  const termos = normalizarBusca(q).split(/\s+/).filter(Boolean);
+  if (!termos.length) return [];
+  const numero = termos.find((t) => /^\d+$/.test(t));
+  const texto = (a: AtivoIrrigacao) =>
+    normalizarBusca(`${a.nome} ${TIPO_ATIVO_LABEL[a.tipo]} ${a.fazenda} ${a.modulo} ${a.casaBombas || ''} ${a.plataforma || ''}`);
+  const prioridade = (a: AtivoIrrigacao) => {
+    const n = /(\d+)\s*$/.exec(a.nome)?.[1];
+    if (numero && n && Number(n) === Number(numero)) return a.tipo === 'pivo' ? 0 : 1;
+    return a.tipo === 'pivo' ? 2 : 3;
+  };
+  // Número digitado casa pelo início de um número do texto ("27" → 27, 270;
+  // nunca 127), ignorando zeros à esquerda ("1" → "01").
+  const casaNumero = (t: string, termo: string) =>
+    (t.match(/\d+/g) || []).some((n) => n.startsWith(termo) || String(Number(n)).startsWith(String(Number(termo))));
+  return ativos
+    .filter((a) => {
+      const t = texto(a);
+      return termos.every((termo) => (/^\d+$/.test(termo) ? casaNumero(t, termo) : t.includes(termo)));
+    })
+    .sort((a, b) => prioridade(a) - prioridade(b) || a.nome.localeCompare(b.nome, 'pt-BR', { numeric: true }))
+    .slice(0, limite);
+}
+
 export function ativosMonitorados(ativos: AtivoIrrigacao[], naoMonitorados: string[] = []): AtivoIrrigacao[] {
   const fora = new Set(naoMonitorados);
   return ativos.filter((a) => !fora.has(a.id));

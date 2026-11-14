@@ -8,27 +8,23 @@ import { Campo, Meta } from '@/components/shared/FormField';
 import { useSessionStore } from '@/store/session';
 import { ATIVOS_IRRIGACAO, useConfigIrrigacao, useCriarChamadoIrrigacao } from '@/hooks/useIrrigacao';
 import { PRIORIDADES_IRRIGACAO, TIPO_ATIVO_LABEL, inputLocalParaIso, isoParaInputLocal } from '@/utils/irrigacao';
-import type { AtivoIrrigacao, PrioridadeIrrigacao, TipoAtivoIrrigacao } from '@/types/irrigacao';
+import type { AtivoIrrigacao, PrioridadeIrrigacao } from '@/types/irrigacao';
+import { AtivoIrrigacaoAutocomplete } from './AtivoIrrigacaoAutocomplete';
 
 const NENHUMA = '__nenhuma__';
 const MAX_FOTOS = 4;
 
-function normalizar(s: string) {
-  return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
-}
-
-/** Abertura: o equipamento sempre vem do cadastro (só os monitorados),
- * escolhido por fazenda → módulo → tipo, ou pela busca. */
+/** Abertura: igual à dos chamados de campo — o equipamento (pivô, casa de
+ * bombas, captação…) é buscado pelo nome/número e escolhido na lista; fazenda,
+ * módulo, casa de bombas e plataforma vêm do cadastro do equipamento. Só os
+ * equipamentos monitorados aparecem. */
 export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => void }) {
   const usuario = useSessionStore((s) => s.usuario);
   const { monitorados, tiposFalha } = useConfigIrrigacao();
   const criar = useCriarChamadoIrrigacao();
 
-  const [fazenda, setFazenda] = useState('');
-  const [modulo, setModulo] = useState('');
-  const [tipo, setTipo] = useState('');
-  const [busca, setBusca] = useState('');
   const [ativo, setAtivo] = useState<AtivoIrrigacao | null>(null);
+  const [buscaKey, setBuscaKey] = useState(0);
   const [casaBombas, setCasaBombas] = useState('');
   const [tipoFalha, setTipoFalha] = useState('');
   const [identificadoEm, setIdentificadoEm] = useState(() => isoParaInputLocal(new Date().toISOString()));
@@ -37,36 +33,19 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
   const [fotos, setFotos] = useState<File[]>([]);
   const [enviando, setEnviando] = useState(false);
 
-  const fazendas = useMemo(() => [...new Set(monitorados.map((a) => a.fazenda).filter(Boolean))].sort(), [monitorados]);
-  const modulos = useMemo(() => [...new Set(monitorados.filter((a) => !fazenda || a.fazenda === fazenda).map((a) => a.modulo).filter(Boolean))].sort(), [monitorados, fazenda]);
-  const tipos = useMemo(() => [...new Set(monitorados.map((a) => a.tipo))] as TipoAtivoIrrigacao[], [monitorados]);
-  const candidatos = useMemo(() => {
-    const termo = normalizar(busca.trim());
-    return monitorados.filter(
-      (a) =>
-        (!fazenda || a.fazenda === fazenda) &&
-        (!modulo || a.modulo === modulo) &&
-        (!tipo || a.tipo === tipo) &&
-        (!termo || normalizar(`${a.nome} ${a.casaBombas || ''} ${a.fazenda} ${a.modulo}`).includes(termo)),
-    );
-  }, [monitorados, fazenda, modulo, tipo, busca]);
   const casas = useMemo(
     () => ATIVOS_IRRIGACAO.filter((a) => a.tipo === 'casa_bombas' && (!ativo || !ativo.fazenda || a.fazenda === ativo.fazenda)),
     [ativo],
   );
 
-  function escolher(a: AtivoIrrigacao) {
+  function escolher(a: AtivoIrrigacao | null) {
     setAtivo(a);
-    setFazenda(a.fazenda);
-    setModulo(a.modulo);
-    setTipo(a.tipo);
-    setBusca('');
-    setCasaBombas(a.tipo === 'pivo' ? a.casaBombas || '' : a.tipo === 'casa_bombas' ? a.nome : '');
+    setCasaBombas(!a ? '' : a.tipo === 'pivo' ? a.casaBombas || '' : a.tipo === 'casa_bombas' ? a.nome : '');
   }
 
   function limpar() {
-    setAtivo(null);
-    setCasaBombas('');
+    escolher(null);
+    setBuscaKey((k) => k + 1);
     setTipoFalha('');
     setDescricao('');
     setFotos([]);
@@ -106,77 +85,20 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
     <div className="mx-auto flex max-w-3xl flex-col gap-6 pb-10">
       <section className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-4">
         <h2 className="text-sm font-bold uppercase tracking-wide text-subtle">Equipamento</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Campo label="Fazenda" htmlFor="irr-fazenda">
-            <Select value={fazenda || NENHUMA} onValueChange={(v) => { setFazenda(v === NENHUMA ? '' : v); setModulo(''); setAtivo(null); }}>
-              <SelectTrigger id="irr-fazenda"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NENHUMA}>Todas</SelectItem>
-                {fazendas.map((f) => <SelectItem key={f} value={f}>{f}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </Campo>
-          <Campo label="Módulo" htmlFor="irr-modulo">
-            <Select value={modulo || NENHUMA} onValueChange={(v) => { setModulo(v === NENHUMA ? '' : v); setAtivo(null); }}>
-              <SelectTrigger id="irr-modulo"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NENHUMA}>Todos</SelectItem>
-                {modulos.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </Campo>
-          <Campo label="Tipo de equipamento" htmlFor="irr-tipo">
-            <Select value={tipo || NENHUMA} onValueChange={(v) => { setTipo(v === NENHUMA ? '' : v); setAtivo(null); }}>
-              <SelectTrigger id="irr-tipo"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value={NENHUMA}>Todos</SelectItem>
-                {tipos.map((t) => <SelectItem key={t} value={t}>{TIPO_ATIVO_LABEL[t]}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </Campo>
-        </div>
+        <Campo label="Equipamento *" htmlFor="irr-equip">
+          <AtivoIrrigacaoAutocomplete key={buscaKey} id="irr-equip" ativos={monitorados} onSelect={escolher} />
+        </Campo>
 
-        {ativo ? (
-          <div className="flex flex-col gap-3 rounded-sm border border-primary bg-primary-light/40 p-3">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <div className="font-semibold text-foreground">{ativo.nome}</div>
-                <div className="text-xs text-muted-foreground">{TIPO_ATIVO_LABEL[ativo.tipo]}</div>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => setAtivo(null)}>Trocar</Button>
-            </div>
-            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              <Meta label="Fazenda" value={ativo.fazenda || '—'} />
-              <Meta label="Módulo" value={ativo.modulo || '—'} />
-              <Meta label="Plataforma de telemetria" value={ativo.plataforma || 'Não classificada'} />
-              {ativo.marca && <Meta label="Marca" value={ativo.marca} />}
-              {ativo.pivosAbastecidos && <Meta label="Pivôs abastecidos" value={ativo.pivosAbastecidos} />}
-              {ativo.bombas && <Meta label="Bombas" value={String(ativo.bombas.length)} />}
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            <Input value={busca} onChange={(e) => setBusca(e.target.value)} placeholder="Buscar equipamento (ex.: Pivô 27, R7, PRM 03)…" aria-label="Buscar equipamento" />
-            <div className="max-h-64 overflow-y-auto rounded-sm border border-border" role="listbox" aria-label="Equipamentos monitorados">
-              {candidatos.length === 0 && <p className="p-3 text-sm text-subtle">Nenhum equipamento monitorado com esses filtros.</p>}
-              {candidatos.slice(0, 80).map((a) => (
-                <button
-                  key={a.id}
-                  type="button"
-                  role="option"
-                  aria-selected={false}
-                  onClick={() => escolher(a)}
-                  className="flex w-full items-center justify-between gap-2 border-b border-border px-3 py-2 text-left text-sm last:border-b-0 hover:bg-muted"
-                >
-                  <span className="font-medium text-foreground">{a.nome}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {TIPO_ATIVO_LABEL[a.tipo]} · {a.fazenda || '—'} · {a.modulo || '—'}
-                    {a.casaBombas ? ` · ${a.casaBombas}` : ''} · {a.plataforma || 'sem plataforma'}
-                  </span>
-                </button>
-              ))}
-              {candidatos.length > 80 && <p className="p-2 text-center text-xs text-subtle">Mostrando 80 de {candidatos.length}. Use os filtros ou a busca.</p>}
-            </div>
+        {ativo && (
+          <div className="grid grid-cols-2 gap-3 rounded-sm border border-border bg-muted p-3 text-sm sm:grid-cols-4">
+            <Meta label="Equipamento" value={ativo.nome} />
+            <Meta label="Tipo" value={TIPO_ATIVO_LABEL[ativo.tipo]} />
+            <Meta label="Fazenda" value={ativo.fazenda || '—'} />
+            <Meta label="Módulo" value={ativo.modulo || '—'} />
+            <Meta label="Plataforma de telemetria" value={ativo.plataforma || 'Não classificada'} />
+            {ativo.marca && <Meta label="Marca" value={ativo.marca} />}
+            {ativo.pivosAbastecidos && <Meta label="Pivôs abastecidos" value={ativo.pivosAbastecidos} />}
+            {ativo.bombas && <Meta label="Bombas" value={String(ativo.bombas.length)} />}
           </div>
         )}
 

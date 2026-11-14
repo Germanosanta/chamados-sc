@@ -80,9 +80,10 @@ jobs:
       - name: Publicar firestore.rules
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/firebase-sa.json
-        # Mesma versão fixada no deploy do Hosting (v3-deploy.yml): a 15.35.0
-        # exige serviceusage.services.get, que a conta de serviço não tem.
-        run: npx --yes firebase-tools@15.34.0 deploy --only firestore:rules --project chamdos-sc --non-interactive
+        # Pela API do Firebase Rules: a CLI (firebase deploy) exige
+        # serviceusage.services.get, que esta conta de serviço não tem (403
+        # em 21/10 e 14/11/2026). O script valida, cria o ruleset e publica.
+        run: node scripts/publicar-regras-firestore.js firestore.rules
 
       - name: Resumo
         if: always()
