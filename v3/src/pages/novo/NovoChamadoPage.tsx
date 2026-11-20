@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -153,7 +154,7 @@ export function NovoChamadoPage() {
     } catch (erro) {
       // eslint-disable-next-line no-console -- sem isso a causa real da falha se perde.
       console.error('[NovoChamado] falha ao abrir chamado', erro);
-      const detalhe = erro instanceof Error ? erro.message.slice(0, 160) : String(erro);
+      const detalhe = motivoErro(erro);
       toast.error(`Não foi possível abrir o chamado. Detalhe: ${detalhe}`);
     } finally {
       setEnviando(false);

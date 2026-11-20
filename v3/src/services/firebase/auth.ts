@@ -8,7 +8,8 @@ import {
   getAuth,
   type User,
 } from 'firebase/auth';
-import { auth, firebaseConfig } from './app';
+import { clearIndexedDbPersistence, terminate } from 'firebase/firestore';
+import { auth, db, firebaseConfig } from './app';
 import { buscarPorCampo, getOne, setMerge } from './firestore';
 import type { LoginLookup, Usuario } from '@/types';
 
@@ -74,6 +75,19 @@ async function autocorrigirUsuarioPorEmail(uid: string, email: string): Promise<
 
 export async function logout(): Promise<void> {
   await fbSignOut(auth);
+  // Terminais compartilhados: o cache local do Firestore (dados dos
+  // chamados, ver app.ts) é apagado ao sair. Só dá para apagar com o
+  // Firestore encerrado, por isso a página é recarregada em seguida. Com
+  // outra aba do sistema aberta, o navegador não deixa apagar; o cache
+  // fica até a última aba sair.
+  try {
+    await terminate(db);
+    await clearIndexedDbPersistence(db);
+  } catch (erro) {
+    // eslint-disable-next-line no-console -- diagnóstico; a saída da sessão já aconteceu.
+    console.warn('[logout] cache local não apagado', erro);
+  }
+  window.location.replace('/login');
 }
 
 export async function trocarSenha(novaSenha: string): Promise<void> {

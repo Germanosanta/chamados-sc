@@ -1,7 +1,10 @@
 {
- "_origem": "Equipamentos 3V3 da Fazenda Karitel (prints da plataforma 3V3 enviados pela operação em 20/11/2026). 'local' como no print ('—' = vazio); DIR-GPS/DIR-PIR: o número indica o pivô (157 → Pivô 57, 141 → Pivô 41), regra informada pela operação. DIR-NB 041 não consta na lista.",
+ "_origem": "Equipamentos 3V3 da Fazenda Karitel (prints da plataforma 3V3 enviados pela operação em 20/11/2026). 'local' como no print ('—' = vazio); DIR-GPS/DIR-PIR: o número indica o pivô (157 → Pivô 57, 141 → Pivô 41), regra informada pela operação. DIR-NB 041 não consta na lista. Informado pela operação: ELE-4E5 = captação Unificada 4/5; PK 1 e PK 2 são do Módulo 01 (poços fora da planilha).",
  "fazenda": "Karitel",
  "plataforma": "3V3",
+ "locaisEquivalentes": {
+  "ELE-4E5": "Unificada 4/5"
+ },
  "dispositivos": [
   {
    "nome": "CIR",
@@ -111,12 +114,14 @@
   {
    "nome": "DIR-NB 005",
    "tipo": "dispositivo",
-   "local": "PK 1"
+   "local": "PK 1",
+   "modulo": "Módulo 01"
   },
   {
    "nome": "DIR-NB 006",
    "tipo": "dispositivo",
-   "local": "PK 2"
+   "local": "PK 2",
+   "modulo": "Módulo 01"
   },
   {
    "nome": "DIR-NB 007",

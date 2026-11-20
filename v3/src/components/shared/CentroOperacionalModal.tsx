@@ -20,6 +20,7 @@ import { useChamados, useAssumirChamado, useRegistrarEvento, useReabrirChamado }
 import { diasAberto, diasBorderClass, equipamentoDoChamado, EVT_NEEDS_INPUT, EVT_PLACEHOLDERS, EVT_STATUS_CHANGE, fazendaLabel, formatDataBR, isFechado, podeAgirNoChamado, temResponsavel } from '@/utils/chamado-helpers';
 import { cn } from '@/utils/cn';
 import { useAuditoriaDoChamado } from '@/hooks/useAuditoriaDoChamado';
+import { motivoErro } from '@/utils/erros';
 
 /**
  * Centro Operacional do Chamado — modal global único (montado 1x no
@@ -65,8 +66,8 @@ export function CentroOperacionalModal() {
     try {
       await assumir(chamado);
       toast(`⚡ ${usuario?.nome} assumiu o chamado ${chamado.num}`);
-    } catch {
-      toast.error('Não foi possível assumir o chamado.');
+    } catch (erro) {
+      toast.error(`Não foi possível assumir o chamado: ${motivoErro(erro)}.`);
     }
   }
 
@@ -88,8 +89,8 @@ export function CentroOperacionalModal() {
     try {
       await registrarEvento(chamado, tipo, detail.trim(), EVT_STATUS_CHANGE[tipo as keyof typeof EVT_STATUS_CHANGE]);
       toast(`✓ Evento registrado`);
-    } catch {
-      toast.error('Não foi possível registrar o evento.');
+    } catch (erro) {
+      toast.error(`Não foi possível registrar o evento: ${motivoErro(erro)}.`);
     } finally {
       setPendingAction(null);
       setActionInput('');
@@ -107,8 +108,8 @@ export function CentroOperacionalModal() {
     try {
       await reabrir(chamado);
       toast(`Chamado ${chamado.num} reaberto.`);
-    } catch {
-      toast.error('Não foi possível reabrir o chamado.');
+    } catch (erro) {
+      toast.error(`Não foi possível reabrir o chamado: ${motivoErro(erro)}.`);
     }
   }
 

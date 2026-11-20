@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,7 +54,7 @@ export function ConfigIrrigacao() {
       await salvar(dados);
       toast(sucesso);
     } catch (erro) {
-      toast.error(`Não foi possível salvar. Detalhe: ${erro instanceof Error ? erro.message.slice(0, 160) : String(erro)}`);
+      toast.error(`Não foi possível salvar. Detalhe: ${motivoErro(erro)}`);
     } finally {
       setSalvando(false);
     }

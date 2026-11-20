@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { cn } from '@/utils/cn';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -59,7 +60,7 @@ export function AreaTecnicaIrrigacao({ onAbrir }: { onAbrir: (num: string) => vo
       await acoes.assumir(c, { key: meuTecnico?.key || usuario.id, nome: meuTecnico?.nome || usuario.nome });
       toast(`⚡ Você assumiu o chamado ${c.num}`);
     } catch (erro) {
-      toast.error(`Não foi possível assumir: ${erro instanceof Error ? erro.message : 'erro desconhecido'}.`);
+      toast.error(`Não foi possível assumir: ${motivoErro(erro)}.`);
     } finally {
       setAssumindo(null);
     }

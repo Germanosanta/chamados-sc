@@ -250,8 +250,10 @@ function gerar(arquivo) {
       const fonte = JSON.parse(fs.readFileSync(path.join(pasta, arq), 'utf8'));
       const locais = new Map(ativos.filter((a) => a.fazenda === fonte.fazenda).map((a) => [chave(a.nome), a]));
       const porDispositivo = new Map();
+      // Nome do local na plataforma → nome no cadastro (ex.: ELE-4E5 → Unificada 4/5), informado pela operação.
+      const equivalente = (local) => (fonte.locaisEquivalentes && fonte.locaisEquivalentes[local]) || local;
       for (const d of fonte.dispositivos) {
-        const lugar = d.local ? locais.get(chave(d.local)) : undefined;
+        const lugar = d.local ? locais.get(chave(equivalente(d.local))) : undefined;
         if (d.local && !lugar && !d.modulo) avisos.push(`${fonte.fazenda} · ${d.nome}: local "${d.local}" não está no cadastro; fica sem módulo`);
         const ativo = {
           id: `dev-${slug(`${fonte.fazenda}-${d.nome}`)}`,

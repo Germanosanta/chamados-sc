@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { ImagePlus, Loader2, RotateCcw } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -115,7 +116,7 @@ function Detalhe({ chamado: c, todos }: { chamado: ChamadoIrrigacao; todos: Cham
     } catch (erro) {
       // eslint-disable-next-line no-console -- sem isso a causa real se perde.
       console.error(`[irrigacao] falha em ${chave}`, erro);
-      toast.error(`Não foi possível concluir. Detalhe: ${erro instanceof Error ? erro.message.slice(0, 160) : String(erro)}`);
+      toast.error(`Não foi possível concluir. Detalhe: ${motivoErro(erro)}`);
       return false;
     } finally {
       setOcupado(null);

@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { cn } from '@/utils/cn';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -83,7 +84,7 @@ export function AreaTecnicoPage() {
         await assumir(c);
         toast(`⚡ Você assumiu o chamado ${c.num}`);
       } catch (erro) {
-        toast.error(`Não foi possível assumir: ${erro instanceof Error ? erro.message : 'erro desconhecido'}.`);
+        toast.error(`Não foi possível assumir: ${motivoErro(erro)}.`);
       }
     },
     [assumir],

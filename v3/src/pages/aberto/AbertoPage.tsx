@@ -21,6 +21,7 @@ import { useDetalheStore } from '@/store/detalhe';
 import type { Chamado } from '@/types/chamado';
 import type { Tecnico } from '@/types/tecnico';
 import { cn } from '@/utils/cn';
+import { motivoErro } from '@/utils/erros';
 
 const CULTURAS = [
   { key: 'Grãos e Fibras', icon: '🌾', label: 'Grãos e Fibras' },
@@ -160,8 +161,8 @@ export function AbertoPage() {
       try {
         await reatribuir(chamado, nome, tecnico.usuarioUid);
         toast(`${chamado.num} → ${nome}`);
-      } catch {
-        toast.error('Não foi possível reatribuir. Tente novamente.');
+      } catch (erro) {
+        toast.error(`Não foi possível reatribuir: ${motivoErro(erro)}.`);
       }
     },
     [reatribuir],
@@ -176,8 +177,8 @@ export function AbertoPage() {
       try {
         await assumir(chamado);
         toast(`⚡ Você assumiu o chamado ${chamado.num}`);
-      } catch {
-        toast.error('Não foi possível assumir o chamado.');
+      } catch (erro) {
+        toast.error(`Não foi possível assumir o chamado: ${motivoErro(erro)}.`);
       }
     },
     [assumir],
@@ -196,8 +197,8 @@ export function AbertoPage() {
       try {
         await alterarStatus(chamado, novoStatus);
         toast(`${chamado.num} → ${novoStatus}`);
-      } catch {
-        toast.error('Não foi possível mover o chamado.');
+      } catch (erro) {
+        toast.error(`Não foi possível mover o chamado: ${motivoErro(erro)}.`);
       }
     },
     [alterarStatus, podeEditar],

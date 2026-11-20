@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, browserSessionPersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 
 /**
  * Mesmo projeto Firebase da V2 (docs/js/firebase/firebase.js) — config
@@ -19,7 +19,24 @@ export const firebaseConfig = {
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-export const db = getFirestore(firebaseApp);
+/**
+ * Cache persistente (IndexedDB) com abas compartilhando uma só conexão: ao
+ * recarregar a página, abrir outra aba ou aplicar uma versão nova, o
+ * Firestore usa o que já está no navegador e só busca no servidor o que
+ * mudou — antes cada recarga relia ~2.800 chamados + histórico e esgotava a
+ * cota diária gratuita de leituras. O cache é apagado ao clicar em "Sair"
+ * (ver logout em auth.ts), por causa dos terminais compartilhados.
+ */
+function criarFirestore() {
+  try {
+    return initializeFirestore(firebaseApp, { localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+  } catch {
+    // Já inicializado (recarga a quente em desenvolvimento).
+    return getFirestore(firebaseApp);
+  }
+}
+
+export const db = criarFirestore();
 
 export const auth = getAuth(firebaseApp);
 // Sessão dura só enquanto a aba fica aberta — mesmo comportamento da V2

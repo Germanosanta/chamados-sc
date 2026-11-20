@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -73,7 +74,7 @@ export function EncerramentoIrrigacaoDialog({
       onOpenChange(false);
       onEncerrado();
     } catch (erro) {
-      toast.error(`Não foi possível encerrar. Detalhe: ${erro instanceof Error ? erro.message.slice(0, 160) : String(erro)}`);
+      toast.error(`Não foi possível encerrar. Detalhe: ${motivoErro(erro)}`);
     } finally {
       setSalvando(false);
     }

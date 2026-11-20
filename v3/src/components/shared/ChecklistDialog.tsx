@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/utils/cn';
+import { motivoErro } from '@/utils/erros';
 import { useSessionStore } from '@/store/session';
 import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { useEncerrarChamado } from '@/hooks/useChamados';
@@ -108,8 +109,8 @@ export function ChecklistDialog({ chamado, open, onOpenChange }: { chamado: Cham
         },
       });
       setRelatorioOpen(true);
-    } catch {
-      setErro('Não foi possível encerrar o chamado. Tente novamente.');
+    } catch (falha) {
+      setErro(`Não foi possível encerrar o chamado: ${motivoErro(falha)}.`);
     } finally {
       setEnviando(false);
     }

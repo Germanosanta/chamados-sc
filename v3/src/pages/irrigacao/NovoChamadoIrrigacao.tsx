@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { motivoErro } from '@/utils/erros';
 import { ImagePlus, Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,7 +76,7 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
     } catch (erro) {
       // eslint-disable-next-line no-console -- sem isso a causa real da falha se perde.
       console.error('[irrigacao] falha ao abrir chamado', erro);
-      toast.error(`Não foi possível abrir o chamado. Detalhe: ${erro instanceof Error ? erro.message.slice(0, 160) : String(erro)}`);
+      toast.error(`Não foi possível abrir o chamado. Detalhe: ${motivoErro(erro)}`);
     } finally {
       setEnviando(false);
     }
