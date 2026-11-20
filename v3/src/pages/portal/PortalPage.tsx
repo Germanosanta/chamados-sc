@@ -40,7 +40,7 @@ export function PortalPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-10 bg-background px-4 py-10">
+    <div className="fundo-plataforma flex min-h-screen flex-col items-center justify-center gap-10 px-4 py-10">
       <div className="flex flex-col items-center gap-3 text-center">
         <img src={logo} alt="Santa Colomba" className="h-auto w-full max-w-[260px] object-contain" />
         <div>

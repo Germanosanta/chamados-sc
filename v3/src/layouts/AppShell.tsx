@@ -11,7 +11,7 @@ import { RouteLoading } from '@/components/shared/RouteLoading';
  * V2) — qualquer tela abre o mesmo modal via useDetalheStore.abrir(num). */
 export function AppShell() {
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="fundo-plataforma flex h-screen overflow-hidden">
       <div className="hidden lg:block">
         <Sidebar />
       </div>

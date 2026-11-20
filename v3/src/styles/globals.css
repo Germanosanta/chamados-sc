@@ -124,3 +124,27 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Fundo da plataforma: foto aérea dos pivôs (public/fundo-pivos.jpg) no
+   lugar do fundo liso. O véu por cima mantém textos e cards legíveis
+   (claro no tema claro, escuro no tema escuro). */
+:root {
+  --fundo-veu: rgba(244, 246, 250, 0.55);
+}
+[data-theme='dark'] {
+  --fundo-veu: rgba(8, 16, 12, 0.7);
+}
+.fundo-plataforma {
+  background-color: var(--bg);
+  background-image: linear-gradient(var(--fundo-veu), var(--fundo-veu)), url('/fundo-pivos.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+/* Login: véu verde-escuro, para o card branco destacar sobre a foto. */
+.fundo-login {
+  background-color: #0c1712;
+  background-image: linear-gradient(rgba(10, 30, 20, 0.45), rgba(8, 20, 14, 0.6)), url('/fundo-pivos.jpg');
+  background-size: cover;
+  background-position: center;
+}

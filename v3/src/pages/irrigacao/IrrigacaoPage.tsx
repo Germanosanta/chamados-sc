@@ -47,7 +47,7 @@ export function IrrigacaoPage() {
   const irPara = (id: Aba) => setParams(id === padrao ? {} : { aba: id }, { replace: true });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="fundo-plataforma min-h-screen">
       <header className="sticky top-0 z-20 border-b border-border bg-surface/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-3">
           <Button variant="ghost" size="icon" onClick={() => navigate('/portal')} aria-label="Voltar para a Central de Tecnologia" title="Central de Tecnologia">
