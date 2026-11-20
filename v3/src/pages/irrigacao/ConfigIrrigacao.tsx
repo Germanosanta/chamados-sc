@@ -10,6 +10,7 @@ import { Pagination } from '@/components/shared/Pagination';
 import { useSessionStore } from '@/store/session';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useConfigIrrigacao, useSalvarConfigIrrigacao } from '@/hooks/useIrrigacao';
+import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { PLATAFORMAS_TELEMETRIA, TIPO_ATIVO_LABEL } from '@/utils/irrigacao';
 import type { AtivoIrrigacao, ConfigIrrigacao as ConfigIrrigacaoTipo, PlataformaTelemetria } from '@/types/irrigacao';
 
@@ -29,7 +30,8 @@ function detalhes(a: AtivoIrrigacao): string {
 export function ConfigIrrigacao() {
   const temPermissao = useSessionStore((s) => s.temPermissao);
   const podeConfigurar = temPermissao('p_config');
-  const { tiposFalha, naoMonitorados, plataformas, ativos } = useConfigIrrigacao();
+  const { tiposFalha, naoMonitorados, plataformas, tecnicoPadrao, ativos } = useConfigIrrigacao();
+  const { data: tecnicos } = useTecnicosAtivos();
   const salvar = useSalvarConfigIrrigacao();
   const [busca, setBusca] = useState('');
   const [soSemPlataforma, setSoSemPlataforma] = useState(false);
@@ -141,6 +143,36 @@ export function ConfigIrrigacao() {
         </div>
         <DataTable columns={colunas} rows={filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA)} rowKey={(a) => a.id} emptyTitle="Nenhum ativo encontrado" />
         <Pagination page={pagina} totalItems={filtrados.length} perPage={POR_PAGINA} onPageChange={setPagina} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-base font-bold text-foreground">Técnico padrão de irrigação</h2>
+        <p className="text-sm text-muted-foreground">Já vem preenchido na abertura: o chamado nasce atribuído a ele (pode ser trocado na hora de abrir).</p>
+        {podeConfigurar ? (
+          <Select
+            value={tecnicoPadrao?.key || SEM}
+            disabled={salvando}
+            onValueChange={(v) => {
+              const t = tecnicos.find((x) => x.key === v);
+              gravar({ tecnicoPadrao: t ? { key: t.key, nome: t.nome, uid: t.usuarioUid || null } : null }, t ? `Técnico padrão: ${t.nome}.` : 'Sem técnico padrão.');
+            }}
+          >
+            <SelectTrigger className="sm:w-72" aria-label="Técnico padrão de irrigação">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={SEM}>Nenhum (escolher a cada abertura)</SelectItem>
+              {tecnicoPadrao && !tecnicos.some((t) => t.key === tecnicoPadrao.key) && <SelectItem value={tecnicoPadrao.key}>{tecnicoPadrao.nome}</SelectItem>}
+              {tecnicos.map((t) => (
+                <SelectItem key={t.key} value={t.key}>
+                  {t.nome}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <p className="text-sm">{tecnicoPadrao?.nome || 'Nenhum definido'}</p>
+        )}
       </section>
 
       <section className="flex flex-col gap-3">

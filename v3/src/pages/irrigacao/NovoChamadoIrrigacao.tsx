@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Campo, Meta } from '@/components/shared/FormField';
 import { useSessionStore } from '@/store/session';
 import { ATIVOS_IRRIGACAO, useConfigIrrigacao, useCriarChamadoIrrigacao } from '@/hooks/useIrrigacao';
+import { useTecnicosAtivos } from '@/hooks/useTecnicos';
 import { PRIORIDADES_IRRIGACAO, TIPO_ATIVO_LABEL, inputLocalParaIso, isoParaInputLocal } from '@/utils/irrigacao';
 import type { AtivoIrrigacao, PrioridadeIrrigacao } from '@/types/irrigacao';
 import { AtivoIrrigacaoAutocomplete } from './AtivoIrrigacaoAutocomplete';
@@ -21,8 +22,12 @@ const MAX_FOTOS = 4;
  * equipamentos monitorados aparecem. */
 export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => void }) {
   const usuario = useSessionStore((s) => s.usuario);
-  const { monitorados, tiposFalha } = useConfigIrrigacao();
+  const { monitorados, tiposFalha, tecnicoPadrao } = useConfigIrrigacao();
+  const { data: tecnicos } = useTecnicosAtivos();
   const criar = useCriarChamadoIrrigacao();
+  // Técnico escolhido; vazio = usa o técnico padrão de irrigação (Configurações).
+  const [tecnicoKey, setTecnicoKey] = useState('');
+  const tecnicoSelecionado = tecnicoKey || tecnicoPadrao?.key || '';
 
   const [ativo, setAtivo] = useState<AtivoIrrigacao | null>(null);
   const [buscaKey, setBuscaKey] = useState(0);
@@ -50,6 +55,7 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
     setTipoFalha('');
     setDescricao('');
     setFotos([]);
+    setTecnicoKey('');
     setPrioridade('Alta');
     setIdentificadoEm(isoParaInputLocal(new Date().toISOString()));
   }
@@ -62,14 +68,17 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
     if (!identificadoIso) erros.push('informe data e hora da identificação');
     else if (new Date(identificadoIso).getTime() > Date.now() + 5 * 60000) erros.push('a identificação não pode estar no futuro');
     if (!descricao.trim()) erros.push('descreva a ocorrência');
-    if (erros.length || !ativo) {
+    const t = tecnicos.find((x) => x.key === tecnicoSelecionado);
+    const tecnico = t ? { key: t.key, nome: t.nome, uid: t.usuarioUid || null } : tecnicoPadrao && tecnicoPadrao.key === tecnicoSelecionado ? tecnicoPadrao : null;
+    if (!tecnico) erros.push('selecione o técnico responsável');
+    if (erros.length || !ativo || !tecnico) {
       toast.error(`⚠ Antes de continuar: ${erros.join(', ')}.`);
       return;
     }
     setEnviando(true);
     try {
-      const { num, fotosComFalha } = await criar({ ativo, casaBombas, tipoFalha, identificadoEm: identificadoIso, descricao, prioridade, fotos });
-      toast(`✓ Chamado ${num} aberto.`);
+      const { num, fotosComFalha } = await criar({ ativo, casaBombas, tipoFalha, identificadoEm: identificadoIso, descricao, prioridade, fotos, tecnico });
+      toast(`✓ Chamado ${num} aberto e atribuído a ${tecnico.nome}.`);
       if (fotosComFalha) toast.error(`${fotosComFalha} foto(s) não foram salvas. Anexe de novo pelo chamado.`);
       limpar();
       onCriado(num);
@@ -138,6 +147,22 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
               <SelectTrigger id="irr-prioridade"><SelectValue /></SelectTrigger>
               <SelectContent>
                 {PRIORIDADES_IRRIGACAO.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </Campo>
+          <Campo label="Técnico responsável *" htmlFor="irr-tecnico">
+            <Select value={tecnicoSelecionado || undefined} onValueChange={setTecnicoKey}>
+              <SelectTrigger id="irr-tecnico"><SelectValue placeholder="Selecione o técnico…" /></SelectTrigger>
+              <SelectContent>
+                {tecnicoPadrao && !tecnicos.some((t) => t.key === tecnicoPadrao.key) && (
+                  <SelectItem value={tecnicoPadrao.key}>{tecnicoPadrao.nome} (padrão)</SelectItem>
+                )}
+                {tecnicos.map((t) => (
+                  <SelectItem key={t.key} value={t.key}>
+                    {t.nome}
+                    {t.key === tecnicoPadrao?.key ? ' (padrão)' : ''}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </Campo>

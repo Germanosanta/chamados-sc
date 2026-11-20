@@ -147,4 +147,6 @@ export interface ConfigIrrigacao {
   /** Plataforma definida na tela de configurações, por id do ativo; ''
    * remove a classificação. Prevalece sobre a do cadastro. */
   plataformas?: Record<string, PlataformaTelemetria | ''>;
+  /** Técnico que já vem preenchido na abertura (o chamado nasce atribuído). */
+  tecnicoPadrao?: { key: string; nome: string; uid: string | null } | null;
 }

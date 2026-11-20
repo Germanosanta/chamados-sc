@@ -52,7 +52,8 @@ export function useConfigIrrigacao() {
     const plataformas = geral?.plataformas || {};
     // Cadastro efetivo: plataforma do cadastro com as definições da tela de configurações por cima.
     const ativos = aplicarPlataformas(ATIVOS_IRRIGACAO, plataformas);
-    return { tiposFalha, naoMonitorados, plataformas, ativos, monitorados: ativosMonitorados(ativos, naoMonitorados), carregando };
+    const tecnicoPadrao = geral?.tecnicoPadrao || null;
+    return { tiposFalha, naoMonitorados, plataformas, tecnicoPadrao, ativos, monitorados: ativosMonitorados(ativos, naoMonitorados), carregando };
   }, [data, carregando]);
 }
 
@@ -78,6 +79,8 @@ export interface NovoChamadoIrrigacao {
   descricao: string;
   prioridade: PrioridadeIrrigacao;
   fotos: File[];
+  /** Técnico responsável desde a abertura (obrigatório na tela). */
+  tecnico: { key: string; nome: string; uid: string | null };
 }
 
 export function useCriarChamadoIrrigacao() {
@@ -109,7 +112,14 @@ export function useCriarChamadoIrrigacao() {
           status: 'aguardando' satisfies StatusIrrigacao,
           materiais: [],
           qtdFotos: 0,
-          eventos: [evento('abertura', `${n.tipoFalha} · ${n.ativo.nome}`, usuario)],
+          // Nasce atribuído: aparece em "Atribuídos a mim" do técnico, sem passar pela fila de disponíveis.
+          tecnico: n.tecnico.nome,
+          tecnicoKey: n.tecnico.key,
+          tecnicoUid: n.tecnico.uid,
+          eventos: [
+            evento('abertura', `${n.tipoFalha} · ${n.ativo.nome}`, usuario),
+            evento('atribuicao', `${n.tecnico.nome} (atribuído na abertura)`, usuario),
+          ],
         }),
         formatarNumeroIrrigacao,
       );
