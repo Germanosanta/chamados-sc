@@ -1,0 +1,6 @@
+{
+  "_origem": "Informado pela operação em 20/11/2026: Central Irricontrol (com repetidora) na sede da Fazenda Karitel. Irricontrol não está entre as plataformas cadastradas (Lindsay, 3V3, BestStation); fica sem plataforma até ser definida em Configurações.",
+  "fazenda": "Karitel",
+  "plataforma": "",
+  "dispositivos": [{ "nome": "Central Irricontrol", "tipo": "concentrador", "local": "Sede da fazenda" }]
+}

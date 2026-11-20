@@ -7069,6 +7069,15 @@
    "modulo": "",
    "local": "Sede da fazenda",
    "plataforma": "BestStation"
+  },
+  {
+   "id": "dev-karitel-central-irricontrol",
+   "tipo": "concentrador",
+   "nome": "Central Irricontrol",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "Sede da fazenda",
+   "plataforma": ""
   }
  ]
 }

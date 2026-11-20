@@ -1,0 +1,8 @@
+{
+  "lote": "lote-2026-11-20c",
+  "_origem": "Pedido da operação em 20/11/2026, item que dependia do cadastro da Central Irricontrol (sede da Karitel).",
+  "prioridade": "Alta",
+  "itens": [
+    { "texto": "Verificar alimentação Repetidora Central Irricontrol", "ativo": "Central Irricontrol", "fazenda": "Karitel", "tipoFalha": "Falha de alimentação do sistema de comunicação" }
+  ]
+}
