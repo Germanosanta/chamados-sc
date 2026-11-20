@@ -1,0 +1,18 @@
+{
+  "lote": "lote-2026-11-20",
+  "_origem": "Pedido da operação em 20/11/2026 ('Favor abrir esses chamados assim que possível'). Fora do lote por não existirem no cadastro: 'Verificar alimentação Repetidora Central Irricontrol' e 'Instalação do novo equipamento Basestation RDM'.",
+  "prioridade": "Alta",
+  "itens": [
+    { "texto": "Troca de fonte PK12", "ativo": "PK 12", "fazenda": "Karitel", "tipoFalha": "Falha de alimentação do sistema de comunicação" },
+    { "texto": "Troca de fonte PK 16", "ativo": "PK 16", "fazenda": "Karitel", "tipoFalha": "Falha de alimentação do sistema de comunicação" },
+    { "texto": "Troca de placa e módulo PK 12", "ativo": "PK 12", "fazenda": "Karitel", "tipoFalha": "Outro problema relacionado à telemetria" },
+    { "texto": "Troca de cabo e antena REP 106", "ativo": "REP 106", "fazenda": "Karitel", "tipoFalha": "Outro problema relacionado à telemetria" },
+    { "texto": "Troca de fonte casa de bomba Primavera 3", "ativo": "Primavera 03", "fazenda": "Karitel", "tipoFalha": "Falha de alimentação do sistema de comunicação" },
+    { "texto": "Troca de sensor de pressão Elevatória G/K", "ativo": "Elevatória G e K", "fazenda": "Karitel", "tipoFalha": "Outro problema relacionado à telemetria" },
+    { "texto": "Troca de módulo REP 106", "ativo": "REP 106", "fazenda": "Karitel", "tipoFalha": "Outro problema relacionado à telemetria" },
+    { "texto": "Troca de fusível pivô 60", "ativo": "Pivô 60", "fazenda": "Karitel", "tipoFalha": "Falha de alimentação do sistema de comunicação" },
+    { "texto": "Troca de antena e cabo PRM01", "ativo": "PRM 01", "fazenda": "Rio do Meio", "tipoFalha": "Outro problema relacionado à telemetria" },
+    { "texto": "Troca de fonte e módulo PRM 13", "ativo": "PRM 13", "fazenda": "Rio do Meio", "tipoFalha": "Falha de alimentação do sistema de comunicação" },
+    { "texto": "Troca de módulo PRM12", "ativo": "PRM 12", "fazenda": "Rio do Meio", "tipoFalha": "Outro problema relacionado à telemetria" }
+  ]
+}

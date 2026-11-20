@@ -1,0 +1,77 @@
+name: Abrir Chamados de Irrigacao em Lote (manual)
+
+# Roda scripts/criar-chamados-irrigacao-lote.js com um arquivo de
+# scripts/dados/. Só manual; simula por padrão; gravar exige "aplicar" e
+# digitar ABRIR. Não duplica itens de um lote já aberto.
+on:
+  workflow_dispatch:
+    inputs:
+      arquivo:
+        description: 'Arquivo do lote em scripts/dados (ex.: dados/lote-irrigacao-2026-11-20.json)'
+        required: true
+        type: string
+      modo:
+        description: 'simular = só lista | aplicar = abre os chamados'
+        required: true
+        type: choice
+        default: simular
+        options:
+          - simular
+          - aplicar
+      confirmacao:
+        description: 'Só para o modo aplicar: digite ABRIR'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: criar-chamados-irrigacao-lote
+  cancel-in-progress: false
+
+jobs:
+  abrir:
+    name: Abrir chamados em lote
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MODO: ${{ github.event.inputs.modo }}
+      CONFIRMACAO: ${{ github.event.inputs.confirmacao }}
+      ARQUIVO: ${{ github.event.inputs.arquivo }}
+    steps:
+      - name: Conferir confirmação
+        run: |
+          if [ "$MODO" = "aplicar" ] && [ "$CONFIRMACAO" != "ABRIR" ]; then
+            echo "::error::No modo aplicar, o campo de confirmação precisa ser exatamente ABRIR. Nada foi gravado."
+            exit 1
+          fi
+          case "$ARQUIVO" in dados/lote-*.json) ;; *) echo "::error::Arquivo precisa ser dados/lote-*.json"; exit 1 ;; esac
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Instalar dependências
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+
+      - name: Preparar credencial do Firebase (efêmera)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+
+      - name: Rodar script
+        working-directory: scripts
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+          if [ "$MODO" = "aplicar" ]; then export APLICAR=1; fi
+          node criar-chamados-irrigacao-lote.js "$ARQUIVO"
+
+      - name: Apagar credencial
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"
