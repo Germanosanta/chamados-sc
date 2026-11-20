@@ -101,7 +101,8 @@ export function AtivoIrrigacaoAutocomplete({
               <span className="font-semibold text-primary">{a.nome}</span>
               <span className="truncate text-sm text-muted-foreground">
                 {TIPO_ATIVO_LABEL[a.tipo]} · {a.fazenda || '—'} · {a.modulo || '—'}
-                {a.casaBombas ? ` · ${a.casaBombas}` : ''} · {a.plataforma || 'sem plataforma'}
+                {a.casaBombas ? ` · ${a.casaBombas}` : ''}
+                {a.local ? ` · ${a.local}` : ''} · {a.plataforma || 'sem plataforma'}
               </span>
             </button>
           ))}

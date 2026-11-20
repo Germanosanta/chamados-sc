@@ -4,7 +4,17 @@
  * irrigacao_chamados/{num}, irrigacao_fotos/{id}, irrigacao_config/{geral|contador}.
  */
 
-export type TipoAtivoIrrigacao = 'pivo' | 'casa_bombas' | 'captacao' | 'elevatoria' | 'poco';
+export type TipoAtivoIrrigacao =
+  | 'pivo'
+  | 'casa_bombas'
+  | 'captacao'
+  | 'elevatoria'
+  | 'poco'
+  // Equipamentos de telemetria (3V3, Rio do Meio)
+  | 'concentrador'
+  | 'repetidor'
+  | 'dispositivo'
+  | 'sensor';
 
 /** Plataforma onde o operador verifica a telemetria do ativo. Só
  * organização dos chamados: não há integração com nenhuma delas. */
@@ -21,6 +31,8 @@ export interface AtivoIrrigacao {
   casaBombas?: string;
   marca?: string;
   pivosAbastecidos?: string;
+  /** Equipamento de telemetria: poço/ponto onde está instalado (ex.: PRM 03). */
+  local?: string;
   /** Ausente = plataforma ainda não confirmada. */
   plataforma?: PlataformaTelemetria;
   coordenadas?: { lat: number; lon: number };
@@ -85,6 +97,8 @@ export interface ChamadoIrrigacao {
   fazenda: string;
   modulo: string;
   casaBombas: string;
+  /** Local de instalação do equipamento de telemetria, quando houver. */
+  local?: string;
   /** Plataforma do ativo no momento da abertura (null = não classificada). */
   plataforma?: PlataformaTelemetria | null;
   tipoFalha: string;

@@ -1,6 +1,6 @@
 {
  "origem": "informações pivôs e reservatorios Elavatórias Captacões e Poços.xlsx",
- "geradoEm": "2026-11-14",
+ "geradoEm": "2026-11-20",
  "ativos": [
   {
    "id": "cb-karitel-r0",
@@ -3979,6 +3979,303 @@
      "Potência (cv)/(hp)": 180
     }
    ],
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-cir",
+   "tipo": "concentrador",
+   "nome": "CIR",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "Concentrador",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-rep-100",
+   "tipo": "repetidor",
+   "nome": "REP 100",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-rep-101",
+   "tipo": "repetidor",
+   "nome": "REP 101",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-rep-102",
+   "tipo": "repetidor",
+   "nome": "REP 102",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "Poste",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-rep-103",
+   "tipo": "repetidor",
+   "nome": "REP 103",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-001",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 001",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 03",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-002",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 002",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 02",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-003",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 003",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 06",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-004",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 004",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 05",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-005",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 005",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 01",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-006",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 006",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 08",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-007",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 007",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 09",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-008",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 008",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 10",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-009",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 009",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 11",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-010",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 010",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 12",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-011",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 011",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 07",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-012",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 012",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 13",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-013",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 013",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "PRM 19",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-dir-nb-014",
+   "tipo": "dispositivo",
+   "nome": "DIR_NB 014",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 04",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-01-hid",
+   "tipo": "sensor",
+   "nome": "PRM-01-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 01",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-02-hid",
+   "tipo": "sensor",
+   "nome": "PRM-02-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 02",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-03-hid",
+   "tipo": "sensor",
+   "nome": "PRM-03-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 03",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-04-hid",
+   "tipo": "sensor",
+   "nome": "PRM-04-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 04",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-05-hid",
+   "tipo": "sensor",
+   "nome": "PRM-05-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 05",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-06-hid",
+   "tipo": "sensor",
+   "nome": "PRM-06-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 01",
+   "local": "PRM 06",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-07-hid",
+   "tipo": "sensor",
+   "nome": "PRM-07-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 07",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-08-hid",
+   "tipo": "sensor",
+   "nome": "PRM-08-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 08",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-09-hid",
+   "tipo": "sensor",
+   "nome": "PRM-09-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 09",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-10-hid",
+   "tipo": "sensor",
+   "nome": "PRM-10-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 10",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-11-hid",
+   "tipo": "sensor",
+   "nome": "PRM-11-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 11",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-12-hid",
+   "tipo": "sensor",
+   "nome": "PRM-12-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 12",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-13-hid",
+   "tipo": "sensor",
+   "nome": "PRM-13-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "Módulo 02",
+   "local": "PRM 13",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-prm-19-hid",
+   "tipo": "sensor",
+   "nome": "PRM-19-HID",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "PRM 19",
    "plataforma": "3V3"
   }
  ]

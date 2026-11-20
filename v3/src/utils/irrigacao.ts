@@ -43,6 +43,10 @@ export const TIPO_ATIVO_LABEL: Record<TipoAtivoIrrigacao, string> = {
   captacao: 'Captação',
   elevatoria: 'Elevatória',
   poco: 'Poço',
+  concentrador: 'Concentrador',
+  repetidor: 'Repetidor',
+  dispositivo: 'Dispositivo de telemetria',
+  sensor: 'Sensor (hidrômetro)',
 };
 
 export const STATUS_IRRIGACAO: Record<StatusIrrigacao, { label: string; variant: 'red' | 'amber' | 'purple' | 'green' | 'neutral' }> = {
@@ -127,22 +131,25 @@ const normalizarBusca = (s: string) => s.toLowerCase().normalize('NFD').replace(
 export function buscarAtivosIrrigacao(ativos: AtivoIrrigacao[], q: string, limite = 30): AtivoIrrigacao[] {
   const termos = normalizarBusca(q).split(/\s+/).filter(Boolean);
   if (!termos.length) return [];
-  const numero = termos.find((t) => /^\d+$/.test(t));
+  // Plataforma fica só para termos de texto: o "3" de "3V3" não pode casar com números.
   const texto = (a: AtivoIrrigacao) =>
-    normalizarBusca(`${a.nome} ${TIPO_ATIVO_LABEL[a.tipo]} ${a.fazenda} ${a.modulo} ${a.casaBombas || ''} ${a.plataforma || ''}`);
-  const prioridade = (a: AtivoIrrigacao) => {
-    const n = /(\d+)\s*$/.exec(a.nome)?.[1];
-    if (numero && n && Number(n) === Number(numero)) return a.tipo === 'pivo' ? 0 : 1;
-    return a.tipo === 'pivo' ? 2 : 3;
-  };
+    normalizarBusca(`${a.nome} ${TIPO_ATIVO_LABEL[a.tipo]} ${a.fazenda} ${a.modulo} ${a.casaBombas || ''} ${a.local || ''}`);
   // Número digitado casa pelo início de um número do texto ("27" → 27, 270;
   // nunca 127), ignorando zeros à esquerda ("1" → "01").
   const casaNumero = (t: string, termo: string) =>
     (t.match(/\d+/g) || []).some((n) => n.startsWith(termo) || String(Number(n)).startsWith(String(Number(termo))));
+  // Primeiro quem tem todos os termos no próprio nome ("prm 03" → PRM 03 antes
+  // do DIR_NB instalado nele); pivôs antes dos demais em cada grupo.
+  const prioridade = (a: AtivoIrrigacao) => {
+    const nome = normalizarBusca(a.nome);
+    const noNome = termos.every((termo) => (/^\d+$/.test(termo) ? casaNumero(nome, termo) : nome.includes(termo)));
+    return (noNome ? 0 : 2) + (a.tipo === 'pivo' ? 0 : 1);
+  };
   return ativos
     .filter((a) => {
       const t = texto(a);
-      return termos.every((termo) => (/^\d+$/.test(termo) ? casaNumero(t, termo) : t.includes(termo)));
+      const plataforma = normalizarBusca(a.plataforma || '');
+      return termos.every((termo) => (/^\d+$/.test(termo) ? casaNumero(t, termo) : t.includes(termo) || plataforma.includes(termo)));
     })
     .sort((a, b) => prioridade(a) - prioridade(b) || a.nome.localeCompare(b.nome, 'pt-BR', { numeric: true }))
     .slice(0, limite);
@@ -344,6 +351,7 @@ export function gerarRelatorioIrrigacao(c: ChamadoIrrigacao): string {
     `*Equipamento:* ${c.ativoNome} (${TIPO_ATIVO_LABEL[c.ativoTipo] || c.ativoTipo})`,
   ];
   if (c.casaBombas) linhas.push(`*Casa de bombas:* ${c.casaBombas}`);
+  if (c.local) linhas.push(`*Local de instalação:* ${c.local}`);
   linhas.push(`*Plataforma de telemetria:* ${c.plataforma || 'Não classificada'}`);
   linhas.push(
     `*Tipo de falha:* ${c.tipoFalha}`,

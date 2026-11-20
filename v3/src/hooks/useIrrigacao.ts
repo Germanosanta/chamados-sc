@@ -97,6 +97,7 @@ export function useCriarChamadoIrrigacao() {
           fazenda: n.ativo.fazenda,
           modulo: n.ativo.modulo,
           casaBombas: n.casaBombas,
+          local: n.ativo.local || '',
           plataforma: n.ativo.plataforma ?? null,
           tipoFalha: n.tipoFalha,
           identificadoEm: n.identificadoEm,

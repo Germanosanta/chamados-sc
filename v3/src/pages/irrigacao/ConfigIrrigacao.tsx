@@ -18,6 +18,7 @@ const SEM = '__sem__';
 function detalhes(a: AtivoIrrigacao): string {
   if (a.tipo === 'pivo') return [a.marca, a.casaBombas && `C. bombas ${a.casaBombas}`, a.dados?.['Área (há)'] && `${a.dados['Área (há)']} ha`].filter(Boolean).join(' · ');
   if (a.tipo === 'casa_bombas') return a.pivosAbastecidos ? `Pivôs ${a.pivosAbastecidos}` : '';
+  if (a.local !== undefined) return a.local ? `Local: ${a.local}` : '';
   return a.bombas ? `${a.bombas.length} bomba(s)` : '';
 }
 

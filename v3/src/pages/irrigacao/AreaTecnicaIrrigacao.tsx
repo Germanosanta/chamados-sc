@@ -141,6 +141,7 @@ export function AreaTecnicaIrrigacao({ onAbrir }: { onAbrir: (num: string) => vo
             <div className="text-sm font-semibold text-foreground">{c.ativoNome}</div>
             <div className="text-xs text-muted-foreground">
               {TIPO_ATIVO_LABEL[c.ativoTipo]} · {c.fazenda || '—'} · {c.modulo || '—'}
+              {c.local ? ` · ${c.local}` : ''}
               {c.plataforma ? ` · ${c.plataforma}` : ''}
             </div>
             <div className="text-xs">{c.tipoFalha}</div>

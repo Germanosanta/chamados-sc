@@ -148,6 +148,7 @@ function Detalhe({ chamado: c, todos }: { chamado: ChamadoIrrigacao; todos: Cham
         <Meta label="Módulo" value={c.modulo || '—'} />
         <Meta label="Casa de bombas" value={c.casaBombas || '—'} />
         <Meta label="Plataforma de telemetria" value={c.plataforma || 'Não classificada'} />
+        {c.local && <Meta label="Local de instalação" value={c.local} />}
         <Meta label="Técnico" value={c.tecnico || 'Sem técnico'} />
         <Meta label="Identificada em" value={formatarDataHora(c.identificadoEm)} />
         <Meta label="Aberto por" value={`${c.abertoPor} · ${formatarDataHora(c.abertoEm)}`} />
