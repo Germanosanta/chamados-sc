@@ -1,0 +1,8 @@
+{
+  "lote": "lote-2026-11-20b",
+  "_origem": "Pedido da operação em 20/11/2026, item que dependia do cadastro da Basestation (sede da Rio do Meio).",
+  "prioridade": "Alta",
+  "itens": [
+    { "texto": "Instalação do novo equipamento Basestation RDM", "ativo": "Basestation", "fazenda": "Rio do Meio", "tipoFalha": "Outro problema relacionado à telemetria" }
+  ]
+}

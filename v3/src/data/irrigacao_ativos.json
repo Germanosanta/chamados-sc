@@ -7060,6 +7060,15 @@
    "modulo": "Módulo 02",
    "local": "PRM 19",
    "plataforma": "3V3"
+  },
+  {
+   "id": "dev-rio-do-meio-basestation",
+   "tipo": "concentrador",
+   "nome": "Basestation",
+   "fazenda": "Rio do Meio",
+   "modulo": "",
+   "local": "Sede da fazenda",
+   "plataforma": "BestStation"
   }
  ]
 }

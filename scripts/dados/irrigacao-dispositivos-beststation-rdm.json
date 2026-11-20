@@ -1,0 +1,6 @@
+{
+  "_origem": "Informado pela operação em 20/11/2026: Basestation (novo equipamento) instalado na sede da Fazenda Rio do Meio. Plataforma BestStation (a mesma dos pivôs da Rio do Meio).",
+  "fazenda": "Rio do Meio",
+  "plataforma": "BestStation",
+  "dispositivos": [{ "nome": "Basestation", "tipo": "concentrador", "local": "Sede da fazenda" }]
+}
