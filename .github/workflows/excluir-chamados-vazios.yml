@@ -1,0 +1,58 @@
+name: Excluir Chamados Vazios (manual)
+
+# Roda scripts/excluir-chamados-vazios.js. Só manual; simula por padrão;
+# apagar exige "aplicar" e digitar EXCLUIR. Guarda cópia antes de apagar.
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: 'simular = só lista | aplicar = apaga (com cópia)'
+        required: true
+        type: choice
+        default: simular
+        options:
+          - simular
+          - aplicar
+      confirmacao:
+        description: 'Só para o modo aplicar: digite EXCLUIR'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  excluir:
+    name: Excluir chamados vazios
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MODO: ${{ github.event.inputs.modo }}
+      CONFIRMACAO: ${{ github.event.inputs.confirmacao }}
+    steps:
+      - name: Conferir confirmação
+        run: |
+          if [ "$MODO" = "aplicar" ] && [ "$CONFIRMACAO" != "EXCLUIR" ]; then
+            echo "::error::No modo aplicar, o campo de confirmação precisa ser exatamente EXCLUIR. Nada foi apagado."
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Instalar dependências
+        working-directory: scripts
+        run: npm install --no-audit --no-fund
+      - name: Preparar credencial do Firebase (efêmera)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/firebase-sa.json"
+      - name: Rodar script
+        working-directory: scripts
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+          if [ "$MODO" = "aplicar" ]; then export APLICAR=1; fi
+          node excluir-chamados-vazios.js
+      - name: Apagar credencial
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"
