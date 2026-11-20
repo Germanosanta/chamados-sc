@@ -236,24 +236,51 @@ function gerar(arquivo) {
     ativos.push(...estacoes.values());
   }
 
-  // Equipamentos de telemetria 3V3 da Rio do Meio (concentrador, repetidores,
-  // dispositivos DIR_NB e hidrômetros), de scripts/dados/. O módulo vem do
-  // poço onde está instalado; local sem poço no cadastro fica sem módulo.
+  // Equipamentos de telemetria 3V3 (concentrador, repetidores, dispositivos e
+  // sensores), de scripts/dados/irrigacao-dispositivos-*.json. O módulo vem
+  // do local onde o equipamento está (poço, pivô, casa de bombas, captação),
+  // ou do campo "modulo" do arquivo quando a operação informou; sensor herda
+  // local e módulo do dispositivo ao qual está ligado.
   {
-    const fonte = JSON.parse(fs.readFileSync(path.join(__dirname, 'dados', 'irrigacao-dispositivos-3v3-rdm.json'), 'utf8'));
-    const estacoesPorNome = new Map(ativos.filter((a) => a.fazenda === fonte.fazenda).map((a) => [a.nome.replace(/\s+/g, ' ').toUpperCase(), a]));
-    for (const d of fonte.dispositivos) {
-      const estacao = d.local ? estacoesPorNome.get(d.local.toUpperCase()) : undefined;
-      if (/^PRM/i.test(d.local) && !estacao) avisos.push(`${d.nome}: local "${d.local}" não está no cadastro de poços; fica sem módulo`);
-      ativos.push({
-        id: `dev-${slug(`${fonte.fazenda}-${d.nome}`)}`,
-        tipo: d.tipo,
-        nome: d.nome,
-        fazenda: fonte.fazenda,
-        modulo: estacao ? estacao.modulo : '',
-        local: d.local || '',
-        plataforma: fonte.plataforma,
-      });
+    // "Primavera 1" = "Primavera 01", "PK 1" = "PK 01", "Pivô 57" = "pivo 57".
+    const chave = (s) =>
+      s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toUpperCase().replace(/[\s_-]+/g, ' ').replace(/\b0+(\d)/g, '$1').trim();
+    const pasta = path.join(__dirname, 'dados');
+    for (const arq of fs.readdirSync(pasta).filter((f) => /^irrigacao-dispositivos-.*\.json$/.test(f)).sort()) {
+      const fonte = JSON.parse(fs.readFileSync(path.join(pasta, arq), 'utf8'));
+      const locais = new Map(ativos.filter((a) => a.fazenda === fonte.fazenda).map((a) => [chave(a.nome), a]));
+      const porDispositivo = new Map();
+      for (const d of fonte.dispositivos) {
+        const lugar = d.local ? locais.get(chave(d.local)) : undefined;
+        if (d.local && !lugar && !d.modulo) avisos.push(`${fonte.fazenda} · ${d.nome}: local "${d.local}" não está no cadastro; fica sem módulo`);
+        const ativo = {
+          id: `dev-${slug(`${fonte.fazenda}-${d.nome}`)}`,
+          tipo: d.tipo,
+          nome: d.nome,
+          fazenda: fonte.fazenda,
+          modulo: d.modulo || (lugar ? lugar.modulo : ''),
+          local: d.local || '',
+          plataforma: fonte.plataforma,
+        };
+        ativos.push(ativo);
+        porDispositivo.set(d.nome, ativo);
+      }
+      for (const sensor of fonte.sensores || []) {
+        const disp = porDispositivo.get(sensor.dispositivo);
+        if (!disp) throw new Error(`${arq}: sensor ${sensor.nome} ligado a dispositivo inexistente ${sensor.dispositivo}`);
+        (disp.sensores = disp.sensores || []).push(sensor.nome);
+        ativos.push({
+          id: `sen-${slug(`${fonte.fazenda}-${sensor.nome}`)}`,
+          tipo: 'sensor',
+          nome: sensor.nome,
+          fazenda: fonte.fazenda,
+          modulo: disp.modulo,
+          local: disp.local,
+          modelo: sensor.modelo,
+          dispositivo: sensor.dispositivo,
+          plataforma: fonte.plataforma,
+        });
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 {
-  "_origem": "Lista de equipamentos 3V3 instalados na Fazenda Rio do Meio, enviada pela operação em 20/11/2026 (prints da plataforma 3V3). 'local' é o poço/ponto de instalação informado; vazio quando a lista não informa.",
+  "_origem": "Lista de equipamentos 3V3 instalados na Fazenda Rio do Meio, enviada pela operação em 20/11/2026 (prints da plataforma 3V3). 'local' é o poço/ponto de instalação informado; vazio quando a lista não informa. PRM 19 é do Módulo 02 (informado pela operação; o poço não está na planilha).",
   "fazenda": "Rio do Meio",
   "plataforma": "3V3",
   "dispositivos": [
@@ -20,7 +20,7 @@
     { "nome": "DIR_NB 010", "tipo": "dispositivo", "local": "PRM 12" },
     { "nome": "DIR_NB 011", "tipo": "dispositivo", "local": "PRM 07" },
     { "nome": "DIR_NB 012", "tipo": "dispositivo", "local": "PRM 13" },
-    { "nome": "DIR_NB 013", "tipo": "dispositivo", "local": "PRM 19" },
+    { "nome": "DIR_NB 013", "tipo": "dispositivo", "local": "PRM 19", "modulo": "Módulo 02" },
     { "nome": "DIR_NB 014", "tipo": "dispositivo", "local": "PRM 04" },
     { "nome": "PRM-01-HID", "tipo": "sensor", "local": "PRM 01" },
     { "nome": "PRM-02-HID", "tipo": "sensor", "local": "PRM 02" },
@@ -35,6 +35,6 @@
     { "nome": "PRM-11-HID", "tipo": "sensor", "local": "PRM 11" },
     { "nome": "PRM-12-HID", "tipo": "sensor", "local": "PRM 12" },
     { "nome": "PRM-13-HID", "tipo": "sensor", "local": "PRM 13" },
-    { "nome": "PRM-19-HID", "tipo": "sensor", "local": "PRM 19" }
+    { "nome": "PRM-19-HID", "tipo": "sensor", "local": "PRM 19", "modulo": "Módulo 02" }
   ]
 }

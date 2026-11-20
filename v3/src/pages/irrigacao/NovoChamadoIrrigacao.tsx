@@ -97,6 +97,9 @@ export function NovoChamadoIrrigacao({ onCriado }: { onCriado: (num: string) => 
             <Meta label="Módulo" value={ativo.modulo || '—'} />
             <Meta label="Plataforma de telemetria" value={ativo.plataforma || 'Não classificada'} />
             {ativo.local && <Meta label="Local de instalação" value={ativo.local} />}
+            {ativo.dispositivo && <Meta label="Dispositivo" value={ativo.dispositivo} />}
+            {ativo.modelo && <Meta label="Modelo" value={ativo.modelo} />}
+            {ativo.sensores?.length ? <Meta label="Sensores ligados" value={ativo.sensores.join(', ')} /> : null}
             {ativo.marca && <Meta label="Marca" value={ativo.marca} />}
             {ativo.pivosAbastecidos && <Meta label="Pivôs abastecidos" value={ativo.pivosAbastecidos} />}
             {ativo.bombas && <Meta label="Bombas" value={String(ativo.bombas.length)} />}

@@ -33,6 +33,11 @@ export interface AtivoIrrigacao {
   pivosAbastecidos?: string;
   /** Equipamento de telemetria: poço/ponto onde está instalado (ex.: PRM 03). */
   local?: string;
+  /** Sensor: modelo e dispositivo ao qual está ligado. */
+  modelo?: string;
+  dispositivo?: string;
+  /** Dispositivo: sensores ligados a ele. */
+  sensores?: string[];
   /** Ausente = plataforma ainda não confirmada. */
   plataforma?: PlataformaTelemetria;
   coordenadas?: { lat: number; lon: number };

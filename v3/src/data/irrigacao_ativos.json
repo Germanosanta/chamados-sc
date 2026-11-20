@@ -3982,6 +3982,2789 @@
    "plataforma": "3V3"
   },
   {
+   "id": "dev-karitel-cir",
+   "tipo": "concentrador",
+   "nome": "CIR",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "Concentrador",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-100",
+   "tipo": "repetidor",
+   "nome": "REP 100",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-101",
+   "tipo": "repetidor",
+   "nome": "REP 101",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-102",
+   "tipo": "repetidor",
+   "nome": "REP 102",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-103",
+   "tipo": "repetidor",
+   "nome": "REP 103",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-104",
+   "tipo": "repetidor",
+   "nome": "REP 104",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-105",
+   "tipo": "repetidor",
+   "nome": "REP 105",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-106",
+   "tipo": "repetidor",
+   "nome": "REP 106",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-107",
+   "tipo": "repetidor",
+   "nome": "REP 107",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-108",
+   "tipo": "repetidor",
+   "nome": "REP 108",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-109",
+   "tipo": "repetidor",
+   "nome": "REP 109",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-110",
+   "tipo": "repetidor",
+   "nome": "REP 110",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-111",
+   "tipo": "repetidor",
+   "nome": "REP 111",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-112",
+   "tipo": "repetidor",
+   "nome": "REP 112",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-113",
+   "tipo": "repetidor",
+   "nome": "REP 113",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-114",
+   "tipo": "repetidor",
+   "nome": "REP 114",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-rep-115",
+   "tipo": "repetidor",
+   "nome": "REP 115",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-001",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 001",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-002",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 002",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 14",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-14"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-003",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 003",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 12",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-12"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-004",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 004",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 13",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-13"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-005",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 005",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "PK 1",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-01"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-006",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 006",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "PK 2",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-02"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-007",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 007",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 16",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-16"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-008",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 008",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 15",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-009",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 009",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 10",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-10"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-010",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 010",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 11",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-11"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-011",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 011",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "R15",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-012",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 012",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "R15",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-013",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 013",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "HIDRO-01-PK-04"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-014",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 014",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "Repetidores (antenas mais altas)",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-015",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 015",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "Repetidores (antenas mais altas)",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "dev-karitel-dir-nb-016",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 016",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-NIVEL",
+    "ELE-4E5-PRESSAO-16-17",
+    "ELE-4E5-PRESSAO-18-19"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-017",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 017",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-PRESSAO-20-21",
+    "ELE-4E5-PRESSAO-22-23"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-018",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 018",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-PRESSAO-24-25",
+    "ELE-4E5-PRESSAO-26-27"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-019",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 019",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-PRESSAO-13-14",
+    "ELE-4E5-PRESSAO-28-29"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-020",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 020",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-PRESSAO-09-10",
+    "ELE-4E5-PRESSAO-11-12"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-021",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 021",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-PRESSAO-05-06",
+    "ELE-4E5-PRESSAO-07-08"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-022",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 022",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "plataforma": "3V3",
+   "sensores": [
+    "ELE-4E5-PRESSAO-01-02",
+    "ELE-4E5-PRESSAO-03-04"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-023",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 023",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-09-PRIMAVERA-3",
+    "PRESSAO-10-PRIMAVERA-3",
+    "PRESSAO-11-PRIMAVERA-3",
+    "PRESSAO-12-PRIMAVERA-3"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-024",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 024",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-13-PRIMAVERA-3",
+    "PRESSAO-14-PRIMAVERA-3",
+    "PRESSAO-15-PRIMAVERA-3",
+    "SENSOR-NIVEL-PRIMAVERA*"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-025",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 025",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "BN-PRESSAO-01",
+    "BN-PRESSAO-02",
+    "BN-PRESSAO-03",
+    "BN-PRESSAO-04"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-026",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 026",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "BN-PRESSAO-05",
+    "BN-PRESSAO-06",
+    "BN-PRESSAO-07",
+    "BN-PRESSAO-08"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-027",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 027",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "BN-PRESSAO-09",
+    "BN-PRESSAO-10",
+    "BN-PRESSAO-11",
+    "BN-PRESSAO-12"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-028",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 028",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 1",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRIMAVERA-1-PRESSAO-01",
+    "PRIMAVERA-1-PRESSAO-02",
+    "PRIMAVERA-1-PRESSAO-03"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-029",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 029",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRIMAVERA-2-PRESSAO-04",
+    "PRIMAVERA-2-PRESSAO-05",
+    "PRIMAVERA-2-PRESSAO-06"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-030",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 030",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 2",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRIMAVERA-2-PRESSAO-07",
+    "PRIMAVERA-2-PRESSAO-08"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-031",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 031",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GK-PRESSAO-01",
+    "GK-PRESSAO-02",
+    "GK-PRESSAO-03",
+    "GK-PRESSAO-04"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-032",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 032",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GK-PRESSAO-05",
+    "GK-PRESSAO-06",
+    "GK-PRESSAO-07",
+    "GK-PRESSAO-08"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-033",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 033",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GK-PRESSAO-09",
+    "GK-PRESSAO-10",
+    "GK-PRESSAO-11",
+    "GK-PRESSAO-12"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-034",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 034",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GK-PRESSAO-13",
+    "GK-PRESSAO-14",
+    "GK-PRESSAO-15",
+    "GK-PRESSAO-16",
+    "SENSOR-NIVEL-GK"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-035",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 035",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GK-PRESSAO-17",
+    "GK-PRESSAO-18",
+    "GK-PRESSAO-19",
+    "GK-PRESSAO-20"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-036",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 036",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GK-PRESSAO-21",
+    "GK-PRESSAO-22",
+    "GK-PRESSAO-23",
+    "GK-PRESSAO-24"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-037",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 037",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GARFO-PRESSAO-01",
+    "GARFO-PRESSAO-02",
+    "GARFO-PRESSAO-03",
+    "GARFO-PRESSAO-04"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-038",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 038",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GARFO-PRESSAO-05",
+    "GARFO-PRESSAO-06",
+    "GARFO-PRESSAO-07",
+    "GARFO-PRESSAO-08",
+    "SENSOR-NIVEL-GARFO"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-039",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 039",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "GARFO-PRESSAO-09",
+    "GARFO-PRESSAO-10"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-040",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 040",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "KARITEL-PRESSAO-01",
+    "KARITEL-PRESSAO-02",
+    "KARITEL-PRESSAO-03",
+    "KARITEL-PRESSAO-04",
+    "SENSOR-NIVEL-KARITEL"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-042",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 042",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "KARITEL-PRESSAO-05",
+    "KARITEL-PRESSAO-06",
+    "KARITEL-PRESSAO-07",
+    "KARITEL-PRESSAO-08"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-nb-043",
+   "tipo": "dispositivo",
+   "nome": "DIR-NB 043",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "plataforma": "3V3",
+   "sensores": [
+    "KARITEL-PRESSAO-09",
+    "KARITEL-PRESSAO-10"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-041",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 041",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "local": "Pivô 41",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-41",
+    "SPG-41"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-057",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 057",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 57",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-57",
+    "SPG-57"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-058",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 058",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 58",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-58",
+    "SPG-58"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-059",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 059",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 59",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-59",
+    "SPG-59"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-060",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 060",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-60",
+    "SPG-60",
+    "STP-60"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-061",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 061",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 61",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-61",
+    "SPG-61"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-062",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 062",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 62",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-62",
+    "SPG-62"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-066",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 066",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 66",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-66",
+    "SPG-66"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-067",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 067",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 67",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-67",
+    "SPG-67"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-068",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 068",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 68",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-68",
+    "SPG-68"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-069",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 069",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 69",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-69",
+    "SPG-69"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-070",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 070",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 70",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-70",
+    "SPG-70"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-071",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 071",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 71",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-71",
+    "SPG-71"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-gps-072",
+   "tipo": "dispositivo",
+   "nome": "DIR-GPS 072",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 72",
+   "plataforma": "3V3",
+   "sensores": [
+    "PRESSAO-72",
+    "SPG-72"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-141",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 141",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "local": "Pivô 41",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-41",
+    "PRESSAO-PIR-41"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-157",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 157",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 57",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-57",
+    "PRESSAO-PIR-57"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-158",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 158",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 58",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-58",
+    "PRESSAO-PIR-58"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-159",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 159",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 59",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-59",
+    "PRESSAO-PIR-59"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-160",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 160",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-60",
+    "PRESSAO-PIR-60"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-161",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 161",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 61",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-61",
+    "PRESSAO-PIR-61"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-162",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 162",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 62",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-62",
+    "PRESSAO-PIR-62"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-166",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 166",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 66",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-66",
+    "PRESSAO-PIR-66"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-167",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 167",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 67",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-67",
+    "PRESSAO-PIR-67"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-168",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 168",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 68",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-68",
+    "PRESSAO-PIR-68"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-169",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 169",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 69",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-69",
+    "PRESSAO-PIR-69"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-170",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 170",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 70",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-70",
+    "PRESSAO-PIR-70"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-171",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 171",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 71",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-71",
+    "PRESSAO-PIR-71"
+   ]
+  },
+  {
+   "id": "dev-karitel-dir-pir-172",
+   "tipo": "dispositivo",
+   "nome": "DIR-PIR 172",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 72",
+   "plataforma": "3V3",
+   "sensores": [
+    "PIR-72",
+    "PRESSAO-PIR-72"
+   ]
+  },
+  {
+   "id": "sen-karitel-bn-pressao-01",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-01",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-02",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-02",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-03",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-03",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-04",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-05",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-05",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-06",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-06",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-07",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-07",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-08",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-08",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-09",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-09",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-10",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-10",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-11",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-11",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-bn-pressao-12",
+   "tipo": "sensor",
+   "nome": "BN-PRESSAO-12",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-nivel",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-NIVEL",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NÍVEL-0-10M",
+   "dispositivo": "DIR-NB 016",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-01-02",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-01-02",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 022",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-03-04",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-03-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 022",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-05-06",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-05-06",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 021",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-07-08",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-07-08",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 021",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-09-10",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-09-10",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 020",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-11-12",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-11-12",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 020",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-13-14",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-13-14",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 019",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-16-17",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-16-17",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 016",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-18-19",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-18-19",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 016",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-20-21",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-20-21",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 017",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-22-23",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-22-23",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 017",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-24-25",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-24-25",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 018",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-26-27",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-26-27",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 018",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-ele-4e5-pressao-28-29",
+   "tipo": "sensor",
+   "nome": "ELE-4E5-PRESSAO-28-29",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "ELE-4E5",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 019",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-01",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-01",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-02",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-02",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-03",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-03",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-04",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-05",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-05",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-06",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-06",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-07",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-07",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-08",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-08",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-09",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-09",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 039",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-garfo-pressao-10",
+   "tipo": "sensor",
+   "nome": "GARFO-PRESSAO-10",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 039",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-01",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-01",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-02",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-02",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-03",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-03",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-04",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-05",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-05",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-06",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-06",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-07",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-07",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-08",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-08",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-09",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-09",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-10",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-10",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-11",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-11",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-12",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-12",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-13",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-13",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-14",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-14",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-15",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-15",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-16",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-16",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-17",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-17",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-18",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-18",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-19",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-19",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-20",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-20",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-21",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-21",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-22",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-22",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-23",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-23",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-gk-pressao-24",
+   "tipo": "sensor",
+   "nome": "GK-PRESSAO-24",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-01",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-01",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "PK 1",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 005",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-02",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-02",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "PK 2",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 006",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-04",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 013",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-10",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-10",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 10",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 009",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-11",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-11",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 11",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 010",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-12",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-12",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 12",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 003",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-13",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-13",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 13",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 004",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-14",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-14",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 14",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 002",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-hidro-01-pk-16",
+   "tipo": "sensor",
+   "nome": "HIDRO-01-PK-16",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "PK 16",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 007",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-01",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-01",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-02",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-02",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-03",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-03",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-04",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-05",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-05",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-06",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-06",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-07",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-07",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-08",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-08",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-09",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-09",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 043",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-karitel-pressao-10",
+   "tipo": "sensor",
+   "nome": "KARITEL-PRESSAO-10",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 043",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-41",
+   "tipo": "sensor",
+   "nome": "PIR-41",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "local": "Pivô 41",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 141",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-57",
+   "tipo": "sensor",
+   "nome": "PIR-57",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 57",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 157",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-58",
+   "tipo": "sensor",
+   "nome": "PIR-58",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 58",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 158",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-59",
+   "tipo": "sensor",
+   "nome": "PIR-59",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 59",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 159",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-60",
+   "tipo": "sensor",
+   "nome": "PIR-60",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 160",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-61",
+   "tipo": "sensor",
+   "nome": "PIR-61",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 61",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 161",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-62",
+   "tipo": "sensor",
+   "nome": "PIR-62",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 62",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 162",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-66",
+   "tipo": "sensor",
+   "nome": "PIR-66",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 66",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 166",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-67",
+   "tipo": "sensor",
+   "nome": "PIR-67",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 67",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 167",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-68",
+   "tipo": "sensor",
+   "nome": "PIR-68",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 68",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 168",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-69",
+   "tipo": "sensor",
+   "nome": "PIR-69",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 69",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 169",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-70",
+   "tipo": "sensor",
+   "nome": "PIR-70",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 70",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 170",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-71",
+   "tipo": "sensor",
+   "nome": "PIR-71",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 71",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 171",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pir-72",
+   "tipo": "sensor",
+   "nome": "PIR-72",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 72",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 172",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-09-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-09-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-10-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-10-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-11-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-11-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-12-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-12-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-13-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-13-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 024",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-14-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-14-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 024",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-15-primavera-3",
+   "tipo": "sensor",
+   "nome": "PRESSAO-15-PRIMAVERA-3",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 024",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-41",
+   "tipo": "sensor",
+   "nome": "PRESSAO-41",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "local": "Pivô 41",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 041",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-57",
+   "tipo": "sensor",
+   "nome": "PRESSAO-57",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 57",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 057",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-58",
+   "tipo": "sensor",
+   "nome": "PRESSAO-58",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 58",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 058",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-59",
+   "tipo": "sensor",
+   "nome": "PRESSAO-59",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 59",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 059",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-60",
+   "tipo": "sensor",
+   "nome": "PRESSAO-60",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 060",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-61",
+   "tipo": "sensor",
+   "nome": "PRESSAO-61",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 61",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 061",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-62",
+   "tipo": "sensor",
+   "nome": "PRESSAO-62",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 62",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 062",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-66",
+   "tipo": "sensor",
+   "nome": "PRESSAO-66",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 66",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 066",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-67",
+   "tipo": "sensor",
+   "nome": "PRESSAO-67",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 67",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 067",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-68",
+   "tipo": "sensor",
+   "nome": "PRESSAO-68",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 68",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 068",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-69",
+   "tipo": "sensor",
+   "nome": "PRESSAO-69",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 69",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 069",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-70",
+   "tipo": "sensor",
+   "nome": "PRESSAO-70",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 70",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 070",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-71",
+   "tipo": "sensor",
+   "nome": "PRESSAO-71",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 71",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 071",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-72",
+   "tipo": "sensor",
+   "nome": "PRESSAO-72",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 72",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 072",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-41",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-41",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "local": "Pivô 41",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 141",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-57",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-57",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 57",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 157",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-58",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-58",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 58",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 158",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-59",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-59",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 59",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 159",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-60",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-60",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 160",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-61",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-61",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 61",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 161",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-62",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-62",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 62",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 162",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-66",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-66",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 66",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 166",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-67",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-67",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 67",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 167",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-68",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-68",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 68",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 168",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-69",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-69",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 69",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 169",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-70",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-70",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 70",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 170",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-71",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-71",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 71",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 171",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-pressao-pir-72",
+   "tipo": "sensor",
+   "nome": "PRESSAO-PIR-72",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 72",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 172",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-1-pressao-01",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-1-PRESSAO-01",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 1",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 028",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-1-pressao-02",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-1-PRESSAO-02",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 1",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 028",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-1-pressao-03",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-1-PRESSAO-03",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 1",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 028",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-2-pressao-04",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-2-PRESSAO-04",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 029",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-2-pressao-05",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-2-PRESSAO-05",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 029",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-2-pressao-06",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-2-PRESSAO-06",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 029",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-2-pressao-07",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-2-PRESSAO-07",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 2",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 030",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-primavera-2-pressao-08",
+   "tipo": "sensor",
+   "nome": "PRIMAVERA-2-PRESSAO-08",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 01",
+   "local": "Primavera 2",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 030",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-sensor-nivel-garfo",
+   "tipo": "sensor",
+   "nome": "SENSOR-NIVEL-GARFO",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NÍVEL-0-10M-GARFO",
+   "dispositivo": "DIR-NB 038",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-sensor-nivel-gk",
+   "tipo": "sensor",
+   "nome": "SENSOR-NIVEL-GK",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NÍVEL-0-10M-GK",
+   "dispositivo": "DIR-NB 034",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-sensor-nivel-karitel",
+   "tipo": "sensor",
+   "nome": "SENSOR-NIVEL-KARITEL",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "SPD-BP KARITEL",
+   "dispositivo": "DIR-NB 040",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-sensor-nivel-primavera",
+   "tipo": "sensor",
+   "nome": "SENSOR-NIVEL-PRIMAVERA*",
+   "fazenda": "Karitel",
+   "modulo": "",
+   "local": "",
+   "modelo": "NÍVEL-0-10M-PRIMAVERA3",
+   "dispositivo": "DIR-NB 024",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-41",
+   "tipo": "sensor",
+   "nome": "SPG-41",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 02",
+   "local": "Pivô 41",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 041",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-57",
+   "tipo": "sensor",
+   "nome": "SPG-57",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 57",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 057",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-58",
+   "tipo": "sensor",
+   "nome": "SPG-58",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 58",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 058",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-59",
+   "tipo": "sensor",
+   "nome": "SPG-59",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 59",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 059",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-60",
+   "tipo": "sensor",
+   "nome": "SPG-60",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 060",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-61",
+   "tipo": "sensor",
+   "nome": "SPG-61",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 61",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 061",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-62",
+   "tipo": "sensor",
+   "nome": "SPG-62",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 62",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 062",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-66",
+   "tipo": "sensor",
+   "nome": "SPG-66",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 66",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 066",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-67",
+   "tipo": "sensor",
+   "nome": "SPG-67",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 67",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 067",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-68",
+   "tipo": "sensor",
+   "nome": "SPG-68",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 68",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 068",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-69",
+   "tipo": "sensor",
+   "nome": "SPG-69",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 69",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 069",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-70",
+   "tipo": "sensor",
+   "nome": "SPG-70",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 70",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 070",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-71",
+   "tipo": "sensor",
+   "nome": "SPG-71",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 71",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 071",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-spg-72",
+   "tipo": "sensor",
+   "nome": "SPG-72",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 72",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 072",
+   "plataforma": "3V3"
+  },
+  {
+   "id": "sen-karitel-stp-60",
+   "tipo": "sensor",
+   "nome": "STP-60",
+   "fazenda": "Karitel",
+   "modulo": "Módulo 03",
+   "local": "Pivô 60",
+   "modelo": "STP",
+   "dispositivo": "DIR-GPS 060",
+   "plataforma": "3V3"
+  },
+  {
    "id": "dev-rio-do-meio-cir",
    "tipo": "concentrador",
    "nome": "CIR",
@@ -4139,7 +6922,7 @@
    "tipo": "dispositivo",
    "nome": "DIR_NB 013",
    "fazenda": "Rio do Meio",
-   "modulo": "",
+   "modulo": "Módulo 02",
    "local": "PRM 19",
    "plataforma": "3V3"
   },
@@ -4274,7 +7057,7 @@
    "tipo": "sensor",
    "nome": "PRM-19-HID",
    "fazenda": "Rio do Meio",
-   "modulo": "",
+   "modulo": "Módulo 02",
    "local": "PRM 19",
    "plataforma": "3V3"
   }

@@ -1,0 +1,1224 @@
+{
+ "_origem": "Equipamentos 3V3 da Fazenda Karitel (prints da plataforma 3V3 enviados pela operação em 20/11/2026). 'local' como no print ('—' = vazio); DIR-GPS/DIR-PIR: o número indica o pivô (157 → Pivô 57, 141 → Pivô 41), regra informada pela operação. DIR-NB 041 não consta na lista.",
+ "fazenda": "Karitel",
+ "plataforma": "3V3",
+ "dispositivos": [
+  {
+   "nome": "CIR",
+   "tipo": "concentrador",
+   "local": "Concentrador"
+  },
+  {
+   "nome": "REP 100",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 101",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 102",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 103",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 104",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 105",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 106",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 107",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 108",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 109",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 110",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 111",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 112",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 113",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 114",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "REP 115",
+   "tipo": "repetidor",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 001",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 002",
+   "tipo": "dispositivo",
+   "local": "PK 14"
+  },
+  {
+   "nome": "DIR-NB 003",
+   "tipo": "dispositivo",
+   "local": "PK 12"
+  },
+  {
+   "nome": "DIR-NB 004",
+   "tipo": "dispositivo",
+   "local": "PK 13"
+  },
+  {
+   "nome": "DIR-NB 005",
+   "tipo": "dispositivo",
+   "local": "PK 1"
+  },
+  {
+   "nome": "DIR-NB 006",
+   "tipo": "dispositivo",
+   "local": "PK 2"
+  },
+  {
+   "nome": "DIR-NB 007",
+   "tipo": "dispositivo",
+   "local": "PK 16"
+  },
+  {
+   "nome": "DIR-NB 008",
+   "tipo": "dispositivo",
+   "local": "PK 15"
+  },
+  {
+   "nome": "DIR-NB 009",
+   "tipo": "dispositivo",
+   "local": "PK 10"
+  },
+  {
+   "nome": "DIR-NB 010",
+   "tipo": "dispositivo",
+   "local": "PK 11"
+  },
+  {
+   "nome": "DIR-NB 011",
+   "tipo": "dispositivo",
+   "local": "R15"
+  },
+  {
+   "nome": "DIR-NB 012",
+   "tipo": "dispositivo",
+   "local": "R15"
+  },
+  {
+   "nome": "DIR-NB 013",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 014",
+   "tipo": "dispositivo",
+   "local": "Repetidores (antenas mais altas)"
+  },
+  {
+   "nome": "DIR-NB 015",
+   "tipo": "dispositivo",
+   "local": "Repetidores (antenas mais altas)"
+  },
+  {
+   "nome": "DIR-NB 016",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 017",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 018",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 019",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 020",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 021",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 022",
+   "tipo": "dispositivo",
+   "local": "ELE-4E5"
+  },
+  {
+   "nome": "DIR-NB 023",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 024",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 025",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 026",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 027",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 028",
+   "tipo": "dispositivo",
+   "local": "Primavera 1"
+  },
+  {
+   "nome": "DIR-NB 029",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 030",
+   "tipo": "dispositivo",
+   "local": "Primavera 2"
+  },
+  {
+   "nome": "DIR-NB 031",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 032",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 033",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 034",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 035",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 036",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 037",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 038",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 039",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 040",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 042",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-NB 043",
+   "tipo": "dispositivo",
+   "local": ""
+  },
+  {
+   "nome": "DIR-GPS 041",
+   "tipo": "dispositivo",
+   "local": "Pivô 41"
+  },
+  {
+   "nome": "DIR-GPS 057",
+   "tipo": "dispositivo",
+   "local": "Pivô 57"
+  },
+  {
+   "nome": "DIR-GPS 058",
+   "tipo": "dispositivo",
+   "local": "Pivô 58"
+  },
+  {
+   "nome": "DIR-GPS 059",
+   "tipo": "dispositivo",
+   "local": "Pivô 59"
+  },
+  {
+   "nome": "DIR-GPS 060",
+   "tipo": "dispositivo",
+   "local": "Pivô 60"
+  },
+  {
+   "nome": "DIR-GPS 061",
+   "tipo": "dispositivo",
+   "local": "Pivô 61"
+  },
+  {
+   "nome": "DIR-GPS 062",
+   "tipo": "dispositivo",
+   "local": "Pivô 62"
+  },
+  {
+   "nome": "DIR-GPS 066",
+   "tipo": "dispositivo",
+   "local": "Pivô 66"
+  },
+  {
+   "nome": "DIR-GPS 067",
+   "tipo": "dispositivo",
+   "local": "Pivô 67"
+  },
+  {
+   "nome": "DIR-GPS 068",
+   "tipo": "dispositivo",
+   "local": "Pivô 68"
+  },
+  {
+   "nome": "DIR-GPS 069",
+   "tipo": "dispositivo",
+   "local": "Pivô 69"
+  },
+  {
+   "nome": "DIR-GPS 070",
+   "tipo": "dispositivo",
+   "local": "Pivô 70"
+  },
+  {
+   "nome": "DIR-GPS 071",
+   "tipo": "dispositivo",
+   "local": "Pivô 71"
+  },
+  {
+   "nome": "DIR-GPS 072",
+   "tipo": "dispositivo",
+   "local": "Pivô 72"
+  },
+  {
+   "nome": "DIR-PIR 141",
+   "tipo": "dispositivo",
+   "local": "Pivô 41"
+  },
+  {
+   "nome": "DIR-PIR 157",
+   "tipo": "dispositivo",
+   "local": "Pivô 57"
+  },
+  {
+   "nome": "DIR-PIR 158",
+   "tipo": "dispositivo",
+   "local": "Pivô 58"
+  },
+  {
+   "nome": "DIR-PIR 159",
+   "tipo": "dispositivo",
+   "local": "Pivô 59"
+  },
+  {
+   "nome": "DIR-PIR 160",
+   "tipo": "dispositivo",
+   "local": "Pivô 60"
+  },
+  {
+   "nome": "DIR-PIR 161",
+   "tipo": "dispositivo",
+   "local": "Pivô 61"
+  },
+  {
+   "nome": "DIR-PIR 162",
+   "tipo": "dispositivo",
+   "local": "Pivô 62"
+  },
+  {
+   "nome": "DIR-PIR 166",
+   "tipo": "dispositivo",
+   "local": "Pivô 66"
+  },
+  {
+   "nome": "DIR-PIR 167",
+   "tipo": "dispositivo",
+   "local": "Pivô 67"
+  },
+  {
+   "nome": "DIR-PIR 168",
+   "tipo": "dispositivo",
+   "local": "Pivô 68"
+  },
+  {
+   "nome": "DIR-PIR 169",
+   "tipo": "dispositivo",
+   "local": "Pivô 69"
+  },
+  {
+   "nome": "DIR-PIR 170",
+   "tipo": "dispositivo",
+   "local": "Pivô 70"
+  },
+  {
+   "nome": "DIR-PIR 171",
+   "tipo": "dispositivo",
+   "local": "Pivô 71"
+  },
+  {
+   "nome": "DIR-PIR 172",
+   "tipo": "dispositivo",
+   "local": "Pivô 72"
+  }
+ ],
+ "sensores": [
+  {
+   "nome": "BN-PRESSAO-01",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025"
+  },
+  {
+   "nome": "BN-PRESSAO-02",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025"
+  },
+  {
+   "nome": "BN-PRESSAO-03",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025"
+  },
+  {
+   "nome": "BN-PRESSAO-04",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 025"
+  },
+  {
+   "nome": "BN-PRESSAO-05",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026"
+  },
+  {
+   "nome": "BN-PRESSAO-06",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026"
+  },
+  {
+   "nome": "BN-PRESSAO-07",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026"
+  },
+  {
+   "nome": "BN-PRESSAO-08",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 026"
+  },
+  {
+   "nome": "BN-PRESSAO-09",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027"
+  },
+  {
+   "nome": "BN-PRESSAO-10",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027"
+  },
+  {
+   "nome": "BN-PRESSAO-11",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027"
+  },
+  {
+   "nome": "BN-PRESSAO-12",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 027"
+  },
+  {
+   "nome": "ELE-4E5-NIVEL",
+   "modelo": "NÍVEL-0-10M",
+   "dispositivo": "DIR-NB 016"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-01-02",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 022"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-03-04",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 022"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-05-06",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 021"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-07-08",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 021"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-09-10",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 020"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-11-12",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 020"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-13-14",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 019"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-16-17",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 016"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-18-19",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 016"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-20-21",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 017"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-22-23",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 017"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-24-25",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 018"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-26-27",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 018"
+  },
+  {
+   "nome": "ELE-4E5-PRESSAO-28-29",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 019"
+  },
+  {
+   "nome": "GARFO-PRESSAO-01",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037"
+  },
+  {
+   "nome": "GARFO-PRESSAO-02",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037"
+  },
+  {
+   "nome": "GARFO-PRESSAO-03",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037"
+  },
+  {
+   "nome": "GARFO-PRESSAO-04",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 037"
+  },
+  {
+   "nome": "GARFO-PRESSAO-05",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038"
+  },
+  {
+   "nome": "GARFO-PRESSAO-06",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038"
+  },
+  {
+   "nome": "GARFO-PRESSAO-07",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038"
+  },
+  {
+   "nome": "GARFO-PRESSAO-08",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 038"
+  },
+  {
+   "nome": "GARFO-PRESSAO-09",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 039"
+  },
+  {
+   "nome": "GARFO-PRESSAO-10",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 039"
+  },
+  {
+   "nome": "GK-PRESSAO-01",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031"
+  },
+  {
+   "nome": "GK-PRESSAO-02",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031"
+  },
+  {
+   "nome": "GK-PRESSAO-03",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031"
+  },
+  {
+   "nome": "GK-PRESSAO-04",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 031"
+  },
+  {
+   "nome": "GK-PRESSAO-05",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032"
+  },
+  {
+   "nome": "GK-PRESSAO-06",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032"
+  },
+  {
+   "nome": "GK-PRESSAO-07",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032"
+  },
+  {
+   "nome": "GK-PRESSAO-08",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 032"
+  },
+  {
+   "nome": "GK-PRESSAO-09",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033"
+  },
+  {
+   "nome": "GK-PRESSAO-10",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033"
+  },
+  {
+   "nome": "GK-PRESSAO-11",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033"
+  },
+  {
+   "nome": "GK-PRESSAO-12",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 033"
+  },
+  {
+   "nome": "GK-PRESSAO-13",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034"
+  },
+  {
+   "nome": "GK-PRESSAO-14",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034"
+  },
+  {
+   "nome": "GK-PRESSAO-15",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034"
+  },
+  {
+   "nome": "GK-PRESSAO-16",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 034"
+  },
+  {
+   "nome": "GK-PRESSAO-17",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035"
+  },
+  {
+   "nome": "GK-PRESSAO-18",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035"
+  },
+  {
+   "nome": "GK-PRESSAO-19",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035"
+  },
+  {
+   "nome": "GK-PRESSAO-20",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 035"
+  },
+  {
+   "nome": "GK-PRESSAO-21",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036"
+  },
+  {
+   "nome": "GK-PRESSAO-22",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036"
+  },
+  {
+   "nome": "GK-PRESSAO-23",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036"
+  },
+  {
+   "nome": "GK-PRESSAO-24",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 036"
+  },
+  {
+   "nome": "HIDRO-01-PK-01",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 005"
+  },
+  {
+   "nome": "HIDRO-01-PK-02",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 006"
+  },
+  {
+   "nome": "HIDRO-01-PK-04",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 013"
+  },
+  {
+   "nome": "HIDRO-01-PK-10",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 009"
+  },
+  {
+   "nome": "HIDRO-01-PK-11",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 010"
+  },
+  {
+   "nome": "HIDRO-01-PK-12",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 003"
+  },
+  {
+   "nome": "HIDRO-01-PK-13",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 004"
+  },
+  {
+   "nome": "HIDRO-01-PK-14",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 002"
+  },
+  {
+   "nome": "HIDRO-01-PK-16",
+   "modelo": "H1000",
+   "dispositivo": "DIR-NB 007"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-01",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-02",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-03",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-04",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 040"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-05",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-06",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-07",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-08",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 042"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-09",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 043"
+  },
+  {
+   "nome": "KARITEL-PRESSAO-10",
+   "modelo": "NP400-0-16BAR",
+   "dispositivo": "DIR-NB 043"
+  },
+  {
+   "nome": "PIR-41",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 141"
+  },
+  {
+   "nome": "PIR-57",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 157"
+  },
+  {
+   "nome": "PIR-58",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 158"
+  },
+  {
+   "nome": "PIR-59",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 159"
+  },
+  {
+   "nome": "PIR-60",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 160"
+  },
+  {
+   "nome": "PIR-61",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 161"
+  },
+  {
+   "nome": "PIR-62",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 162"
+  },
+  {
+   "nome": "PIR-66",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 166"
+  },
+  {
+   "nome": "PIR-67",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 167"
+  },
+  {
+   "nome": "PIR-68",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 168"
+  },
+  {
+   "nome": "PIR-69",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 169"
+  },
+  {
+   "nome": "PIR-70",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 170"
+  },
+  {
+   "nome": "PIR-71",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 171"
+  },
+  {
+   "nome": "PIR-72",
+   "modelo": "PIR",
+   "dispositivo": "DIR-PIR 172"
+  },
+  {
+   "nome": "PRESSAO-09-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023"
+  },
+  {
+   "nome": "PRESSAO-10-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023"
+  },
+  {
+   "nome": "PRESSAO-11-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023"
+  },
+  {
+   "nome": "PRESSAO-12-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 023"
+  },
+  {
+   "nome": "PRESSAO-13-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 024"
+  },
+  {
+   "nome": "PRESSAO-14-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 024"
+  },
+  {
+   "nome": "PRESSAO-15-PRIMAVERA-3",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 024"
+  },
+  {
+   "nome": "PRESSAO-41",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 041"
+  },
+  {
+   "nome": "PRESSAO-57",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 057"
+  },
+  {
+   "nome": "PRESSAO-58",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 058"
+  },
+  {
+   "nome": "PRESSAO-59",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 059"
+  },
+  {
+   "nome": "PRESSAO-60",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 060"
+  },
+  {
+   "nome": "PRESSAO-61",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 061"
+  },
+  {
+   "nome": "PRESSAO-62",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 062"
+  },
+  {
+   "nome": "PRESSAO-66",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 066"
+  },
+  {
+   "nome": "PRESSAO-67",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 067"
+  },
+  {
+   "nome": "PRESSAO-68",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 068"
+  },
+  {
+   "nome": "PRESSAO-69",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 069"
+  },
+  {
+   "nome": "PRESSAO-70",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 070"
+  },
+  {
+   "nome": "PRESSAO-71",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 071"
+  },
+  {
+   "nome": "PRESSAO-72",
+   "modelo": "NP400",
+   "dispositivo": "DIR-GPS 072"
+  },
+  {
+   "nome": "PRESSAO-PIR-41",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 141"
+  },
+  {
+   "nome": "PRESSAO-PIR-57",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 157"
+  },
+  {
+   "nome": "PRESSAO-PIR-58",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 158"
+  },
+  {
+   "nome": "PRESSAO-PIR-59",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 159"
+  },
+  {
+   "nome": "PRESSAO-PIR-60",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 160"
+  },
+  {
+   "nome": "PRESSAO-PIR-61",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 161"
+  },
+  {
+   "nome": "PRESSAO-PIR-62",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 162"
+  },
+  {
+   "nome": "PRESSAO-PIR-66",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 166"
+  },
+  {
+   "nome": "PRESSAO-PIR-67",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 167"
+  },
+  {
+   "nome": "PRESSAO-PIR-68",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 168"
+  },
+  {
+   "nome": "PRESSAO-PIR-69",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 169"
+  },
+  {
+   "nome": "PRESSAO-PIR-70",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 170"
+  },
+  {
+   "nome": "PRESSAO-PIR-71",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 171"
+  },
+  {
+   "nome": "PRESSAO-PIR-72",
+   "modelo": "NP400",
+   "dispositivo": "DIR-PIR 172"
+  },
+  {
+   "nome": "PRIMAVERA-1-PRESSAO-01",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 028"
+  },
+  {
+   "nome": "PRIMAVERA-1-PRESSAO-02",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 028"
+  },
+  {
+   "nome": "PRIMAVERA-1-PRESSAO-03",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 028"
+  },
+  {
+   "nome": "PRIMAVERA-2-PRESSAO-04",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 029"
+  },
+  {
+   "nome": "PRIMAVERA-2-PRESSAO-05",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 029"
+  },
+  {
+   "nome": "PRIMAVERA-2-PRESSAO-06",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 029"
+  },
+  {
+   "nome": "PRIMAVERA-2-PRESSAO-07",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 030"
+  },
+  {
+   "nome": "PRIMAVERA-2-PRESSAO-08",
+   "modelo": "NP400",
+   "dispositivo": "DIR-NB 030"
+  },
+  {
+   "nome": "SENSOR-NIVEL-GARFO",
+   "modelo": "NÍVEL-0-10M-GARFO",
+   "dispositivo": "DIR-NB 038"
+  },
+  {
+   "nome": "SENSOR-NIVEL-GK",
+   "modelo": "NÍVEL-0-10M-GK",
+   "dispositivo": "DIR-NB 034"
+  },
+  {
+   "nome": "SENSOR-NIVEL-KARITEL",
+   "modelo": "SPD-BP KARITEL",
+   "dispositivo": "DIR-NB 040"
+  },
+  {
+   "nome": "SENSOR-NIVEL-PRIMAVERA*",
+   "modelo": "NÍVEL-0-10M-PRIMAVERA3",
+   "dispositivo": "DIR-NB 024"
+  },
+  {
+   "nome": "SPG-41",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 041"
+  },
+  {
+   "nome": "SPG-57",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 057"
+  },
+  {
+   "nome": "SPG-58",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 058"
+  },
+  {
+   "nome": "SPG-59",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 059"
+  },
+  {
+   "nome": "SPG-60",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 060"
+  },
+  {
+   "nome": "SPG-61",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 061"
+  },
+  {
+   "nome": "SPG-62",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 062"
+  },
+  {
+   "nome": "SPG-66",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 066"
+  },
+  {
+   "nome": "SPG-67",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 067"
+  },
+  {
+   "nome": "SPG-68",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 068"
+  },
+  {
+   "nome": "SPG-69",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 069"
+  },
+  {
+   "nome": "SPG-70",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 070"
+  },
+  {
+   "nome": "SPG-71",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 071"
+  },
+  {
+   "nome": "SPG-72",
+   "modelo": "SPG",
+   "dispositivo": "DIR-GPS 072"
+  },
+  {
+   "nome": "STP-60",
+   "modelo": "STP",
+   "dispositivo": "DIR-GPS 060"
+  }
+ ]
+}

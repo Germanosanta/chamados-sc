@@ -133,17 +133,24 @@ export function buscarAtivosIrrigacao(ativos: AtivoIrrigacao[], q: string, limit
   if (!termos.length) return [];
   // Plataforma fica só para termos de texto: o "3" de "3V3" não pode casar com números.
   const texto = (a: AtivoIrrigacao) =>
-    normalizarBusca(`${a.nome} ${TIPO_ATIVO_LABEL[a.tipo]} ${a.fazenda} ${a.modulo} ${a.casaBombas || ''} ${a.local || ''}`);
+    normalizarBusca(
+      `${a.nome} ${TIPO_ATIVO_LABEL[a.tipo]} ${a.fazenda} ${a.modulo} ${a.casaBombas || ''} ${a.local || ''} ${a.dispositivo || ''} ${(a.sensores || []).join(' ')}`,
+    );
   // Número digitado casa pelo início de um número do texto ("27" → 27, 270;
   // nunca 127), ignorando zeros à esquerda ("1" → "01").
   const casaNumero = (t: string, termo: string) =>
     (t.match(/\d+/g) || []).some((n) => n.startsWith(termo) || String(Number(n)).startsWith(String(Number(termo))));
   // Primeiro quem tem todos os termos no próprio nome ("prm 03" → PRM 03 antes
   // do DIR_NB instalado nele); pivôs antes dos demais em cada grupo.
+  // Número exato no nome ("primavera 1" → Primavera 01) vem antes do que só
+  // começa com ele (PRESSAO-10-PRIMAVERA-3).
+  const numeroExato = (t: string, termo: string) => (t.match(/\d+/g) || []).some((n) => Number(n) === Number(termo));
   const prioridade = (a: AtivoIrrigacao) => {
     const nome = normalizarBusca(a.nome);
-    const noNome = termos.every((termo) => (/^\d+$/.test(termo) ? casaNumero(nome, termo) : nome.includes(termo)));
-    return (noNome ? 0 : 2) + (a.tipo === 'pivo' ? 0 : 1);
+    const casa = (exato: boolean) =>
+      termos.every((termo) => (/^\d+$/.test(termo) ? (exato ? numeroExato(nome, termo) : casaNumero(nome, termo)) : nome.includes(termo)));
+    const grupo = casa(true) ? 0 : casa(false) ? 2 : 4;
+    return grupo + (a.tipo === 'pivo' ? 0 : 1);
   };
   return ativos
     .filter((a) => {

@@ -18,7 +18,8 @@ const SEM = '__sem__';
 function detalhes(a: AtivoIrrigacao): string {
   if (a.tipo === 'pivo') return [a.marca, a.casaBombas && `C. bombas ${a.casaBombas}`, a.dados?.['Área (há)'] && `${a.dados['Área (há)']} ha`].filter(Boolean).join(' · ');
   if (a.tipo === 'casa_bombas') return a.pivosAbastecidos ? `Pivôs ${a.pivosAbastecidos}` : '';
-  if (a.local !== undefined) return a.local ? `Local: ${a.local}` : '';
+  if (a.dispositivo) return [a.modelo, `Dispositivo ${a.dispositivo}`, a.local && `Local ${a.local}`].filter(Boolean).join(' · ');
+  if (a.local !== undefined) return [a.local && `Local: ${a.local}`, a.sensores?.length && `${a.sensores.length} sensor(es)`].filter(Boolean).join(' · ');
   return a.bombas ? `${a.bombas.length} bomba(s)` : '';
 }
 
